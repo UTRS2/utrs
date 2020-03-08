@@ -4,6 +4,9 @@
 <div class="card">
 	<h5 class="card-header">Admin tools</h5>
 	<div class="card-body">
+		<div class="alert alert-danger" role="alert">
+			Manage templates is still in development and do not work yet.
+		</div>
 		<a href="/admin/templates"><button type="button" class="btn btn-primary">Manage Templates</button></a>
 	</div>
 </div>

@@ -44,6 +44,9 @@
 <br>
 <div class="col-md-1"></div>
 <div class="col-md-10">
+<div class="alert alert-danger" role="alert">
+	Appeal Keys are still in development and do not work yet.
+</div>
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">If you already have an appeal</h5>
