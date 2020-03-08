@@ -21,3 +21,12 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+.editorconfig
+/config/
+/storage/
+/tests/
+server.php
+webpack.mix.js
+/bootstrap/
+artisan
+composer.lock
