@@ -85,7 +85,10 @@ class AppealController extends Controller
         }
         foreach ($wikis as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
-            if (Permission::checkPrivacy(Auth::id()) & Auth::user()['wikis'] != "*") {
+            if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
+                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('wiki','=',$wiki)->get();
+            }
+            elseif (Permission::checkPrivacy(Auth::id()) & Auth::user()['wikis'] != "*") {
                 $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('wiki','=',$wiki)->get();
             }
             elseif (Permission::checkPrivacy(Auth::id())) {
