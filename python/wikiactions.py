@@ -34,6 +34,7 @@ def calldb(command):
 def sendemails():
     results = calldb("select * from wikitasks where task = 'verifyaccount';")
     for result in results:
+        wtid=result[0]
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';")
         for userresult in userresults:
@@ -55,14 +56,16 @@ def sendemails():
             'target': username,
             'subject': 'UTRS Wiki Account Verification',
             'token': code.encode(),
-            'text': """
-            Thank you for registering your account with UTRS. Please verify your account by going to the following link.
+            'text': 
+"""
+Thank you for registering your account with UTRS. Please verify your account by going to the following link.
 
-            http://utrs-beta.wmflabs.org/verify/
-            """+str(confirmhash.hexdigest())+"""
+http://utrs-beta.wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
 
-            Thanks,
-            UTRS Developers"""
+Thanks,
+UTRS Developers"""
             }
             raw = callAPI(params)
+            print calldb("update users set u_v_token = '"+confirmhash+"';")
+            print calldb("delete from wikitasks where id="+wtid+";")
 sendemails()
