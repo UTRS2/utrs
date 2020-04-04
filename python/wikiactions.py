@@ -28,12 +28,18 @@ def calldb(command):
         if (connection.is_connected()):
             cursor.close()
             connection.close()
-            print("MySQL connection is closed")
         return record
 def sendemails():
     results = calldb("select * from wikitasks where task = 'verifyaccount';")
     for result in results:
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';")
-        print userresults
+        for userresult in userresults:
+            username = userresult[2]
+            params = {'action': 'query',
+            'meta': 'tokens'
+            }
+            raw = callAPI(params)
+            reg = raw["query"]
+            print reg
 sendemails()
