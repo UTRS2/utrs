@@ -31,4 +31,8 @@ webpack.mix.js
 artisan
 composer.lock
 python/credentials.py
+python/login.py
 vendor/*
+storage/*
+*.template.py
+*.pyc
