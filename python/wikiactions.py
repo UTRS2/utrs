@@ -2,7 +2,17 @@ import mysql.connector
 from mysql.connector import Error
 import credentials
 
-def verify():
+import localconfig
+import mwclient
+import login
+
+masterwiki =  mwclient.Site('en.wikipedia.org')
+masterwiki.login(login.username,login.password)
+
+def callAPI(params):
+    return masterwiki.api(**params)
+
+def verify(command):
     try:
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
@@ -10,9 +20,8 @@ def verify():
                                              password=credentials.password)
         if connection.is_connected():
             cursor = connection.cursor()
-            cursor.execute("select * from wikitasks where task = 'verifyaccount';")
+            cursor.execute(command)
             record = cursor.fetchall()
-            print record
 
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -21,4 +30,9 @@ def verify():
             cursor.close()
             connection.close()
             print("MySQL connection is closed")
-verify()
+        return record
+def sendemails():
+    results = verify("select * from wikitasks where task = 'verifyaccount';")
+    for result in results:
+        print result
+sendemails()
