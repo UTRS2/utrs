@@ -42,6 +42,6 @@ def sendemails():
             }
             raw = callAPI(params)
             print raw
-            code = raw["query"]["token"]["csrftoken"]
+            code = raw["query"]["tokens"]["csrftoken"]
             print code
 sendemails()
