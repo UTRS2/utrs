@@ -30,3 +30,4 @@ webpack.mix.js
 /bootstrap/
 artisan
 composer.lock
+python/credentials.py
