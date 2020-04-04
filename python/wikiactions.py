@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 import credentials
+import re
+import hashlib
 
 import mwclient
 import login
@@ -38,10 +40,25 @@ def sendemails():
             username = userresult[2]
             params = {'action': 'query',
             'format': 'json',
-            'meta': 'tokens'
+            'action': 'tokens'
             }
             raw = callAPI(params)
-            print raw
             code = raw["query"]["tokens"]["csrftoken"]
-            print code
+            mash= username+credentials.secret
+            confirmhash = hashlib.md5(mash.encode()) 
+            params = {'action': 'emailuser',
+            'format': 'json',
+            'target': username,
+            'subject': 'UTRS Wiki Account Verification',
+            'token': code.replace("+","%2B"),
+            'text': """
+            Thank you for registering your account with UTRS. Please verify your account by going to the following link.
+
+            http://utrs-beta.wmflabs.org/verify/
+            """+confirmhash+"""
+
+            Thanks,
+            UTRS Developers"""
+            }
+            raw = callAPI(params)
 sendemails()
