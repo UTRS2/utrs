@@ -51,8 +51,6 @@ def sendemails():
                 quit()
             mash= username+credentials.secret
             confirmhash = hashlib.md5(mash.encode()) 
-            print str(confirmhash.hexdigest())
-            quit()
             params = {'action': 'emailuser',
             'format': 'json',
             'target': username,
@@ -68,6 +66,6 @@ Thanks,
 UTRS Developers"""
             }
             raw = callAPI(params)
-            print calldb("update users set u_v_token = '"+str(confirmhash.hexdigest())+"' where id="+str(user)+";")
+            print calldb("update users set u_v_token = "+confirmhash.hexdigest()+" where id="+str(user)+";")
             print calldb("delete from wikitasks where id="+wtid+";")
 sendemails()
