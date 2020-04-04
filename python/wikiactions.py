@@ -70,5 +70,5 @@ UTRS Developers"""
             }
             raw = callAPI(params)
             print calldb("update users set u_v_token = "+confirmhash.hexdigest()+" where id="+str(user)+";","write")
-            print calldb("delete from wikitasks where id="+wtid+";","write")
+            print calldb("delete from wikitasks where id="+str(wtid)+";","write")
 sendemails()
