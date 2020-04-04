@@ -42,5 +42,6 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/verifyaccount','AdminController@verifyAccount');
+Route::get('/verify/{code}','AdminController@verify');
 Route::get('/pending','HomeController@pending');
 Route::get('/logout', 'HomeController@crashandburn');

@@ -112,4 +112,10 @@ class AdminController extends Controller
     		return view('admin.verifyme');
     	}
     }
+    public function verify($code) {
+    	$user = User::where('u_v_token','=',$code)->first();
+    	$user->verified=1;
+    	$user->save();
+    	return Redirect::to('/verifyaccount');
+    }
 }
