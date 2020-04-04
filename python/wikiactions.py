@@ -15,6 +15,7 @@ def callAPI(params):
 
 def calldb(command,style):
     try:
+        print command
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
                                              user=credentials.user,
@@ -28,7 +29,6 @@ def calldb(command,style):
                 connection.commit()
     except Error as e:
         print("Error while connecting to MySQL", e)
-        print command
     finally:
         if (connection.is_connected()):
             cursor.close()
