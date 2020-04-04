@@ -54,7 +54,7 @@ def sendemails():
             'format': 'json',
             'target': username,
             'subject': 'UTRS Wiki Account Verification',
-            'token': code.replace("+","%2B"),
+            'token': code.encode(),
             'text': """
             Thank you for registering your account with UTRS. Please verify your account by going to the following link.
 
