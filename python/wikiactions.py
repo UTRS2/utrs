@@ -2,7 +2,6 @@ import mysql.connector
 from mysql.connector import Error
 import credentials
 
-import localconfig
 import mwclient
 import login
 
