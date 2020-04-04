@@ -37,9 +37,10 @@ def sendemails():
         for userresult in userresults:
             username = userresult[2]
             params = {'action': 'query',
+            'format': 'json',
             'meta': 'tokens'
             }
             raw = callAPI(params)
-            code = raw["query"].items()[0][1].items()[0][1]
+            code = raw["query"]["token"]["csrftoken"]
             print code
 sendemails()
