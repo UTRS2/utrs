@@ -11,7 +11,7 @@ def verify():
         if connection.is_connected():
             cursor = connection.cursor()
             cursor.execute("select * from wikitasks where task = 'accountverify';")
-            record = cursor.fetch()
+            record = cursor.fetchall()
             print record
 
     except Error as e:
