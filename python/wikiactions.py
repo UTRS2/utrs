@@ -10,7 +10,7 @@ def verify():
                                              password=credentials.password)
         if connection.is_connected():
             cursor = connection.cursor()
-            cursor.execute("select * from wikitasks where task = 'accountverify';")
+            cursor.execute("select * from wikitasks where task = 'verifyaccount';")
             record = cursor.fetchall()
             print record
 
