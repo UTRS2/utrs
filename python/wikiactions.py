@@ -43,7 +43,11 @@ def sendemails():
             'action': 'tokens'
             }
             raw = callAPI(params)
-            code = raw["query"]["tokens"]["csrftoken"]
+            try:code = raw["query"]["tokens"]["csrftoken"]
+            except:
+                print raw
+                print "FAILURE: Param not accepted."
+                die()
             mash= username+credentials.secret
             confirmhash = hashlib.md5(mash.encode()) 
             params = {'action': 'emailuser',
