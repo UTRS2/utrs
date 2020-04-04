@@ -35,11 +35,11 @@ def calldb(command,style):
         if style == "read":return record
         else:return "Done"
 def sendemails():
-    results = calldb("select * from wikitasks where task = 'verifyaccount';")
+    results = calldb("select * from wikitasks where task = 'verifyaccount';","read")
     for result in results:
         wtid=result[0]
         user = result[2]
-        userresults = calldb("select * from users where id = '"+str(user)+"';")
+        userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
             username = userresult[2]
             params = {'action': 'query',
@@ -69,6 +69,6 @@ Thanks,
 UTRS Developers"""
             }
             raw = callAPI(params)
-            print calldb("update users set u_v_token = "+confirmhash.hexdigest()+" where id="+str(user)+";")
-            print calldb("delete from wikitasks where id="+wtid+";")
+            print calldb("update users set u_v_token = "+confirmhash.hexdigest()+" where id="+str(user)+";","write")
+            print calldb("delete from wikitasks where id="+wtid+";","write")
 sendemails()
