@@ -13,7 +13,7 @@ masterwiki.login(login.username,login.password)
 def callAPI(params):
     return masterwiki.api(**params)
 
-def calldb(command):
+def calldb(command,style):
     try:
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
@@ -22,15 +22,18 @@ def calldb(command):
         if connection.is_connected():
             cursor = connection.cursor()
             cursor.execute(command)
-            record = cursor.fetchall()
-
+            if style == "read":
+                record = cursor.fetchall()
+            if style == "write":
+                connection.commit()
     except Error as e:
         print("Error while connecting to MySQL", e)
     finally:
         if (connection.is_connected()):
             cursor.close()
             connection.close()
-        return record
+        if style == "read":return record
+        else:return "Done"
 def sendemails():
     results = calldb("select * from wikitasks where task = 'verifyaccount';")
     for result in results:
