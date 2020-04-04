@@ -40,6 +40,6 @@ def sendemails():
             'meta': 'tokens'
             }
             raw = callAPI(params)
-            code = raw["query"].items()[0][0]
+            code = raw["query"].items()[0][1][0][1]
             print code
 sendemails()
