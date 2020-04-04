@@ -31,3 +31,4 @@ webpack.mix.js
 artisan
 composer.lock
 python/credentials.py
+/vendor/*
