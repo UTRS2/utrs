@@ -28,6 +28,8 @@ def calldb(command,style):
                 connection.commit()
     except Error as e:
         print("Error while connecting to MySQL", e)
+        print command
+        quit()
     finally:
         if (connection.is_connected()):
             cursor.close()
