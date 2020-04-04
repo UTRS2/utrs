@@ -35,6 +35,7 @@
 		@endauth
 		@guest
 	    <a href="/login" class="btn btn-primary">Login</a>
+	    <a href="/register" class="btn btn-primary">Register</a>
 	    @endguest
 	  </div>
 	</div>

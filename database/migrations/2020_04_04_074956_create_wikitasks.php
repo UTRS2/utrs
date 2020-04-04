@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddWikiToUsers extends Migration
+class CreateWikitasks extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddWikiToUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('wikis')->nullable();
+        Schema::create('wikitasks', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('task');
+            $table->smallInteger('actionid');
         });
     }
 
@@ -25,8 +27,6 @@ class AddWikiToUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('wikis');
-        });
+        Schema::dropIfExists('wikitasks');
     }
 }

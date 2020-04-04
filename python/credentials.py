@@ -1,0 +1,4 @@
+ip=''
+database=''
+user=''
+password=''

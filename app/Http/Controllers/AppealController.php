@@ -21,6 +21,10 @@ use Illuminate\Support\Arr;
 class AppealController extends Controller
 {
     public function appeal($id) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
     	$info = Appeal::find($id);
     	if (is_null($info)) {
     		$info = Oldappeal::find($id);
@@ -78,6 +82,10 @@ class AppealController extends Controller
     }
     public function appeallist() {
         $tooladmin = False;
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         if (Auth::user()['wikis']!=="*") {
             $wikis = ["*"];
         } else {
@@ -163,6 +171,10 @@ class AppealController extends Controller
         return view ('appeals.makeappeal.ip');
     }
     public function checkuser($id, Request $request) {
+        if (!Auth::check()) {
+            $response->assertUnauthorized();
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -179,6 +191,10 @@ class AppealController extends Controller
         }
     }
     public function comment($id, Request $request) {
+        if (!Auth::check()) {
+            $response->assertUnauthorized();
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -195,6 +211,10 @@ class AppealController extends Controller
         }
     }
     public function respond($id, $template, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -211,6 +231,10 @@ class AppealController extends Controller
         }
     }
     public function respondCustomSubmit($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -227,6 +251,10 @@ class AppealController extends Controller
         }
     }
     public function viewtemplates($id) {
+        if (!Auth::check()) {
+            $response->assertUnauthorized();
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user,$appeal->wiki);
@@ -241,6 +269,10 @@ class AppealController extends Controller
         }
     }
     public function respondCustom($id) {
+        if (!Auth::check()) {
+            $response->assertUnauthorized();
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user,$appeal->wiki);
@@ -254,6 +286,10 @@ class AppealController extends Controller
         }
     }
     public function reserve($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -276,6 +312,10 @@ class AppealController extends Controller
         }
     }
     public function release($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -298,6 +338,10 @@ class AppealController extends Controller
         }
     }
     public function open($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -320,6 +364,10 @@ class AppealController extends Controller
         }
     }
     public function invalidate($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -337,6 +385,10 @@ class AppealController extends Controller
         }
     }
     public function close($id, $type, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -354,6 +406,10 @@ class AppealController extends Controller
         }
     }
     public function privacy($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -371,6 +427,10 @@ class AppealController extends Controller
         }
     }
     public function checkuserreview($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -388,6 +448,10 @@ class AppealController extends Controller
         }
     }
     public function admin($id, Request $request) {
+        if (!Auth::check()) {
+            abort(403,'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');

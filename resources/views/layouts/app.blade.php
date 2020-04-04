@@ -12,7 +12,11 @@
             <a class="navbar-brand nav-item" href="/">UTRS 2.0</a>
             @auth
             <div class="dropdow nav-item" style="color:white;">
+                @if (Auth::user()->verified)
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                @else
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                @endif
                 <a href="/logout" style="color:white;">{{Auth::user()->username}}</a>
             </div>
             @endauth             

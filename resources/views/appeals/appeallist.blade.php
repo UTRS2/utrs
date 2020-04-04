@@ -8,6 +8,9 @@
 			Manage templates is still in development and do not work yet.
 		</div>
 		<a href="/admin/templates"><button type="button" class="btn btn-primary">Manage Templates</button></a>
+		<a href="/admin/bans"><button type="button" class="btn btn-primary">Manage Bans</button></a>
+		<a href="/admin/users"><button type="button" class="btn btn-primary">Manage Users</button></a>
+		<a href="/admin/sitenotices"><button type="button" class="btn btn-primary">Manage Sitenotices</button></a>
 	</div>
 </div>
 @endif

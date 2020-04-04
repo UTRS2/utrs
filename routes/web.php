@@ -33,7 +33,14 @@ Route::get('/appeal/template/{id}/{template}', 'AppealController@respond');
 Route::get('/appeal/custom/{id}', 'AppealController@respondCustom');
 Route::post('/appeal/custom/{id}', 'AppealController@respondCustomSubmit');
 
+Route::get('/admin/users', 'AdminController@listusers');
+Route::get('/admin/bans', 'AdminController@listbans');
+Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
+Route::get('/admin/templates', 'AdminController@listtemplates');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/verifyaccount','AdminController@verifyAccount');
+Route::get('/pending','HomeController@pending');
 Route::get('/logout', 'HomeController@crashandburn');
