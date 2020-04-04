@@ -11,7 +11,7 @@ masterwiki.login(login.username,login.password)
 def callAPI(params):
     return masterwiki.api(**params)
 
-def verify(command):
+def calldb(command):
     try:
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
@@ -31,7 +31,9 @@ def verify(command):
             print("MySQL connection is closed")
         return record
 def sendemails():
-    results = verify("select * from wikitasks where task = 'verifyaccount';")
+    results = calldb("select * from wikitasks where task = 'verifyaccount';")
     for result in results:
-        print result
+        user = result[2]
+        userresults = calldb("select * from users where id = '"+str(user)+"';")
+        print userresults
 sendemails()
