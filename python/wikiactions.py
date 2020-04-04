@@ -51,7 +51,7 @@ def sendemails():
                 quit()
             mash= username+credentials.secret
             confirmhash = hashlib.md5(mash.encode()) 
-            str(confirmhash.hexdigest())
+            print str(confirmhash.hexdigest())
             quit()
             params = {'action': 'emailuser',
             'format': 'json',
