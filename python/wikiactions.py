@@ -59,7 +59,7 @@ def sendemails():
             Thank you for registering your account with UTRS. Please verify your account by going to the following link.
 
             http://utrs-beta.wmflabs.org/verify/
-            """+confirmhash+"""
+            """+str(confirmhash.hexdigest())+"""
 
             Thanks,
             UTRS Developers"""
