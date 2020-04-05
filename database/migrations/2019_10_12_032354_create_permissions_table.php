@@ -15,15 +15,16 @@ class CreatePermissionsTable extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->boolean('oversight');
-            $table->boolean('checkuser');
-            $table->boolean('steward');
-            $table->boolean('staff');
-            $table->boolean('developer');
-            $table->boolean('tooladmin');
-            $table->boolean('privacy');
-            $table->boolean('admin');
-            $table->boolean('user');
+            $table->bigInteger('userid');
+            $table->boolean('oversight')->default(0);
+            $table->boolean('checkuser')->default(0);
+            $table->boolean('steward')->default(0);
+            $table->boolean('staff')->default(0);
+            $table->boolean('developer')->default(0);
+            $table->boolean('tooladmin')->default(0);
+            $table->boolean('privacy')->default(0);
+            $table->boolean('admin')->default(0);
+            $table->boolean('user')->default(0);
             $table->string('wiki');
             $table->timestamps();
         });
