@@ -160,9 +160,9 @@ def checkPerms(user, id):
     ###################################
     ###Set permissions#################
     if enperms['user']:
-        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",enwiki,"+str(int(enperms["oversight"]))+","+str(int(enperms["checkuser"]))+","+str(int(enperms["sysop"]))+",1);","write")
+        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'enwiki',"+str(int(enperms["oversight"]))+","+str(int(enperms["checkuser"]))+","+str(int(enperms["sysop"]))+",1);","write")
     if ptperms['user']:
-        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",ptwiki,"+str(int(ptperms["oversight"]))+","+str(int(ptperms["checkuser"]))+","+str(int(ptperms["sysop"]))+",1);","write")
+        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'ptwiki',"+str(int(ptperms["oversight"]))+","+str(int(ptperms["checkuser"]))+","+str(int(ptperms["sysop"]))+",1);","write")
     if metaperms['user']:
-        calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",*,"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
+        calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",'*',"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
 verifyusers()
