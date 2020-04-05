@@ -21,7 +21,7 @@ def callmetaAPI(params):
     return metawiki.api(**params)
 
 def callptwikiAPI(params):
-    return ptwikiwiki.api(**params)
+    return ptwiki.api(**params)
 
 def calldb(command,style):
     try:
@@ -53,6 +53,7 @@ def verifyusers():
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
             username = userresult[2]
+            print username
             params = {'action': 'query',
             'format': 'json',
             'meta': 'tokens'
