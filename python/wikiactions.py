@@ -90,6 +90,7 @@ def checkPerms(user):
             'usprop': 'groups'
             }
     raw = callAPI(params)
+    print raw["query"]
     result = raw["query"]["users"]["groups"]
     print result
 #verifyusers()
