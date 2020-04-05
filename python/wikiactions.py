@@ -9,9 +9,19 @@ import login
 
 masterwiki =  mwclient.Site('en.wikipedia.org')
 masterwiki.login(login.username,login.password)
+metawiki =  mwclient.Site('meta.wikimedia.org')
+metawiki.login(login.username,login.password)
+ptwiki =  mwclient.Site('pt.wikipedia.org')
+ptwiki.login(login.username,login.password)
 
 def callAPI(params):
     return masterwiki.api(**params)
+
+def callmetaAPI(params):
+    return metawiki.api(**params)
+
+def callptwikiAPI(params):
+    return ptwikiwiki.api(**params)
 
 def calldb(command,style):
     try:
@@ -35,7 +45,7 @@ def calldb(command,style):
             connection.close()
         if style == "read":return record
         else:return "Done"
-def sendemails():
+def verifyusers():
     results = calldb("select * from wikitasks where task = 'verifyaccount';","read")
     for result in results:
         wtid=result[0]
@@ -70,6 +80,17 @@ Thanks,
 UTRS Developers"""
             }
             raw = callAPI(params)
-            print calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
-            print calldb("delete from wikitasks where id="+str(wtid)+";","write")
-sendemails()
+            calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
+            calldb("delete from wikitasks where id="+str(wtid)+";","write")
+def checkPerms(user):
+    params = {'action': 'query',
+            'format': 'json',
+            'list': 'users',
+            'ususers': user,
+            'usprop': 'groups'
+            }
+            raw = callAPI(params)
+            result = raw["query"]["users"]["groups"]
+            print result
+#verifyusers()
+checkPerms("DeltaQuad")
