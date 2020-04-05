@@ -83,17 +83,90 @@ UTRS Developers"""
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkPerms(user):
+    enperms = ["user"=False,"sysop"=False,"checkuser"=False,"oversight"=False]
+    ptperms = ["user"=False,"sysop"=False,"checkuser"=False,"oversight"=False]
+    metaperms = ["user"=False,"steward"=False,"staff"=False]
+    ##############################
+    ###Enwiki checks##############
     params = {'action': 'query',
             'format': 'json',
             'list': 'users',
             'ususers': user,
-            'usprop': 'groups'
+            'usprop': 'groups|editcount'
             }
     raw = callAPI(params)
     results = raw["query"]["users"][0]["groups"]
     for result in results:
         if "sysop" in result:
-            print "Sysop in enwiki"
-            enwikisysop=True
+            enperms["sysop"]=True
+        if "checkuser" in result:
+            enperms["checkuser"]=True
+        if "oversight" in result:
+            enperms["oversight"]=True
+    params = {'action': 'query',
+            'format': 'json',
+            'meta': 'userinfo',
+            'ususers': user,
+            'usprop': 'groups'
+            }
+    raw = callAPI(params)
+    editcount = raw["query"]["users"][0]["editcount"]
+    if editcount >500:enperms["user"]=True
+    ##############################
+    ###Ptwiki checks##############
+    raw = callptwikiAPI(params)
+    results = raw["query"]["users"][0]["groups"]
+    for result in results:
+        if "sysop" in result:
+            ptperms["sysop"]=True
+        if "checkuser" in result:
+            ptperms["checkuser"]=True
+        if "oversight" in result:
+            ptperms["oversight"]=True
+    params = {'action': 'query',
+            'format': 'json',
+            'meta': 'userinfo',
+            'ususers': user,
+            'usprop': 'groups'
+            }
+    raw = callptwikiAPI(params)
+    editcount = raw["query"]["users"][0]["editcount"]
+    if editcount >500:enperms["user"]=True
+    ##############################
+    ###Meta checks##############
+    params = {'action': 'query',
+            'format': 'json',
+            'list': 'globalallusers',
+            'agufrom': user,
+            'agulimit':1,
+            'aguprop': 'groups'
+            }
+    raw = callmetaAPI(params)
+    results = raw["query"]["globalallusers"][0]["groups"]
+    for result in results:
+        if "steward" in result:
+            metaperms["steward"]=True
+        if "staff" in result:
+            metaperms["staff"]=True
+    params = {'action': 'query',
+            'format': 'json',
+            'list': 'users',
+            'ususers': user,
+            'usprop': 'editcount'
+            }
+    raw = callptwikiAPI(params)
+    editcount = raw["query"]["users"][0]["editcount"]
+    if editcount >500:metaperms["user"]=True
+    ###################################
+    ###Set allowed Wikis###############
+
+    ###################################
+    ###Set permissions#################
+    if enperms['user']:
+        calldb("insert into permissions (oversight,checkuser,admin,user) values ("+int(enperms["oversight"])+","+int(enperms["checkuser"])+","+int(enperms["sysop"]),1");","write")
+    if ptperms['user']:
+        calldb("insert into permissions (oversight,checkuser,admin,user) values ("+int(ptperms["oversight"])+","+int(ptperms["checkuser"])+","+int(ptperms["sysop"]),1");","write")
+    if metaperms['user']:
+        calldb("insert into permissions (steward,staff,user) values ("+int(metaperms["steward"])+","+int(metaperms["staff"]),1");","write")
 #verifyusers()
 checkPerms("DeltaQuad")
