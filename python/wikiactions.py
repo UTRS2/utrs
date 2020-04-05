@@ -48,6 +48,7 @@ def calldb(command,style):
 def verifyusers():
     results = calldb("select * from wikitasks where task = 'verifyaccount';","read")
     for result in results:
+        print result
         wtid=result[0]
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
