@@ -89,8 +89,8 @@ def checkPerms(user):
             'ususers': user,
             'usprop': 'groups'
             }
-            raw = callAPI(params)
-            result = raw["query"]["users"]["groups"]
-            print result
+    raw = callAPI(params)
+    result = raw["query"]["users"]["groups"]
+    print result
 #verifyusers()
 checkPerms("DeltaQuad")
