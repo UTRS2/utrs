@@ -90,8 +90,10 @@ def checkPerms(user):
             'usprop': 'groups'
             }
     raw = callAPI(params)
-    print raw["query"]["users"][0]["groups"]
-    #result = raw["query"]["users"]["groups"]
-    #print result
+    results = raw["query"]["users"][0]["groups"]
+    for result in results:
+        if "sysop" in result:
+            print "Sysop in enwiki"
+            enwikisysop=True
 #verifyusers()
 checkPerms("DeltaQuad")
