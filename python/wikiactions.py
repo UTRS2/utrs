@@ -9,9 +9,19 @@ import login
 
 masterwiki =  mwclient.Site('en.wikipedia.org')
 masterwiki.login(login.username,login.password)
+metawiki =  mwclient.Site('meta.wikimedia.org')
+metawiki.login(login.username,login.password)
+ptwiki =  mwclient.Site('pt.wikipedia.org')
+ptwiki.login(login.username,login.password)
 
 def callAPI(params):
     return masterwiki.api(**params)
+
+def callmetaAPI(params):
+    return metawiki.api(**params)
+
+def callptwikiAPI(params):
+    return ptwiki.api(**params)
 
 def calldb(command,style):
     try:
@@ -35,14 +45,15 @@ def calldb(command,style):
             connection.close()
         if style == "read":return record
         else:return "Done"
-def sendemails():
+def verifyusers():
     results = calldb("select * from wikitasks where task = 'verifyaccount';","read")
     for result in results:
         wtid=result[0]
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
-            username = userresult[2]
+            username = userresult[1]
+            if username == None:continue
             params = {'action': 'query',
             'format': 'json',
             'meta': 'tokens'
@@ -70,6 +81,88 @@ Thanks,
 UTRS Developers"""
             }
             raw = callAPI(params)
-            print calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
-            print calldb("delete from wikitasks where id="+str(wtid)+";","write")
-sendemails()
+            calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
+            calldb("delete from wikitasks where id="+str(wtid)+";","write")
+            checkPerms(username,user)
+def checkPerms(user, id):
+    enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
+    ptperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
+    metaperms = {"user":False,"steward":False,"staff":False}
+    ##############################
+    ###Enwiki checks##############
+    params = {'action': 'query',
+            'format': 'json',
+            'list': 'users',
+            'ususers': user,
+            'usprop': 'groups|editcount'
+            }
+    raw = callAPI(params)
+    results = raw["query"]["users"][0]["groups"]
+    for result in results:
+        if "sysop" in result:
+            enperms["sysop"]=True
+        if "checkuser" in result:
+            enperms["checkuser"]=True
+        if "oversight" in result:
+            enperms["oversight"]=True
+    editcount = raw["query"]["users"][0]["editcount"]
+    if editcount >500:enperms["user"]=True
+    ##############################
+    ###Ptwiki checks##############
+    raw = callptwikiAPI(params)
+    results = raw["query"]["users"][0]["groups"]
+    for result in results:
+        if "sysop" in result:
+            ptperms["sysop"]=True
+        if "checkuser" in result:
+            ptperms["checkuser"]=True
+        if "oversight" in result:
+            ptperms["oversight"]=True
+    editcount = raw["query"]["users"][0]["editcount"]
+    if editcount >500:enperms["user"]=True
+    ##############################
+    ###Meta checks##############
+    params = {'action': 'query',
+            'format': 'json',
+            'list': 'globalallusers',
+            'agufrom': user,
+            'agulimit':1,
+            'aguprop': 'groups'
+            }
+    raw = callmetaAPI(params)
+    results = raw["query"]["globalallusers"][0]["groups"]
+    for result in results:
+        if "steward" in result:
+            metaperms["steward"]=True
+        if "staff" in result:
+            metaperms["staff"]=True
+    params = {'action': 'query',
+            'format': 'json',
+            'list': 'users',
+            'ususers': user,
+            'usprop': 'editcount'
+            }
+    raw = callptwikiAPI(params)
+    editcount = raw["query"]["users"][0]["editcount"]
+    if editcount >500:metaperms["user"]=True
+    ###################################
+    ###Set allowed Wikis###############
+    string = ""
+    if enperms['user']:
+        string += "enwiki"
+    if ptperms['user']:
+        if string != "":string +=",ptwiki"
+        else:string +="ptwiki"
+    if metaperms['user']:
+        if string != "":string +=",global"
+        else:string +="global"
+    calldb("update users set wikis = '"+string+"' where id="+str(id)+";","write")
+    ###################################
+    ###Set permissions#################
+    if enperms['user']:
+        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'enwiki',"+str(int(enperms["oversight"]))+","+str(int(enperms["checkuser"]))+","+str(int(enperms["sysop"]))+",1);","write")
+    if ptperms['user']:
+        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'ptwiki',"+str(int(ptperms["oversight"]))+","+str(int(ptperms["checkuser"]))+","+str(int(ptperms["sysop"]))+",1);","write")
+    if metaperms['user']:
+        calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",'*',"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
+verifyusers()
