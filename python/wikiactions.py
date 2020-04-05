@@ -105,13 +105,6 @@ def checkPerms(user, id):
             enperms["checkuser"]=True
         if "oversight" in result:
             enperms["oversight"]=True
-    params = {'action': 'query',
-            'format': 'json',
-            'meta': 'userinfo',
-            'ususers': user,
-            'usprop': 'groups'
-            }
-    raw = callAPI(params)
     editcount = raw["query"]["users"][0]["editcount"]
     if editcount >500:enperms["user"]=True
     ##############################
@@ -125,13 +118,6 @@ def checkPerms(user, id):
             ptperms["checkuser"]=True
         if "oversight" in result:
             ptperms["oversight"]=True
-    params = {'action': 'query',
-            'format': 'json',
-            'meta': 'userinfo',
-            'ususers': user,
-            'usprop': 'groups'
-            }
-    raw = callptwikiAPI(params)
     editcount = raw["query"]["users"][0]["editcount"]
     if editcount >500:enperms["user"]=True
     ##############################
