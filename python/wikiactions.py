@@ -52,6 +52,7 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
+            print userresult
             username = userresult[2]
             if username == None:continue
             params = {'action': 'query',
