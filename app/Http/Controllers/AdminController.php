@@ -11,6 +11,7 @@ use App\Permission;
 use App\Wikitask;
 use Auth;
 use Validator;
+use Redirect;
 use Illuminate\Support\Arr;
 
 class AdminController extends Controller
@@ -111,5 +112,11 @@ class AdminController extends Controller
     		Wikitask::create(['task'=>'verifyaccount','actionid'=>Auth::id()]);
     		return view('admin.verifyme');
     	}
+    }
+    public function verify($code) {
+    	$user = User::where('u_v_token','=',$code)->first();
+    	$user->verified=1;
+    	$user->save();
+    	return Redirect::to('/verifyaccount');
     }
 }
