@@ -117,6 +117,6 @@ class AdminController extends Controller
     	$user = User::where('u_v_token','=',$code)->first();
     	$user->verified=1;
     	$user->save();
-    	return Redirect::to('/verifyaccount');
+    	return Redirect::to('/home');
     }
 }

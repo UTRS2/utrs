@@ -16,7 +16,6 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('username');
-            $table->string('wikiaccount')->nullable()->unique();
             $table->boolean('verified')->default(0);
             $table->string('u_v_token')->nullable();
             $table->string('password');
