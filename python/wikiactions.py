@@ -82,7 +82,8 @@ UTRS Developers"""
             raw = callAPI(params)
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
-def checkPerms(user):
+            checkPerms(username,user)
+def checkPerms(user, id):
     enperms = ["user"=False,"sysop"=False,"checkuser"=False,"oversight"=False]
     ptperms = ["user"=False,"sysop"=False,"checkuser"=False,"oversight"=False]
     metaperms = ["user"=False,"steward"=False,"staff"=False]
@@ -159,14 +160,22 @@ def checkPerms(user):
     if editcount >500:metaperms["user"]=True
     ###################################
     ###Set allowed Wikis###############
-
+    string = ""
+    if enperms['user']:
+        string += "enwiki"
+    if ptperms['user']:
+        if string != "":string +=",ptwiki"
+        else:string +="ptwiki"
+    if metaperms['user']:
+        if string != "":string +=",global"
+        else:string +="global"
+    calldb("update users set wikis = '"+string+"' where id="+str(id)+";","write")
     ###################################
     ###Set permissions#################
     if enperms['user']:
-        calldb("insert into permissions (oversight,checkuser,admin,user) values ("+int(enperms["oversight"])+","+int(enperms["checkuser"])+","+int(enperms["sysop"]),1");","write")
+        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+id+",enwiki,"+int(enperms["oversight"])+","+int(enperms["checkuser"])+","+int(enperms["sysop"]),1");","write")
     if ptperms['user']:
-        calldb("insert into permissions (oversight,checkuser,admin,user) values ("+int(ptperms["oversight"])+","+int(ptperms["checkuser"])+","+int(ptperms["sysop"]),1");","write")
+        calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+id+",ptwiki,"+int(ptperms["oversight"])+","+int(ptperms["checkuser"])+","+int(ptperms["sysop"]),1");","write")
     if metaperms['user']:
-        calldb("insert into permissions (steward,staff,user) values ("+int(metaperms["steward"])+","+int(metaperms["staff"]),1");","write")
-#verifyusers()
-checkPerms("DeltaQuad")
+        calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+id+",*,"+int(metaperms["steward"])+","+int(metaperms["staff"]),1");","write")
+verifyusers()
