@@ -84,9 +84,9 @@ UTRS Developers"""
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
             checkPerms(username,user)
 def checkPerms(user, id):
-    enperms = array("user"=False,"sysop"=False,"checkuser"=False,"oversight"=False)
-    ptperms = array("user"=False,"sysop"=False,"checkuser"=False,"oversight"=False)
-    metaperms = array("user"=False,"steward"=False,"staff"=False)
+    enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
+    ptperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
+    metaperms = {"user":False,"steward":False,"staff":False}
     ##############################
     ###Enwiki checks##############
     params = {'action': 'query',
