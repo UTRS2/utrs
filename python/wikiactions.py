@@ -165,4 +165,30 @@ def checkPerms(user, id):
         calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'ptwiki',"+str(int(ptperms["oversight"]))+","+str(int(ptperms["checkuser"]))+","+str(int(ptperms["sysop"]))+",1);","write")
     if metaperms['user']:
         calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",'*',"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
+def verifyblock():
+    results = calldb("select * from appeals where status = 'verify';","read")
+    for appeal in results:
+        target = appeal[1]
+        wiki=appeal[13]
+        params = {'action': 'query',
+            'format': 'json',
+            'list': 'blocks',
+            'bkusers': target
+            }
+        if wiki == "enwiki":
+            raw = callAPI(params)
+            if len(raw["query"]["blocks"])>0:
+                calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+                calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
+                calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+            else:calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+        if wiki == "ptwiki":
+            raw = callptwikiAPI(params)
+        if wiki == "global":
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'blocks',
+            'bkusers': target
+            }
+            raw = callmetaAPI(params)
 verifyusers()
