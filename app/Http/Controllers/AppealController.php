@@ -30,7 +30,7 @@ class AppealController extends Controller
     	if (is_null($info)) {
     		$info = Oldappeal::find($id);
             if (is_null($info)) {
-                throw new \InvalidArgumentException('Appeal does not exist or you do not have access to it: '.$id);
+                abort(404,'Appeal does not exist or you do not have access to it.');
             }
     		$comments = $info->comments()->get();
             $userlist = [];
