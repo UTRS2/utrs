@@ -49,7 +49,6 @@ class AppealController extends Controller
             else {$closestatus=FALSE;}
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
                 $logs = $info->comments()->get();
-                dd($logs);
                 $userlist = [];
                 if (!is_null($info->handlingadmin)) {
                     $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
@@ -63,6 +62,7 @@ class AppealController extends Controller
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
                 foreach($logs as $log) {
+                    dd($log);
                     if(is_null($log->user) || $log->user=0) {continue;}
                     if(in_array($log->user, $userlist)) {continue;}
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
