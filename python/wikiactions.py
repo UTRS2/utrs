@@ -175,21 +175,82 @@ def verifyblock():
             'list': 'blocks',
             'bkusers': target
             }
-        if wiki == "enwiki":
-            raw = callAPI(params)
+        if wiki == "enwiki":raw = callAPI(params)
+        if wiki == "ptwiki":raw = callptwikiAPI(params)
+        if len(raw["query"]["blocks"])>0:
+            calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+            calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
+            calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+            continue
+        else:
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'blocks',
+            'bkip': target
+            }
+            if wiki == "enwiki":raw = callAPI(params)
+            if wiki == "ptwiki":raw = callptwikiAPI(params)
             if len(raw["query"]["blocks"])>0:
                 calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
                 calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
                 calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
-            else:calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-        if wiki == "ptwiki":
-            raw = callptwikiAPI(params)
+                continue
+            else:
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'blocks',
+                'bkids': target
+                }
+                if wiki == "enwiki":raw = callAPI(params)
+                if wiki == "ptwiki":raw = callptwikiAPI(params)
+                if len(raw["query"]["blocks"])>0:
+                    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+                    calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
+                    calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+                    continue
+                else:
+                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    continue
         if wiki == "global":
             params = {'action': 'query',
             'format': 'json',
-            'list': 'blocks',
-            'bkusers': target
+            'list': 'globalallusers ',
+            'agufrom': target,
+            'agulimit':1,
+            'aguprop':'lockinfo'
             }
             raw = callmetaAPI(params)
+            try:
+                if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'logevents',
+                'lefrom': "User:"+target+"@global",
+                'letype':'globalauth'
+                'lelimit':1,
+                'leprop':'user|comment'
+                }
+                raw = callmetaAPI(params)
+                calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+                calldb("update appeals set blockingadmin = '"+raw["query"]["logevents"][0]["user"]+"' where id="+str(appeal[0])+";","write")
+                calldb("update appeals set blockreason = '"+raw["query"]["logevents"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+                continue
+            except:
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'globallocks ',
+                'bgip': target,
+                'bglimit':1,
+                'bgprop':'lockinfo'
+                }
+                raw = callmetaAPI(params)
+                if len(raw["query"]["globalblocks"])>0:
+                    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+                    calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
+                    calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+                    continue
+                else:
+                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    continue
 verifyusers()
 verifyblock()
