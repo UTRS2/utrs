@@ -27,7 +27,6 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
     	$info = Appeal::find($id);
-        dd($info);
     	if (is_null($info)) {
     		$info = Oldappeal::find($id);
             if (is_null($info)) {
@@ -46,6 +45,7 @@ class AppealController extends Controller
     		return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
     	}
     	else {
+            dd("Stop 1");
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
             else {$closestatus=FALSE;}
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
@@ -76,6 +76,7 @@ class AppealController extends Controller
                         return view ('appeals.privacydeny');
                     }
                 }
+                dd("Stop 2");
         		return view('appeals.appeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);	
             }
             else {
