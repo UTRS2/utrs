@@ -64,6 +64,7 @@ class AppealController extends Controller
                 foreach($logs as $log) {
                     if(is_null($log->user) || $log->user=0) {continue;}
                     if(in_array($log->user, $userlist)) {continue;}
+                    dd(User::findOrFail($log->user)['username']);
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
                 }
                 dd("Step 2");
