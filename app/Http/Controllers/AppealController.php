@@ -49,7 +49,6 @@ class AppealController extends Controller
             else {$closestatus=FALSE;}
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
                 $logs = $info->comments()->get();
-                
                 $userlist = [];
                 if (!is_null($info->handlingadmin)) {
                     $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
@@ -60,7 +59,7 @@ class AppealController extends Controller
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
-                dd("Stop 1");
+
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
                 foreach($logs as $log) {
@@ -68,7 +67,7 @@ class AppealController extends Controller
                     if(in_array($log->user, $userlist)) {continue;}
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
                 }
-
+                dd("Stop 1");
                 if ($info->status == "PRIVACY") {
                     if (Permission::checkPrivacy(Auth::id())) {
                         return view('appeals.privacyreview', ['info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);
