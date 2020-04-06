@@ -22,7 +22,7 @@
   			{{Form::token()}}
     		<h5 class="card-title">About you</h5>
     		{{Form::label('wiki', 'Which Wiki are you blocked on?')}}<br>
-    		{{Form::select('wiki', array('enwiki' => 'English Wikipedia', 'other' => 'Test - DO NOT USE'), 'enwiki')}}<br>
+    		{{Form::select('wiki', array('enwiki' => 'English Wikipedia','ptwiki' => 'Portuguese Wikipedia', 'global' => 'Global Locks/Blocks'), 'enwiki')}}<br>
     		{{Form::label('username', 'What is the IP address that is blocked?')}}<br>
     		{{Form::text('username')}}<br>
     		{{Form::hidden('blocktype', 0)}}
