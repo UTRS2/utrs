@@ -62,12 +62,13 @@ class AppealController extends Controller
 
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
+                dd("Stop 1");
                 foreach($logs as $log) {
                     if(is_null($log->user)) {continue;}
                     if(in_array($log->user, $userlist)) {continue;}
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
                 }
-                dd("Stop 1");
+                
                 if ($info->status == "PRIVACY") {
                     if (Permission::checkPrivacy(Auth::id())) {
                         return view('appeals.privacyreview', ['info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);
