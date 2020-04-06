@@ -192,3 +192,4 @@ def verifyblock():
             }
             raw = callmetaAPI(params)
 verifyusers()
+verifyblock()
