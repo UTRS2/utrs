@@ -226,7 +226,7 @@ def verifyblock():
                 'format': 'json',
                 'list': 'logevents',
                 'lefrom': "User:"+target+"@global",
-                'letype':'globalauth'
+                'letype':'globalauth',
                 'lelimit':1,
                 'leprop':'user|comment'
                 }
