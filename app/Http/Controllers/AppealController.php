@@ -162,6 +162,7 @@ class AppealController extends Controller
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id,'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
+        Wikitask::create(['task'=>'appealkey','actionid'=>$appeal->id]);
         return view ('appeals.makeappeal.hash', ['hash'=>$key]);
     }
     public function ipappeal() {
