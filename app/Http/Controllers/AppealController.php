@@ -27,6 +27,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
     	$info = Appeal::find($id);
+        dd($info);
     	if (is_null($info)) {
     		$info = Oldappeal::find($id);
             if (is_null($info)) {
