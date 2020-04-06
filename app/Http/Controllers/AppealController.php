@@ -59,12 +59,10 @@ class AppealController extends Controller
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
-
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
-                dd("Stop 1");
                 foreach($logs as $log) {
-                    if(is_null($log->user)) {continue;}
+                    if(is_null($log->user) || $log->user=0) {continue;}
                     if(in_array($log->user, $userlist)) {continue;}
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
                 }
@@ -77,7 +75,6 @@ class AppealController extends Controller
                         return view ('appeals.privacydeny');
                     }
                 }
-                dd("Stop 2");
         		return view('appeals.appeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);	
             }
             else {
