@@ -48,9 +48,8 @@ class AppealController extends Controller
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
             else {$closestatus=FALSE;}
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
-
                 $logs = $info->comments()->get();
-                dd("Stop 1");
+                
                 $userlist = [];
                 if (!is_null($info->handlingadmin)) {
                     $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
@@ -61,6 +60,7 @@ class AppealController extends Controller
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
+                dd("Stop 1");
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
                 foreach($logs as $log) {
