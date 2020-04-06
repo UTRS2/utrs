@@ -48,6 +48,7 @@ class AppealController extends Controller
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
             else {$closestatus=FALSE;}
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
+                dd("Stop 1");
                 $logs = $info->comments()->get();
                 $userlist = [];
                 if (!is_null($info->handlingadmin)) {
