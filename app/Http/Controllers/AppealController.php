@@ -84,7 +84,7 @@ class AppealController extends Controller
     public function publicappeal(Request $request) {
         $input = $request->all();
         $hash = $input['hash'];
-        $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail;
+        $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
         if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
         else {$closestatus=FALSE;}
         $logs = $info->comments()->get();
