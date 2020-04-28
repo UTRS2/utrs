@@ -14,10 +14,10 @@ class Permission extends Model
             return False;
         }
         if ($wiki="*") {
-            $specific = Permission::where('id','=',$id)->where('wiki','=','*')->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
         }
         else {
-            $specific = Permission::where('id','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
         }
         dd($specific);
         return $specific;
@@ -27,10 +27,10 @@ class Permission extends Model
     		return False;
     	}
         if ($wiki="*") {
-            $specific = Permission::where('id','=',$id)->where('wiki','=','*')->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
         }
     	else {
-            $specific = Permission::where('id','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
         }
     	if ($level == "OVERSIGHT") {
     		if (isset($specific->oversight)) {return True;}
