@@ -17,7 +17,7 @@ class Permission extends Model
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
         }
         else {
-            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
         }
         return $specific;
     }
@@ -29,7 +29,7 @@ class Permission extends Model
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
         }
     	else {
-            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
         }
     	if ($level == "OVERSIGHT") {
     		if (isset($specific->oversight)) {return True;}
