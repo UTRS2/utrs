@@ -249,36 +249,18 @@ def verifyblock():
                     if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
                     continue
 def blockNotFound(username,wiki,id):
-    print username,wiki,id
-    params = {'action': 'query',
-            'format': 'json',
-            'meta': 'tokens'
-            }
-    if wiki == "enwiki":raw = callAPI(params)
-    if wiki == "ptwiki":raw = callptwikiAPI(params)
-    if wiki == "global":raw = callmetaAPI(params)
-    try:code = raw["query"]["tokens"]["csrftoken"]
-    except:
-        print raw
-        print "FAILURE: Param not accepted."
-        quit()
-    mash= username+credentials.secret
+    print "Block not found email: " + username
+    mash= target+credentials.secret
     confirmhash = hashlib.md5(mash.encode()) 
-    params = {'action': 'emailuser',
-    'format': 'json',
-    'target': username,
-    'subject': 'UTRS Appeal #'+str(id)+" - Block not found",
-    'token': code.encode(),
-    'text': 
-"""
+    subject="UTRS Appeal #"+str(id)+" - Block not found"
+    text="""
 Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
 
-http://utrs-beta.wmflabs.org/fixblock/"""+str(id)+"""
+http://utrs-beta.wmflabs.org/fixblock/"""+str(confirmhash)+"""
 
 Thanks,
 UTRS Developers"""
-            }
-    raw = callAPI(params)
+    sendemail(username,subject,text,wiki)
 
 def runAPI(wiki, params):
     if wiki == "enwiki":raw = callAPI(params)
@@ -289,5 +271,24 @@ def updateBlockinfoDB(raw,appeal):
     calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
     calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
     calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+def sendemail(target,subject,text,wiki):
+    params = {'action': 'query',
+            'format': 'json',
+            'meta': 'tokens'
+            }
+    raw = runAPI(wiki, params)
+    try:code = raw["query"]["tokens"]["csrftoken"]
+    except:
+        print raw
+        print "FAILURE: Param not accepted."
+        quit()
+    params = {'action': 'emailuser',
+    'format': 'json',
+    'target': target,
+    'subject': subject,
+    'token': code.encode(),
+    'text': text
+            }
+    raw = callAPI(params)
 verifyusers()
 verifyblock()

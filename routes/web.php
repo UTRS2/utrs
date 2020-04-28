@@ -32,6 +32,7 @@ Route::get('/appeal/template/{id}', 'AppealController@viewtemplates');
 Route::get('/appeal/template/{id}/{template}', 'AppealController@respond');
 Route::get('/appeal/custom/{id}', 'AppealController@respondCustom');
 Route::post('/appeal/custom/{id}', 'AppealController@respondCustomSubmit');
+Route::get('/fixappeal/{hash}', 'AppealModifyController@changeip');
 
 Route::get('/admin/users', 'AdminController@listusers');
 Route::get('/admin/bans', 'AdminController@listbans');
