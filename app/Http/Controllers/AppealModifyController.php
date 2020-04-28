@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Appeal;
 use App\Log;
+use App\Wikitask;
 use Validator;
 use Redirect;
 
