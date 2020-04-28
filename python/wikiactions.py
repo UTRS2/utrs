@@ -267,13 +267,13 @@ def blockNotFound(username,wiki,id):
     params = {'action': 'emailuser',
     'format': 'json',
     'target': username,
-    'subject': 'UTRS Appeal #'+id+" - Block not found",
+    'subject': 'UTRS Appeal #'+str(id)+" - Block not found",
     'token': code.encode(),
     'text': 
 """
 Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
 
-http://utrs-beta.wmflabs.org/fixblock/"""+id+"""
+http://utrs-beta.wmflabs.org/fixblock/"""+str(id)+"""
 
 Thanks,
 UTRS Developers"""
