@@ -12,7 +12,7 @@ class AppealModifyController extends Controller
     public function changeip($hash) {
     	$appeal = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
     	if ($appeal->status !== "NOTFOUND") {
-    		abort(403,"Appeal is not availible to be modified.")
+    		abort(403,"Appeal is not availible to be modified.");
     	}
     	return view('appeals.fixip', ['appeal'=>$appeal,'hash'=>$hash]);
     }
