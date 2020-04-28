@@ -250,7 +250,7 @@ def verifyblock():
                     continue
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
-    mash= target+credentials.secret
+    mash= username+credentials.secret
     confirmhash = hashlib.md5(mash.encode()) 
     subject="UTRS Appeal #"+str(id)+" - Block not found"
     text="""
