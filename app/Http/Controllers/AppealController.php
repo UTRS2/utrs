@@ -25,6 +25,7 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403,'No logged in user');
         }
+        dd(User::findOrFail(Auth::id())->checkRead());
         User::findOrFail(Auth::id())->checkRead();
     	$info = Appeal::find($id);
     	if (is_null($info)) {
@@ -54,7 +55,6 @@ class AppealController extends Controller
                     $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
                 }
                 $cudata = Privatedata::where('appealID','=',$id)->get()->first();
-                dd(Permission::whoami(Auth::id(),$info->wiki));
                 $perms['checkuser'] = Permission::checkCheckuser(Auth::id(),$info->wiki);
                 $perms['functionary'] = Permission::checkCheckuser(Auth::id(),$info->wiki) || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
