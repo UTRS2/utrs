@@ -14,6 +14,8 @@ metawiki.login(login.username,login.password)
 ptwiki =  mwclient.Site('pt.wikipedia.org')
 ptwiki.login(login.username,login.password)
 
+regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
+
 def callAPI(params):
     return masterwiki.api(**params)
 
@@ -170,49 +172,39 @@ def verifyblock():
     for appeal in results:
         target = appeal[1]
         wiki=appeal[13]
-        params = {'action': 'query',
-            'format': 'json',
-            'list': 'blocks',
-            'bkusers': target
-            }
-        if wiki == "enwiki":raw = callAPI(params)
-        if wiki == "ptwiki":raw = callptwikiAPI(params)
-        if len(raw["query"]["blocks"])>0:
-            calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-            calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
-            calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
-            continue
-        else:
-            params = {'action': 'query',
-            'format': 'json',
-            'list': 'blocks',
-            'bkip': target
-            }
-            if wiki == "enwiki":raw = callAPI(params)
-            if wiki == "ptwiki":raw = callptwikiAPI(params)
-            if len(raw["query"]["blocks"])>0:
-                calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-                calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
-                calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
-                continue
+        if wiki == "enwiki" or wiki == "ptwiki":
+            if !re.match(regex,target):
+                raw = runAPI(wiki, params)
+                if len(raw["query"]["blocks"])>0:
+                    updateBlockinfoDB(raw,appeal)
+                    continue
+                else:
+                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    blockNotFound(target,wiki,appeal[0])
             else:
                 params = {'action': 'query',
                 'format': 'json',
                 'list': 'blocks',
-                'bkids': target
+                'bkip': target
                 }
-                if wiki == "enwiki":raw = callAPI(params)
-                if wiki == "ptwiki":raw = callptwikiAPI(params)
+                raw = runAPI(wiki, params)
                 if len(raw["query"]["blocks"])>0:
-                    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-                    calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
-                    calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+                    updateBlockinfoDB(raw,appeal)
                     continue
                 else:
-                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
-                    if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
-                    continue
+                    params = {'action': 'query',
+                    'format': 'json',
+                    'list': 'blocks',
+                    'bkids': target
+                    }
+                    raw = runAPI(wiki, params)
+                    if len(raw["query"]["blocks"])>0:
+                        updateBlockinfoDB(raw,appeal)
+                        continue
+                    else:
+                        calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                        continue
         if wiki == "global":
             params = {'action': 'query',
             'format': 'json',
@@ -221,7 +213,7 @@ def verifyblock():
             'agulimit':1,
             'aguprop':'lockinfo'
             }
-            raw = callmetaAPI(params)
+            raw = runAPI(wiki, params)
             try:
                 if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
                 params = {'action': 'query',
@@ -232,10 +224,8 @@ def verifyblock():
                 'lelimit':1,
                 'leprop':'user|comment'
                 }
-                raw = callmetaAPI(params)
-                calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-                calldb("update appeals set blockingadmin = '"+raw["query"]["logevents"][0]["user"]+"' where id="+str(appeal[0])+";","write")
-                calldb("update appeals set blockreason = '"+raw["query"]["logevents"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+                raw = runAPI(wiki, params)
+                updateBlockinfoDB(raw,appeal)
                 continue
             except:
                 params = {'action': 'query',
@@ -245,15 +235,12 @@ def verifyblock():
                 'bglimit':1,
                 'bgprop':'lockinfo'
                 }
-                raw = callmetaAPI(params)
+                raw = runAPI(wiki, params)
                 if len(raw["query"]["globalblocks"])>0:
-                    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-                    calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
-                    calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+                    updateBlockinfoDB(raw,appeal)
                     continue
                 else:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
                     if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
                     continue
 def blockNotFound(username,wiki,id):
@@ -287,5 +274,15 @@ Thanks,
 UTRS Developers"""
             }
     raw = callAPI(params)
+
+def runAPI(wiki, params):
+    if wiki == "enwiki":raw = callAPI(params)
+    if wiki == "ptwiki":raw = callptwikiAPI(params)
+    if wiki == "global":raw = callmetaAPI(params)
+    return raw
+def updateBlockinfoDB(raw,appeal):
+    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+    calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
+    calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
 verifyusers()
 verifyblock()
