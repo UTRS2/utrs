@@ -6,7 +6,7 @@
 	<div class="alert alert-danger" role="alert">
   		You are now modifying your appeal to be resubmitted. Please ensure the information is correct.
 	</div>
-	{{ Form::open(array('url' => 'fixappeal/'.$appeal->id)) }}
+	{{ Form::open(array('url' => 'fixip/'.$appeal->id)) }}
 	{{Form::token()}}
 	<h5 class="card-title">About you</h5>
 	{{Form::label('wiki', 'Which Wiki are you blocked on?')}}<br>
