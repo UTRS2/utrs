@@ -11,7 +11,7 @@ class Permission extends Model
 
     public static function whoami($id,$wiki) {
         if(is_null($id)) {
-            return False;
+            abort(403,'No logged in user');
         }
         if ($wiki="*") {
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
@@ -23,7 +23,7 @@ class Permission extends Model
     }
     public static function checkSecurity($id, $level,$wiki) {
     	if(is_null($id)) {
-    		return False;
+    		abort(403,'No logged in user');
     	}
         if ($wiki="*") {
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
