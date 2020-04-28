@@ -98,8 +98,7 @@ class AppealController extends Controller
             if(in_array($log->user, $userlist)) {continue;}
             $userlist[$log->user] = User::findOrFail($log->user)['username'];
         }
-        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);   
-        }
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
     }
     public function appeallist() {
         $tooladmin = False;
