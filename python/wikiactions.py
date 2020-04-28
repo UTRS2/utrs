@@ -251,6 +251,38 @@ def verifyblock():
                     continue
                 else:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
+                    if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
                     continue
+def blockNotFound(username,wiki,id):
+    params = {'action': 'query',
+            'format': 'json',
+            'meta': 'tokens'
+            }
+    if wiki == "enwiki":raw = callAPI(params)
+    if wiki == "ptwiki":raw = callptwikiAPI(params)
+    if wiki == "global":raw = callmetaAPI(params)
+    try:code = raw["query"]["tokens"]["csrftoken"]
+    except:
+        print raw
+        print "FAILURE: Param not accepted."
+        quit()
+    mash= username+credentials.secret
+    confirmhash = hashlib.md5(mash.encode()) 
+    params = {'action': 'emailuser',
+    'format': 'json',
+    'target': username,
+    'subject': 'UTRS Appeal #'+id+" - Block not found",
+    'token': code.encode(),
+    'text': 
+"""
+Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
+
+http://utrs-beta.wmflabs.org/fixblock/"""+id+"""
+
+Thanks,
+UTRS Developers"""
+            }
+    raw = callAPI(params)
 verifyusers()
 verifyblock()
