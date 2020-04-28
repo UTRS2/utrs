@@ -24,11 +24,9 @@ class AppealModifyController extends Controller
         $hash = $input['hash'];
         $appeal = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
         $rules = array(
-            'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
-            'blocktype' => 'required|numeric|max:2|min:0',
-            'privacyreview' => 'required|numeric|max:2|min:0'
+            'blocktype' => 'required|numeric|max:2|min:0'
         );
         $validator = Validator::make($input, $rules);
 
