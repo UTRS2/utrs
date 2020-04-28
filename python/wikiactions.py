@@ -173,7 +173,7 @@ def verifyblock():
         target = appeal[1]
         wiki=appeal[13]
         if wiki == "enwiki" or wiki == "ptwiki":
-            if !re.match(regex,target):
+            if not re.match(regex,target):
                 raw = runAPI(wiki, params)
                 if len(raw["query"]["blocks"])>0:
                     updateBlockinfoDB(raw,appeal)
