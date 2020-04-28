@@ -19,11 +19,11 @@
 	{{Form::radio('blocktype', 1)}} Yes<br>
 	{{Form::radio('blocktype', 0,true)}} No, I don't have an account.<br>
 	{{Form::radio('blocktype', 2)}} No, the underlying IP address is blocked<br>
-	@if($appeal->blocktype===1)
+	@elseif($appeal->blocktype===1)
 	{{Form::radio('blocktype', 1,true)}} Yes<br>
 	{{Form::radio('blocktype', 0)}} No, I don't have an account.<br>
 	{{Form::radio('blocktype', 2)}} No, the underlying IP address is blocked<br>
-	@if($appeal->blocktype===2)
+	@elseif($appeal->blocktype===2)
 	{{Form::radio('blocktype', 1)}} Yes<br>
 	{{Form::radio('blocktype', 0)}} No, I don't have an account.<br>
 	{{Form::radio('blocktype', 2,true)}} No, the underlying IP address is blocked<br>
