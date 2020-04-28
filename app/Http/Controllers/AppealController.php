@@ -25,7 +25,6 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403,'No logged in user');
         }
-        dd(User::findOrFail(Auth::id())->checkRead());
         User::findOrFail(Auth::id())->checkRead();
     	$info = Appeal::find($id);
     	if (is_null($info)) {
