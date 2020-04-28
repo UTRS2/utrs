@@ -16,7 +16,7 @@ class AppealModifyController extends Controller
     	}
     	return view('appeals.fixip', ['appeal'=>$appeal,'hash'=>$hash]);
     }
-    public function changeipsubmit(Request $request) {
+    public function changeipsubmit(Request $request,$id) {
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('REMOTE_ADDR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
