@@ -81,6 +81,26 @@ class AppealController extends Controller
             }
     	}
     }
+    public function publicappeal(Request $request) {
+        $input = $request->all();
+        $hash = $input['hash'];
+        $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail;
+        if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
+        else {$closestatus=FALSE;}
+        $logs = $info->comments()->get();
+        $userlist = [];
+        if (!is_null($info->handlingadmin)) {
+            $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
+        }
+        $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
+        foreach($logs as $log) {
+            if(is_null($log->user) || $log->user==0) {continue;}
+            if(in_array($log->user, $userlist)) {continue;}
+            $userlist[$log->user] = User::findOrFail($log->user)['username'];
+        }
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);   
+        }
+    }
     public function appeallist() {
         $tooladmin = False;
         if (!Auth::check()) {

@@ -12,7 +12,7 @@
   			<div class="container">
       			<div class="row">
                     <div class="col-12">
-                        @if($info['privacyreview']!=0)
+                        @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
                             <div class="alert alert-primary" role="alert">
                                 You are currently reviewing a ticket that is restricted from public view. You have three options to review this ticket:<br>
                                 <br>
@@ -52,7 +52,7 @@
         	    		</p>
             		</div>
         			<div class="col-7">
-                        @if($info['privacyreview']!=0)
+                        @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
                             <div class="container">
                                 <div class="row">
                                 <a href="/appeal/publicize/{{$id}}"><div class="col-4"><button type="button" class="btn btn-danger">Publicize Appeal</button></div></a>
