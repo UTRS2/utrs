@@ -19,7 +19,7 @@ class Permission extends Model
         else {
             $specific = Permission::where('id','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
         }
-        return $specific
+        return $specific;
     }
     public static function checkSecurity($id, $level,$wiki) {
     	if(is_null($id)) {
