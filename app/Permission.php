@@ -9,6 +9,18 @@ class Permission extends Model
     protected $primaryKey = 'userid';
     public $timestamps = false;
 
+    public static function whoami($id,$wiki) {
+        if(is_null($id)) {
+            return False;
+        }
+        if ($wiki="*") {
+            $specific = Permission::where('id','=',$id)->where('wiki','=','*')->get()->first();
+        }
+        else {
+            $specific = Permission::where('id','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
+        }
+        return $specific
+    }
     public static function checkSecurity($id, $level,$wiki) {
     	if(is_null($id)) {
     		return False;
