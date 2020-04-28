@@ -257,6 +257,7 @@ def verifyblock():
                     if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
                     continue
 def blockNotFound(username,wiki,id):
+    print username,wiki,id
     params = {'action': 'query',
             'format': 'json',
             'meta': 'tokens'
