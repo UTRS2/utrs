@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Appeal;
+use Validator;
+use Redirect;
 
 class AppealModifyController extends Controller
 {
@@ -40,7 +42,6 @@ class AppealModifyController extends Controller
         $appeal->save();
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'modifyip','ip' => $ip, 'ua' => $ua . " " .$lang));
         Wikitask::create(['task'=>'verifyblock','actionid'=>$appeal->id]);
-        return view ('appeals.makeappeal.hash', ['hash'=>$key]);
-    }
+        return redirect('/');
     }
 }
