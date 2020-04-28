@@ -36,9 +36,9 @@ class AppealModifyController extends Controller
         {
             return Redirect::to('/fixappeal/'.$hash)->withInput()->withErrors($validator);
         }
-        $appeal->wiki=$request['wiki']
-        $appeal->appealfor=$request['appealfor']
-        $appeal->blocktype=$request['blocktype']
+        $appeal->wiki=$request['wiki'];
+        $appeal->appealfor=$request['appealfor'];
+        $appeal->blocktype=$request['blocktype'];
         $appeal->save();
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'modifyip','ip' => $ip, 'ua' => $ua . " " .$lang));
         Wikitask::create(['task'=>'verifyblock','actionid'=>$appeal->id]);
