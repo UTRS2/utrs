@@ -28,6 +28,7 @@
 	{{Form::radio('blocktype', 0)}} No, I don't have an account.<br>
 	{{Form::radio('blocktype', 2,true)}} No, the underlying IP address is blocked<br>
 	@endif
+	{{Form::hidden('hash', $hash)}}
 	<br>
 	<button type="submit" class="btn btn-success">Submit</button>
 	{{ Form::close() }}
