@@ -166,7 +166,7 @@ def checkPerms(user, id):
     if metaperms['user']:
         calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",'*',"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
 def verifyblock():
-    results = calldb("select * from appeals where status = 'verify';","read")
+    results = calldb("select * from appeals where status = 'VERIFY';","read")
     for appeal in results:
         target = appeal[1]
         wiki=appeal[13]
