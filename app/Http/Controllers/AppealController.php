@@ -87,6 +87,7 @@ class AppealController extends Controller
         $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
         if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
         else {$closestatus=FALSE;}
+        $id = $info->id;
         $logs = $info->comments()->get();
         $userlist = [];
         if (!is_null($info->handlingadmin)) {
