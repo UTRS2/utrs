@@ -179,10 +179,13 @@ def checkPerms(user, id):
 def verifyblock():
     results = calldb("select * from appeals where status = 'VERIFY';","read")
     for appeal in results:
+        ip = calldb("select * from privatedatas where appealID = "+appeal[0]+";","read")[0][2]
         target = appeal[1]
         wiki=appeal[13]
+        blocktype = appeal[4]
         if wiki == "enwiki" or wiki == "ptwiki":
-            if not re.match(regex,target):
+            if blocktype == 2:target = ip
+            if blocktype == 1:
                 params = {'action': 'query',
                 'format': 'json',
                 'list': 'blocks',
