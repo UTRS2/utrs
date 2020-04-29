@@ -54,7 +54,7 @@ class AppealController extends Controller
                     $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
                 }
                 $cudata = Privatedata::where('appealID','=',$id)->get()->first();
-                dd(Permission::whoami(Auth::id(),$info->wiki))
+                dd(Permission::whoami(Auth::id(),$info->wiki));
                 $perms['checkuser'] = Permission::checkCheckuser(Auth::id(),$info->wiki);
                 $perms['functionary'] = Permission::checkCheckuser(Auth::id(),$info->wiki) || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
