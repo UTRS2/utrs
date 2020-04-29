@@ -102,8 +102,8 @@ class AppealController extends Controller
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
     }
     public function appeallist() {
-        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY"];
-        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY"];
+        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY","NOTFOUND"];
+        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY","NOTFOUND"];
         $devnoview = ["ACCEPT", "DECLINE", "EXPIRE"];
         $tooladmin = False;
         if (!Auth::check()) {
