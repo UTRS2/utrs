@@ -102,9 +102,9 @@ class AppealController extends Controller
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
     }
     public function appeallist() {
-        $regularnoview = "ACCEPT, DECLINE, EXPIRE, VERIFY, PRIVACY";
-        $privacynoview = "ACCEPT, DECLINE, EXPIRE, VERIFY";
-        $devnoview = "ACCEPT, DECLINE, EXPIRE";
+        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY"];
+        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY"];
+        $devnoview = ["ACCEPT", "DECLINE", "EXPIRE"];
         $tooladmin = False;
         if (!Auth::check()) {
             abort(403,'No logged in user');
@@ -118,20 +118,20 @@ class AppealController extends Controller
         foreach ($wikis as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
-                $appeals = Appeal::where('status','not in','(\''.$devnoview.'\')');
+                $appeals = Appeal::whereNotIn('status',$devnoview)->get();
                 dd($appeals);
             }
             elseif (Permission::checkPrivacy(Auth::id()) && Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('wiki','=',$wiki)->where('status','not in','(\''.$privacynoview.'\')')->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->whereNotIn('status',$privacynoview)->get();
             }
             elseif (Permission::checkPrivacy(Auth::id())) {
-                $appeals = Appeal::where('status','not in','(\''.$privacynoview.'\')')->get();
+                $appeals = Appeal::whereNotIn('status',$privacynoview)->get();
             }
             elseif (Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','not in','(\''.$regularnoview.'\')')->get();
+                $appeals = Appeal::whereNotIn('status',$regularnoview)->get();
             }
             else {
-                $appeals = Appeal::where('wiki','=',$wiki)->where('status','not in','(\''.$regularnoview.'\')')->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->whereNotIn('status',$regularnoview)->get();
             }
         }
         return view ('appeals.appeallist', ['appeals'=>$appeals, 'tooladmin'=>$tooladmin]);
