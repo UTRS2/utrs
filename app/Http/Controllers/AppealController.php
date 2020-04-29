@@ -118,19 +118,19 @@ class AppealController extends Controller
         foreach ($wikis as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
-                $appeals = Appeal::where('status','in','('.$devnoview.')')->get();
+                $appeals = Appeal::where('status','not in','(\''.$devnoview.'\')')->get();
             }
             elseif (Permission::checkPrivacy(Auth::id()) && Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('wiki','=',$wiki)->where('status','in','('.$privacynoview.')')->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->where('status','not in','(\''.$privacynoview.'\')')->get();
             }
             elseif (Permission::checkPrivacy(Auth::id())) {
-                $appeals = Appeal::where('status','in','('.$privacynoview.')')->get();
+                $appeals = Appeal::where('status','not in','(\''.$privacynoview.'\')')->get();
             }
             elseif (Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','in','('.$regularnoview.')')->get();
+                $appeals = Appeal::where('status','not in','(\''.$regularnoview.'\')')->get();
             }
             else {
-                $appeals = Appeal::where('wiki','=',$wiki)->where('status','in','('.$regularnoview.')')->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->where('status','not in','(\''.$regularnoview.'\')')->get();
             }
         }
         return view ('appeals.appeallist', ['appeals'=>$appeals, 'tooladmin'=>$tooladmin]);
