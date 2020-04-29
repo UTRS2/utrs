@@ -138,26 +138,9 @@
     			@endforeach
 			  </tbody>
 			</table>
+            <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other administrators.</i>
             <br />
-            <b><u>Custom replies</u></b>
             <br />
-            <br />
-            <table class="table table-bordered table-dark">
-              <thead>
-                <tr>
-                  <th scope="col">Response ID</th>
-                  <th scope="col">Response</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($replies as $reply)
-                <tr>
-                    <td>{{$reply['id']}}</td>
-                    <td>{{$reply['custom']}}</td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
             </div>
             </div>
             </div>
