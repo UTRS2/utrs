@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Ban;
+use App\Log;
 use App\Template;
 use App\Sitenotice;
 use App\Permission;
@@ -118,5 +119,41 @@ class AdminController extends Controller
     	$user->verified=1;
     	$user->save();
     	return Redirect::to('/home');
+    }
+    public function makeTemplate(Request $request) {
+        if(!Permission::checkToolAdmin(Auth::id(),"*")) {
+            abort(401);
+        }
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $newtemplate = $request->all();
+        $name = $newtemplate['name'];
+        $template = $newtemplate['template'];
+        $creation = Template::create(['name'=>$name,'template'=>$template,'active'=>1]);
+        $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$creation->id,'objecttype'=>'template','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
+        return Redirect::to('/admin/templates');
+    }
+    public function saveTemplate(Request $request, $id) {
+        if(!Permission::checkToolAdmin(Auth::id(),"*")) {
+            abort(401);
+        }
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $data = $request->all();
+        $template = Template::findOrFail($id);
+        $template->name = $data['name'];
+        $template->template = $data['template'];
+        $template->save();
+        $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$template->id,'objecttype'=>'template','action'=>'update','ip' => $ip, 'ua' => $ua . " " .$lang));
+        return Redirect::to('/admin/templates');
+    }
+    public function showNewTemplate() {
+        return view ('admin.newtemplate');
+    }
+    public function modifyTemplate($id) {
+        $template = Template::findOrFail($id);
+        return view ('admin.edittemplate',["template"=>$template]);
     }
 }

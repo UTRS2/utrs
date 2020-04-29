@@ -41,6 +41,10 @@ Route::get('/admin/users', 'AdminController@listusers');
 Route::get('/admin/bans', 'AdminController@listbans');
 Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
 Route::get('/admin/templates', 'AdminController@listtemplates');
+Route::post('admin/templates/create', 'AdminController@makeTemplate');
+Route::post('admin/templates/{id}', 'AdminController@saveTemplate');
+Route::get('admin/templates/create', 'AdminController@showNewTemplate');
+Route::get('admin/templates/{id}', 'AdminController@modifyTemplate');
 
 Auth::routes();
 
