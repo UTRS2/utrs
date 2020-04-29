@@ -213,6 +213,7 @@ class AppealController extends Controller
         }
     }
     public function comment($id, Request $request) {
+        dd($request);
         if (!Auth::check()) {
             $response->assertUnauthorized();
         }
