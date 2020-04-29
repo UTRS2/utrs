@@ -307,6 +307,7 @@ def clearPrivateData():
     for result in results:
         id = result[0]
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
+        print appeal
         if appeal[0][5] != "CLOSED":continue
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'closed' and objecttype = 'appeal';","read")
         timediff = datetime.strptime(logs[0]["timestamp"], '%Y-%m-%d %H:%M:%S') - timedelta(days=7)
