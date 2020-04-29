@@ -61,8 +61,13 @@ class AppealController extends Controller
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
-                if ($info->privacyreview !== $info->privacylevel) {
+                if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
                     if(!Permission::checkPrivacy(Auth::id()) && !Permission::checkOversight(Auth::id(),$info->wiki)) {
+                        return view ('appeals.privacydeny');
+                    }
+                }
+                if ($info->privacylevel == 1) {
+                    if(!$perms['admin']) {
                         return view ('appeals.privacydeny');
                     }
                 }
@@ -70,11 +75,6 @@ class AppealController extends Controller
                     if(is_null($log->user) || $log->user==0) {continue;}
                     if(in_array($log->user, $userlist)) {continue;}
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
-                }
-                if ($info->status == "PRIVACY") {
-                    if (!Permission::checkPrivacy(Auth::id())) {
-                        return view ('appeals.privacydeny');
-                    }
                 }
         		return view('appeals.appeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);	
             }
@@ -447,6 +447,7 @@ class AppealController extends Controller
         $admin = Permission::checkAdmin($user,$appeal->wiki);
         if ($admin && $appeal->status!=="PRIVACY") {
             $appeal->status = "PRIVACY";
+            $appeal->privacyreview = 2;
             $appeal->save();
             $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'sent for privacy review','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
@@ -496,5 +497,31 @@ class AppealController extends Controller
         else {
             abort(403);
         }
+    }
+    public function privacyhandle(Request $request,$id,$action) {
+        $appeal = Appeal::findOrFail($id);
+        if (Permission::checkPrivacy(Auth::id()) || Permission::checkOversight(Auth::id(),$info->wiki)) {
+            if ($action == "publicize") {
+                $appeal->privacyreview = 0;
+                $appeal->privacylevel = 0;
+                $appeal->status = "OPEN";
+                $appeal->save();
+            }
+            if ($action == "privatize") {
+                $appeal->privacyreview = 1;
+                $appeal->privacylevel = 1;
+                $appeal->status = "OPEN";
+                $appeal->save();
+            }
+            if ($action == "oversight") {
+                $appeal->privacyreview = 2;
+                $appeal->privacylevel = 2;
+                $appeal->status = "OPEN";
+                $appeal->save();
+            }
+            return redirect('appeal/'.$id);
+        }
+        else {abort(401);}
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
     }
 }

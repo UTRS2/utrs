@@ -138,10 +138,10 @@
     			@if($info['privacylevel']==0 && $info['privacyreview']==0)
 				<center>This appeal is considered public. Logged in Wikimedians can view this.
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Oxygen480-actions-irc-voice.svg/200px-Oxygen480-actions-irc-voice.svg.png" class="img-fluid"></center>
-    			@elseif($info['privacylevel']==1 && $info['privacyreview']==0)
+    			@elseif($info['privacylevel']==1 && $info['privacyreview']==1)
     			<center>This appeal is considered private. Only logged in administrators have access to this appeal.
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Oxygen480-actions-irc-unvoice.svg/200px-Oxygen480-actions-irc-unvoice.svg.png" class="img-fluid"></center>
-    			@elseif($info['privacylevel']==2 || $info['privacyreview']!=0)
+    			@elseif($info['privacylevel']==2 || ($info['privacylevel']!==$info['privacyreview'])
     			<center>This appeal is oversighted or under privacy review. Only logged in Privacy Team members have access to this appeal.
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oversight_logo.png/200px-Oversight_logo.png" class="img-fluid"></center>
     			@endif
