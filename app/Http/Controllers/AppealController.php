@@ -119,7 +119,6 @@ class AppealController extends Controller
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
                 $appeals = Appeal::whereNotIn('status',$devnoview)->get();
-                dd($appeals);
             }
             elseif (Permission::checkPrivacy(Auth::id()) && Auth::user()['wikis'] != "*") {
                 $appeals = Appeal::where('wiki','=',$wiki)->whereNotIn('status',$privacynoview)->get();
