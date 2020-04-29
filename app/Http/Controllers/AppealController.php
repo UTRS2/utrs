@@ -101,7 +101,7 @@ class AppealController extends Controller
             if(in_array($log->user, $userlist)) {continue;}
             $userlist[$log->user] = User::findOrFail($log->user)['username'];
         }
-        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
     }
     public function appeallist() {
         $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY","NOTFOUND"];
