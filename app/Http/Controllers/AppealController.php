@@ -247,7 +247,7 @@ class AppealController extends Controller
         $text = $templateObject->template;
         if ($admin && $appeal->handlingadmin==Auth::id()) {
             $mail = Sendresponse::create(array('appealID'=>$id, 'template'=>$template));
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded','reason'=>$text,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>1));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded','reason'=>$text,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
@@ -267,7 +267,7 @@ class AppealController extends Controller
         $admin = Permission::checkAdmin($user,$appeal->wiki);
         if ($admin && $appeal->handlingadmin==Auth::id()) {
             $mail = Sendresponse::create(array('appealID'=>$id, 'template'=>0, 'custom'=>$request->input('custom')));
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded','reason'=>$request->input('custom'),'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>1));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded','reason'=>$request->input('custom'),'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
