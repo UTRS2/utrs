@@ -143,8 +143,8 @@ class AdminController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $data = $request->all();
         $template = Template::findOrFail($id);
-        $template->name = $data->name;
-        $template->template = $data->template;
+        $template->name = $data['name'];
+        $template->template = $data->['template'];
         $template->save();
         $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$template->id,'objecttype'=>'template','action'=>'update','ip' => $ip, 'ua' => $ua . " " .$lang));
         return Redirect::to('/admin/templates');
