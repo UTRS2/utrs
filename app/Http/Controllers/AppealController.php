@@ -118,7 +118,7 @@ class AppealController extends Controller
         foreach ($wikis as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
-                $appeals = Appeal::where('status','in','('.$devnoreview.')')->get();
+                $appeals = Appeal::where('status','in','('.$devnoview.')')->get();
             }
             elseif (Permission::checkPrivacy(Auth::id()) && Auth::user()['wikis'] != "*") {
                 $appeals = Appeal::where('wiki','=',$wiki)->where('status','in','('.$privacynoview.')')->get();
