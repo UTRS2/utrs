@@ -73,7 +73,7 @@ class AppealController extends Controller
                 }
                 if ($info->status == "PRIVACY") {
                     if (Permission::checkPrivacy(Auth::id())) {
-                        return view('appeals.privacyreview', ['info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);
+                        return view('appeals.appeal', ['info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);
                     }
                     else {
                         return view ('appeals.privacydeny');
