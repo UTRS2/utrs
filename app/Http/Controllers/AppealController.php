@@ -21,9 +21,9 @@ use Illuminate\Support\Arr;
 
 class AppealController extends Controller
 {
-    $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE","VERIFY","PRIVACY"];
-    $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE","VERIFY"];
-    $devnoview = ["ACCEPT", "DECLINE", "EXPIRE"];
+    public $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE","VERIFY","PRIVACY"];
+    public $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE","VERIFY"];
+    public $devnoview = ["ACCEPT", "DECLINE", "EXPIRE"];
     public function appeal($id) {
         if (!Auth::check()) {
             abort(403,'No logged in user');
