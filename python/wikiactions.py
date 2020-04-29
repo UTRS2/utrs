@@ -272,6 +272,9 @@ def updateBlockinfoDB(raw,appeal):
     calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
     calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
     calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+    results = calldb("select * from appeals where status = 'VERIFY';","read")
+    if results[0]['privacylevel'] != results[0]['privacyreview']:calldb("update appeals set status = \"PRIVACY\" where id="+str(appeal[0])+";","write")
+    else:calldb("update appeals set status = \"OPEN\" where id="+str(appeal[0])+";","write")
 def sendemail(target,subject,text,wiki):
     params = {'action': 'query',
             'format': 'json',
