@@ -127,10 +127,10 @@ class AppealController extends Controller
                 $appeals = Appeal::where('status','in','('.$privacynoview.')')->get();
             }
             elseif (Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','in','('.$regularnoreview.')')->get();
+                $appeals = Appeal::where('status','in','('.$regularnoview.')')->get();
             }
             else {
-                $appeals = Appeal::where('wiki','=',$wiki)->where('status','in','('.$regularnoreview.')')->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->where('status','in','('.$regularnoview.')')->get();
             }
         }
         return view ('appeals.appeallist', ['appeals'=>$appeals, 'tooladmin'=>$tooladmin]);
