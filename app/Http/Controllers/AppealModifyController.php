@@ -20,7 +20,7 @@ class AppealModifyController extends Controller
     }
     public function changeipsubmit(Request $request,$id) {
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
         $hash = $input['hash'];
