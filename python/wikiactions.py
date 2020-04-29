@@ -323,3 +323,4 @@ def appeallist():
 verifyusers()
 verifyblock()
 clearPrivateData()
+appeallist()
