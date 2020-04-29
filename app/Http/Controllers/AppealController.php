@@ -503,7 +503,7 @@ class AppealController extends Controller
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $appeal = Appeal::findOrFail($id);
-        $user = $appeal->appealfor;
+        $user = Auth::id();
         if (Permission::checkPrivacy(Auth::id()) || Permission::checkOversight(Auth::id(),$info->wiki)) {
             if ($action == "publicize") {
                 $appeal->privacyreview = 0;
