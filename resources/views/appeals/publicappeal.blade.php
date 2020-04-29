@@ -113,7 +113,7 @@
                         @else
                             <td>{{$userlist[$comment['user']]}}</td>
                             <td>{{$comment['timestamp']}}</td>
-                            @if($comment['protected'] || $comment['action']=="responded")
+                            @if($comment['protected'] || $comment['action']=="comment")
                                 <td>Access to comment is restricted.</td>
                             @else
                                 @if($comment['comment']!==NULL)
