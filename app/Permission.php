@@ -15,11 +15,13 @@ class Permission extends Model
         }
         if ($wiki="*") {
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
+            return $specific;
         }
         else {
             $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
+            return $specific;
         }
-        return $specific;
+        abort(500,'Permissions Failure');
     }
     public static function checkSecurity($id, $level,$wiki) {
     	if(is_null($id)) {
