@@ -162,8 +162,10 @@
 			  </thead>
 			  <tbody>
 			    @foreach($comments as $comment)
-			    	@if($comment['action']!=="comment")
+			    	@if($comment['action']!=="comment" || $comment['action']!=="responded")
 			    	<tr>
+                    @elseif($comment['action']=="responded")
+                    <tr class="bg-primary">
 			    	@else
 			    	<tr class="bg-success">
 			    	@endif
