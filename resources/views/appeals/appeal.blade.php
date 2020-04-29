@@ -25,9 +25,10 @@
           			<div class="col-5">
         	    		<h4 class="card-title">Appeal for "{{$info['appealfor']}}"</h4>
         	    		<p class="card-text">
-        	    			Appeal status: {{$info['status']}}
+                            <br />Appeal status: {{$info['status']}}
         	    			<br />Blocking Admin: {{$info['blockingadmin']}}
         	    			<br />Time Submitted: {{$info['submitted']}}
+                            <br />Wiki: {{$info['wiki']}}
                             @if(!is_null($info['handlingadmin']))
                             <br />Handling Admin: {{$userlist[$info['handlingadmin']]}}
                             @endif
