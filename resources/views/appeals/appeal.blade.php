@@ -127,7 +127,9 @@
                 It has been requested that this appeal be oversighted and only availible to those on the privacy team to review.
                 @endif
             </div>
-    		<div class="col-3">
+            <div class="container">
+            <div class="row">
+    		<div class="col-6">
     			@if($info['status']=="ACCEPT")
     			<center>This appeal was approved.<br />
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png" class="img-fluid"></center>
@@ -142,7 +144,7 @@
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png" class="img-fluid"></center>
     			@endif
     		</div>
-    		<div class="col-3">
+    		<div class="col-6">
     			@if($info['privacylevel']==0 && $info['privacyreview']==0)
 				<center>This appeal is considered public. Logged in Wikimedians can view this.
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Oxygen480-actions-irc-voice.svg/200px-Oxygen480-actions-irc-voice.svg.png" class="img-fluid"></center>
@@ -153,6 +155,7 @@
     			<center>This appeal is oversighted or under privacy review. Only logged in Privacy Team members have access to this appeal.
     			<br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oversight_logo.png/200px-Oversight_logo.png" class="img-fluid"></center>
     			@endif
+            </div></div>
             </div>
     		</div>
     		</div>
