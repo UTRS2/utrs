@@ -499,6 +499,9 @@ class AppealController extends Controller
         }
     }
     public function privacyhandle(Request $request,$id,$action) {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $appeal = Appeal::findOrFail($id);
         if (Permission::checkPrivacy(Auth::id()) || Permission::checkOversight(Auth::id(),$info->wiki)) {
             if ($action == "publicize") {
@@ -506,18 +509,21 @@ class AppealController extends Controller
                 $appeal->privacylevel = 0;
                 $appeal->status = "OPEN";
                 $appeal->save();
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'publicized','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             }
             if ($action == "privatize") {
                 $appeal->privacyreview = 1;
                 $appeal->privacylevel = 1;
                 $appeal->status = "OPEN";
                 $appeal->save();
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'privatized','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             }
             if ($action == "oversight") {
                 $appeal->privacyreview = 2;
                 $appeal->privacylevel = 2;
                 $appeal->status = "OPEN";
                 $appeal->save();
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'oversighted','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             }
             return redirect('appeal/'.$id);
         }
