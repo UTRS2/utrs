@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Ban;
+use App\Log;
 use App\Template;
 use App\Sitenotice;
 use App\Permission;
