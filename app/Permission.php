@@ -14,6 +14,7 @@ class Permission extends Model
             abort(403,'No logged in user');
         }
         if ($wiki="*") {
+            dd(Permission::where('userid','=',$id)->get()->first());
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
             return $specific;
         }
