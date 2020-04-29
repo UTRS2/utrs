@@ -102,7 +102,7 @@ class AdminController extends Controller
     		else {$active="No";}
     		$rowcontents[$template->id] = [$idbutton,$template->name,$template->template,$active];
     	}
-    	return view ('admin.tables', ['title'=>'All Templates','tableheaders'=>$tableheaders, 'rowcontents'=>$rowcontents]);
+    	return view ('admin.tables', ['title'=>'All Templates','tableheaders'=>$tableheaders, 'rowcontents'=>$rowcontents, 'new'=>True]);
     }
     public function verifyAccount() {
     	if (Auth::user()->verified) {
