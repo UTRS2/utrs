@@ -18,6 +18,7 @@ class Permission extends Model
             return $specific;
         }
         else {
+            dd(Permission::where('userid','=',$id)->get()->first());
             $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
             return $specific;
         }
