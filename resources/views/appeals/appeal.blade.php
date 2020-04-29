@@ -55,9 +55,9 @@
                         @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
                             <div class="container">
                                 <div class="row">
-                                <a href="/appeal/publicize/{{$id}}"><div class="col-4"><button type="button" class="btn btn-danger">Publicize Appeal</button></div></a>
-                                <a href="/appeal/privatize/{{$id}}"><div class="col-4"><button type="button" class="btn btn-warning">Restrict Appeal</button></div></a>
-                                <a href="/appeal/oversight/{{$id}}"><div class="col-4"><button type="button" class="btn btn-success">Oversight Appeal</button></div></a>
+                                <a href="/appeal/privacy/{{$id}}/publicize"><div class="col-4"><button type="button" class="btn btn-danger">Publicize Appeal</button></div></a>
+                                <a href="/appeal/privacy/{{$id}}/privatize"><div class="col-4"><button type="button" class="btn btn-warning">Restrict Appeal</button></div></a>
+                                <a href="/appeal/privacy/{{$id}}/oversight"><div class="col-4"><button type="button" class="btn btn-success">Oversight Appeal</button></div></a>
                                 </div>
                             </div>
                         @else
