@@ -94,7 +94,7 @@ class AdminController extends Controller
     	if (!$permission) {
     		abort(403);
     	}
-    	$tableheaders = ['ID','Target','Expires','Reason'];
+    	$tableheaders = ['ID','Target','Expires','Active'];
     	$rowcontents = [];
     	foreach ($alltemplates as $template) {
     		$idbutton = '<a href="/admin/templates/'.$template->id.'"><button type="button" class="btn btn-primary">'.$template->id.'</button></a>';
