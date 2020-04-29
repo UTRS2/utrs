@@ -324,7 +324,7 @@ def appeallist():
     fulltext+=top
     results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND';","read")
     for result in results:
-        fulltext += "\n|-\n|"+result[0]+"\n|"+result[1]+"\n|"+result[9]+"\n|"+result[5]
+        fulltext += "\n|-\n|"+str(result[0])+"\n|"+str(result[1])+"\n|"+str(result[9])+"\n|"+str(result[5])
     fulltext +="\n|}"
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
