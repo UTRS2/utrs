@@ -141,7 +141,7 @@ class AdminController extends Controller
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $data = $request->all();
-        $template = Template::findOrFail($id)
+        $template = Template::findOrFail($id);
         $template->name = $data->name;
         $template->template = $data->template;
         $template->save();
