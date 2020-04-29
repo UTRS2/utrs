@@ -21,6 +21,9 @@ use Illuminate\Support\Arr;
 
 class AppealController extends Controller
 {
+    public const $regularnoview = array("ACCEPT", "DECLINE", "EXPIRE","VERIFY","PRIVACY")
+    public const $privacynoview = array("ACCEPT", "DECLINE", "EXPIRE","VERIFY")
+    public const $devnoview = array("ACCEPT", "DECLINE", "EXPIRE")
     public function appeal($id) {
         if (!Auth::check()) {
             abort(403,'No logged in user');
@@ -115,19 +118,34 @@ class AppealController extends Controller
         foreach ($wikis as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('wiki','=',$wiki)->get();
+                $appeals = Appeal::all();
+                foreach ($devnoview as $item) {
+                    $appeals = $appeals->where('status','!=',$item)->get();
+                }
             }
-            elseif (Permission::checkPrivacy(Auth::id()) & Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('wiki','=',$wiki)->get();
+            elseif (Permission::checkPrivacy(Auth::id()) && Auth::user()['wikis'] != "*") {
+                $appeals = Appeal::where('wiki','=',$wiki)->get();
+                foreach ($privacynoview as $item) {
+                    $appeals = $appeals->where('status','!=',$item)->get();
+                }
             }
             elseif (Permission::checkPrivacy(Auth::id())) {
-                 $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->get();
+                $appeals = Appeal::all();
+                foreach ($privacynoview as $item) {
+                    $appeals = $appeals->where('status','!=',$item)->get();
+                }
             }
             elseif (Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('status','!=','PRIVACY')->get();
+                $appeals = Appeal::all();
+                foreach ($regularnoview as $item) {
+                    $appeals = $appeals->where('status','!=',$item)->get();
+                }
             }
             else {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('status','!=','PRIVACY')->where('wiki','=',$wiki)->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->get();
+                foreach ($regularnoview as $item) {
+                    $appeals = $appeals->where('status','!=',$item)->get();
+                }
             }
         }
         return view ('appeals.appeallist', ['appeals'=>$appeals, 'tooladmin'=>$tooladmin]);
