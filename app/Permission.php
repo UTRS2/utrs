@@ -9,15 +9,29 @@ class Permission extends Model
     protected $primaryKey = 'userid';
     public $timestamps = false;
 
+    public static function whoami($id,$wiki) {
+        if(is_null($id)) {
+            abort(403,'No logged in user');
+        }
+        if ($wiki=="*") {
+            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
+            return $specific;
+        }
+        else {
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
+            return $specific;
+        }
+        abort(500,'Permissions Failure');
+    }
     public static function checkSecurity($id, $level,$wiki) {
     	if(is_null($id)) {
-    		return False;
+    		abort(403,'No logged in user');
     	}
-        if ($wiki="*") {
-            $specific = Permission::where('id','=',$id)->where('wiki','=','*')->get()->first();
+        if ($wiki=="*") {
+            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
         }
     	else {
-            $specific = Permission::where('id','=',$id)->where('wiki','rlike','\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
         }
     	if ($level == "OVERSIGHT") {
     		if (isset($specific->oversight)) {return True;}

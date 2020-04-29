@@ -12,7 +12,7 @@
   			<div class="container">
       			<div class="row">
                     <div class="col-12">
-                        @if($info['privacyreview']!=0)
+                        @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
                             <div class="alert alert-primary" role="alert">
                                 You are currently reviewing a ticket that is restricted from public view. You have three options to review this ticket:<br>
                                 <br>
@@ -52,7 +52,7 @@
         	    		</p>
             		</div>
         			<div class="col-7">
-                        @if($info['privacyreview']!=0)
+                        @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
                             <div class="container">
                                 <div class="row">
                                 <a href="/appeal/publicize/{{$id}}"><div class="col-4"><button type="button" class="btn btn-danger">Publicize Appeal</button></div></a>
@@ -162,13 +162,15 @@
 			  </thead>
 			  <tbody>
 			    @foreach($comments as $comment)
-			    	@if($comment['action']!=="comment")
-			    	<tr>
-			    	@else
+			    	@if($comment['action']=="comment")
 			    	<tr class="bg-success">
+                    @elseif($comment['action']=="responded")
+                    <tr class="bg-primary">
+			    	@else
+			    	<tr>
 			    	@endif
 			    	@if(is_null($comment['commentUser']))
-                        @if($comment['action']!=="comment")
+                        @if($comment['action']!=="comment" && $comment['action']!=="responded")
                             @if($comment['user']==0)
 				            <td><i>System</i></td>
                             @else
@@ -218,26 +220,8 @@
     			@endforeach
 			  </tbody>
 			</table>
+            <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other administrators.</i>
             <br />
-            <b><u>Custom replies</u></b>
-            <br />
-            <br />
-            <table class="table table-bordered table-dark">
-              <thead>
-                <tr>
-                  <th scope="col">Response ID</th>
-                  <th scope="col">Response</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($replies as $reply)
-                <tr>
-                    <td>{{$reply['id']}}</td>
-                    <td>{{$reply['custom']}}</td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
 			<br />
             @if($perms['admin'])
             <div class="container">

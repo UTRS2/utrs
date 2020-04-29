@@ -45,21 +45,20 @@
 <br>
 <div class="col-md-1"></div>
 <div class="col-md-10">
-<div class="alert alert-danger" role="alert">
-	Appeal Keys are still in development and do not work yet.
-</div>
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">If you already have an appeal</h5>
     <p class="card-text">Please enter your appeal key below</p>
-    <form method="POST" action="appeal.find">
+    {{ Form::open(array('url' => 'publicappeal')) }}
+    {{Form::token()}}
     <div class="input-group mb-3">
 	  <div class="input-group-prepend">
 	    <span class="input-group-text" id="basic-addon1">#</span>
 	  </div>
-	  <input type="text" class="form-control" placeholder="Appeal Key" aria-label="Appeal Key" aria-describedby="basic-addon1" id="appeal-key">
+	  <center>{{Form::text('hash')}}</center>
 	</div>
     <button type="submit" class="btn btn-primary">Submit</button>
+    {{ Form::close() }}
     <a href="#" class="btn btn-danger">Forgot Appeal Key</a>
     </form>
   </div>
