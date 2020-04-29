@@ -90,14 +90,14 @@
                     <tr>
                     @endif
 			    	@if(is_null($comment['commentUser']))
-                        @if($comment['action']!=="comment")
+                        @if($comment['action']!=="comment" && $comment['action']!=="responded")
                             @if($comment['user']==0)
 				            <td><i>System</i></td>
                             @else
                             <td><i>{{$userlist[$comment['user']]}}</i></td>
                             @endif
 				            <td><i>{{$comment['timestamp']}}</i></td>
-                            @if($comment['protected'])
+                            @if($comment['protected'] || $comment['action']!=="comment")
                                 <td><i>Access to comment is restricted.</i></td>
                             @else
 				                @if($comment['comment']!==NULL)
