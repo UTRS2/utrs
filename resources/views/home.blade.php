@@ -53,7 +53,7 @@
     {{Form::token()}}
     <div class="input-group mb-3">
 	  <div class="input-group-prepend">
-	    <span class="input-group-text" id="basic-addon1">#</span>{{Form::text('hash')}}
+	    <span class="input-group-text" id="basic-addon1">#</span>{{Form::text('hash', ['class'=>'form-control','placeholder'=>'Appeal Key'])}}
 	  </div>
 	</div>
     <button type="submit" class="btn btn-primary">Submit</button>
