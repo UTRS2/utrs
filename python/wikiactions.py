@@ -121,7 +121,7 @@ def checkPerms(user, id):
         if "oversight" in result:
             ptperms["oversight"]=True
     editcount = raw["query"]["users"][0]["editcount"]
-    if editcount >500:enperms["user"]=True
+    if editcount >500:ptperms["user"]=True
     ##############################
     ###Meta checks##############
     params = {'action': 'query',
