@@ -304,6 +304,22 @@ def clearPrivateData():
         timediff = datetime.strptime(logs[0]["timestamp"], '%Y-%m-%d %H:%M:%S') - timedelta(days=7)
         if timediff.days > 7:
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
+def appeallist():
+    fulltext=""
+    top = """
+    {| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle" |-
+    !Appeal Number
+    !Appellant
+    !Appeal Filed
+    !Status
+    """
+    fulltext+=top
+    results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND';","read")
+    for result in results:
+        fulltext += "\n|-\n|"+result[0]+"\n|"+result[1]+"\n|"+result[9]+"\n|"+result[5]
+    fulltext +="\n|}"
+    page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
+    page.save(fulltext, "Updating UTRS caselist")
 verifyusers()
 verifyblock()
 clearPrivateData()
