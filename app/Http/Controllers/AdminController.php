@@ -127,8 +127,8 @@ class AdminController extends Controller
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $newtemplate = $request->all();
-        $name = $newtemplate->name;
-        $template = $newtemplate->template;
+        $name = $newtemplate['name'];
+        $template = $newtemplate['template'];
         Template::create(['name'=>$name,'template'=>$template,'active'=>1]);
         $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$id,'objecttype'=>'template','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
         return Redirect::to('/admin/templates');
