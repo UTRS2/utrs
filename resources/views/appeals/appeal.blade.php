@@ -121,6 +121,7 @@
 	    		<p>{{$info['appealtext']}}</p>
     		</div>
             <div class="col-6">
+            @if ($info['privacyreview']==1 || $info['privacyreview']==2)
             <div class="alert alert-primary" role="alert">
                 @if ($info['privacyreview']==1)
                 It has been requested that this appeal be hidden from public view and only visible to administrators.
@@ -128,6 +129,7 @@
                 It has been requested that this appeal be oversighted and only availible to those on the privacy team to review.
                 @endif
             </div>
+            @endif
             <div class="container">
             <div class="row">
     		<div class="col-6">
