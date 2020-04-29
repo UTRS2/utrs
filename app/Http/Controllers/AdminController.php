@@ -130,8 +130,8 @@ class AdminController extends Controller
         $newtemplate = $request->all();
         $name = $newtemplate['name'];
         $template = $newtemplate['template'];
-        Template::create(['name'=>$name,'template'=>$template,'active'=>1]);
-        $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$id,'objecttype'=>'template','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
+        $creation = Template::create(['name'=>$name,'template'=>$template,'active'=>1]);
+        $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$creation->id,'objecttype'=>'template','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
         return Redirect::to('/admin/templates');
     }
     public function saveTemplate(Request $request, $id) {
@@ -146,7 +146,7 @@ class AdminController extends Controller
         $template->name = $data->name;
         $template->template = $data->template;
         $template->save();
-        $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$id,'objecttype'=>'template','action'=>'update','ip' => $ip, 'ua' => $ua . " " .$lang));
+        $log = Log::create(array('user' => Auth::id(), 'referenceobject'=>$template->id,'objecttype'=>'template','action'=>'update','ip' => $ip, 'ua' => $ua . " " .$lang));
         return Redirect::to('/admin/templates');
     }
     public function showNewTemplate() {
