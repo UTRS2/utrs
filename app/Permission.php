@@ -13,13 +13,11 @@ class Permission extends Model
         if(is_null($id)) {
             abort(403,'No logged in user');
         }
-        if ($wiki="*") {
-            dd(Permission::where('userid','=',$id)->get()->first());
+        if ($wiki=="*") {
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
             return $specific;
         }
         else {
-            dd(Permission::where('userid','=',$id)->get()->first());
             $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
             return $specific;
         }
@@ -29,7 +27,7 @@ class Permission extends Model
     	if(is_null($id)) {
     		abort(403,'No logged in user');
     	}
-        if ($wiki="*") {
+        if ($wiki=="*") {
             $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
         }
     	else {
