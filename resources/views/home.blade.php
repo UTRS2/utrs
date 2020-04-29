@@ -37,7 +37,7 @@
 	    <h5 class="card-title">For users that are here</h5>
 	    <p class="card-text">to comment on, process or assist with appeals, 
 	    please select the button below. Please note that only user accounts 
-		over 5,000 edits are allowed to participate in this form.</p>
+		over 500 edits are allowed to participate in this form.</p>
 		@auth
 		<a href="/review" class="btn btn-primary">Go to Appeals</a>
 		@endauth
