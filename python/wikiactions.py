@@ -297,12 +297,13 @@ def sendemail(target,subject,text,wiki):
 def clearPrivateData():
     results = calldb("select * from privatedatas;","read")
     for result in results:
-        appeal = calldb("select * from appeal where id = "+str(result['id'])+";","read")
+        id = result[0]
+        appeal = calldb("select * from appeal where id = "+str(id)+";","read")
         if appeal[0]['status'] != "CLOSED":continue
-        logs = calldb("select timestamp from logs where referenceobject = "+str(result[id])+" and action = 'closed' and objecttype = 'appeal';","read")
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'closed' and objecttype = 'appeal';","read")
         timediff = datetime.strptime(logs[0]["timestamp"], '%Y-%m-%d %H:%M:%S') - timedelta(days=7)
         if timediff.days > 7:
-            calldb("delete from privatedatas where appealID = "+str(result['id'])+";","write")
+            calldb("delete from privatedatas where appealID = "+str(id)+";","write")
 verifyusers()
 verifyblock()
 clearPrivateData()

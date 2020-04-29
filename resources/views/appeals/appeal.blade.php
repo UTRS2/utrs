@@ -119,6 +119,13 @@
 	    		<br /><b>Why should you be unblocked?</b>
 	    		<p>{{$info['appealtext']}}</p>
     		</div>
+            <div class="alert alert-primary" role="alert">
+                @if ($info['privacyreview']==1)
+                It has been requested that this appeal be hidden from public view and only visible to administrators.
+                @elseif ($info['privacyreview']==2)
+                It has been requested that this appeal be oversighted and only availible to those on the privacy team to review.
+                @endif
+            </div>
     		<div class="col-3">
     			@if($info['status']=="ACCEPT")
     			<center>This appeal was approved.<br />
