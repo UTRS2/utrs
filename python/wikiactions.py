@@ -197,7 +197,8 @@ def verifyblock():
                     continue
                 else:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    blockNotFound(target,wiki,appeal[0])
+                    try:blockNotFound(target,wiki,appeal[0])
+                    except:calldb("update appeals set status = 'INVALID' where id="+str(appeal[0])+";","write")
             else:
                 params = {'action': 'query',
                 'format': 'json',

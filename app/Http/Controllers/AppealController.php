@@ -47,6 +47,9 @@ class AppealController extends Controller
     	else {
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
             else {$closestatus=FALSE;}
+            if ($info->status !== "OPEN" && !Permission::checkSecurity($id, "DEVELOPER","*") {
+                abort(404,'This appeal has been marked invalid.');
+            }
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
                 $logs = $info->comments()->get();
                 $userlist = [];
@@ -104,9 +107,9 @@ class AppealController extends Controller
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
     }
     public function appeallist() {
-        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY","NOTFOUND"];
-        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY","NOTFOUND"];
-        $devnoview = ["ACCEPT", "DECLINE", "EXPIRE"];
+        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY","NOTFOUND","INVALID"];
+        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY","NOTFOUND","INVALID"];
+        $devnoview = ["ACCEPT", "DECLINE", "EXPIRE", "INVALID"];
         $tooladmin = False;
         if (!Auth::check()) {
             abort(403,'No logged in user');
