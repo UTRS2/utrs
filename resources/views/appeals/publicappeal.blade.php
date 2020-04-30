@@ -155,6 +155,18 @@
             <br />
             <br />
             </div>
+            <div class="col-6">
+            <h5 class="card-title">Drop a comment</h5>
+            {{ Form::open(array('url' => 'appeal/publiccomment/'.$id)) }}
+            {{Form::token()}}
+            {{Form::label('comment', 'Add a comment to this appeal:')}}<br>
+            {{Form::textarea('comment',null,['rows'=>4,'width'=>'-webkit-fill-available'])}}<br><br>
+            <button type="submit" class="btn btn-success">Submit</button>
+            {{ Form::close() }}
+            </div>
+            </div>
+            </div>
+            </div>
             </div>
             </div>
         </div>

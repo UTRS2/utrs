@@ -232,13 +232,19 @@ class AppealController extends Controller
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $checkuser = Permission::checkAdmin($user,$appeal->wiki);
-        if ($checkuser) {
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-            return redirect('appeal/'.$id);
+        $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+        return redirect('appeal/'.$id);
         }
-        else {
-            $response->assertUnauthorized();
-        }
+    }
+    public function publiccomment($id, Request $request) {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $reason = $request->input('comment');
+        $user = 0;
+        $appeal = Appeal::findOrFail($id);
+        $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+        return redirect('appeal/'.$id);
     }
     public function respond($id, $template, Request $request) {
         if (!Auth::check()) {
