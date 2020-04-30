@@ -33,42 +33,40 @@ class Permission extends Model
     	else {
             $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
         }
-
-        dd($specific->oversight==1);
     	if ($level == "OVERSIGHT") {
-    		if (isset($specific->oversight)) {return True;}
+    		if ($specific->oversight==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "CHECKUSER") {
-    		if (isset($specific->checkuser)) {return True;}
+    		if ($specific->checkuser==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "STEWARD") {
-    		if (isset($specific->steward)) {return True;}
+    		if ($specific->steward==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "STAFF") {
-    		if (isset($specific->staff)) {return True;}
+    		if ($specific->staff==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "DEVELOPER") {
-    		if (isset($specific->developer)) {return True;}
+    		if ($specific->developer==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "TOOLADMIN") {
-    		if (isset($specific->tooladmin)) {return True;}
+    		if ($specific->tooladmin==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "PRIVACY") {
-    		if (isset($specific->privacy)) {return True;}
+    		if ($specific->privacy==1) {return True;}
     		else {return False;}
     	}
         if ($level == "ADMIN") {
-            if (isset($specific->admin)) {return True;}
+            if ($specific->admin==1) {return True;}
             else {return False;}
         }
     	if ($level == "USER") {
-    		if (isset($specific->user)) {return True;}
+    		if ($specific->user==1) {return True;}
     		else {return False;}
     	}
     }
