@@ -7,9 +7,11 @@
   		On the next page, you will be issued a Appeal Key. Keep it in a safe place. If you forget it, you are able to recover it, but only if your Wikimedia Account has a valid email address. DO NOT SHARE this key with anyone.
 	</div>
 	<div class="alert alert-info" role="alert">
-  		After filing this appeal, you will get an appeal key. Update emails will be sent via the Wikimedia interface. If you do not have an email associated with your Wikimedia account, you will have to check back here for updates.
+  		After filing this appeal, you will get an appeal key. <s>Update emails will be sent via the Wikimedia interface.</s> If you do not have an email associated with your Wikimedia account, you will have to check back here for updates.
 
   		An administrator will look at your request in due time. Depending on which language and site you are appealing from, appeal times may vary excessively.
+
+      Please note, any text you input for your appeal you agree to release under a <a href="https://en.wikipedia.org/wiki/Public_domain">public domain licence</a> so that it can be copied over to Wikipedia if needed. If you do not agree, do not file an appeal.
 
   		If you have any questions, you can contact us. Please note: We will not expidite, approve, deny, or edit your appeal. It is for information only.
 	</div>

@@ -10,6 +10,8 @@
   		After filing this appeal, you will get an appeal key. For security reasons, we do not send email updates for IP blocks. You will have to check back here for updates.
 
   		An administrator will look at your request in due time. Depending on which language and site you are appealing from, appeal times may vary excessively.
+      
+      Please note, any text you input for your appeal you agree to release under a <a href="https://en.wikipedia.org/wiki/Public_domain">public domain licence</a> so that it can be copied over to Wikipedia if needed. If you do not agree, do not file an appeal.
 
   		If you have any questions, you can contact us. Please note: We will not expidite, approve, deny, or edit your appeal. It is for information only.
 	</div>
