@@ -71,7 +71,7 @@
                                     <div class="alert alert-danger" role="alert">
                                         You are not an admin, and therefore can't preform any action on this appeal.
                                     </div>
-                                @endif
+                                @else
                                     @if(($info['status']==="ACCEPT" || $info['status']==="DECLINE" || $info['status']==="EXPIRE") && !$perms['functionary'])
                                     <div class="alert alert-danger" role="alert">
                                         This appeal is closed and no further action can be taken.
@@ -105,6 +105,7 @@
                                     @endif
                                 </div>
                                 </div>
+                                @endif
                             </div>
                         </div>
                         @endif
