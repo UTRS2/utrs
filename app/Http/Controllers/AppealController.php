@@ -60,7 +60,6 @@ class AppealController extends Controller
                 $perms['checkuser'] = Permission::checkCheckuser(Auth::id(),$info->wiki);
                 $perms['functionary'] = Permission::checkCheckuser(Auth::id(),$info->wiki) || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
-                dd(Permission::checkAdmin(Auth::id(),$info->wiki));
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
