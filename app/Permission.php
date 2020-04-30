@@ -42,7 +42,7 @@ class Permission extends Model
     		else {return False;}
     	}
     	if ($level == "STEWARD") {
-    		if ($specific->steward==1) {return True;}
+    		if ($specific['steward']==1) {return True;}
     		else {return False;}
     	}
     	if ($level == "STAFF") {
