@@ -34,7 +34,7 @@ class Permission extends Model
             $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
         }
 
-        dd(isset($specific->oversight));
+        dd($specific->oversight==0);
     	if ($level == "OVERSIGHT") {
     		if (isset($specific->oversight)) {return True;}
     		else {return False;}
