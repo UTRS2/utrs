@@ -47,7 +47,7 @@ class AppealController extends Controller
     	else {
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
             else {$closestatus=FALSE;}
-            if ($info->status !== "OPEN" && !Permission::checkSecurity($id, "DEVELOPER","*") {
+            if ($info->status !== "OPEN" && !Permission::checkSecurity($id, "DEVELOPER","*")) {
                 abort(404,'This appeal has been marked invalid.');
             }
             if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
