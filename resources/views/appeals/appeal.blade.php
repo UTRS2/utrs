@@ -67,7 +67,6 @@
                                 <div class="col-4"></div>
                                 <div class="col-8">
                                 <h5 class="card-title">Actions</h5>
-                                {{$perms['admin']}}
                                 @if(!$perms['admin'])
                                     <div class="alert alert-danger" role="alert">
                                         You are not an admin, and therefore can't preform any action on this appeal.
