@@ -53,7 +53,7 @@
         	    		</p>
             		</div>
         			<div class="col-7">
-                        @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
+                        @if($info['privacyreview']!=0 && $info['status']=="PRIVACY" && $perms['admin'])
                             <div class="container">
                                 <div class="row">
                                 <a href="/appeal/privacy/{{$id}}/publicize"><div class="col-4"><button type="button" class="btn btn-danger">Publicize Appeal</button></div></a>
