@@ -53,15 +53,15 @@
 				@elseif($appeal['status']=="USER")
 					<tr>
 				@elseif($appeal['status']=="ADMIN")
-					<tr class="table-primary">
+					<tr class="bg-primary">
 				@elseif($appeal['status']=="TOOLADMIN")
-					<tr class="table-info">
+					<tr class="bg-info">
 				@elseif($appeal['status']=="CHECKUSER")
-					<tr class="table-warning">
+					<tr class="bg-warning">
 				@elseif($appeal['status']=="PROXY")
-					<tr class="table-warning">
+					<tr class="bg-warning">
 				@elseif($appeal['status']=="PRIVACY")
-					<tr class="table-danger">
+					<tr class="bg-danger">
 				@endif
 						<td><a href="/appeal/{{$appeal['id']}}"><button type="button" class="btn btn-primary">{{$appeal['id']}}</button></a></td>
 						<td style="vertical-align: middle;">{{$appeal['appealfor']}}</td>
