@@ -218,14 +218,14 @@ def verifyblock():
                     try:raw = runAPI(wiki, params)
                     except:
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                        if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                        if re.match(regex,target) == None:blockNotFound(target,wiki,appeal[0])
                         continue
                     if len(raw["query"]["blocks"])>0:
                         updateBlockinfoDB(raw,appeal)
                         continue
                     else:
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                        if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                        if re.match(regex,target) == None:blockNotFound(target,wiki,appeal[0])
                         continue
         if wiki == "global":
             params = {'action': 'query',
