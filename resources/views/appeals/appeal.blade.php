@@ -27,6 +27,7 @@
         	    		<p class="card-text">
                             Appeal status: {{$info['status']}}
         	    			<br />Blocking Admin: {{$info['blockingadmin']}}
+                            <br />Block Reason: {{$info['blockreason']}}
         	    			<br />Time Submitted: {{$info['submitted']}}
                             <br />Wiki: {{$info['wiki']}}
                             @if(!is_null($info['handlingadmin']))
