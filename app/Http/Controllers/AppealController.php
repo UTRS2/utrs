@@ -234,7 +234,6 @@ class AppealController extends Controller
         $checkuser = Permission::checkAdmin($user,$appeal->wiki);
         $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
         return redirect('appeal/'.$id);
-        }
     }
     public function publiccomment($id, Request $request) {
         $ua = $request->server('HTTP_USER_AGENT');
