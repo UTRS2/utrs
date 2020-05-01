@@ -39,6 +39,9 @@ class AppealModifyController extends Controller
         $appeal->wiki=$request['wiki'];
         $appeal->appealfor=$request['appealfor'];
         $appeal->blocktype=$request['blocktype'];
+        if ($request['hiddenip']!==NULL) {
+        	$appeal->hiddenip = $request['hiddenip'];
+        }
         $appeal->status="VERIFY";
         $appeal->save();
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'modifyip','ip' => $ip, 'ua' => $ua . " " .$lang));

@@ -36,6 +36,9 @@
 	{{Form::radio('blocktype', 0)}} No, I don't have an account.<br>
 	{{Form::radio('blocktype', 2,true)}} No, the underlying IP address is blocked<br>
 	@endif
+	<br>
+	{{Form::label('hiddenip', 'If you selected "No, the underlying IP address is blocked" above, what is the IP?')}}<br>
+	{{Form::text('hiddenip',$appeal->appealfor)}}<br>
 	{{Form::hidden('hash', $hash)}}
 	<br>
 	<button type="submit" class="btn btn-success">Submit</button>
