@@ -3,7 +3,7 @@ from mysql.connector import Error
 import credentials
 import re
 import hashlib
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,date
 
 import mwclient
 import login
@@ -317,8 +317,7 @@ def clearPrivateData():
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
         if appeal[0][5] != "CLOSED":continue
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'closed' and objecttype = 'appeal';","read")
-        timediff = datetime.strptime(logs[0]["timestamp"], '%Y-%m-%d %H:%M:%S') - timedelta(days=7)
-        if timediff.days > 7:
+        if datesince(logs[0]["timestamp"], 7):
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
 def appeallist():
     fulltext=""
@@ -336,6 +335,11 @@ def appeallist():
     fulltext +="\n|}"
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
+def datesince(orig,length):
+    today = date.today()
+    diff = today - timedelta(days=length)
+    orig = datetime.strptime(orig,'%Y-%m-%d %H:%M:%S')
+    return diff > today
 verifyusers()
 verifyblock()
 clearPrivateData()
