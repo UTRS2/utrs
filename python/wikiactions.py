@@ -341,7 +341,7 @@ def datesince(orig,length):
     orig = datetime.strptime(orig,'%Y-%m-%d %H:%M:%S')
     return diff > today
 def closeNotFound():
-    results = calldb("select * from appeals where status = NOTFOUND;","read")
+    results = calldb("select * from appeals where status = 'NOTFOUND';","read")
     for result in results:
         id = result[0]
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
