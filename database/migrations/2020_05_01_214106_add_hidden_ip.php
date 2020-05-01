@@ -27,6 +27,6 @@ class AddHiddenIp extends Migration
     {
         Schema::table('appeals', function(Blueprint $table) {
             $table->dropColumn('hiddenip');
-        }
+        });
     }
 }
