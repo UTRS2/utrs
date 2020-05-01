@@ -340,6 +340,13 @@ def datesince(orig,length):
     diff = today - timedelta(days=length)
     orig = datetime.strptime(orig,'%Y-%m-%d %H:%M:%S')
     return diff > today
+def closeNotFound():
+    results = calldb("select * from appeals where status = NOTFOUND;","read")
+    for result in results:
+        id = result[0]
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
+        if datesince(logs[0]["timestamp"], 5):
+            calldb("update appeals set status = 'EXPIRED' where appealID = "+str(id)+";","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
