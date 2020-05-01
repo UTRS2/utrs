@@ -345,6 +345,7 @@ def closeNotFound():
     for result in results:
         id = result[0]
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
+        print logs
         if datesince(logs[0][9], 5):
             calldb("update appeals set status = 'EXPIRED' where appealID = "+str(id)+";","write")
 verifyusers()
