@@ -14,7 +14,7 @@
 	</ul>
 
 	We appreciate your patience in advance,<br />
-    UTRS Developement Team
+    UTRS Development Team
 </div>
 @if($tooladmin)
 <div class="card">
