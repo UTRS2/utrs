@@ -290,8 +290,6 @@ Your block that you filed an appeal for on the UTRS Platform has not been found.
 
 http://utrs-beta.wmflabs.org/fixblock/"""+str(confirmhash)+"""
 
-Recently some emails have been sent with an improper link. We are resending them to make sure everyone gets them.
-
 Thanks,
 UTRS Developers"""
     sendemail(username,subject,text,wiki)
