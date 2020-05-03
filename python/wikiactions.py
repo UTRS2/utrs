@@ -68,7 +68,7 @@ def verifyusers():
                 print "FAILURE: Param not accepted."
                 quit()
             mash= username+credentials.secret
-            confirmhash = hashlib.md5(mash.encode()) 
+            confirmhash = hashlib.md5(mash.encode())
             params = {'action': 'emailuser',
             'format': 'json',
             'target': username,
@@ -283,12 +283,14 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
     mash= username+credentials.secret
-    confirmhash = hashlib.md5(mash.encode()) 
+    confirmhash = hashlib.md5(mash.encode()).hexdigest()
     subject="UTRS Appeal #"+str(id)+" - Block not found"
     text="""
 Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
 
 http://utrs-beta.wmflabs.org/fixblock/"""+str(confirmhash)+"""
+
+Recently some emails have been sent with an improper link. We are resending them to make sure everyone gets them.
 
 Thanks,
 UTRS Developers"""
