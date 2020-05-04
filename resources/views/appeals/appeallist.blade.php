@@ -63,7 +63,7 @@
 				@elseif($appeal['status']=="PRIVACY")
 					<tr class="bg-danger">
 				@endif
-						<td><a href="/appeal/{{$appeal['id']}}"><button type="button" class="btn btn-primary">{{$appeal['id']}}</button></a></td>
+						<td style="vertical-align: middle;"><a href="/appeal/{{$appeal['id']}}"><button type="button" class="btn btn-primary">{{$appeal['id']}}</button></a></td>
 						<td style="vertical-align: middle;">{{$appeal['appealfor']}}</td>
 						@if($appeal['blocktype']==0)
 						<td style="vertical-align: middle;">IP address</td>
