@@ -245,7 +245,7 @@
     			@endforeach
 			  </tbody>
 			</table>
-            <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other administrators.</i>
+            <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other administrators or the user involved.</i>
             <br />
 			<br />
             @if($perms['admin'])
