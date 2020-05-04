@@ -303,9 +303,11 @@ def runAPI(wiki, params):
     if wiki == "global":raw = callmetaAPI(params)
     return raw
 def updateBlockinfoDB(raw,appeal):
+    reason = raw["query"]["blocks"][0]["reason"]
+    reason = reason.replace("'","\'")
     calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
     calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
-    calldb("update appeals set blockreason = '"+raw["query"]["blocks"][0]["reason"]+"' where id="+str(appeal[0])+";","write")
+    calldb("update appeals set blockreason = '"+reason+"' where id="+str(appeal[0])+";","write")
     results = calldb("select * from appeals where status = 'VERIFY';","read")
     if results[0][2] != results[0][3]:calldb("update appeals set status = \"PRIVACY\" where id="+str(appeal[0])+";","write")
     else:calldb("update appeals set status = \"OPEN\" where id="+str(appeal[0])+";","write")
