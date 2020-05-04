@@ -209,11 +209,22 @@ def verifyblock():
                             if len(raw["query"]["blocks"])>0:
                                 updateBlockinfoDB(raw,appeal)
                                 continue
-                        page = masterwiki.pages["User talk:"+str(target)]
-                        page.save(page.text() + """
+                        params = {'action': 'query',
+                        'format': 'json',
+                        'list': 'users',
+                        'ususers': target,
+                        'usprop': 'editcount'
+                        }
+                        raw = runAPI(wiki, params)
+                        try:
+                            test = raw["query"]["users"]["userid"]
+                            page = masterwiki.pages["User talk:"+str(target)]
+                            page.save(page.text() + """
 == A UTRS Appeal ==
 A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
-                        """, "UTRS Account notice")
+                        """, "UTRS Appeal not found notice")
+                        except:
+                            continue
             else:
                 params = {'action': 'query',
                 'format': 'json',
