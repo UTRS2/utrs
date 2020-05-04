@@ -220,6 +220,9 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                 'list': 'blocks',
                 'bkip': target
                 }
+                if not re.search($regex,$target):
+                    calldb("update appeals set blocktype = 1 where id="+str(appeal[0])+";","write")
+                    continue
                 raw = runAPI(wiki, params)
                 if len(raw["query"]["blocks"])>0:
                     updateBlockinfoDB(raw,appeal)
