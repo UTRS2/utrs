@@ -208,7 +208,11 @@
                                 @endif
                             @endif
                         @else
+                            @if($comment['user']==0)
+                            <td><i>System</i></td>
+                            @else
                             <td>{{$userlist[$comment['user']]}}</td>
+                            @endif
                             <td>{{$comment['timestamp']}}</td>
                             @if($comment['protected'] && !$perms['functionary'])
                                 <td>Access to comment is restricted.</td>
@@ -221,7 +225,11 @@
                             @endif
                       @endif
 				    @else
+                      @if($comment['user']==0)
+                      <td><i>System</i></td>
+                      @else
 				      <td>{{$userlist[$comment['commentUser']]}}</td>
+                      @endif
 				      <td>{{$comment['timestamp']}}</td>
 				      @if($comment['protected'] && !$perms['functionary'])
 				        <td><i>Access to comment is restricted.</td>
