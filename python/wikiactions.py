@@ -376,7 +376,7 @@ def appeallist():
 def datesince(orig,length):
     today = date.today()
     diff = today - timedelta(days=length)
-    return diff > today
+    return diff > orig
 def closeNotFound():
     results = calldb("select * from appeals where status = 'NOTFOUND';","read")
     for result in results:
