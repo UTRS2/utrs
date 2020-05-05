@@ -39,7 +39,7 @@
                             <br />Handling Admin: {{$userlist[$info['handlingadmin']]}}
                             @endif
                             @if($info['status'] == "NOTFOUND")
-                            <a href="/fixip/{{$hash}}"><button class="btn btn-success">Fix Block information</button></a>
+                            <a href="/fixappeal/{{$hash}}"><button class="btn btn-success">Fix Block information</button></a>
                             @endif
         	    		</p>
             		</div>
