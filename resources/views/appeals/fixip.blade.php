@@ -38,7 +38,7 @@
 	@endif
 	<br>
 	{{Form::label('hiddenip', 'If you selected "No, the underlying IP address is blocked" above, what is the IP?')}}<br>
-	{{Form::text('hiddenip',$appeal->appealfor)}}<br>
+	{{Form::text('hiddenip',$appeal->hiddenip)}}<br>
 	{{Form::hidden('hash', $hash)}}
 	<br>
 	<button type="submit" class="btn btn-success">Submit</button>
