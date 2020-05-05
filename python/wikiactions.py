@@ -280,6 +280,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                 updateBlockinfoDB(raw,appeal,wiki)
                 continue
             except:
+                print appeal[0]
                 if re.search(regex,appeal[0]) is not None:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                     continue
