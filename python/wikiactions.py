@@ -374,10 +374,10 @@ def appeallist():
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
-    print orig
+    print orig[0]
     today = date.today()
     diff = today - timedelta(days=length)
-    return diff > orig
+    return diff > orig[0]
 def closeNotFound():
     results = calldb("select * from appeals where status = 'NOTFOUND';","read")
     for result in results:
