@@ -193,7 +193,7 @@ def verifyblock():
                 }
                 raw = runAPI(wiki, params)
                 if len(raw["query"]["blocks"])>0:
-                    updateBlockinfoDB(raw,appeal)
+                    updateBlockinfoDB(raw,appeal,wiki)
                     continue
                 else:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
@@ -207,7 +207,7 @@ def verifyblock():
                             }
                             raw = runAPI(wiki, params)
                             if len(raw["query"]["blocks"])>0:
-                                updateBlockinfoDB(raw,appeal)
+                                updateBlockinfoDB(raw,appeal,wiki)
                                 continue
                         params = {'action': 'query',
                         'format': 'json',
@@ -236,7 +236,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     continue
                 raw = runAPI(wiki, params)
                 if len(raw["query"]["blocks"])>0:
-                    updateBlockinfoDB(raw,appeal)
+                    updateBlockinfoDB(raw,appeal,wiki)
                     continue
                 else:
                     params = {'action': 'query',
@@ -250,7 +250,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                         if re.match(regex,target) == None:blockNotFound(target,wiki,appeal[0])
                         continue
                     if len(raw["query"]["blocks"])>0:
-                        updateBlockinfoDB(raw,appeal)
+                        updateBlockinfoDB(raw,appeal,wiki)
                         continue
                     else:
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
@@ -265,36 +265,36 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
             'aguprop':'lockinfo'
             }
             raw = runAPI(wiki, params)
-            print raw["query"]
-            #try:
-            if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
-            params = {'action': 'query',
-            'format': 'json',
-            'list': 'logevents',
-            'lefrom': "User:"+target+"@global",
-            'letype':'globalauth',
-            'lelimit':1,
-            'leprop':'user|comment'
-            }
-            raw = runAPI(wiki, params)
-            updateBlockinfoDB(raw,appeal)
-                #continue
-            #except:
-            params = {'action': 'query',
-            'format': 'json',
-            'list': 'globallocks ',
-            'bgip': target,
-            'bglimit':1,
-            'bgprop':'lockinfo'
-            }
-            raw = runAPI(wiki, params)
-            if len(raw["query"]["globalblocks"])>0:
-                updateBlockinfoDB(raw,appeal)
+            try:
+                if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'logevents',
+                'letitle': "User:"+target+"@global",
+                'letype':'globalauth',
+                'lelimit':1,
+                'leprop':'user|comment'
+                }
+                raw = runAPI(wiki, params)
+                print raw
+                updateBlockinfoDB(raw,appeal,wiki)
                 continue
-            else:
-                calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
-                continue
+            except:
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'globallocks ',
+                'bgip': target,
+                'bglimit':1,
+                'bgprop':'lockinfo'
+                }
+                raw = runAPI(wiki, params)
+                if len(raw["query"]["globalblocks"])>0:
+                    updateBlockinfoDB(raw,appeal,wiki)
+                    continue
+                else:
+                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                    continue
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
     mash= username+credentials.secret
@@ -314,11 +314,17 @@ def runAPI(wiki, params):
     if wiki == "ptwiki":raw = callptwikiAPI(params)
     if wiki == "global":raw = callmetaAPI(params)
     return raw
-def updateBlockinfoDB(raw,appeal):
-    reason = raw["query"]["blocks"][0]["reason"]
-    reason = reason.replace("'","\'")
+def updateBlockinfoDB(raw,appeal,wiki):
+    if wiki != "global":
+        blockingadmin = raw["query"]["blocks"][0]["by"]
+        reason = raw["query"]["blocks"][0]["reason"]
+        reason = reason.replace("'","\'")
+    else:
+        blockingadmin = raw["query"]["logevents"][0]["user"]
+        reason = raw["query"]["logevents"][0]["comment"]
+        reason = reason.replace("'","\'")
     calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-    calldb("update appeals set blockingadmin = '"+raw["query"]["blocks"][0]["by"]+"' where id="+str(appeal[0])+";","write")
+    calldb("update appeals set blockingadmin = '"+blockingadmin+"' where id="+str(appeal[0])+";","write")
     calldb("update appeals set blockreason = '"+reason+"' where id="+str(appeal[0])+";","write")
     results = calldb("select * from appeals where status = 'VERIFY';","read")
     if results[0][2] != results[0][3]:calldb("update appeals set status = \"PRIVACY\" where id="+str(appeal[0])+";","write")
