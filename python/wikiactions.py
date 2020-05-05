@@ -265,36 +265,36 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
             'aguprop':'lockinfo'
             }
             raw = runAPI(wiki, params)
-            try:
-                if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
-                params = {'action': 'query',
-                'format': 'json',
-                'list': 'logevents',
-                'letitle': "User:"+target+"@global",
-                'letype':'globalauth',
-                'lelimit':1,
-                'leprop':'user|comment'
-                }
-                raw = runAPI(wiki, params)
-                print raw
+            #try:
+            if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'logevents',
+            'letitle': "User:"+target+"@global",
+            'letype':'globalauth',
+            'lelimit':1,
+            'leprop':'user|comment'
+            }
+            raw = runAPI(wiki, params)
+            print raw
+            updateBlockinfoDB(raw,appeal,wiki)
+            continue
+            #except:
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'globallocks ',
+            'bgip': target,
+            'bglimit':1,
+            'bgprop':'lockinfo'
+            }
+            raw = runAPI(wiki, params)
+            if len(raw["query"]["globalblocks"])>0:
                 updateBlockinfoDB(raw,appeal,wiki)
                 continue
-            except:
-                params = {'action': 'query',
-                'format': 'json',
-                'list': 'globallocks ',
-                'bgip': target,
-                'bglimit':1,
-                'bgprop':'lockinfo'
-                }
-                raw = runAPI(wiki, params)
-                if len(raw["query"]["globalblocks"])>0:
-                    updateBlockinfoDB(raw,appeal,wiki)
-                    continue
-                else:
-                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
-                    continue
+            else:
+                calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                continue
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
     mash= username+credentials.secret
