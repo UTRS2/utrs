@@ -266,19 +266,19 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
             }
             raw = runAPI(wiki, params)
             print raw["query"]
-            try:
-                if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
-                params = {'action': 'query',
-                'format': 'json',
-                'list': 'logevents',
-                'lefrom': "User:"+target+"@global",
-                'letype':'globalauth',
-                'lelimit':1,
-                'leprop':'user|comment'
-                }
-                raw = runAPI(wiki, params)
-                updateBlockinfoDB(raw,appeal)
-                continue
+            #try:
+            if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'logevents',
+            'lefrom': "User:"+target+"@global",
+            'letype':'globalauth',
+            'lelimit':1,
+            'leprop':'user|comment'
+            }
+            raw = runAPI(wiki, params)
+            updateBlockinfoDB(raw,appeal)
+                #continue
             except:
                 params = {'action': 'query',
                 'format': 'json',
