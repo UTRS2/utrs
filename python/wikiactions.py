@@ -367,7 +367,7 @@ def appeallist():
     !Status
     """
     fulltext+=top
-    results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRED' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
+    results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRE' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
     for result in results:
         fulltext += "\n|-\n|[https://utrs-beta.wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+result[1].encode('utf-8').strip()+"\n|"+str(result[9])+"\n|"+str(result[5])
     fulltext +="\n|}"
@@ -383,7 +383,7 @@ def closeNotFound():
         id = result[0]
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 5):
-            calldb("update appeals set status = 'EXPIRED' where id = "+str(id)+";","write")
+            calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
