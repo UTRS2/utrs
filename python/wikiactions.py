@@ -247,14 +247,14 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     try:raw = runAPI(wiki, params)
                     except:
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                        if re.match(regex,target) == None:blockNotFound(target,wiki,appeal[0])
+                        if re.search(regex,target) == None:blockNotFound(target,wiki,appeal[0])
                         continue
                     if len(raw["query"]["blocks"])>0:
                         updateBlockinfoDB(raw,appeal,wiki)
                         continue
                     else:
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                        if re.match(regex,target) == None:blockNotFound(target,wiki,appeal[0])
+                        if re.search(regex,target) == None:blockNotFound(target,wiki,appeal[0])
                         continue
         if wiki == "global":
             params = {'action': 'query',
@@ -280,7 +280,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                 updateBlockinfoDB(raw,appeal,wiki)
                 continue
             except:
-                if not re.match(regex,appeal[0]):
+                if not re.search(regex,appeal[0]):
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                     continue
                 params = {'action': 'query',
@@ -296,7 +296,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     continue
                 else:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    if re.match(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                    if re.search(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
                 continue
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
