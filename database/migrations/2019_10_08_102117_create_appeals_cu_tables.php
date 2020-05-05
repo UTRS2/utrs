@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,7 +24,7 @@ class CreateAppealsCuTables extends Migration
             $table->boolean('blockfound');
             $table->string('blockingadmin')->nullable();
             $table->string('blockreason')->nullable();
-            $table->timestamp('submitted')->default("CURRENT_TIMESTAMP");
+            $table->timestamp('submitted')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->bigInteger('handlingadmin')->nullable();
             $table->string('appealsecretkey');
             $table->string('appealtext', 8000);
