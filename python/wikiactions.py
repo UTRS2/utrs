@@ -374,7 +374,6 @@ def appeallist():
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
-    print orig[0]
     today = datetime.now()
     diff = today - timedelta(days=length)
     return diff > orig[0]
@@ -384,7 +383,7 @@ def closeNotFound():
         id = result[0]
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 5):
-            calldb("update appeals set status = 'EXPIRED' where appealID = "+str(id)+";","write")
+            calldb("update appeals set status = 'EXPIRED' where id = "+str(id)+";","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
