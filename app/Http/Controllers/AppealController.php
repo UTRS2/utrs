@@ -45,6 +45,7 @@ class AppealController extends Controller
     		return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
     	}
     	else {
+            dd(Permission::checkSecurity($id, "DEVELOPER","*"));
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
             else {$closestatus=FALSE;}
             if ($info->status == "INVALID" && !Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
