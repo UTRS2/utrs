@@ -374,6 +374,7 @@ def appeallist():
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
+    print orig
     today = date.today()
     diff = today - timedelta(days=length)
     return diff > orig
