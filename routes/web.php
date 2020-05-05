@@ -48,6 +48,8 @@ Route::get('admin/templates/create', 'AdminController@showNewTemplate');
 Route::get('admin/templates/{id}', 'AdminController@modifyTemplate');
 
 Auth::routes();
+Route::get('/oauth', 'Auth\\OauthLoginController@login');
+Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/verifyaccount','AdminController@verifyAccount');

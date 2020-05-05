@@ -40,4 +40,10 @@ return [
         ],
     ],
 
+    'wiki' => [
+        'client_id' => env('OAUTH_CLIENT_ID'),
+        'client_secret' => env('OAUTH_CLIENT_SECRET'),
+        'redirect' => env('OAUTH_CALLBACK_URL'),
+    ],
+
 ];
