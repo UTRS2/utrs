@@ -153,7 +153,7 @@ def checkPerms(user, id):
             'ususers': user,
             'usprop': 'editcount'
             }
-    raw = callptwikiAPI(params)
+    raw = callmetaAPI(params)
     editcount = raw["query"]["users"][0]["editcount"]
     if editcount >500:metaperms["user"]=True
     ###################################
@@ -257,10 +257,9 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                         if re.match(regex,target) == None:blockNotFound(target,wiki,appeal[0])
                         continue
         if wiki == "global":
-            print target
             params = {'action': 'query',
             'format': 'json',
-            'list': 'globalallusers ',
+            'list': 'globalallusers',
             'agufrom': str(target),
             'agulimit':1,
             'aguprop':'lockinfo'
