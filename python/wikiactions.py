@@ -281,7 +281,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                 continue
             except:
                 print appeal[0]
-                if re.search(regex,appeal[0]) is not None:
+                if re.search(regex,str(appeal[1])) is None:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                     continue
                 params = {'action': 'query',
@@ -297,7 +297,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     continue
                 else:
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    if re.search(regex,appeal[0]) == None:blockNotFound(target,wiki,appeal[0])
+                    if re.search(regex,str(appeal[1])) is None:blockNotFound(target,wiki,appeal[0])
                 continue
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
