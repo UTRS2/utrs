@@ -116,7 +116,7 @@ class AppealController extends Controller
             abort(403,'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
-        if (Auth::user()['wikis']!=="*") {
+        if (Auth::user()['wikis']=="*") {
             $wikis = ["*"];
         } else {
             $wikis = explode(",",(Auth::user()['wikis']));
