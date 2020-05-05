@@ -100,7 +100,7 @@ class Permission extends Model
         }
     	return False;
     }
-    public static function checkPrivacy($id) {
+    public static function checkPrivacy($id,$wiki) {
         if(Permission::checkSecurity($id, "DEVELOPER","*")) {
             return True;
         }
@@ -113,6 +113,9 @@ class Permission extends Model
     	if(Permission::checkSecurity($id, "PRIVACY","*")) {
     		return True;
     	}
+        if(Permission::checkSecurity($id, "OVERSIGHT",$wiki)) {
+            return True;
+        }
     	return False;
     }
     public static function checkAdmin($id,$wiki) {

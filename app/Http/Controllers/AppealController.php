@@ -65,7 +65,7 @@ class AppealController extends Controller
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
                 if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
-                    if(!Permission::checkPrivacy(Auth::id()) && !Permission::checkOversight(Auth::id(),$info->wiki)) {
+                    if(!Permission::checkPrivacy(Auth::id(),$wiki) && !Permission::checkOversight(Auth::id(),$info->wiki)) {
                         return view ('appeals.privacydeny');
                     }
                 }
@@ -126,13 +126,13 @@ class AppealController extends Controller
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
                 $appeals = Appeal::whereNotIn('status',$devnoview)->get();
             }
-            elseif (Permission::checkPrivacy(Auth::id()) && Auth::user()['wikis'] != "*") {
+            elseif (Permission::checkPrivacy(Auth::id(),$wiki) && Auth::user()['wikis'] != "*") {
                 $appeals = Appeal::where('wiki','=',$wiki)->whereNotIn('status',$privacynoview)->get();
             }
-            elseif (Permission::checkPrivacy(Auth::id())) {
+            elseif (Permission::checkPrivacy(Auth::id(),$wiki)) {
                 $appeals = Appeal::whereNotIn('status',$privacynoview)->get();
             }
-            elseif (Auth::user()['wikis'] != "*") {
+            elseif (Auth::user()['wikis'] == "*") {
                 $appeals = Appeal::whereNotIn('status',$regularnoview)->get();
             }
             else {
@@ -512,7 +512,7 @@ class AppealController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
-        if (Permission::checkPrivacy(Auth::id()) || Permission::checkOversight(Auth::id(),$info->wiki)) {
+        if (Permission::checkPrivacy(Auth::id(),$wiki) || Permission::checkOversight(Auth::id(),$info->wiki)) {
             if ($action == "publicize") {
                 $appeal->privacyreview = 0;
                 $appeal->privacylevel = 0;
