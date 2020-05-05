@@ -375,7 +375,7 @@ def appeallist():
     page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
     print orig[0]
-    today = date.today()
+    today = datetime.now()
     diff = today - timedelta(days=length)
     return diff > orig[0]
 def closeNotFound():
