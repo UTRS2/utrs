@@ -265,7 +265,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
             'aguprop':'lockinfo'
             }
             raw = runAPI(wiki, params)
-            print raw["query"]["globalallusers"][0]
+            print raw["query"]
             try:
                 if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
                 params = {'action': 'query',
