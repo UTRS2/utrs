@@ -512,7 +512,7 @@ class AppealController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
-        if (Permission::checkPrivacy(Auth::id(),$wiki) || Permission::checkOversight(Auth::id(),$info->wiki)) {
+        if (Permission::checkPrivacy(Auth::id(),$appeal->wiki) || Permission::checkOversight(Auth::id(),$info->wiki)) {
             if ($action == "publicize") {
                 $appeal->privacyreview = 0;
                 $appeal->privacylevel = 0;
