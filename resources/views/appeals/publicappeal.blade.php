@@ -38,6 +38,9 @@
                             @if(!is_null($info['handlingadmin']))
                             <br />Handling Admin: {{$userlist[$info['handlingadmin']]}}
                             @endif
+                            @if($info['status'] == "NOTFOUND")
+                            <a href="/fixappeal/{{$hash}}"><button class="btn btn-success">Fix Block information</button></a>
+                            @endif
         	    		</p>
             		</div>
                 </div>
