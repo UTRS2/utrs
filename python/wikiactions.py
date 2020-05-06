@@ -186,7 +186,7 @@ def verifyblock():
         if wiki == "enwiki" or wiki == "ptwiki":
             print "FOUND A WIKI"
             if blocktype == 2:target = ip
-            if blocktype == 1:
+            if blocktype == 1 or blocktype == 2:
                 params = {'action': 'query',
                 'format': 'json',
                 'list': 'blocks',
