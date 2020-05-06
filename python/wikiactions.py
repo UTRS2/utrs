@@ -184,6 +184,7 @@ def verifyblock():
         wiki=appeal[13]
         blocktype = appeal[4]
         if wiki == "enwiki" or wiki == "ptwiki":
+            print "FOUND A WIKI"
             if blocktype == 2:target = ip
             if blocktype == 1:
                 params = {'action': 'query',
