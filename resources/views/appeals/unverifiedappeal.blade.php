@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'Appeal not verified')
 @section('content')
 
 	<br />

@@ -1,4 +1,6 @@
 @extends('layouts.app')
+
+@section('title', 'Error')
 @section('content')
 
 <div class="col-md-1"></div>

@@ -1,4 +1,6 @@
 @extends('layouts.app')
+
+@section('title', 'Account not verified')
 @section('content')
 
 <div class="col-md-1"></div>
