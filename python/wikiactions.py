@@ -196,11 +196,12 @@ def verifyblock():
                     updateBlockinfoDB(raw,appeal,wiki)
                     continue
                 else:
+                    print appeal[14]
                     if appeal[14]!= None:
                         params = {'action': 'query',
                             'format': 'json',
                             'list': 'blocks',
-                            'bkip': appeal[14]
+                            'bkip': str(appeal[14])
                         }
                         raw = runAPI(wiki, params)
                         if len(raw["query"]["blocks"])>0:
@@ -214,17 +215,17 @@ def verifyblock():
                     }
                     raw = runAPI(wiki, params)
                     try:
-                        blockNotFound(target,wiki,appeal[0])
+                        #blockNotFound(target,wiki,appeal[0])
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         continue
                     except:
                         page = masterwiki.pages["User talk:"+str(target)]
                         try:
                             test = raw["query"]["users"]["userid"]
-                            page.save(page.text() + """
-== A UTRS Appeal ==
-A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
-                    """, "UTRS Appeal not found notice")
+                            #page.save(page.text() + """
+#== A UTRS Appeal ==
+#A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
+                    #""", "UTRS Appeal not found notice")
                             calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         except:
                             calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
