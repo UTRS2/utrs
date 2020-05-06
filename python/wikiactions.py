@@ -193,10 +193,11 @@ def verifyblock():
                 }
                 raw = runAPI(wiki, params)
                 if len(raw["query"]["blocks"])>0:
+                    print "We took a different route"
                     updateBlockinfoDB(raw,appeal,wiki)
                     continue
                 else:
-                    print appeal[14]
+                    print "APPEAL 14: "+appeal[14]
                     if appeal[14]!= None:
                         params = {'action': 'query',
                             'format': 'json',
