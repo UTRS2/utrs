@@ -196,35 +196,39 @@ def verifyblock():
                     updateBlockinfoDB(raw,appeal,wiki)
                     continue
                 else:
-                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
-                    try:blockNotFound(target,wiki,appeal[0])
-                    except:
-                        if appeal[14]!= None:
-                            params = {'action': 'query',
-                                'format': 'json',
-                                'list': 'blocks',
-                                'bkip': appeal[14]
-                            }
-                            raw = runAPI(wiki, params)
-                            if len(raw["query"]["blocks"])>0:
-                                updateBlockinfoDB(raw,appeal,wiki)
-                                continue
+                    if appeal[14]!= None:
                         params = {'action': 'query',
-                        'format': 'json',
-                        'list': 'users',
-                        'ususers': target,
-                        'usprop': 'editcount'
+                            'format': 'json',
+                            'list': 'blocks',
+                            'bkip': appeal[14]
                         }
                         raw = runAPI(wiki, params)
+                        if len(raw["query"]["blocks"])>0:
+                            updateBlockinfoDB(raw,appeal,wiki)
+                            continue
+                    params = {'action': 'query',
+                    'format': 'json',
+                    'list': 'users',
+                    'ususers': target,
+                    'usprop': 'editcount'
+                    }
+                    raw = runAPI(wiki, params)
+                    try:
+                        blockNotFound(target,wiki,appeal[0])
+                        calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        continue
+                    except:
+                        page = masterwiki.pages["User talk:"+str(target)]
                         try:
                             test = raw["query"]["users"]["userid"]
-                            page = masterwiki.pages["User talk:"+str(target)]
                             page.save(page.text() + """
 == A UTRS Appeal ==
 A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
-                        """, "UTRS Appeal not found notice")
+                    """, "UTRS Appeal not found notice")
+                            calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         except:
-                            continue
+                            calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        continue
             else:
                 params = {'action': 'query',
                 'format': 'json',
