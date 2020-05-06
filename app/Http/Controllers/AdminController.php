@@ -121,6 +121,7 @@ class AdminController extends Controller
     	return Redirect::to('/home');
     }
     public function makeTemplate(Request $request) {
+        dd(Permission::whoami(Auth::id(),"*"));
         if(!Permission::checkToolAdmin(Auth::id(),"*")) {
             abort(401);
         }
