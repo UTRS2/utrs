@@ -73,6 +73,7 @@ class WikiSocialiteServer extends Server
      * {@inheritDoc}
      * @throws Exception
      */
+    // Overriding this is a hack, and I don't like it. Upstream class does not support JWTs as user details so I made this class support it.
     public function getUserDetails(TokenCredentials $tokenCredentials, $force = false)
     {
         if (!$this->cachedUserDetailsResponse || $force) {

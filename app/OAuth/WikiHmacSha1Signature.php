@@ -10,7 +10,7 @@ class WikiHmacSha1Signature extends HmacSha1Signature
     /**
      * {@inheritDoc}
      */
-    // This is a hack, and I don't like it. It's needed to include port in OAuth signature uri :/
+    // Overriding this is a hack, and I don't like it. It's needed to include port in OAuth signature uri :/
     protected function baseString(Uri $url, $method = 'POST', array $parameters = array())
     {
         $baseString = rawurlencode($method).'&';
