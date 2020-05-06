@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
-use App\Http\WikiSocialiteProvider;
+use App\OAuth\WikiSocialiteServer;
+use App\OAuth\WikiSocialiteProvider;
+use Laravel\Socialite\One\TwitterProvider;
+use League\OAuth1\Client\Server\Twitter as TwitterServer;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -31,7 +34,9 @@ class AuthServiceProvider extends ServiceProvider
             'wiki',
             function ($app) use ($socialite) {
                 $config = $app['config']['services.wiki'];
-                return $socialite->buildProvider(WikiSocialiteProvider::class, $config);
+                return new WikiSocialiteProvider(
+                    $this->app['request'], new WikiSocialiteServer($config),
+                );
             }
         );
     }

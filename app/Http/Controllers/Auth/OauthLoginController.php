@@ -20,10 +20,11 @@ class OauthLoginController extends Controller
         $socialiteUser = Socialite::driver('wiki')->user();
 
         $user = User::firstOrCreate([
-            'username' => $socialiteUser->username,
+            'username' => $socialiteUser->name,
         ], [
             // these parameters will be filled when the user is created
             'password' => '',
+            'verified' => true,
         ]);
 
         Auth::login($user, true);
