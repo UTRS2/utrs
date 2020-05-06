@@ -193,6 +193,7 @@ def verifyblock():
                 'bkusers': target
                 }
                 raw = runAPI(wiki, params)
+                print raw
                 if len(raw["query"]["blocks"])>0:
                     print "We took a different route"
                     updateBlockinfoDB(raw,appeal,wiki)
