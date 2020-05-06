@@ -184,7 +184,6 @@ def verifyblock():
         wiki=appeal[13]
         blocktype = appeal[4]
         if wiki == "enwiki" or wiki == "ptwiki":
-            print "FOUND A WIKI"
             if blocktype == 2:target = ip
             if blocktype == 1 or blocktype == 2:
                 params = {'action': 'query',
@@ -193,13 +192,10 @@ def verifyblock():
                 'bkusers': target
                 }
                 raw = runAPI(wiki, params)
-                print raw
                 if len(raw["query"]["blocks"])>0:
-                    print "We took a different route"
                     updateBlockinfoDB(raw,appeal,wiki)
                     continue
                 else:
-                    print "APPEAL 14: "+appeal[14]
                     if appeal[14]!= None:
                         params = {'action': 'query',
                             'format': 'json',
