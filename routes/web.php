@@ -25,7 +25,7 @@ Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
 Route::get('/appeal/release/{id}', 'AppealController@release');
 Route::get('/appeal/open/{id}', 'AppealController@open');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
-Route::post('/appeal/checkuserreview/{id}', 'AppealController@checkuserreview');
+Route::get('/appeal/checkuserreview/{id}', 'AppealController@checkuserreview');
 Route::get('/appeal/privacy/{id}', 'AppealController@privacy');
 Route::get('/appeal/admin/{id}', 'AppealController@admin');
 Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
