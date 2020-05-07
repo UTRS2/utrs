@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Appeal #' . $id)
+@section('title', 'Your Appeal')
 @section('content')
 <div class="alert alert-danger" role="alert">
     <b>IMPORTANT MESSAGE</b><br />
