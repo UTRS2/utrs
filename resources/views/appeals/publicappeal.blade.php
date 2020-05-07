@@ -125,7 +125,11 @@
                                 @endif
                             @endif
                         @else
+                            @if($comment['user']==0)
+                            <td><i>System</i></td>
+                            @else
                             <td>{{$userlist[$comment['user']]}}</td>
+                            @endif
                             <td>{{$comment['timestamp']}}</td>
                             @if($comment['protected'] || $comment['action']=="comment")
                                 <td>Access to comment is restricted.</td>
