@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'No access')
+@section('title', 'Access Denied')
 @section('content')
 
 <div class="col-md-1"></div>
