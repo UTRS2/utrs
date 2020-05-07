@@ -436,7 +436,7 @@ class AppealController extends Controller
             $appeal->status = strtoupper($type);
             $appeal->save();
             $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'closed - '.$type,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-            return redirect('appeal/'.$id);
+            return redirect('/review');
         }
         else {
             abort(403);
@@ -458,7 +458,7 @@ class AppealController extends Controller
             $appeal->privacyreview = 2;
             $appeal->save();
             $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'sent for privacy review','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-            return redirect('appeal/'.$id);
+            return redirect('/review');
         }
         else {
             abort(403);
