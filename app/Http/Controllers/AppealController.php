@@ -50,7 +50,7 @@ class AppealController extends Controller
             if ($info->status == "INVALID" && !Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
                 abort(404,'This appeal has been marked invalid.');
             }
-            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || !$closestatus) || Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
+            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
                 $logs = $info->comments()->get();
                 $userlist = [];
                 if (!is_null($info->handlingadmin)) {
