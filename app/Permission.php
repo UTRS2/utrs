@@ -55,10 +55,14 @@ class Permission extends Model
     		abort(403,'No logged in user');
     	}
         if ($wiki=="*") {
-            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->first();
+            $specific = Permission::where('userid','=',$id)
+                ->where('wiki','=','*')->first();
         }
     	else {
-            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->first();
+            $specific = Permission::where('userid','=',$id)
+                ->where('wiki', $wiki)
+                ->orWhere('wiki', '*')
+                ->first();
         }
     	if ($level == "OVERSIGHT") {
     		if ($specific['oversight']==1) {return True;}
