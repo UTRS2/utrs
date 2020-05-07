@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
@@ -14,24 +15,50 @@ class Permission extends Model
             abort(403,'No logged in user');
         }
         if ($wiki=="*") {
-            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
+            $specific = Permission::where('userid','=',$id)
+                ->where('wiki','=','*')
+                ->first();
             return $specific;
         }
         else {
-            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)
+                ->where('wiki', $wiki)
+                ->orWhere('wiki', '*')
+                ->first();
             return $specific;
         }
         abort(500,'Permissions Failure');
     }
+
+    public static function hasAnyPermission($userId, $wiki, $permissionArray)
+    {
+        abort_if(is_null($userId), 403, 'No logged in user');
+        $permission = Permission::where('userid', $userId)
+            ->where('wiki', $wiki)
+            ->first();
+
+        if (!$permission) {
+            return false;
+        }
+
+        foreach ($permissionArray as $permissionName) {
+            if ($permission->{Str::lower($permissionName)} == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function checkSecurity($id, $level,$wiki) {
     	if(is_null($id)) {
     		abort(403,'No logged in user');
     	}
         if ($wiki=="*") {
-            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','=','*')->first();
         }
     	else {
-            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->get()->first();
+            $specific = Permission::where('userid','=',$id)->where('wiki','rlike','\\*|'.$wiki)->first();
         }
     	if ($level == "OVERSIGHT") {
     		if ($specific['oversight']==1) {return True;}
@@ -70,94 +97,24 @@ class Permission extends Model
     		else {return False;}
     	}
     }
+
     public static function checkCheckuser($id,$wiki) {
-    	if(Permission::checkSecurity($id, "CHECKUSER",$wiki)) {
-    		return True;
-    	}
-    	if(Permission::checkSecurity($id, "STEWARD","*")) {
-    		return True;
-    	}
-    	if(Permission::checkSecurity($id, "STAFF","*")) {
-    		return True;
-    	}
-    	if(Permission::checkSecurity($id, "DEVELOPER","*")) {
-    		return True;
-    	}
-    	return False;
+        return self::hasAnyPermission($id, $wiki, ['checkuser']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
     }
+
     public static function checkOversight($id,$wiki) {
-    	if(Permission::checkSecurity($id, "OVERSIGHT",$wiki)) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "STEWARD","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "STAFF","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "DEVELOPER","*")) {
-            return True;
-        }
-    	return False;
+        return self::hasAnyPermission($id, $wiki, ['oversight']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
     }
+
     public static function checkPrivacy($id,$wiki) {
-        if(Permission::checkSecurity($id, "DEVELOPER","*")) {
-            return True;
-        }
-    	if(Permission::checkSecurity($id, "STEWARD","*")) {
-    		return True;
-    	}
-    	if(Permission::checkSecurity($id, "STAFF","*")) {
-    		return True;
-    	}
-    	if(Permission::checkSecurity($id, "PRIVACY","*")) {
-    		return True;
-    	}
-        if(Permission::checkSecurity($id, "OVERSIGHT",$wiki)) {
-            return True;
-        }
-    	return False;
+        return self::hasAnyPermission($id, $wiki, ['oversight']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer', 'privacy']);
     }
+
     public static function checkAdmin($id,$wiki) {
-        if(Permission::checkSecurity($id, "ADMIN",$wiki)) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "DEVELOPER","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "STEWARD","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "STAFF","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "PRIVACY","*")) {
-            return True;
-        }
-        return False;
+        return self::hasAnyPermission($id, $wiki, ['admin']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer', 'privacy']);
     }
+
     public static function checkToolAdmin($id,$wiki) {
-        if(Permission::checkSecurity($id, "TOOLADMIN",$wiki)) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "DEVELOPER","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "STEWARD","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "STAFF","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "PRIVACY","*")) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "OVERSIGHT",$wiki)) {
-            return True;
-        }
-        if(Permission::checkSecurity($id, "CHECKUSER",$wiki)) {
-            return True;
-        }
-        return False;
+        return self::hasAnyPermission($id, $wiki, ['tooladmin', 'oversight', 'checkuser']) || self::hasAnyPermission($id, '*', ['developer', 'steward', 'staff', 'developer', 'privacy']);
     }
 }
