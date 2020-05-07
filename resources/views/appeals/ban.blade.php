@@ -1,6 +1,7 @@
 @extends('layouts.app')
-@section('content')
 
+@section('title', 'Banned')
+@section('content')
 <div class="col-md-1"></div>
 <div class="col-md-10">
 	<div class="alert alert-danger" role="alert">
