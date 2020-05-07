@@ -1,4 +1,6 @@
 @extends('layouts.app')
+
+@section('title', 'Templates')
 @section('scripts')
   function toggleShow(id) {
     document.getElementById("template"+id).style.display="block";

@@ -1,13 +1,18 @@
 <html>
     <head>
-        <title>@yield('title')</title>
+        <title>
+            @hasSection('title')
+            @yield('title') &ndash;
+            @endif
+            {{ config('app.name') }}
+        </title>
         <link rel="stylesheet" href="{{ url(mix('css/app.css')) }}">
         <script src="{{ url(mix('js/app.js')) }}"></script>
         <script type="text/javascript">@yield('scripts')</script>
     </head>
     <body>
         <nav class="navbar navbar-dark bg-dark">
-            <a class="navbar-brand nav-item" href="/">UTRS 2.0</a>
+            <a class="navbar-brand nav-item" href="/">{{ config('app.name') }}</a>
             @auth
             <div class="dropdow nav-item" style="color:white;">
                 @if (Auth::user()->verified)
@@ -18,7 +23,6 @@
                 <a href="/logout" style="color:white;">{{Auth::user()->username}}</a>
             </div>
             @endauth             
-        </ul>
         </nav>
 
         <div class="container">
