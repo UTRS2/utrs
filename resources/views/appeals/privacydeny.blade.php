@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Private appeal')
+@section('title', 'Appeal access denied')
 @section('content')
 
 <div class="col-md-1"></div>
