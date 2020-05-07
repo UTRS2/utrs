@@ -1,4 +1,6 @@
 @extends('layouts.app')
+
+@section('title', 'Your Appeal')
 @section('content')
 <div class="alert alert-danger" role="alert">
     <b>IMPORTANT MESSAGE</b><br />
@@ -125,7 +127,11 @@
                                 @endif
                             @endif
                         @else
+                            @if($comment['user']==0)
+                            <td><i>System</i></td>
+                            @else
                             <td>{{$userlist[$comment['user']]}}</td>
+                            @endif
                             <td>{{$comment['timestamp']}}</td>
                             @if($comment['protected'] || $comment['action']=="comment")
                                 <td>Access to comment is restricted.</td>

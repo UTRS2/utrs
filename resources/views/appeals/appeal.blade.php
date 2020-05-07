@@ -1,6 +1,7 @@
 @extends('layouts.app')
-@section('content')
 
+@section('title', 'Appeal #' . $id)
+@section('content')
 @if($info['status']==="ACCEPT" || $info['status']==="DECLINE" || $info['status']==="EXPIRE")
 	<br />
 	<div class="alert alert-danger" role="alert">This appeal is closed. No further changes can be made to it.</div>
@@ -70,7 +71,7 @@
                                 <h5 class="card-title">Actions</h5>
                                 @if(!$perms['admin'])
                                     <div class="alert alert-danger" role="alert">
-                                        You are not an admin, and therefore can't preform any action on this appeal.
+                                        You are not an admin, and therefore can't perform any action on this appeal.
                                     </div>
                                 @else
                                     @if(($info['status']==="ACCEPT" || $info['status']==="DECLINE" || $info['status']==="EXPIRE") && !$perms['functionary'])

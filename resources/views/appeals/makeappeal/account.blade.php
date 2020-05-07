@@ -1,6 +1,7 @@
 @extends('layouts.app')
-@section('content')
 
+@section('title', 'Appeal a block on an account ')
+@section('content')
 <div class="col-md-1"></div>
 <div class="col-md-10">
 	<div class="alert alert-warning" role="alert">
