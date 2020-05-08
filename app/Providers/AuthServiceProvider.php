@@ -4,8 +4,6 @@ namespace App\Providers;
 
 use App\OAuth\WikiSocialiteServer;
 use App\OAuth\WikiSocialiteProvider;
-use Laravel\Socialite\One\TwitterProvider;
-use League\OAuth1\Client\Server\Twitter as TwitterServer;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
