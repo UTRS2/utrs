@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Create directories
-        run: mkdir -pv storage/frameworks/{sessions,views,cache}
+        run: mkdir -pv storage/framework/{sessions,views,cache}
       - name: Copy env file
         run: cp .env.ci .env
       - name: Install Composer dependencies
