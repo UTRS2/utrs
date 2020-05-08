@@ -35,7 +35,7 @@ abstract class BaseWikiPermissionJob
     {
         // drop user group if user has less than 500 edits
         if ($user->getEditcount() < 500) {
-            $groups = array_filter($groups, function ($group) { return $group !== 'user'; });
+            $groups = array_values(array_filter($groups, function ($group) { return $group !== 'user'; }));
         }
 
         return $groups;

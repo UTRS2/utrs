@@ -19,6 +19,8 @@ class User extends Authenticatable
 
     protected static function boot()
     {
+        parent::boot();
+
         // load user permissions after they have been created
         static::created(function (User $user) {
             $user->queuePermissionChecks();
