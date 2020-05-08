@@ -13,7 +13,6 @@ use App\Ban;
 use App\Log;
 use App\Template;
 use App\Sendresponse;
-use App\Wikitask;
 use Auth;
 use Validator;
 use Redirect;

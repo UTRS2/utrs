@@ -11,9 +11,7 @@ use App\Sitenotice;
 use App\Permission;
 use App\Wikitask;
 use Auth;
-use Validator;
 use Redirect;
-use Illuminate\Support\Arr;
 
 class AdminController extends Controller
 {

@@ -39,9 +39,7 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
         return [
             'user',
             'steward',
-            'sysop',
-            'checkuser',
-            'oversight',
+            'staff',
         ];
     }
 }
