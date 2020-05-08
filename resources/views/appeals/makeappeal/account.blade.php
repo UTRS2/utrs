@@ -14,7 +14,7 @@
 
       Please note, any text you input for your appeal you agree to release under a <a href="https://en.wikipedia.org/wiki/Public_domain">public domain licence</a> so that it can be copied over to Wikipedia if needed. If you do not agree, do not file an appeal.
 
-  		If you have any questions, you can contact us. Please note: We will not expidite, approve, deny, or edit your appeal. It is for information only.
+  		If you have any questions, you can contact us. Please note: We will not expedite, approve, deny, or edit your appeal. It is for information only.
 	</div>
 	<div class="card" style="align-content: left">
   		<div class="card-header">
