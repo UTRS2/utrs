@@ -45,7 +45,6 @@ class AppealModifyController extends Controller
         $appeal->status="VERIFY";
         $appeal->save();
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'modifyip','ip' => $ip, 'ua' => $ua . " " .$lang));
-        Wikitask::create(['task'=>'verifyblock','actionid'=>$appeal->id]);
         return redirect('/');
     }
 }
