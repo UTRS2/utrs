@@ -44,7 +44,7 @@ abstract class BaseWikiPermissionJob
     /**
      * @param bool $exists true if this user exists on the wiki this job is querying
      */
-    protected function updateDoesExist(bool $exists)
+    public function updateDoesExist(bool $exists)
     {}
 
     protected function getUserPermissions()

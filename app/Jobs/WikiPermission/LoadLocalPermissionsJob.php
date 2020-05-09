@@ -50,13 +50,13 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
         ];
     }
 
-    protected function updateDoesExist(bool $exists)
+    public function updateDoesExist(bool $exists)
     {
         $wikis = explode(',', $this->user->wikis ?? '');
         $wikiId = $this->getWikiId();
 
         if ($exists) {
-            $wikis = array_push($wikis, $wikiId);
+            array_push($wikis, $wikiId);
         } else {
             // according to stackoverflow this is the best way to remove an element from an array
             $wikis = array_values(array_filter($wikis, function($value) use ($wikiId) { return $value !== $wikiId; }));

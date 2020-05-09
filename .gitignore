@@ -24,7 +24,6 @@ Homestead.json
 .editorconfig
 /config/
 /storage/
-/tests/
 server.php
 webpack.mix.js
 /bootstrap/

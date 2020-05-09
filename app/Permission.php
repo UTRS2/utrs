@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Permission extends Model
 {
     protected $primaryKey = 'userid';
+    protected $guarded = [];
     public $timestamps = false;
 
     public static function whoami($id,$wiki) {
