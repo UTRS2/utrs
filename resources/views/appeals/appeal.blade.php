@@ -34,6 +34,8 @@
                             @if(!is_null($info['handlingadmin']))
                             <br />Handling Admin: {{$userlist[$info['handlingadmin']]}}
                             @endif
+                            <br /><a href="https://en.wikipedia.org/wiki/User:{{$info['appealfor']}}"><button type="button" class="btn btn-secondary">User talk</button></a>&nbsp;<a href="https://en.wikipedia.org/wiki/Special:Contributions/{{$info['appealfor']}}"><button type="button" class="btn btn-light">Contribs</button></a>&nbsp;<a href="https://en.wikipedia.org/wiki/Special:BlockList/{{$info['appealfor']}}"><button type="button" class="btn btn-light">Find block</button></a>
+                            <br /><a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{$info['appealfor']}}"><button type="button" class="btn btn-light">Block Log</button></a>&nbsp;<a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{$info['appealfor']}}"><button type="button" class="btn btn-light">Global (b)locks</button></a>&nbsp;<a href="https://en.wikipedia.org/wiki/Special:Unblock/{{$info['appealfor']}}"><button type="button" class="btn btn-warning">Unblock</button></a>
                             @if($perms['checkuser'])
                             <h5 class="card-title">CU data</h5>
                             @if($checkuserdone)
@@ -98,10 +100,10 @@
                                         <a href="/appeal/close/{{$id}}/accept"><button type="button" class="btn btn-danger">Accept appeal</button></a><br><br style="line-height: .5em;">
                                         <a href="/appeal/close/{{$id}}/decline"><button type="button" class="btn btn-danger">Decline appeal</button></a><br><br style="line-height: .5em;">
                                         <a href="/appeal/close/{{$id}}/expire"><button type="button" class="btn btn-danger">Mark appeal expired</button></a><br><br style="line-height: .5em;">
-                                        @if($info['status']!=="open")
+                                        @if($info['status']=="OPEN")
                                         <a href="/appeal/privacy/{{$id}}"><button type="button" class="btn btn-warning">Privacy Team</button></a> <a href="/appeal/checkuserreview/{{$id}}"><button type="button" class="btn btn-warning">CheckUser</button></a> <a href="/appeal/tooladmin/{{$id}}"><button type="button" class="btn btn-warning">Tool admin</button></a><br><br style="line-height: .5em;">
                                         @endif
-                                        @if($info['status']!=="open" && !$perms['tooladmin'])
+                                        @if(($info['status']!=="OPEN" && $info['status']!=="EXPIRE" && $info['status']!=="DECLINE" && $info['status']!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                         <a href="/appeal/open/{{$id}}"><button type="button" class="btn btn-info">Return to tool users</button></a><br><br style="line-height: .5em;">
                                         @endif
                                     @endif

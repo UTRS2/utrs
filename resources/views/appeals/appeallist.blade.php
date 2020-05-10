@@ -6,10 +6,10 @@
 
 	Please note:
 	<ul>
-	<li>In doing this, please understand that there will be bugs and issues. We will try our best to keep up with those issues. You can get assistance at [[WT:UTRS|the UTRS talkpage]] (preferably) or by placing {!! "{{tl|UTRS help me}}" !!} on your talkpage.</li>
+	<li>In doing this, please understand that there will be bugs and issues. We will try our best to keep up with those issues. You can get assistance at <a href="https://en.wikipedia.org/wiki/Wikipedia_talk:Unblock_Ticket_Request_System">the UTRS talkpage</a> (preferably) or by placing <a href="https://en.wikipedia.org/wiki/Template:UTRS_help_me">@{{UTRS help me}}</a> on your talkpage.</li>
 	<li>New features are not being considered at this time. Though your idea may have already been thought of and be in development.</li>
 	<li>Administrators will need to create a new login to use UTRS 2.0. The only thing that needs to match is your Wikipedia username. You should receive a confirmation email to verify your account within 5 minutes. At this time, there is no plans for reintegrating OAuth for login (for multiple reasons).</li>
-	<li>Temporary tool administrator status can be requested on [[WT:UTRS]], and will be granted liberally at this time to help create templates from the [https://utrs.wmflabs.org/tempMgmt.php old version]. All bans, user management, and other tool administration functions are only available via the database or automated scripts already running on the server at this time.</li>
+	<li>Temporary tool administrator status can be requested on <a href="https://en.wikipedia.org/wiki/Wikipedia_talk:Unblock_Ticket_Request_System">WT:UTRS</a>, and will be granted liberally at this time to help create templates from the <a href="https://utrs.wmflabs.org/tempMgmt.php">old version</a>. All bans, user management, and other tool administration functions are only available via the database or automated scripts already running on the server at this time.</li>
 	<li>More information will be available in the days to come about the features of UTRS.</li>
 	</ul>
 
