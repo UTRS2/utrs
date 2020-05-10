@@ -34,6 +34,8 @@
                             @if(!is_null($info['handlingadmin']))
                             <br />Handling Admin: {{$userlist[$info['handlingadmin']]}}
                             @endif
+                            <br /><a href="https://en.wikipedia.org/wiki/User:{{$info['appealfor']}}"><button type="button" class="btn btn-secondary">User talk</button></a>&nbsp;<a href="https://en.wikipedia.org/wiki/Special:Contributions/{{$info['appealfor']}}"><button type="button" class="btn btn-light">Contribs</button></a>&nbsp;<a href="https://en.wikipedia.org/wiki/Special:BlockList/{{$info['appealfor']}}"><button type="button" class="btn btn-light">Find block</button></a>
+                            <br /><a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{$info['appealfor']}}"><button type="button" class="btn btn-light">Block Log</button></a>&nbsp;<a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{$info['appealfor']}}"><button type="button" class="btn btn-light">Global (b)locks</button></a>&nbsp;<a href="https://en.wikipedia.org/wiki/Special:Unblock/{{$info['appealfor']}}"><button type="button" class="btn btn-warning">Unblock</button></a>
                             @if($perms['checkuser'])
                             <h5 class="card-title">CU data</h5>
                             @if($checkuserdone)
