@@ -3,6 +3,7 @@ from mysql.connector import Error
 import credentials
 import re
 import hashlib
+from datetime import datetime,timedelta,date
 
 import mwclient
 import login
@@ -13,6 +14,8 @@ metawiki =  mwclient.Site('meta.wikimedia.org')
 metawiki.login(login.username,login.password)
 ptwiki =  mwclient.Site('pt.wikipedia.org')
 ptwiki.login(login.username,login.password)
+
+regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
 
 def callAPI(params):
     return masterwiki.api(**params)
@@ -65,7 +68,7 @@ def verifyusers():
                 print "FAILURE: Param not accepted."
                 quit()
             mash= username+credentials.secret
-            confirmhash = hashlib.md5(mash.encode()) 
+            confirmhash = hashlib.md5(mash.encode())
             params = {'action': 'emailuser',
             'format': 'json',
             'target': username,
@@ -80,7 +83,15 @@ http://utrs-beta.wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
 Thanks,
 UTRS Developers"""
             }
-            raw = callAPI(params)
+            try:raw = callAPI(params)
+            except:
+                page = masterwiki.pages["User talk:"+str(username)]
+                page.save(page.text() + """
+== Your UTRS Account ==
+Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
+                    """, "UTRS Account notice")
+                calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                calldb("delete from users where id="+str(user)+";","write")    
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
             checkPerms(username,user)
@@ -94,7 +105,7 @@ def checkPerms(user, id):
             'format': 'json',
             'list': 'users',
             'ususers': user,
-            'usprop': 'groups|editcount'
+            'usprop': 'groups|editcount|emailable'
             }
     raw = callAPI(params)
     results = raw["query"]["users"][0]["groups"]
@@ -119,7 +130,7 @@ def checkPerms(user, id):
         if "oversight" in result:
             ptperms["oversight"]=True
     editcount = raw["query"]["users"][0]["editcount"]
-    if editcount >500:enperms["user"]=True
+    if editcount >500:ptperms["user"]=True
     ##############################
     ###Meta checks##############
     params = {'action': 'query',
@@ -142,7 +153,7 @@ def checkPerms(user, id):
             'ususers': user,
             'usprop': 'editcount'
             }
-    raw = callptwikiAPI(params)
+    raw = callmetaAPI(params)
     editcount = raw["query"]["users"][0]["editcount"]
     if editcount >500:metaperms["user"]=True
     ###################################
@@ -165,4 +176,225 @@ def checkPerms(user, id):
         calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'ptwiki',"+str(int(ptperms["oversight"]))+","+str(int(ptperms["checkuser"]))+","+str(int(ptperms["sysop"]))+",1);","write")
     if metaperms['user']:
         calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",'*',"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
+def verifyblock():
+    results = calldb("select * from appeals where status = 'VERIFY';","read")
+    for appeal in results:
+        ip = calldb("select * from privatedatas where appealID = "+str(appeal[0])+";","read")[0][2]
+        target = appeal[1]
+        wiki=appeal[13]
+        blocktype = appeal[4]
+        if wiki == "enwiki" or wiki == "ptwiki":
+            if blocktype == 2:target = ip
+            if blocktype == 1 or blocktype == 2:
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'blocks',
+                'bkusers': target
+                }
+                raw = runAPI(wiki, params)
+                if len(raw["query"]["blocks"])>0:
+                    updateBlockinfoDB(raw,appeal,wiki)
+                    continue
+                else:
+                    if appeal[14]!= None:
+                        params = {'action': 'query',
+                            'format': 'json',
+                            'list': 'blocks',
+                            'bkip': str(appeal[14])
+                        }
+                        raw = runAPI(wiki, params)
+                        if len(raw["query"]["blocks"])>0:
+                            updateBlockinfoDB(raw,appeal,wiki)
+                            continue
+                    params = {'action': 'query',
+                    'format': 'json',
+                    'list': 'users',
+                    'ususers': target,
+                    'usprop': 'editcount'
+                    }
+                    raw = runAPI(wiki, params)
+                    try:
+                        #blockNotFound(target,wiki,appeal[0])
+                        calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        continue
+                    except:
+                        page = masterwiki.pages["User talk:"+str(target)]
+                        try:
+                            test = raw["query"]["users"]["userid"]
+                            #page.save(page.text() + """
+#== A UTRS Appeal ==
+#A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
+                    #""", "UTRS Appeal not found notice")
+                            calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        except:
+                            calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        continue
+            else:
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'blocks',
+                'bkip': target
+                }
+                if not re.search(regex,target):
+                    calldb("update appeals set blocktype = 1 where id="+str(appeal[0])+";","write")
+                    continue
+                raw = runAPI(wiki, params)
+                if len(raw["query"]["blocks"])>0:
+                    updateBlockinfoDB(raw,appeal,wiki)
+                    continue
+                else:
+                    params = {'action': 'query',
+                    'format': 'json',
+                    'list': 'blocks',
+                    'bkids': target
+                    }
+                    try:raw = runAPI(wiki, params)
+                    except:
+                        calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        if re.search(regex,target) == None:blockNotFound(target,wiki,appeal[0])
+                        continue
+                    if len(raw["query"]["blocks"])>0:
+                        updateBlockinfoDB(raw,appeal,wiki)
+                        continue
+                    else:
+                        calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                        if re.search(regex,target) == None:blockNotFound(target,wiki,appeal[0])
+                        continue
+        if wiki == "global":
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'globalallusers',
+            'agufrom': str(target),
+            'agulimit':1,
+            'aguprop':'lockinfo'
+            }
+            raw = runAPI(wiki, params)
+            try:
+                if raw["query"]["globalallusers"][0]["locked"]=="":locked=True
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'logevents',
+                'letitle': "User:"+target+"@global",
+                'letype':'globalauth',
+                'lelimit':1,
+                'leprop':'user|comment'
+                }
+                raw = runAPI(wiki, params)
+                print raw
+                updateBlockinfoDB(raw,appeal,wiki)
+                continue
+            except:
+                print appeal[0]
+                if re.search(regex,str(appeal[1])) is None:
+                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    continue
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'globallocks ',
+                'bgip': target,
+                'bglimit':1,
+                'bgprop':'lockinfo'
+                }
+                raw = runAPI(wiki, params)
+                if len(raw["query"]["globalblocks"])>0:
+                    updateBlockinfoDB(raw,appeal,wiki)
+                    continue
+                else:
+                    calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
+                    if re.search(regex,str(appeal[1])) is None:blockNotFound(target,wiki,appeal[0])
+                continue
+def blockNotFound(username,wiki,id):
+    print "Block not found email: " + username
+    mash= username+credentials.secret
+    confirmhash = hashlib.md5(mash.encode()).hexdigest()
+    subject="UTRS Appeal #"+str(id)+" - Block not found"
+    text="""
+Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
+
+http://utrs-beta.wmflabs.org/fixblock/"""+str(confirmhash)+"""
+
+Thanks,
+UTRS Developers"""
+    sendemail(username,subject,text,wiki)
+
+def runAPI(wiki, params):
+    if wiki == "enwiki":raw = callAPI(params)
+    if wiki == "ptwiki":raw = callptwikiAPI(params)
+    if wiki == "global":raw = callmetaAPI(params)
+    return raw
+def updateBlockinfoDB(raw,appeal,wiki):
+    if wiki != "global":
+        blockingadmin = raw["query"]["blocks"][0]["by"]
+        reason = raw["query"]["blocks"][0]["reason"]
+        reason = reason.replace("'","\'")
+    else:
+        blockingadmin = raw["query"]["logevents"][0]["user"]
+        reason = raw["query"]["logevents"][0]["comment"]
+        reason = reason.replace("'","\'")
+    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
+    calldb("update appeals set blockingadmin = '"+blockingadmin+"' where id="+str(appeal[0])+";","write")
+    calldb("update appeals set blockreason = '"+reason+"' where id="+str(appeal[0])+";","write")
+    results = calldb("select * from appeals where status = 'VERIFY';","read")
+    if results[0][2] != results[0][3]:calldb("update appeals set status = \"PRIVACY\" where id="+str(appeal[0])+";","write")
+    else:calldb("update appeals set status = \"OPEN\" where id="+str(appeal[0])+";","write")
+def sendemail(target,subject,text,wiki):
+    params = {'action': 'query',
+            'format': 'json',
+            'meta': 'tokens'
+            }
+    raw = runAPI(wiki, params)
+    try:code = raw["query"]["tokens"]["csrftoken"]
+    except:
+        print raw
+        print "FAILURE: Param not accepted."
+        quit()
+    params = {'action': 'emailuser',
+    'format': 'json',
+    'target': target,
+    'subject': subject,
+    'token': code.encode(),
+    'text': text
+            }
+    raw = callAPI(params)
+def clearPrivateData():
+    results = calldb("select * from privatedatas;","read")
+    for result in results:
+        id = result[1]
+        appeal = calldb("select * from appeals where id = "+str(id)+";","read")
+        if appeal[0][5] != "CLOSED":continue
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'closed' and objecttype = 'appeal';","read")
+        if datesince(logs[0], 7):
+            calldb("delete from privatedatas where appealID = "+str(id)+";","write")
+def appeallist():
+    fulltext=""
+    top = """
+    {| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle" |-
+    !Appeal Number
+    !Appellant
+    !Appeal Filed
+    !Status
+    """
+    fulltext+=top
+    results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRE' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
+    for result in results:
+        username = result[1].encode('utf-8').strip()
+        fulltext += "\n|-\n|[https://utrs-beta.wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
+    fulltext +="\n|}"
+    page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
+    page.save(fulltext, "Updating UTRS caselist")
+def datesince(orig,length):
+    today = datetime.now()
+    diff = today - timedelta(days=length)
+    return diff > orig[0]
+def closeNotFound():
+    results = calldb("select * from appeals where status = 'NOTFOUND';","read")
+    for result in results:
+        id = result[0]
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
+        if datesince(logs[0], 5):
+            calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
 verifyusers()
+verifyblock()
+clearPrivateData()
+appeallist()
+closeNotFound()

@@ -1,4 +1,2 @@
-ip=''
-database=''
 user=''
 password=''

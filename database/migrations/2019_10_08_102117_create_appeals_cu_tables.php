@@ -23,7 +23,7 @@ class CreateAppealsCuTables extends Migration
             $table->boolean('blockfound');
             $table->string('blockingadmin')->nullable();
             $table->string('blockreason')->nullable();
-            $table->timestamp('submitted');
+            $table->timestamp('submitted')->default("CURRENT_TIMESTAMP");
             $table->bigInteger('handlingadmin')->nullable();
             $table->string('appealsecretkey');
             $table->string('appealtext', 8000);

@@ -3,6 +3,9 @@
 <div class="card">
 	<h5 class="card-header">{{$title}}</h5>
 	<div class="card-body">
+		@if(isset($new))
+		<a href="/admin/templates/create"><button type="button" class="btn btn-primary">New Template</button></a><br /><br />
+		@endif
 		<table class="table table-bordered table-dark">
 			<thead>
 				<tr>

@@ -78,14 +78,14 @@
 			    	@if(is_null($comment['commentUser']))
 				      <td><i>System</i></td>
 				      <td><i>{{$comment['timestamp']}}</i></td>
-				      <td><i>{{$comment['comment']}}</i></td>
+				      <td><i>{{$comment['oldcomments']}}</i></td>
 				    @else
 				      <td>{{$userlist[$comment['commentUser']]}}</td>
 				      <td>{{$comment['timestamp']}}</td>
 				      @if($comment['protected'])
 				      <td><i>Access to comment is restricted.</i></td>
 				      @else
-				      <td>{{$comment['comment']}}</td>
+				      <td>{{$comment['oldcomments']}}</td>
 				      @endif
 				    @endif
 				    </tr>

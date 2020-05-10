@@ -13,6 +13,7 @@ use App\Ban;
 use App\Log;
 use App\Template;
 use App\Sendresponse;
+use App\Wikitask;
 use Auth;
 use Validator;
 use Redirect;
@@ -29,7 +30,7 @@ class AppealController extends Controller
     	if (is_null($info)) {
     		$info = Oldappeal::find($id);
             if (is_null($info)) {
-                throw new \InvalidArgumentException('Appeal does not exist or you do not have access to it: '.$id);
+                abort(404,'Appeal does not exist or you do not have access to it.');
             }
     		$comments = $info->comments()->get();
             $userlist = [];
@@ -45,7 +46,11 @@ class AppealController extends Controller
     	}
     	else {
             if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
-            if (($info->status !== "OPEN" || $info->status !== "PRIVACY" || $info->status !== "ADMIN" || $info->status !== "CHECKUSER" || $closestatus) || !Permission::checkSecurity($id, "DEVELOPER","*")) {
+            else {$closestatus=FALSE;}
+            if ($info->status == "INVALID" && !Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
+                abort(404,'This appeal has been marked invalid.');
+            }
+            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
                 $logs = $info->comments()->get();
                 $userlist = [];
                 if (!is_null($info->handlingadmin)) {
@@ -59,20 +64,22 @@ class AppealController extends Controller
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
+                if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
+                    if(!Permission::checkPrivacy(Auth::id(),$info->wiki) && !Permission::checkOversight(Auth::id(),$info->wiki)) {
+                        return view ('appeals.privacydeny');
+                    }
+                }
+                if ($info->privacylevel == 1) {
+                    if(!$perms['admin']) {
+                        return view ('appeals.privacydeny');
+                    }
+                }
                 foreach($logs as $log) {
-                    if(is_null($log->user)) {continue;}
+                    if(is_null($log->user) || $log->user==0) {continue;}
                     if(in_array($log->user, $userlist)) {continue;}
                     $userlist[$log->user] = User::findOrFail($log->user)['username'];
                 }
 
-                if ($info->status == "PRIVACY") {
-                    if (Permission::checkPrivacy(Auth::id())) {
-                        return view('appeals.privacyreview', ['info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);
-                    }
-                    else {
-                        return view ('appeals.privacydeny');
-                    }
-                }
         		return view('appeals.appeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);	
             }
             else {
@@ -80,13 +87,36 @@ class AppealController extends Controller
             }
     	}
     }
+    public function publicappeal(Request $request) {
+        $input = $request->all();
+        $hash = $input['hash'];
+        $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
+        if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
+        else {$closestatus=FALSE;}
+        $id = $info->id;
+        $logs = $info->comments()->get();
+        $userlist = [];
+        if (!is_null($info->handlingadmin)) {
+            $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
+        }
+        $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
+        foreach($logs as $log) {
+            if(is_null($log->user) || $log->user==0) {continue;}
+            if(in_array($log->user, $userlist)) {continue;}
+            $userlist[$log->user] = User::findOrFail($log->user)['username'];
+        }
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
+    }
     public function appeallist() {
+        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY","NOTFOUND","INVALID"];
+        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY","NOTFOUND","INVALID"];
+        $devnoview = ["ACCEPT", "DECLINE", "EXPIRE", "INVALID"];
         $tooladmin = False;
         if (!Auth::check()) {
             abort(403,'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
-        if (Auth::user()['wikis']!=="*") {
+        if (Auth::user()['wikis']=="*") {
             $wikis = ["*"];
         } else {
             $wikis = explode(",",(Auth::user()['wikis']));
@@ -94,19 +124,19 @@ class AppealController extends Controller
         foreach ($wikis as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(),$wiki)) {$tooladmin=True;}
             if(Permission::checkSecurity(Auth::id(),"DEVELOPER","*")) {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('wiki','=',$wiki)->get();
+                $appeals = Appeal::whereNotIn('status',$devnoview)->get();
             }
-            elseif (Permission::checkPrivacy(Auth::id()) & Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('wiki','=',$wiki)->get();
+            elseif (Permission::checkPrivacy(Auth::id(),$wiki) && Auth::user()['wikis'] != "*") {
+                $appeals = Appeal::where('wiki','=',$wiki)->whereNotIn('status',$privacynoview)->get();
             }
-            elseif (Permission::checkPrivacy(Auth::id())) {
-                 $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->get();
+            elseif (Permission::checkPrivacy(Auth::id(),$wiki)) {
+                $appeals = Appeal::whereNotIn('status',$privacynoview)->get();
             }
-            elseif (Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('status','!=','PRIVACY')->get();
+            elseif (Auth::user()['wikis'] == "*") {
+                $appeals = Appeal::whereNotIn('status',$regularnoview)->get();
             }
             else {
-                $appeals = Appeal::where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->where('status','!=','VERIFY')->where('status','!=','PRIVACY')->where('wiki','=',$wiki)->get();
+                $appeals = Appeal::where('wiki','=',$wiki)->whereNotIn('status',$regularnoview)->get();
             }
         }
         return view ('appeals.appeallist', ['appeals'=>$appeals, 'tooladmin'=>$tooladmin]);
@@ -119,7 +149,7 @@ class AppealController extends Controller
     }
     public function accountappealsubmit(Request $request) {
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
         Arr::forget($input, '_token');
@@ -176,7 +206,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -196,19 +226,24 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $reason = $request->input('comment');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $checkuser = Permission::checkAdmin($user,$appeal->wiki);
-        if ($checkuser) {
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-            return redirect('appeal/'.$id);
-        }
-        else {
-            $response->assertUnauthorized();
-        }
+        $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+        return redirect('appeal/'.$id);
+    }
+    public function publiccomment($id, Request $request) {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $reason = $request->input('comment');
+        $user = 0;
+        $appeal = Appeal::findOrFail($id);
+        $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+        return redirect('appeal/'.$id);
     }
     public function respond($id, $template, Request $request) {
         if (!Auth::check()) {
@@ -216,14 +251,16 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user,$appeal->wiki);
+        $templateObject = Template::find($template);
+        $text = $templateObject->template;
         if ($admin && $appeal->handlingadmin==Auth::id()) {
             $mail = Sendresponse::create(array('appealID'=>$id, 'template'=>$template));
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded with template '.$template,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>1));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded','reason'=>$text,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
@@ -236,14 +273,14 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user,$appeal->wiki);
         if ($admin && $appeal->handlingadmin==Auth::id()) {
             $mail = Sendresponse::create(array('appealID'=>$id, 'template'=>0, 'custom'=>$request->input('custom')));
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded with custom template','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>1));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'responded','reason'=>$request->input('custom'),'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
@@ -291,7 +328,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -317,7 +354,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -343,7 +380,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -369,7 +406,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -390,7 +427,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -399,7 +436,7 @@ class AppealController extends Controller
             $appeal->status = strtoupper($type);
             $appeal->save();
             $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'closed - '.$type,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-            return redirect('appeal/'.$id);
+            return redirect('/review');
         }
         else {
             abort(403);
@@ -411,16 +448,17 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user,$appeal->wiki);
         if ($admin && $appeal->status!=="PRIVACY") {
             $appeal->status = "PRIVACY";
+            $appeal->privacyreview = 2;
             $appeal->save();
             $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'sent for privacy review','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-            return redirect('appeal/'.$id);
+            return redirect('/review');
         }
         else {
             abort(403);
@@ -432,7 +470,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -453,7 +491,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('REMOTE_ADDR');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -467,5 +505,38 @@ class AppealController extends Controller
         else {
             abort(403);
         }
+    }
+    public function privacyhandle(Request $request,$id,$action) {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        if (Permission::checkPrivacy(Auth::id(),$appeal->wiki) || Permission::checkOversight(Auth::id(),$info->wiki)) {
+            if ($action == "publicize") {
+                $appeal->privacyreview = 0;
+                $appeal->privacylevel = 0;
+                $appeal->status = "OPEN";
+                $appeal->save();
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'publicized','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            }
+            if ($action == "privatize") {
+                $appeal->privacyreview = 1;
+                $appeal->privacylevel = 1;
+                $appeal->status = "OPEN";
+                $appeal->save();
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'privatized','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            }
+            if ($action == "oversight") {
+                $appeal->privacyreview = 2;
+                $appeal->privacylevel = 2;
+                $appeal->status = "OPEN";
+                $appeal->save();
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'oversighted','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            }
+            return redirect('appeal/'.$id);
+        }
+        else {abort(401);}
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
     }
 }
