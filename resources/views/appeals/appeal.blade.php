@@ -103,7 +103,7 @@
                                         @if($info['status']=="OPEN")
                                         <a href="/appeal/privacy/{{$id}}"><button type="button" class="btn btn-warning">Privacy Team</button></a> <a href="/appeal/checkuserreview/{{$id}}"><button type="button" class="btn btn-warning">CheckUser</button></a> <a href="/appeal/tooladmin/{{$id}}"><button type="button" class="btn btn-warning">Tool admin</button></a><br><br style="line-height: .5em;">
                                         @endif
-                                        @if($info['status']!=="OPEN" && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
+                                        @if(($info['status']!=="OPEN" && $info['status']!=="EXPIRE" && $info['status']!=="DECLINE" && $info['status']!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                         <a href="/appeal/open/{{$id}}"><button type="button" class="btn btn-info">Return to tool users</button></a><br><br style="line-height: .5em;">
                                         @endif
                                     @endif
