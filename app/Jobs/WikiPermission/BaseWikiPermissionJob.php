@@ -17,7 +17,7 @@ abstract class BaseWikiPermissionJob
     protected $user;
 
     /**
-     * @return string
+     * @return string wiki api endpoint url
      */
     abstract function getWikiUrl();
 
@@ -27,9 +27,17 @@ abstract class BaseWikiPermissionJob
     abstract function getWikiId();
 
     /**
-     * @return array
+     * @return array list of groups that should be checked for the user in this wiki
      */
     abstract function getPermissionsToCheck();
+
+    /**
+     * @return string wiki name on users.wikis column
+     */
+    protected function getValueInAllowedWikis()
+    {
+        return $this->getWikiId();
+    }
 
     protected function transformGroupArray(MediawikiUser $user, array $groups)
     {
@@ -45,7 +53,19 @@ abstract class BaseWikiPermissionJob
      * @param bool $exists true if this user exists on the wiki this job is querying
      */
     public function updateDoesExist(bool $exists)
-    {}
+    {
+        $wikis = explode(',', $this->user->wikis ?? '');
+        $wikiId = $this->getValueInAllowedWikis();
+
+        if ($exists) {
+            array_push($wikis, $wikiId);
+        } else {
+            // according to stackoverflow this is the best way to remove an element from an array
+            $wikis = array_values(array_filter($wikis, function($value) use ($wikiId) { return $value !== $wikiId; }));
+        }
+
+        $this->user->wikis = implode(',', $wikis);
+    }
 
     protected function getUserPermissions()
     {

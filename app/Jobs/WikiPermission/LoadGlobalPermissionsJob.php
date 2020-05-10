@@ -34,6 +34,11 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
         return '*';
     }
 
+    protected function getValueInAllowedWikis()
+    {
+        return 'global';
+    }
+
     public function getPermissionsToCheck()
     {
         return [
