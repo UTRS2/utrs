@@ -100,10 +100,10 @@
                                         <a href="/appeal/close/{{$id}}/accept"><button type="button" class="btn btn-danger">Accept appeal</button></a><br><br style="line-height: .5em;">
                                         <a href="/appeal/close/{{$id}}/decline"><button type="button" class="btn btn-danger">Decline appeal</button></a><br><br style="line-height: .5em;">
                                         <a href="/appeal/close/{{$id}}/expire"><button type="button" class="btn btn-danger">Mark appeal expired</button></a><br><br style="line-height: .5em;">
-                                        @if($info['status']!=="open")
+                                        @if($info['status']=="OPEN")
                                         <a href="/appeal/privacy/{{$id}}"><button type="button" class="btn btn-warning">Privacy Team</button></a> <a href="/appeal/checkuserreview/{{$id}}"><button type="button" class="btn btn-warning">CheckUser</button></a> <a href="/appeal/tooladmin/{{$id}}"><button type="button" class="btn btn-warning">Tool admin</button></a><br><br style="line-height: .5em;">
                                         @endif
-                                        @if($info['status']!=="open" && !$perms['tooladmin'])
+                                        @if(($info['status']!=="OPEN" && $info['status']!=="EXPIRE" && $info['status']!=="DECLINE" && $info['status']!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                         <a href="/appeal/open/{{$id}}"><button type="button" class="btn btn-info">Return to tool users</button></a><br><br style="line-height: .5em;">
                                         @endif
                                     @endif
