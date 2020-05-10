@@ -202,10 +202,12 @@ def verifyblock():
                             'list': 'blocks',
                             'bkip': str(appeal[14])
                         }
-                        raw = runAPI(wiki, params)
-                        if len(raw["query"]["blocks"])>0:
-                            updateBlockinfoDB(raw,appeal,wiki)
-                            continue
+                        try:
+                            raw = runAPI(wiki, params)
+                            if len(raw["query"]["blocks"])>0:
+                                updateBlockinfoDB(raw,appeal,wiki)
+                                continue
+                        except:itdidntwork=1#nullvar
                     params = {'action': 'query',
                     'format': 'json',
                     'list': 'users',
