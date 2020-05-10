@@ -202,7 +202,6 @@ def verifyblock():
                             'list': 'blocks',
                             'bkip': str(appeal[14])
                         }
-                        print appeal[14]
                         try:
                             raw = runAPI(wiki, params)
                             if len(raw["query"]["blocks"])>0:
