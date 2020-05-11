@@ -47,7 +47,10 @@ class GetBlockDetailsJob implements ShouldQueue
                 'status' => $status,
             ]);
 
-            VerifyBlockJob::dispatch($this->appeal);
+            // if not verified and no verify token is set on a blocked user, attempt to send an e-mail
+            if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($details['user'])) {
+                VerifyBlockJob::dispatch($this->appeal);
+            }
         }
     }
 }
