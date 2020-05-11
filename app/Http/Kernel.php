@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\ForceHttps;
+use App\Http\Middleware\AddHstsHeader;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -22,6 +23,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
 
         ForceHttps::class,
+        AddHstsHeader::class,
     ];
 
     /**
