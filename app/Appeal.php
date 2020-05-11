@@ -14,6 +14,11 @@ class Appeal extends Model
         'privacylevel' => 0,
         'blockfound' => 0
     ];
+
+	protected $casts = [
+	    'user_verified' => 'boolean',
+    ];
+
     public function comments()
     {
         return $this->hasMany('App\Log', 'referenceobject','id');

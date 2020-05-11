@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Log;
 use App\Appeal;
 use App\MwApi\MwApiExtras;
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,10 +26,38 @@ class VerifyBlockJob implements ShouldQueue
     public function handle()
     {
         if (!MwApiExtras::canEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername())) {
-            // todo: do something?
+            Log::create([
+                'user' => 0,
+                'referenceobject' => $this->appeal->id,
+                'objecttype' => 'appeal',
+                'action' => 'account verification',
+                'reason' => 'user can not be e-mailed thru wiki',
+                'ip' => '127.0.0.1',
+                'ua' => '',
+                'protected' => 0,
+            ]);
+
             return;
         }
 
-        MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(), 'foo', 'bar');
+        $token = Str::random(32);
+
+        $this->appeal->update([
+            'verify_token' => $token,
+        ]);
+
+        MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(),
+            'foo', $token);
+
+        Log::create([
+            'user' => 0,
+            'referenceobject' => $this->appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'account verification',
+            'reason' => 'user e-mailed thru wiki',
+            'ip' => '127.0.0.1',
+            'ua' => '',
+            'protected' => 0,
+        ]);
     }
 }

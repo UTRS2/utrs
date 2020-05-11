@@ -14,6 +14,8 @@ class AddVerifyTokenToAppeals extends Migration
     public function up()
     {
         Schema::table('appeals', function (Blueprint $table) {
+            $table->boolean('user_verified')
+                ->default(false);
             $table->string('verify_token')
                 ->nullable();
         });
@@ -27,6 +29,7 @@ class AddVerifyTokenToAppeals extends Migration
     public function down()
     {
         Schema::table('appeals', function (Blueprint $table) {
+            $table->dropColumn('user_verified');
             $table->dropColumn('verify_token');
         });
     }

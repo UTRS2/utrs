@@ -18,6 +18,7 @@ use Auth;
 use Validator;
 use Redirect;
 use Illuminate\Support\Arr;
+use App\Jobs\GetBlockDetailsJob;
 
 class AppealController extends Controller
 {
@@ -88,8 +89,7 @@ class AppealController extends Controller
     	}
     }
     public function publicappeal(Request $request) {
-        $input = $request->all();
-        $hash = $input['hash'];
+        $hash = $request->input('hash');
         $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
         if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
         else {$closestatus=FALSE;}
@@ -189,9 +189,13 @@ class AppealController extends Controller
         if(!is_null($banip)) {
             return view('appeals.ban', ['expire'=>$banip['expiry'],'id'=>$banip['id']]);
         }
+
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id,'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
+
+        GetBlockDetailsJob::dispatch($appeal);
+
         return view ('appeals.makeappeal.hash', ['hash'=>$key]);
     }
     public function ipappeal() {
@@ -538,5 +542,31 @@ class AppealController extends Controller
         }
         else {abort(401);}
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
+    }
+
+    public function verifyAccountOwnership(Request $request, Appeal $appeal, $token)
+    {
+        abort_if($appeal->user_verified, 400, 'Already verified');
+        abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
+
+        $appeal->update([
+            'verify_token' => null,
+            'user_verified' => true,
+        ]);
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        Log::create([
+            'user' => 0,
+            'referenceobject'=> $appeal->id,
+            'objecttype'=>'appeal',
+            'action'=>'account verification',
+            'reason' => 'account ownership verified',
+            'ip' => $ip,
+            'ua' => $ua . " " .$lang
+        ]);
+
+        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
 }
