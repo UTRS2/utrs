@@ -87,7 +87,8 @@ UTRS Developers"""
             }
             try:raw = callAPI(params)
             except:
-                page = masterwiki.pages["User talk:"+str(username)]
+                username = "User talk:"+str(username)
+                page = masterwiki.pages[username]
                 page.save(page.text() + """
 == Your UTRS Account ==
 Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
