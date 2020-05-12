@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import mysql.connector
 from mysql.connector import Error
 import credentials
@@ -220,7 +222,7 @@ def verifyblock():
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         continue
                     except:
-                        page = masterwiki.pages["User talk:"+str(target.encode('utf-8').strip()).encode('utf-8').strip()]
+                        page = masterwiki.pages["User talk:"+str(target)]
                         try:
                             test = raw["query"]["users"]["userid"]
                             page.save(page.text() + """
