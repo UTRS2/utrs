@@ -2,6 +2,12 @@
 
 @section('title', 'Appeal #' . $id)
 @section('content')
+<div class="mb-1">
+    <a href="/review" class="btn btn-light">
+        Back to appeal list
+    </a>
+</div>
+
 @if($info['status']==="ACCEPT" || $info['status']==="DECLINE" || $info['status']==="EXPIRE")
 	<br />
 	<div class="alert alert-danger" role="alert">This appeal is closed. No further changes can be made to it.</div>
