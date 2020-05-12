@@ -87,7 +87,9 @@ UTRS Developers"""
             }
             try:raw = callAPI(params)
             except:
-                username = "User talk:"+str(username)
+                try:username = "User talk:"+username
+                except:
+                    username = "User talk:"+str(username)
                 page = masterwiki.pages[username]
                 page.save(page.text() + """
 == Your UTRS Account ==
