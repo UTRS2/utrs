@@ -348,7 +348,7 @@
                                 @endif
                                 <td>{{$comment->timestamp}}</td>
                                 @if($comment->protected && !$perms['functionary'])
-                                    <td><i>Access to comment is restricted.</td>
+                                    <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment!==null)
                                         <td>{{$comment->comment}}</td>
@@ -395,14 +395,49 @@
             </div>
         </div>
 
-        <div class="card my-2">
-            <h4 class="card-header">
-                Previous appeals
-            </h4>
+        @if($previousAppeals->isNotEmpty())
+            <div class="card my-2">
+                <h4 class="card-header">
+                    Previous appeals
+                </h4>
 
-            <div class="card-body">
-foo
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Appeal</th>
+                            <th>Status</th>
+                            <th>Handling admin</th>
+                            <th>Submitted at</th>
+                        </tr>
+
+                        @foreach($previousAppeals as $appeal)
+                            <tr>
+                                <td>
+                                    <a href="/appeal/{{ $appeal->id }}">
+                                        #{{ $appeal->id }}
+                                    </a>
+                                </td>
+
+                                <td>
+                                    {{ $appeal->status }}
+                                </td>
+
+                                <td>
+                                    @if($appeal->handlingAdminObject)
+                                        {{ $appeal->handlingAdminObject->username }}
+                                    @else
+                                        <i>None</i>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    {{ $appeal->submitted }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 @endsection

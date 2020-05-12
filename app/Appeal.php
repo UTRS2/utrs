@@ -13,8 +13,14 @@ class Appeal extends Model
         'privacylevel' => 0,
         'blockfound' => 0
     ];
+
     public function comments()
     {
         return $this->hasMany('App\Log', 'referenceobject','id');
+    }
+
+    public function handlingAdminObject()
+    {
+        return $this->belongsTo(User::class, 'handlingadmin', 'id');
     }
 }

@@ -85,9 +85,15 @@ class AppealController extends Controller
                     $userlist[$log->user] = User::findOrFail($log->user)->username;
                 }
 
-                $previousAppeals = Appeal::where('appealfor', $info->appealfor)
-                    ->orWhere('hiddenip', $info->appealfor)
-                    ->whereNot('id', $info->id);
+                $previousAppeals = Appeal::where('wiki', $info->wiki)
+                    ->where(function ($query) use ($info) {
+                        $query->where('appealfor', $info->appealfor)
+                            ->orWhere('hiddenip', $info->appealfor);
+                    })
+                    ->where('id', '!=', $info->id)
+                    ->with('handlingAdminObject')
+                    ->orderByDesc('id')
+                    ->get();
 
         		return view('appeals.appeal', [
         		    'id' => $id,
