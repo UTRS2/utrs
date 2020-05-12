@@ -16,7 +16,7 @@ Route::get('/appeal/account', 'AppealController@accountappeal');
 Route::post('/appeal/account', 'AppealController@appealsubmit');
 Route::get('/appeal/ip', 'AppealController@ipappeal');
 Route::post('/appeal/ip', 'AppealController@appealsubmit');
-Route::get('/appeal/{id}', 'AppealController@appeal');
+Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
 Route::get('/review', 'AppealController@appeallist');
 Route::post('/appeal/checkuser/{id}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
