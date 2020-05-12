@@ -15,8 +15,8 @@ class Appeal extends Model
         'blockfound' => 0
     ];
 
-	protected $casts = [
-	    'user_verified' => 'boolean',
+    protected $casts = [
+        'user_verified' => 'boolean',
     ];
 
     public function comments()

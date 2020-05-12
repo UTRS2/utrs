@@ -35,7 +35,7 @@ class MwApiExtras
             'text' => $content,
         ]));
 
-        // TODO: do something with response?
+        return $response['emailuser']['result'] === 'Success';
     }
 
     public static function getBlockInfo($wiki, $username)

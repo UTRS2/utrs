@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Log;
 use App\Appeal;
+use RuntimeException;
 use App\MwApi\MwApiExtras;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
@@ -15,6 +16,8 @@ use Illuminate\Queue\SerializesModels;
 class VerifyBlockJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $tries = 3;
 
     private $appeal;
 
@@ -46,8 +49,28 @@ class VerifyBlockJob implements ShouldQueue
             'verify_token' => $token,
         ]);
 
-        MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(),
-            'foo', $token);
+        $url = url(route('appeal.verifyownership', [$this->appeal, $token]));
+        $title = 'UTRS appeal verification';
+        $message = <<<EOF
+Hello,
+
+Someone appealed your Wikipedia bot using the Unblock Ticket Request System (UTRS).
+If this was you, please verify this appeal by using this link:
+
+$url
+
+If this wasn't you, no action is needed.
+
+Thanks,
+the UTRS team
+EOF;
+
+
+        $result = MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(), $title, $message);
+
+        if (!$result) {
+            throw new RuntimeException('Failed sending an e-mail');
+        }
 
         Log::create([
             'user' => 0,
