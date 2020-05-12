@@ -8,7 +8,6 @@
  */
 
 define('LARAVEL_START', microtime(true));
-$_SERVER['HTTP_X_FORWARDED_FOR'] = '127.0.0.1';
 
 /*
 |--------------------------------------------------------------------------
