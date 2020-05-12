@@ -18,6 +18,7 @@ use Auth;
 use Validator;
 use Redirect;
 use Illuminate\Support\Arr;
+use App\Rules\SecretEqualsRule;
 use App\Jobs\GetBlockDetailsJob;
 
 class AppealController extends Controller
@@ -550,10 +551,18 @@ class AppealController extends Controller
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
     }
 
-    public function verifyAccountOwnership(Request $request, Appeal $appeal, $token)
+    public function showVerifyOwnershipForm(Request $request, Appeal $appeal, $token)
     {
-        abort_if($appeal->user_verified, 400, 'Already verified');
         abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
+        return view('appeals.verifyaccount', ['appeal' => $appeal]);
+    }
+
+    public function verifyAccountOwnership(Request $request, Appeal $appeal)
+    {
+        $request->validate([
+            'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
+            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)]
+        ]);
 
         $appeal->update([
             'verify_token' => null,
@@ -563,6 +572,7 @@ class AppealController extends Controller
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
         Log::create([
             'user' => 0,
             'referenceobject'=> $appeal->id,
@@ -573,6 +583,7 @@ class AppealController extends Controller
             'ua' => $ua . " " .$lang
         ]);
 
+        // todo: use post?
         return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
 }
