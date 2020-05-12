@@ -13,8 +13,9 @@
 
 Route::get('/', 'Controller@home');
 Route::get('/appeal/account', 'AppealController@accountappeal');
-Route::post('/appeal/account', 'AppealController@accountappealsubmit');
+Route::post('/appeal/account', 'AppealController@appealsubmit');
 Route::get('/appeal/ip', 'AppealController@ipappeal');
+Route::post('/appeal/ip', 'AppealController@appealsubmit');
 Route::get('/appeal/{id}', 'AppealController@appeal');
 Route::get('/review', 'AppealController@appeallist');
 Route::get('/appeal/{appeal}/verify/{token}', 'AppealController@verifyAccountOwnership')
