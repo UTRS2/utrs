@@ -147,11 +147,12 @@ class AppealController extends Controller
         }
         return view ('appeals.makeappeal.account');
     }
-    public function accountappealsubmit(Request $request) {
+    public function appealsubmit(Request $request) {
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
+        $type = $input['type'];
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
         $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
@@ -167,7 +168,12 @@ class AppealController extends Controller
 
         if ($validator->fails())
         {
-            return Redirect::to('/appeal/account')->withInput()->withErrors($validator);
+            if ($type =="account") {
+                return Redirect::to('/appeal/account')->withInput()->withErrors($validator);
+            }
+            if ($type =="ip") {
+                return Redirect::to('/appeal/ip')->withInput()->withErrors($validator);
+            }            
         }
         if (sizeof(Appeal::where('appealfor','=',$input['appealfor'])->where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->get())>0 || sizeof(Appeal::where('appealsecretkey')->get())>0) {
             return view('appeals.spam');
