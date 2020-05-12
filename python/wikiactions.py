@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import mysql.connector
 from mysql.connector import Error
 import credentials
@@ -85,7 +87,10 @@ UTRS Developers"""
             }
             try:raw = callAPI(params)
             except:
-                page = masterwiki.pages["User talk:"+str(username)]
+                try:username = "User talk:"+username
+                except:
+                    username = "User talk:"+str(username)
+                page = masterwiki.pages[username]
                 page.save(page.text() + """
 == Your UTRS Account ==
 Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
@@ -220,7 +225,10 @@ def verifyblock():
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         continue
                     except:
-                        page = masterwiki.pages["User talk:"+str(target)]
+                        try:username = "User talk:"+target
+                        except:
+                            username = "User talk:"+str(target)
+                        page = masterwiki.pages[username]
                         try:
                             test = raw["query"]["users"]["userid"]
                             page.save(page.text() + """
