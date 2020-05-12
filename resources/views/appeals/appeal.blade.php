@@ -3,7 +3,7 @@
 @section('title', 'Appeal #' . $id)
 @section('content')
 <div class="mb-1">
-    <a href="/review" class="btn btn-light">
+    <a href="/review" class="btn btn-primary">
         Back to appeal list
     </a>
 </div>
