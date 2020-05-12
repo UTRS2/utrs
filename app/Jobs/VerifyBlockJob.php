@@ -54,7 +54,7 @@ class VerifyBlockJob implements ShouldQueue
         $message = <<<EOF
 Hello,
 
-Someone appealed your Wikipedia bot using the Unblock Ticket Request System (UTRS).
+Someone appealed your Wikipedia block using the Unblock Ticket Request System (UTRS).
 If this was you, please verify this appeal by using this link:
 
 $url

@@ -25,32 +25,31 @@ class GetBlockDetailsJob implements ShouldQueue
     public function handle()
     {
         if ($this->appeal->wiki === 'global') {
-            // global b(lock)
-            throw new \RuntimeException('not implemented yet');
+            $details = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
         } else {
             $details = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
+        }
 
-            if (!$details) {
-                $this->appeal->update([
-                    'status' => 'NOTFOUND',
-                ]);
-
-                return;
-            }
-
-            $status = $this->appeal->privacylevel === $this->appeal->privacyreview ? 'OPEN' : 'PRIVACY';
-
+        if (!$details) {
             $this->appeal->update([
-                'blockfound' => 1,
-                'blockingadmin' => $details['by'],
-                'blockreason' => $details['reason'],
-                'status' => $status,
+                'status' => 'NOTFOUND',
             ]);
 
-            // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
-            if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($details['user'])) {
-                VerifyBlockJob::dispatch($this->appeal);
-            }
+            return;
+        }
+
+        $status = $this->appeal->privacylevel === $this->appeal->privacyreview ? 'OPEN' : 'PRIVACY';
+
+        $this->appeal->update([
+            'blockfound' => 1,
+            'blockingadmin' => $details['by'],
+            'blockreason' => $details['reason'],
+            'status' => $status,
+        ]);
+
+        // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
+        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($details['user'])) {
+            VerifyBlockJob::dispatch($this->appeal);
         }
     }
 }

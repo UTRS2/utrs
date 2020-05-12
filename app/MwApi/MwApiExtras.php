@@ -58,4 +58,43 @@ class MwApiExtras
 
         return $response['query']['blocks'][0];
     }
+
+    public static function getGlobalBlockInfo($username)
+    {
+        $api = MwApiGetter::getApiForWiki('global');
+
+        if (filter_var($username, FILTER_VALIDATE_IP) !== false) {
+            // is ip
+
+            $response = $api->getRequest(new SimpleRequest(
+                'query',
+                [
+                    'list' => 'globalblocks',
+                    'bgaddresses' => $username,
+                    'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
+                ]
+            ));
+
+            if (empty($response['query']['globalblocks'])) {
+                return null;
+            }
+
+            return $response['query']['globalblocks'][0];
+        }
+
+        $entries = MwApiGetter::getServicesForWiki('global')->newLogListGetter()
+            ->getLogList([
+                'letype' => 'globalauth/setstatus',
+                'letitle' => 'User:' . $username . '@global'
+            ]);
+        $entry = $entries->getLatest();
+
+        // this looks something like details of other types
+        return [
+            'by' => $entry->getUser(),
+            'user' => $username,
+            'timestamp' => $entry->getTimestamp(),
+            'reason' => $entry->getComment(),
+        ];
+    }
 }
