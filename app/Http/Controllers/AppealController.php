@@ -24,11 +24,11 @@ class AppealController extends Controller
         Auth::user()->checkRead();
 
         $info = Appeal::find($id);
-    	if (is_null($info)) {
-    		$info = Oldappeal::find($id);
+        if (is_null($info)) {
+            $info = Oldappeal::find($id);
             abort_if(is_null($info), 404,'Appeal does not exist or you do not have access to it.');
 
-    		$comments = $info->comments()->get();
+            $comments = $info->comments()->get();
             $userlist = [];
 
             foreach($comments as $comment) {
@@ -37,13 +37,13 @@ class AppealController extends Controller
                 }
             }
 
-    		if ($info['status'] === "UNVERIFIED") {
-    			return view('appeals.unverifiedappeal');
-    		}
+            if ($info['status'] === "UNVERIFIED") {
+                return view('appeals.unverifiedappeal');
+            }
 
-    		return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
-    	} else {
-    	    $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
+            return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
+        } else {
+            $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
 
             $closestatus = ($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE");
             abort_if($info->status == "INVALID" && !$isDeveloper, 404,'This appeal has been marked invalid.');
@@ -62,7 +62,7 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
-                $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
+                $perms['dev'] = $isDeveloper;
 
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
@@ -95,8 +95,8 @@ class AppealController extends Controller
                     ->orderByDesc('id')
                     ->get();
 
-        		return view('appeals.appeal', [
-        		    'id' => $id,
+                return view('appeals.appeal', [
+                    'id' => $id,
                     'info' => $info,
                     'comments' => $logs,
                     'userlist' => $userlist,
@@ -109,7 +109,7 @@ class AppealController extends Controller
             } else {
                 return view ('appeals.deny');
             }
-    	}
+        }
     }
 
     public function publicappeal(Request $request) {
