@@ -9,7 +9,7 @@
             </a>
         </div>
 
-        @if($info['status']==="ACCEPT" || $info['status']==="DECLINE" || $info['status']==="EXPIRE")
+        @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
             <br/>
             <div class="alert alert-danger" role="alert">
                 This appeal is closed. No further changes can be made to it.
@@ -22,7 +22,7 @@
                 <div>
                     <div class="row">
                         <div class="col-12">
-                            @if($info['privacyreview']!=0 && $info['status']=="PRIVACY")
+                            @if($info->privacyreview!=0 && $info->status=="PRIVACY")
                                 <div class="alert alert-primary" role="alert">
                                     You are currently reviewing a ticket that is restricted from public view. You have
                                     three
@@ -39,45 +39,46 @@
                             @endif
                         </div>
                         <div class="col-5">
-                            <h4 class="card-title">Appeal for "{{$info['appealfor']}}"</h4>
+                            <h4 class="card-title">Appeal for "{{ $info->appealfor }}"</h4>
                             <p class="card-text">
-                                Appeal status: {{$info['status']}}
-                                <br/>Blocking Admin: {{$info['blockingadmin']}}
-                                <br/>Block Reason: {{$info['blockreason']}}
-                                <br/>Time Submitted: {{$info['submitted']}}
-                                <br/>Wiki: {{$info['wiki']}}
-                                @if(!is_null($info['handlingadmin']))
-                                    <br/>Handling Admin: {{$userlist[$info['handlingadmin']]}}
+                                Appeal number: #{{ $info->id }}
+                                <br/>Appeal status: {{$info->status}}
+                                <br/>Blocking Admin: {{$info->blockingadmin}}
+                                <br/>Block Reason: {{$info->blockreason}}
+                                <br/>Time Submitted: {{$info->submitted}}
+                                <br/>Wiki: {{$info->wiki}}
+                                @if(!is_null($info->handlingadmin))
+                                    <br/>Handling Admin: {{$userlist[$info->handlingadmin]}}
                                 @endif
                                 <br/>
 
-                                <a href="https://en.wikipedia.org/wiki/User:{{$info['appealfor']}}"
+                                <a href="https://en.wikipedia.org/wiki/User:{{$info->appealfor}}"
                                    class="btn btn-secondary">
                                     User talk
                                 </a>
 
-                                <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{$info['appealfor']}}"
+                                <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{$info->appealfor}}"
                                    class="btn btn-light">
                                     Contribs
                                 </a>
 
-                                <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{$info['appealfor']}}"
+                                <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{$info->appealfor}}"
                                    class="btn btn-light">
                                     Find block
                                 </a>
 
-                                <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{$info['appealfor']}}"
+                                <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{$info->appealfor}}"
                                    class="btn btn-light">
                                     Block log
                                 </a>
 
-                                <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{$info['appealfor']}}"
+                                <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{$info->appealfor}}"
                                    class="btn btn-light">
                                     Global (b)locks
                                 </a>
 
                                 @if($perms['admin'])
-                                    <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{$info['appealfor']}}"
+                                    <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{$info->appealfor}}"
                                        class="btn btn-warning">
                                         Unblock
                                     </a>
@@ -85,9 +86,9 @@
                             @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone)
-                                    IP address: {{$cudata['ipaddress']}}<br/>
-                                    Useragent: {{$cudata['useragent']}}<br/>
-                                    Browser Language: {{$cudata['language']}}
+                                    IP address: {{$cudata->ipaddress}}<br/>
+                                    Useragent: {{$cudata->useragent}}<br/>
+                                    Browser Language: {{$cudata->language}}
                                 @else
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
@@ -102,7 +103,7 @@
                             @endif
                         </div>
                         <div class="col-7">
-                            @if($info['privacyreview']!=0 && $info['status']=="PRIVACY" && $perms['admin'])
+                            @if($info->privacyreview!=0 && $info->status=="PRIVACY" && $perms['admin'])
                                 <div class="row">
                                     <div class="col-4">
                                         <a href="/appeal/privacy/{{$id}}/publicize" class="btn btn-danger">
@@ -131,7 +132,7 @@
                                                 appeal.
                                             </div>
                                         @else
-                                            @if($info['status']==="ACCEPT" || $info['status']==="DECLINE" || $info['status']==="EXPIRE")
+                                            @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
                                                 @if($perms['functionary'])
                                                     <div style="text-align: center;">
                                                         <a href="/appeal/open/{{$id}}" class="btn btn-success">
@@ -147,15 +148,15 @@
                                             @else
                                                 <div style="text-align: center;">
                                                     <div class="mb-2">
-                                                        @if($info['handlingadmin']==null)
+                                                        @if($info->handlingadmin==null)
                                                             <a href="/appeal/reserve/{{$id}}" class="btn btn-success">
                                                                 Reserve
                                                             </a>
-                                                        @elseif($info['handlingadmin']!=null && $info['handlingadmin'] == Auth::id())
+                                                        @elseif($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
                                                             <a href="/appeal/release/{{$id}}" class="btn btn-success">
                                                                 Release
                                                             </a>
-                                                        @elseif($info['handlingadmin']!=null && $info['handlingadmin'] != Auth::id())
+                                                        @elseif($info->handlingadmin!=null && $info->handlingadmin != Auth::id())
                                                             <button class="btn btn-success" disabled>
                                                                 Reserve
                                                             </button>
@@ -183,7 +184,7 @@
                                                         </a>
                                                     </div>
 
-                                                    @if($info['status']=="OPEN")
+                                                    @if($info->status=="OPEN")
                                                         <div class="mb-2">
                                                             <a href="/appeal/privacy/{{$id}}" class="btn btn-warning">
                                                                 Privacy Team
@@ -196,7 +197,7 @@
                                                             </a>
                                                         </div>
                                                     @endif
-                                                    @if(($info['status']!=="OPEN" && $info['status']!=="EXPIRE" && $info['status']!=="DECLINE" && $info['status']!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
+                                                    @if(($info->status!=="OPEN" && $info->status!=="EXPIRE" && $info->status!=="DECLINE" && $info->status!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                                         <div class="mb-2">
                                                             <a href="/appeal/open/{{$id}}" class="btn btn-info">
                                                                 Return to tool users
@@ -221,15 +222,15 @@
                 <div class="row">
                     <div class="col-6">
                         <br/><b>Why should you be unblocked?</b>
-                        <p>{{$info['appealtext']}}</p>
+                        <p>{{$info->appealtext}}</p>
                     </div>
                     <div class="col-6">
-                        @if ($info['privacyreview']==1 || $info['privacyreview']==2)
+                        @if ($info->privacyreview==1 || $info->privacyreview==2)
                             <div class="alert alert-primary" role="alert">
-                                @if ($info['privacyreview']==1)
+                                @if ($info->privacyreview==1)
                                     It has been requested that this appeal be hidden from public view and only visibleto
                                     administrators.
-                                @elseif ($info['privacyreview']==2)
+                                @elseif ($info->privacyreview==2)
                                     It has been requested that this appeal be oversighted and only availible to those on
                                     the privacy team to review.
                                 @endif
@@ -238,17 +239,17 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-6">
-                                    @if($info['status']=="ACCEPT")
+                                    @if($info->status=="ACCEPT")
                                         <center>This appeal was approved.<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info['status']=="EXPIRE")
+                                    @elseif($info->status=="EXPIRE")
                                         <center>This appeal expired.<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info['status']=="DECLINE")
+                                    @elseif($info->status=="DECLINE")
                                         <center>This appeal was denied.<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
@@ -261,18 +262,18 @@
                                     @endif
                                 </div>
                                 <div class="col-6">
-                                    @if($info['privacylevel']==0 && $info['privacyreview']==0)
+                                    @if($info->privacylevel==0 && $info->privacyreview==0)
                                         <center>This appeal is considered public. Logged in Wikimedians can view this.
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Oxygen480-actions-irc-voice.svg/200px-Oxygen480-actions-irc-voice.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info['privacylevel']==1 && $info['privacyreview']==1)
+                                    @elseif($info->privacylevel==1 && $info->privacyreview==1)
                                         <center>This appeal is considered private. Only logged in administrators have
                                             access to this appeal.
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Oxygen480-actions-irc-unvoice.svg/200px-Oxygen480-actions-irc-unvoice.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info['privacylevel']==2 || ($info['privacylevel']!==$info['privacyreview']))
+                                    @elseif($info->privacylevel==2 || ($info->privacylevel!==$info->privacyreview))
                                         <center>This appeal is oversighted or under privacy review. Only logged in
                                             Privacy Team members have access to this appeal.
                                             <br/><img
@@ -370,7 +371,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <h5 class="card-title">Send a templated reply</h5>
-                                @if($info['handlingadmin']!=null && $info['handlingadmin'] == Auth::id())
+                                @if($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
                                     <a href="/appeal/template/{{$id}}" class="btn btn-info">
                                         Send a reply to the user
                                     </a>
