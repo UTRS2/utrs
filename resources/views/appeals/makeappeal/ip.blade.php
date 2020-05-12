@@ -29,6 +29,7 @@
     		{{Form::label('username', 'What is the IP address that is blocked?')}}<br>
     		{{Form::text('username')}}<br>
     		{{Form::hidden('blocktype', 0)}}
+        {{Form::hidden('type', 'ip')}}
     		<br>
     		<h5 class="card-title">Block appeal information</h5>
     		<div class="alert alert-warning" role="alert">
