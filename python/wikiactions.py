@@ -220,7 +220,7 @@ def verifyblock():
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         continue
                     except:
-                        page = masterwiki.pages["User talk:"+str(target)]
+                        page = masterwiki.pages["User talk:"+str(target.encode('utf-8').strip())]
                         try:
                             test = raw["query"]["users"]["userid"]
                             page.save(page.text() + """
