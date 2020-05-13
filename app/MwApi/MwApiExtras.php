@@ -84,12 +84,13 @@ class MwApiExtras
 
         $entries = MwApiGetter::getServicesForWiki('global')->newLogListGetter()
             ->getLogList([
-                'letype' => 'globalauth/setstatus',
+                'letype' => 'globalauth',
                 'letitle' => 'User:' . $username . '@global'
             ]);
+
         $entry = $entries->getLatest();
 
-        if ($entry->getDetails()['params'][0] !== 'locked') {
+        if (!$entry || $entry->getDetails()['params'][0] !== 'locked') {
             return null;
         }
 

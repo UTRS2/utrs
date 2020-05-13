@@ -10,17 +10,12 @@ use Illuminate\Support\Str;
  */
 class MwApiUrls
 {
-    const WIKI_URLS = [
-        'enwiki' => 'https://en.wikipedia.org/w/api.php',
-        'ptwiki' => 'https://pt.wikipedia.org/w/api.php',
-    ];
-
     /**
      * @return string api url for the global wiki (meta on wmf sites)
      */
     public static function getGlobalWikiUrl()
     {
-        return env('WIKI_URL_GLOBAL', 'https://meta.wikimedia.org/w/api.php');
+        return config('wikis.globalwiki.api_url');
     }
 
     /**
@@ -33,11 +28,7 @@ class MwApiUrls
             return self::getGlobalWikiUrl();
         }
 
-        if ($env = env('WIKI_URL_' . Str::upper($wiki), false)) {
-            return $env;
-        }
-
-        return self::WIKI_URLS[Str::lower($wiki)];
+        return config('wikis.wikis.' . Str::lower($wiki) . '.api_url');
     }
 
     /**
@@ -45,7 +36,7 @@ class MwApiUrls
      */
     public static function getSupportedWikis()
     {
-        return array_keys(self::WIKI_URLS);
+        return array_keys(config('wikis.wikis'));
     }
 }
 

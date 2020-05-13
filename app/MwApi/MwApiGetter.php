@@ -17,7 +17,7 @@ class MwApiGetter
         }
 
         $api = new MediawikiApi(MwApiUrls::getWikiUrl($wiki));
-        $api->login(new ApiUser(env('MEDIAWIKI_USERNAME'), env('MEDIAWIKI_PASSWORD')));
+        $api->login(new ApiUser(config('wikis.login.username'), config('wikis.login.password')));
 
         return self::$loadedApis[$wiki] = $api;
     }
