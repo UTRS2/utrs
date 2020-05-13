@@ -7,7 +7,6 @@
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 
-$_SERVER['HTTP_X_FORWARDED_FOR'] = '127.0.0.1';
 define('LARAVEL_START', microtime(true));
 
 /*
