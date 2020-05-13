@@ -20,9 +20,9 @@
             <h4 class="card-header">Appeal details</h4>
             <div class="card-body">
                 <div>
-                    <div class="row">
-                        <div class="col-12">
-                            @if($info->privacyreview!=0 && $info->status=="PRIVACY")
+                    @if($info->privacyreview!=0 && $info->status=="PRIVACY")
+                        <div class="row">
+                            <div class="col-12">
                                 <div class="alert alert-primary" role="alert">
                                     You are currently reviewing a ticket that is restricted from public view. You have
                                     three
@@ -36,9 +36,11 @@
                                     3) You select "Oversight Appeal" - Only select this option if there is personally
                                     identifying information in the appeal.
                                 </div>
-                            @endif
+                            </div>
                         </div>
-                        <div class="col-5">
+                    @endif
+                    <div class="row">
+                        <div class="col-md-5">
                             <h4 class="card-title">Appeal for "{{ $info->appealfor }}"</h4>
                             <p class="card-text">
                                 Appeal number: #{{ $info->id }}
@@ -93,16 +95,23 @@
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
                                     </div>
-                                    {{ Form::open(array('url' => 'appeal/checkuser/'.$id)) }}
-                                    {{Form::token()}}
-                                    {{Form::label('reason', 'Reason:')}}<br>
-                                    {{Form::textarea('reason',null,['rows'=>2])}}<br><br>
-                                    <button type="submit" class="btn btn-success">Submit</button>
-                                    {{ Form::close() }}
+                                    <form method="POST" action="/appeal/checkuser/{{ $id }}">
+                                        @csrf
+
+                                        <div class="form-group">
+                                            <label for="cu-reason">
+                                                Reason
+                                            </label>
+
+                                            <textarea name="reason" id="cu-reason" class="form-control"></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-success">Submit</button>
+                                    </form>
                                 @endif
                             @endif
                         </div>
-                        <div class="col-7">
+                        <div class="col-md-7">
                             @if($info->privacyreview!=0 && $info->status=="PRIVACY" && $perms['admin'])
                                 <div class="row">
                                     <div class="col-4">
@@ -123,8 +132,8 @@
                                 </div>
                             @else
                                 <div class="row">
-                                    <div class="col-4"></div>
-                                    <div class="col-8">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-8">
                                         <h5 class="card-title">Actions</h5>
                                         @if(!$perms['admin'])
                                             <div class="alert alert-danger" role="alert">
@@ -134,7 +143,7 @@
                                         @else
                                             @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
                                                 @if($perms['functionary'])
-                                                    <div style="text-align: center;">
+                                                    <div>
                                                         <a href="/appeal/open/{{$id}}" class="btn btn-success">
                                                             Re-open</a>
                                                         <a href="/appeal/oversight/{{$id}}" class="btn btn-danger">
@@ -146,7 +155,7 @@
                                                     </div>
                                                 @endif
                                             @else
-                                                <div style="text-align: center;">
+                                                <div>
                                                     <div class="mb-2">
                                                         @if($info->handlingadmin==null)
                                                             <a href="/appeal/reserve/{{$id}}" class="btn btn-success">
@@ -220,11 +229,11 @@
             <h4 class="card-header">Appeal Content</h4>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-6">
-                        <br/><b>Why should you be unblocked?</b>
+                    <div class="col-md-6">
+                        <b>Why should you be unblocked?</b>
                         <p>{{$info->appealtext}}</p>
                     </div>
-                    <div class="col-6">
+                    <div class="col-md-6">
                         @if ($info->privacyreview==1 || $info->privacyreview==2)
                             <div class="alert alert-primary" role="alert">
                                 @if ($info->privacyreview==1)
@@ -236,8 +245,7 @@
                                 @endif
                             </div>
                         @endif
-                        <div class="container">
-                            <div class="row">
+                        <div class="row">
                                 <div class="col-6">
                                     @if($info->status=="ACCEPT")
                                         <center>This appeal was approved.<br/>
@@ -282,7 +290,6 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -291,7 +298,7 @@
         <div class="card my-2">
             <h4 class="card-header">Admin Comments</h4>
             <div class="card-body">
-                <table class="table table-bordered table-dark">
+                <table class="table table-dark">
                 <thead>
                 <tr>
                     <th scope="col">Commenting User</th>
@@ -367,29 +374,34 @@
                 <br/>
                 <br/>
                 @if($perms['admin'])
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-6">
-                                <h5 class="card-title">Send a templated reply</h5>
-                                @if($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
-                                    <a href="/appeal/template/{{$id}}" class="btn btn-info">
-                                        Send a reply to the user
-                                    </a>
-                                @else
-                                    <div class="alert alert-danger" role="alert">
-                                        You are not the handling admin.
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="col-6">
-                                <h5 class="card-title">Drop a comment</h5>
-                                {{ Form::open(array('url' => 'appeal/comment/'.$id)) }}
-                                {{Form::token()}}
-                                {{Form::label('comment', 'Add a comment to this appeal:')}}<br>
-                                {{Form::textarea('comment',null,['rows'=>4,'width'=>'-webkit-fill-available'])}}<br><br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title">Send a templated reply</h5>
+                            @if($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
+                                <a href="/appeal/template/{{$id}}" class="btn btn-info">
+                                    Send a reply to the user
+                                </a>
+                            @else
+                                <div class="alert alert-danger" role="alert">
+                                    You are not the handling admin.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">Drop a comment</h5>
+                            <form method="POST" action="/appeal/comment/{{ $id }}">
+                                @csrf
+
+                                <div class="form-group">
+                                    <label for="comment">
+                                        Add a comment to this appeal
+                                    </label>
+
+                                    <textarea name="comment" id="comment" class="form-control"></textarea>
+                                </div>
+
                                 <button type="submit" class="btn btn-success">Submit</button>
-                                {{ Form::close() }}
-                            </div>
+                            </form>
                         </div>
                     </div>
                 @endif
