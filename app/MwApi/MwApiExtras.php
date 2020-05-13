@@ -89,6 +89,10 @@ class MwApiExtras
             ]);
         $entry = $entries->getLatest();
 
+        if ($entry->getDetails()['params'][0] !== 'locked') {
+            return null;
+        }
+
         // this looks something like details of other types
         return [
             'by' => $entry->getUser(),

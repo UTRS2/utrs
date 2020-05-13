@@ -561,7 +561,7 @@ class AppealController extends Controller
     {
         $request->validate([
             'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
-            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)]
+            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
         ]);
 
         $appeal->update([
