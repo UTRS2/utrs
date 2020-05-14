@@ -372,6 +372,12 @@ def clearPrivateData():
     for result in results:
         id = result[1]
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
+        #Temp
+        if appeal[0][5] == "EXPIRE":
+            date = datetime.strptime(appeal[0][9],"%Y-%m-%d %H:%M:%S") - timedelta(days=7)
+            calldb("insert into logs (set user, referenceobject, action, ip, ua, protected, timestamp) VALUES ('"+str(0)+"','"+str(id)+"','closed - expired','DB entry','DB/Python',0,'"+date+"');","write")
+            continue
+        #regular
         if appeal[0][5] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action RLIKE 'closed' and objecttype = 'appeal';","read")
         print "CLEAR DATA: "+str(result)
@@ -405,6 +411,7 @@ def closeNotFound():
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 5):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
+            calldb("insert into logs (set user, referenceobject, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
