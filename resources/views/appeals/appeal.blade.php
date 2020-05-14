@@ -24,8 +24,8 @@
                                 You are currently reviewing a ticket that is restricted from public view. You have three options to review this ticket:<br>
                                 <br>
                                 1) You select "Publicize Appeal" - Only select this if you have reviewed the entire appeal and there is no potentially private data involved.<br>
-                                2) You select "Restrict Appeal" - Only select this option if there is private data, but it is not personally identifying.<br>
-                                3) You select "Oversight Appeal" - Only select this option if there is personally identifying information in the appeal.
+                                2) You select "Restrict Appeal" - Only select this option if there is private data, but it is relevant to the appeal. (Example: Real name, IP that is blocked, position in an organization)<br>
+                                3) You select "Oversight Appeal" - Only select this option if there is irrelevant personally identifying information (IPII) in the appeal OR if it is an oversight block. If there is IPII infomration in the appeal, please contact a developer at utrs-developers@googlegroups.com and state what needs to be removed.
                             </div>
                         @endif
                     </div>
