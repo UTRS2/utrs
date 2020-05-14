@@ -34,7 +34,6 @@ Route::get('/appeal/template/{id}/{template}', 'AppealController@respond');
 Route::get('/appeal/custom/{id}', 'AppealController@respondCustom');
 Route::post('/appeal/custom/{id}', 'AppealController@respondCustomSubmit');
 Route::get('/publicappeal', 'AppealController@publicappeal');
-Route::post('/publicappeal', 'AppealController@publicappeal');
 Route::post('/publicappeal/comment', 'AppealController@publicComment');
 Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
 Route::get('/fixappeal/{hash}', 'AppealModifyController@changeip');
