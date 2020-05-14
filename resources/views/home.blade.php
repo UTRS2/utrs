@@ -57,8 +57,7 @@
   <div class="card-body">
     <h5 class="card-title">If you already have an appeal</h5>
     <p class="card-text">Please enter your appeal key below</p>
-    {{ Form::open(array('url' => 'publicappeal')) }}
-    {{Form::token()}}
+    {{ Form::open(array('url' => 'publicappeal', 'method' => 'GET')) }}
     <div class="input-group mb-3" style="display: block;">
 	  <div class="input-group-prepend">
 	    <span class="input-group-text" id="basic-addon1">#</span>{{Form::text('hash', null, ['class'=>'form-control','placeholder'=>'Appeal Key'])}}

@@ -87,12 +87,12 @@ class AppealController extends Controller
             }
     	}
     }
+
     public function publicappeal(Request $request) {
-        $input = $request->all();
-        $hash = $input['hash'];
+        $hash = $request->input('hash');
         $info = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
-        if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
-        else {$closestatus=FALSE;}
+        $closestatus = $info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE";
+
         $id = $info->id;
         $logs = $info->comments()->get();
         $userlist = [];
@@ -107,6 +107,32 @@ class AppealController extends Controller
         }
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
     }
+
+    public function publicComment(Request $request) {
+        $key = $request->input('appealsecretkey');
+        $appeal = Appeal::where('appealsecretkey', $key)->firstOrFail();
+
+        abort_if($appeal->status=="ACCEPT" || $appeal->status=="DECLINE" || $appeal->status=="EXPIRE", 400, "Appeal is closed");
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $reason = $request->input('comment');
+
+        Log::create([
+            'user' => 0,
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'comment',
+            'reason' => $reason,
+            'ip' => $ip,
+            'ua' => $ua . " " .$lang,
+            'protected' => 0
+        ]);
+
+        return redirect()->back();
+    }
+
     public function appeallist() {
         $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY","NOTFOUND","INVALID"];
         $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY","NOTFOUND","INVALID"];
@@ -228,16 +254,6 @@ class AppealController extends Controller
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $checkuser = Permission::checkAdmin($user,$appeal->wiki);
-        $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
-        return redirect('appeal/'.$id);
-    }
-    public function publiccomment($id, Request $request) {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $reason = $request->input('comment');
-        $user = 0;
-        $appeal = Appeal::findOrFail($id);
         $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'comment','reason'=>$reason,'ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
         return redirect('appeal/'.$id);
     }
