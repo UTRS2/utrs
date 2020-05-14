@@ -58,7 +58,6 @@
 			</div>
 			{{Form::label('blocktype', 'Why should you be unblocked?')}}<br>
 			{{Form::textarea('appealtext')}}<br>
-      {{Form::hidden('type', 'account')}}
 			<br>
 			<button type="submit" class="btn btn-success">Submit</button>
     		{{ Form::close() }}
