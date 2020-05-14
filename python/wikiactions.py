@@ -70,7 +70,8 @@ def verifyusers():
                 print "FAILURE: Param not accepted."
                 quit()
             mash= username+credentials.secret
-            confirmhash = hashlib.md5(mash.encode())
+            mash = mash.encode('utf-8')
+            confirmhash = hashlib.md5(mash)
             params = {'action': 'emailuser',
             'format': 'json',
             'target': username,
