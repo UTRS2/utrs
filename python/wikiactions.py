@@ -406,7 +406,7 @@ def closeNotFound():
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 5):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
-            calldb("insert into logs (user, referenceobject, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','closed - expired','DB entry','DB/Python',0);","write")
+            calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
