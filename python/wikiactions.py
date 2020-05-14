@@ -377,6 +377,7 @@ def clearPrivateData():
             date = appeal[0][9] - timedelta(days=7)
             calldb("insert into logs (user, referenceobject, action, ip, ua, protected, timestamp) VALUES ('"+str(0)+"','"+str(id)+"','closed - expired','DB entry','DB/Python',0,'"+str(date)+"');","write")
             continue
+        if id < 30415:continue
         print appeal
         quit()
         #regular
