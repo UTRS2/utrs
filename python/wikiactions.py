@@ -374,7 +374,7 @@ def clearPrivateData():
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
         #Temp
         if appeal[0][5] == "EXPIRE":
-            date = datetime.strptime(appeal[0][9],"%Y-%m-%d %H:%M:%S") - timedelta(days=7)
+            date = appeal[0][9] - timedelta(days=7)
             calldb("insert into logs (set user, referenceobject, action, ip, ua, protected, timestamp) VALUES ('"+str(0)+"','"+str(id)+"','closed - expired','DB entry','DB/Python',0,'"+date+"');","write")
             continue
         #regular
