@@ -376,7 +376,7 @@ def clearPrivateData():
         #Temp
         if appeal[0][5] == "INVALID":
             date = appeal[0][9] - timedelta(days=7)
-            calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected, timestamp) VALUES ('"+str(0)+"','"+str(id)+"','appeal',closed - invalidated','DB entry','DB/Python',0,'"+str(date)+"');","write")
+            calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected, timestamp) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - invalidated','DB entry','DB/Python',0,'"+str(date)+"');","write")
             continue
         if appeal[0][5] != "INVALID":continue
         if id < 30415:continue
