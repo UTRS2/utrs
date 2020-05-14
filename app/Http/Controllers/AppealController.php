@@ -385,7 +385,7 @@ class AppealController extends Controller
             if($appeal->status=="ACCEPT" || $appeal->status=="EXPIRE" || $appeal->status=="DECLINE" || $appeal->status=="CHECKUSER" || $appeal->status=="ADMIN") {
                 $appeal->status = "OPEN";
                 $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'re-open','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'sent back to users','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             }
             else {
                 abort(403);
@@ -410,7 +410,7 @@ class AppealController extends Controller
         if ($dev && $appeal->status!=="INVALID") {
             $appeal->status = "INVALID";
             $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'invalidate','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'closed - invalidated','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
