@@ -373,10 +373,12 @@ def clearPrivateData():
         id = result[1]
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
         #Temp
-        if appeal[0][5] == "EXPIRE":
+        if appeal[0][5] == "EXPIRE" and id >30415:
             date = appeal[0][9] - timedelta(days=7)
             calldb("insert into logs (user, referenceobject, action, ip, ua, protected, timestamp) VALUES ('"+str(0)+"','"+str(id)+"','closed - expired','DB entry','DB/Python',0,'"+str(date)+"');","write")
             continue
+        print appeal
+        quit()
         #regular
         if appeal[0][5] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action RLIKE 'closed' and objecttype = 'appeal';","read")
