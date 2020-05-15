@@ -125,7 +125,11 @@ class AdminController extends Controller
             abort(401);
         }
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $newtemplate = $request->all();
         $name = $newtemplate['name'];
@@ -139,7 +143,11 @@ class AdminController extends Controller
             abort(401);
         }
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $data = $request->all();
         $template = Template::findOrFail($id);
