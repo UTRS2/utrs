@@ -13,7 +13,6 @@ use App\Ban;
 use App\Log;
 use App\Template;
 use App\Sendresponse;
-use App\Wikitask;
 use Auth;
 use Validator;
 use Redirect;
@@ -22,71 +21,91 @@ use Illuminate\Support\Arr;
 class AppealController extends Controller
 {
     public function appeal($id) {
-        if (!Auth::check()) {
-            abort(403,'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
-    	$info = Appeal::find($id);
-    	if (is_null($info)) {
-    		$info = Oldappeal::find($id);
-            if (is_null($info)) {
-                abort(404,'Appeal does not exist or you do not have access to it.');
-            }
-    		$comments = $info->comments()->get();
+        Auth::user()->checkRead();
+
+        $info = Appeal::find($id);
+        if (is_null($info)) {
+            $info = Oldappeal::find($id);
+            abort_if(is_null($info), 404,'Appeal does not exist or you do not have access to it.');
+
+            $comments = $info->comments()->get();
             $userlist = [];
+
             foreach($comments as $comment) {
-                if(is_null($comment->commentUser)) {continue;}
-                if(in_array($comment->commentUser, $userlist)) {continue;}
-                $userlist[$comment->commentUser] = Olduser::findOrFail($comment->commentUser)['username'];
+                if (!is_null($comment->commentUser) && !in_array($comment->commentUser, $userlist)) {
+                    $userlist[$comment->commentUser] = Olduser::findOrFail($comment->commentUser)->username;
+                }
             }
-    		if ($info['status'] === "UNVERIFIED") {
-    			return view('appeals.unverifiedappeal');
-    		}
-    		return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
-    	}
-    	else {
-            if($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE") {$closestatus=TRUE;}
-            else {$closestatus=FALSE;}
-            if ($info->status == "INVALID" && !Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
-                abort(404,'This appeal has been marked invalid.');
+
+            if ($info['status'] === "UNVERIFIED") {
+                return view('appeals.unverifiedappeal');
             }
-            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || Permission::checkSecurity(Auth::id(), "DEVELOPER","*")) {
+
+            return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
+        } else {
+            $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
+
+            $closestatus = ($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE");
+            abort_if($info->status == "INVALID" && !$isDeveloper, 404,'This appeal has been marked invalid.');
+
+            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || $isDeveloper) {
                 $logs = $info->comments()->get();
                 $userlist = [];
+
                 if (!is_null($info->handlingadmin)) {
                     $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
                 }
+
                 $cudata = Privatedata::where('appealID','=',$id)->get()->first();
+
                 $perms['checkuser'] = Permission::checkCheckuser(Auth::id(),$info->wiki);
-                $perms['functionary'] = Permission::checkCheckuser(Auth::id(),$info->wiki) || Permission::checkOversight(Auth::id(),$info->wiki);
+                $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
                 $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
+
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
+
                 if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
-                    if(!Permission::checkPrivacy(Auth::id(),$info->wiki) && !Permission::checkOversight(Auth::id(),$info->wiki)) {
-                        return view ('appeals.privacydeny');
+                    if (!Permission::checkPrivacy(Auth::id(), $info->wiki) && !Permission::checkOversight(Auth::id(), $info->wiki)) {
+                        return view('appeals.privacydeny');
                     }
-                }
-                if ($info->privacylevel == 1) {
-                    if(!$perms['admin']) {
-                        return view ('appeals.privacydeny');
-                    }
-                }
-                foreach($logs as $log) {
-                    if(is_null($log->user) || $log->user==0) {continue;}
-                    if(in_array($log->user, $userlist)) {continue;}
-                    $userlist[$log->user] = User::findOrFail($log->user)['username'];
                 }
 
-        		return view('appeals.appeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'cudata'=>$cudata, 'checkuserdone'=>$checkuserdone, 'perms'=>$perms, 'replies'=>$replies]);	
-            }
-            else {
+                if ($info->privacylevel == 1 && $perms['admin']) {
+                    return view('appeals.privacydeny');
+                }
+
+                foreach($logs as $log) {
+                    if (is_null($log->user) || $log->user==0 || in_array($log->user, $userlist)) {
+                        continue;
+                    }
+
+                    $userlist[$log->user] = User::findOrFail($log->user)->username;
+                }
+
+                $previousAppeals = Appeal::where('appealfor', $info->appealfor)
+                    ->orWhere('hiddenip', $info->appealfor)
+                    ->whereNot('id', $info->id);
+
+                return view('appeals.appeal', [
+                    'id' => $id,
+                    'info' => $info,
+                    'comments' => $logs,
+                    'userlist' => $userlist,
+                    'cudata' => $cudata,
+                    'checkuserdone' => $checkuserdone,
+                    'perms' => $perms,
+                    'replies' => $replies,
+                    'previousAppeals' => $previousAppeals,
+                ]);
+            } else {
                 return view ('appeals.deny');
             }
-    	}
+        }
     }
+
     public function publicappeal(Request $request) {
         $input = $request->all();
         $hash = $input['hash'];
@@ -152,22 +171,34 @@ class AppealController extends Controller
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
+        $type = $input['type'];
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
         $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
         $input = Arr::add($input, 'appealsecretkey', $key);
-
-        $request->validate([
+        $rules = array(
             'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0',
             'privacyreview' => 'required|numeric|max:2|min:0'
-        ]);
+        );
+        $validator = Validator::make($input, $rules);
 
-        if (sizeof(Appeal::where('appealfor','=',$input['appealfor'])->where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->get())>0 || sizeof(Appeal::where('appealsecretkey')->get())>0) {
+        if ($validator->fails())
+        {
+            if ($type =="account") {
+                return Redirect::to('/appeal/account')->withInput()->withErrors($validator);
+            }
+            if ($type =="ip") {
+                return Redirect::to('/appeal/ip')->withInput()->withErrors($validator);
+            }            
+        }
+
+        if (Appeal::where('appealfor','=',$input['appealfor'])->where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get())>0) {
             return view('appeals.spam');
         }
+
         $appealbyname = Appeal::where('appealfor','=',$input['appealfor'])->orderBy('id', 'desc')->first();
         if (!is_null($appealbyname)) {
             $lastdate = $appealbyname['submitted'];
@@ -177,17 +208,13 @@ class AppealController extends Controller
                 return view('appeals.spam');
             }  
         }
-        $banacct = Ban::where('ip','=',0)->get();
-        $banip = Ban::where('ip','=',1)->get();
-        foreach ($banip as $ban) {
-            if (ip_in_range($ban->target)) {
-                return view('appeals.ban', ['expire'=>$ban->expiry,'id'=>$ban->id]);
-            }
+        $banacct = Ban::where('target','=',$input['appealfor'])->first(); 
+        $banip = Ban::where('target','=',$ip)->first();
+        if(!is_null($banacct)) {
+            return view('appeals.ban', ['expire'=>$banacct->expiry,'id'=>$banacct['id']]);
         }
-        foreach ($banacct as $ban) {
-            if (count(preg_match($ban->target,$input['appealfor']))>0) {
-                return view('appeals.ban', ['expire'=>$ban->expiry,'id'=>$ban->id]);
-            }
+        if(!is_null($banip)) {
+            return view('appeals.ban', ['expire'=>$banip['expiry'],'id'=>$banip['id']]);
         }
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id,'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
@@ -389,7 +416,7 @@ class AppealController extends Controller
             if($appeal->status=="ACCEPT" || $appeal->status=="EXPIRE" || $appeal->status=="DECLINE" || $appeal->status=="CHECKUSER" || $appeal->status=="ADMIN") {
                 $appeal->status = "OPEN";
                 $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'sent back to users','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+                $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'re-open','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             }
             else {
                 abort(403);
@@ -414,7 +441,7 @@ class AppealController extends Controller
         if ($dev && $appeal->status!=="INVALID") {
             $appeal->status = "INVALID";
             $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'closed - invalidated','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'invalidate','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
@@ -538,37 +565,5 @@ class AppealController extends Controller
         }
         else {abort(401);}
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
-    }
-    /**
-    * Check if a given ip is in a network.
-    *
-    * @see https://gist.github.com/ryanwinchester/578c5b50647df3541794
-    *
-    * @param  string $ip     IP to check in IPV4 format eg. 127.0.0.1
-    * @param  string $range  IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
-    * @return bool           true if the ip is in this range / false if not.
-    *
-    * Modifications are local.
-    */
-    public function ip_in_range($iprange)
-    {
-        if (strpos($iprange, '/') == false) {
-            $range .= '/32';
-            $ip = $iprange;
-        }
-        else {
-            $range = "/".explode("/",$iprange)[1];
-            $ip = "/".explode("/",$iprange)[0];
-        }
-
-        // $range is in IP/CIDR format eg 127.0.0.1/24
-        list($range, $netmask) = explode('/', $range, 2);
-
-        $ip_decimal = ip2long($ip);
-        $range_decimal = ip2long($range);
-        $wildcard_decimal = pow(2, (32 - $netmask)) - 1;
-        $netmask_decimal = ~ $wildcard_decimal;
-
-        return (($ip_decimal & $netmask_decimal) == ($range_decimal & $netmask_decimal));
     }
 }
