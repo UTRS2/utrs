@@ -104,7 +104,7 @@ class AppealController extends Controller
                     'checkuserdone' => $checkuserdone,
                     'perms' => $perms,
                     'replies' => $replies,
-                    'previousAppeals' => $previousAppeals,
+                    'previousAppeals' => $previousAppeals
                 ]);
             } else {
                 return view ('appeals.deny');
