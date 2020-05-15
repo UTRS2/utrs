@@ -92,6 +92,8 @@ class AppealController extends Controller
                             ->orWhere('hiddenip', $info->appealfor);
                     })
                     ->where('id', '!=', $info->id)
+                    ->where('status', '!=','INVALID')
+                    ->where('status', '!=','NOTFOUND')
                     ->with('handlingAdminObject')
                     ->orderByDesc('id')
                     ->get();
