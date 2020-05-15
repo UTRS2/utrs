@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import mysql.connector
 from mysql.connector import Error
 import credentials
@@ -68,7 +70,8 @@ def verifyusers():
                 print "FAILURE: Param not accepted."
                 quit()
             mash= username+credentials.secret
-            confirmhash = hashlib.md5(mash.encode())
+            mash = mash.encode('utf-8')
+            confirmhash = hashlib.md5(mash)
             params = {'action': 'emailuser',
             'format': 'json',
             'target': username,
@@ -85,7 +88,10 @@ UTRS Developers"""
             }
             try:raw = callAPI(params)
             except:
-                page = masterwiki.pages["User talk:"+str(username)]
+                try:username = "User talk:"+username
+                except:
+                    username = "User talk:"+str(username)
+                page = masterwiki.pages[username]
                 page.save(page.text() + """
 == Your UTRS Account ==
 Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
@@ -202,10 +208,12 @@ def verifyblock():
                             'list': 'blocks',
                             'bkip': str(appeal[14])
                         }
-                        raw = runAPI(wiki, params)
-                        if len(raw["query"]["blocks"])>0:
-                            updateBlockinfoDB(raw,appeal,wiki)
-                            continue
+                        try:
+                            raw = runAPI(wiki, params)
+                            if len(raw["query"]["blocks"])>0:
+                                updateBlockinfoDB(raw,appeal,wiki)
+                                continue
+                        except:itdidntwork=1#nullvar
                     params = {'action': 'query',
                     'format': 'json',
                     'list': 'users',
@@ -214,17 +222,20 @@ def verifyblock():
                     }
                     raw = runAPI(wiki, params)
                     try:
-                        #blockNotFound(target,wiki,appeal[0])
+                        blockNotFound(target,wiki,appeal[0])
                         calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         continue
                     except:
-                        page = masterwiki.pages["User talk:"+str(target)]
+                        try:username = "User talk:"+target
+                        except:
+                            username = "User talk:"+str(target)
+                        page = masterwiki.pages[username]
                         try:
                             test = raw["query"]["users"]["userid"]
-                            #page.save(page.text() + """
-#== A UTRS Appeal ==
-#A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
-                    #""", "UTRS Appeal not found notice")
+                            page.save(page.text() + """
+== A UTRS Appeal ==
+A UTRS appeal was filed on your behalf, but we were unable to find the block and you don't have wiki mail enabled for us to email you. If this was you, please use the appeal key you were given to return to the system and fix the relevant errors. ~~~~
+                    """, "UTRS Appeal not found notice")
                             calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                         except:
                             calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
@@ -361,8 +372,8 @@ def clearPrivateData():
     for result in results:
         id = result[1]
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
-        if appeal[0][5] != "CLOSED":continue
-        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'closed' and objecttype = 'appeal';","read")
+        if appeal[0][5] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action RLIKE 'closed' and objecttype = 'appeal';","read")
         if datesince(logs[0], 7):
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
 def appeallist():
@@ -393,6 +404,7 @@ def closeNotFound():
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 5):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
+            calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
