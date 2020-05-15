@@ -177,13 +177,17 @@ class AppealController extends Controller
                 return view('appeals.spam');
             }  
         }
-        $banacct = Ban::where('target','=',$input['appealfor'])->first(); 
-        $banip = Ban::where('target','=',$ip)->first();
-        if(!is_null($banacct)) {
-            return view('appeals.ban', ['expire'=>$banacct->expiry,'id'=>$banacct['id']]);
+        $banacct = Ban::where('ip','=',0)->get();
+        $banip = Ban::where('ip','=',1)->get();
+        foreach ($banip as $ban) {
+            if (ip_in_range($ban->target)) {
+                return view('appeals.ban', ['expire'=>$ban->expiry],'id'=>$ban->id]);
+            }
         }
-        if(!is_null($banip)) {
-            return view('appeals.ban', ['expire'=>$banip['expiry'],'id'=>$banip['id']]);
+        foreach ($banacct as $ban) {
+            if (count(preg_match($ban->target,$input['appealfor']))>0) {
+                return view('appeals.ban', ['expire'=>$ban->expiry],'id'=>$ban->id]);
+            }
         }
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id,'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
@@ -534,5 +538,37 @@ class AppealController extends Controller
         }
         else {abort(401);}
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
+    }
+    /**
+    * Check if a given ip is in a network.
+    *
+    * @see https://gist.github.com/ryanwinchester/578c5b50647df3541794
+    *
+    * @param  string $ip     IP to check in IPV4 format eg. 127.0.0.1
+    * @param  string $range  IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
+    * @return bool           true if the ip is in this range / false if not.
+    *
+    * Modifications are local.
+    */
+    public function ip_in_range($iprange)
+    {
+        if (strpos($iprange, '/') == false) {
+            $range .= '/32';
+            $ip = $iprange;
+        }
+        else {
+            $range = "/".explode("/",$iprange)[1];
+            $ip = "/".explode("/",$iprange)[0];
+        }
+
+        // $range is in IP/CIDR format eg 127.0.0.1/24
+        list($range, $netmask) = explode('/', $range, 2);
+
+        $ip_decimal = ip2long($ip);
+        $range_decimal = ip2long($range);
+        $wildcard_decimal = pow(2, (32 - $netmask)) - 1;
+        $netmask_decimal = ~ $wildcard_decimal;
+
+        return (($ip_decimal & $netmask_decimal) == ($range_decimal & $netmask_decimal));
     }
 }
