@@ -95,19 +95,16 @@
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
                                     </div>
-                                    <form method="POST" action="/appeal/checkuser/{{ $id }}">
-                                        @csrf
+                                    {{ Form::open(['url' => '/appeal/checkuser/' . $id]) }}
+                                        {{ Form::token() }}
 
                                         <div class="form-group">
-                                            <label for="cu-reason">
-                                                Reason
-                                            </label>
-
-                                            <textarea name="reason" id="cu-reason" class="form-control"></textarea>
+                                            {{ Form::label('reason', 'Reason') }}
+                                            {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
-                                        <button type="submit" class="btn btn-success">Submit</button>
-                                    </form>
+                                        {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                    {{ Form::close() }}
                                 @endif
                             @endif
                         </div>
@@ -389,19 +386,16 @@
                         </div>
                         <div class="col-md-6">
                             <h5 class="card-title">Drop a comment</h5>
-                            <form method="POST" action="/appeal/comment/{{ $id }}">
-                                @csrf
+                            {{ Form::open(['url' => '/appeal/comment/' . $id]) }}
+                                {{ Form::token() }}
 
                                 <div class="form-group">
-                                    <label for="comment">
-                                        Add a comment to this appeal
-                                    </label>
-
-                                    <textarea name="comment" id="comment" class="form-control"></textarea>
+                                    {{ Form::label('comment', 'Add a comment to this appeal') }}
+                                    {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
-                                <button type="submit" class="btn btn-success">Submit</button>
-                            </form>
+                                {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                            {{ Form::close() }}
                         </div>
                     </div>
                 @endif
