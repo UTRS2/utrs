@@ -16,7 +16,7 @@ Route::get('/appeal/account', 'AppealController@accountappeal');
 Route::post('/appeal/account', 'AppealController@appealsubmit');
 Route::get('/appeal/ip', 'AppealController@ipappeal');
 Route::post('/appeal/ip', 'AppealController@appealsubmit');
-Route::get('/appeal/{id}', 'AppealController@appeal');
+Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
 Route::get('/review', 'AppealController@appeallist');
 
 Route::get('/appeal/{appeal}/verify/{token}', 'AppealController@showVerifyOwnershipForm')
@@ -26,7 +26,6 @@ Route::post('/appeal/{appeal}/verify', 'AppealController@verifyAccountOwnership'
 
 Route::post('/appeal/checkuser/{id}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
-Route::post('/appeal/publiccomment/{id}', 'AppealController@publiccomment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
 Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
 Route::get('/appeal/release/{id}', 'AppealController@release');
@@ -40,8 +39,8 @@ Route::get('/appeal/template/{id}', 'AppealController@viewtemplates');
 Route::get('/appeal/template/{id}/{template}', 'AppealController@respond');
 Route::get('/appeal/custom/{id}', 'AppealController@respondCustom');
 Route::post('/appeal/custom/{id}', 'AppealController@respondCustomSubmit');
-Route::post('/publicappeal', 'AppealController@publicappeal');
 Route::get('/publicappeal', 'AppealController@publicappeal');
+Route::post('/publicappeal/comment', 'AppealController@publicComment');
 Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
 Route::get('/fixappeal/{hash}', 'AppealModifyController@changeip');
 Route::post('/fixip/{id}', 'AppealModifyController@changeipsubmit');

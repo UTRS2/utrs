@@ -70,7 +70,8 @@ def verifyusers():
                 print "FAILURE: Param not accepted."
                 quit()
             mash= username+credentials.secret
-            confirmhash = hashlib.md5(mash.encode())
+            mash = mash.encode('utf-8')
+            confirmhash = hashlib.md5(mash)
             params = {'action': 'emailuser',
             'format': 'json',
             'target': username,
@@ -371,8 +372,8 @@ def clearPrivateData():
     for result in results:
         id = result[1]
         appeal = calldb("select * from appeals where id = "+str(id)+";","read")
-        if appeal[0][5] != "CLOSED":continue
-        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'closed' and objecttype = 'appeal';","read")
+        if appeal[0][5] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action RLIKE 'closed' and objecttype = 'appeal';","read")
         if datesince(logs[0], 7):
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
 def appeallist():
@@ -403,6 +404,7 @@ def closeNotFound():
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 5):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
+            calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
 verifyblock()
 clearPrivateData()
