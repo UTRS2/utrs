@@ -2,9 +2,9 @@ Getting UTRS2 working in a dev environment
 
 1. Clone into a directory
 2. mkdir storge/framework
-3. mkdir storge/framework/sessions
-4. mkdir storge/framework/views
-5. mkdir storge/framework/cache
+3. mkdir storage/framework/sessions
+4. mkdir storage/framework/views
+5. mkdir storage/framework/cache
 6. composer install
 7. cp .env.example .env
 8. edit the DB details in .env
