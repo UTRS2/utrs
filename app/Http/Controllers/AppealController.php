@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App;
 use App\Appeal;
 use App\Oldappeal;
 use App\Olduser;
@@ -193,32 +194,25 @@ class AppealController extends Controller
     }
     public function appealsubmit(Request $request) {
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
-        $type = $input['type'];
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
         $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
         $input = Arr::add($input, 'appealsecretkey', $key);
-        $rules = array(
+        
+        $request->validate([
             'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0',
             'privacyreview' => 'required|numeric|max:2|min:0'
-        );
-        $validator = Validator::make($input, $rules);
-
-        if ($validator->fails())
-        {
-            if ($type =="account") {
-                return Redirect::to('/appeal/account')->withInput()->withErrors($validator);
-            }
-            if ($type =="ip") {
-                return Redirect::to('/appeal/ip')->withInput()->withErrors($validator);
-            }            
-        }
+        ]);
 
         if (Appeal::where('appealfor','=',$input['appealfor'])->where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get())>0) {
             return view('appeals.spam');
@@ -258,7 +252,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -278,7 +276,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $reason = $request->input('comment');
         $user = Auth::id();
@@ -293,7 +295,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -315,7 +321,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -370,7 +380,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -396,7 +410,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -422,7 +440,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -448,7 +470,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -469,7 +495,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -490,7 +520,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -512,7 +546,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -533,7 +571,11 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -550,7 +592,11 @@ class AppealController extends Controller
     }
     public function privacyhandle(Request $request,$id,$action) {
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        if (config('use_xff')) {
+            $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = $request->server('REMOTE_ADDR');
+        }
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
