@@ -229,7 +229,7 @@
                 </h4>
 
                 <div class="card-body">
-                    <table class="table">
+                    <table class="table table-dark">
                         <tr>
                             <th>Appeal</th>
                             <th>Status</th>
@@ -238,7 +238,7 @@
                         </tr>
 
                         @foreach($previousAppeals as $appeal)
-                            <tr>
+                            <tr class="{{ $appeal->status === 'ACCEPT' ? 'bg-success' : (in_array($appeal->status,['DECLINE','EXPIRE']) ? 'bg-danger' : '') }}">
                                 <td>
                                     <a href="/appeal/{{ $appeal->id }}">
                                         #{{ $appeal->id }}
