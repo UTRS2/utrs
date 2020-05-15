@@ -62,7 +62,7 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
-                $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
+                $perms['dev'] = $isDeveloper;
 
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
@@ -85,9 +85,15 @@ class AppealController extends Controller
                     $userlist[$log->user] = User::findOrFail($log->user)->username;
                 }
 
-                $previousAppeals = Appeal::where('appealfor', $info->appealfor)
-                    ->orWhere('hiddenip', $info->appealfor)
-                    ->whereNot('id', $info->id);
+                $previousAppeals = Appeal::where('wiki', $info->wiki)
+                    ->where(function ($query) use ($info) {
+                        $query->where('appealfor', $info->appealfor)
+                            ->orWhere('hiddenip', $info->appealfor);
+                    })
+                    ->where('id', '!=', $info->id)
+                    ->with('handlingAdminObject')
+                    ->orderByDesc('id')
+                    ->get();
 
                 return view('appeals.appeal', [
                     'id' => $id,
@@ -98,7 +104,7 @@ class AppealController extends Controller
                     'checkuserdone' => $checkuserdone,
                     'perms' => $perms,
                     'replies' => $replies,
-                    'previousAppeals' => $previousAppeals,
+                    'previousAppeals' => $previousAppeals
                 ]);
             } else {
                 return view ('appeals.deny');
@@ -171,29 +177,18 @@ class AppealController extends Controller
         $ip = $request->server('HTTP_X_FORWARDED_FOR');
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
-        $type = $input['type'];
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
         $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
         $input = Arr::add($input, 'appealsecretkey', $key);
-        $rules = array(
+
+        $request->validate([
             'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0',
             'privacyreview' => 'required|numeric|max:2|min:0'
-        );
-        $validator = Validator::make($input, $rules);
-
-        if ($validator->fails())
-        {
-            if ($type =="account") {
-                return Redirect::to('/appeal/account')->withInput()->withErrors($validator);
-            }
-            if ($type =="ip") {
-                return Redirect::to('/appeal/ip')->withInput()->withErrors($validator);
-            }            
-        }
+        ]);
 
         if (Appeal::where('appealfor','=',$input['appealfor'])->where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get())>0) {
             return view('appeals.spam');
