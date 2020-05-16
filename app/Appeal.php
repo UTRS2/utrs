@@ -10,7 +10,7 @@ class Appeal extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
-	protected $attributes = [
+    protected $attributes = [
         'privacylevel' => 0,
         'blockfound' => 0
     ];
@@ -33,5 +33,10 @@ class Appeal extends Model
         }
 
         return $this->appealfor;
+    }
+
+    public function handlingAdminObject()
+    {
+        return $this->belongsTo(User::class, 'handlingadmin', 'id');
     }
 }

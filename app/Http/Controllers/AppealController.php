@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App;
 use App\Appeal;
 use App\Oldappeal;
 use App\Olduser;
@@ -29,6 +30,11 @@ class AppealController extends Controller
         if (is_null($info)) {
             $info = Oldappeal::find($id);
             abort_if(is_null($info), 404,'Appeal does not exist or you do not have access to it.');
+
+            //Enwiki is hardcoded here as all previous appeals were only on enwiki.
+            //Since that had a different policy at the time, we have to still observe the same privacy level.
+            $perms['admin'] = Permission::checkAdmin(Auth::id(),'enwiki');
+            abort_if(is_null($info), 403,'Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');            
 
             $comments = $info->comments()->get();
             $userlist = [];
@@ -64,7 +70,7 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
-                $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
+                $perms['dev'] = $isDeveloper;
 
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
@@ -87,9 +93,17 @@ class AppealController extends Controller
                     $userlist[$log->user] = User::findOrFail($log->user)->username;
                 }
 
-                $previousAppeals = Appeal::where('appealfor', $info->appealfor)
-                    ->orWhere('hiddenip', $info->appealfor)
-                    ->whereNot('id', $info->id);
+                $previousAppeals = Appeal::where('wiki', $info->wiki)
+                    ->where(function ($query) use ($info) {
+                        $query->where('appealfor', $info->appealfor)
+                            ->orWhere('hiddenip', $info->appealfor);
+                    })
+                    ->where('id', '!=', $info->id)
+                    ->where('status', '!=','INVALID')
+                    ->where('status', '!=','NOTFOUND')
+                    ->with('handlingAdminObject')
+                    ->orderByDesc('id')
+                    ->get();
 
                 return view('appeals.appeal', [
                     'id' => $id,
@@ -135,7 +149,7 @@ class AppealController extends Controller
         abort_if($appeal->status=="ACCEPT" || $appeal->status=="DECLINE" || $appeal->status=="EXPIRE", 400, "Appeal is closed");
 
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $reason = $request->input('comment');
 
@@ -195,32 +209,21 @@ class AppealController extends Controller
     }
     public function appealsubmit(Request $request) {
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $input = $request->all();
-        $type = $input['type'];
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
         $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
         $input = Arr::add($input, 'appealsecretkey', $key);
-        $rules = array(
+        
+        $request->validate([
             'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0',
             'privacyreview' => 'required|numeric|max:2|min:0'
-        );
-        $validator = Validator::make($input, $rules);
-
-        if ($validator->fails())
-        {
-            if ($type =="account") {
-                return Redirect::to('/appeal/account')->withInput()->withErrors($validator);
-            }
-            if ($type =="ip") {
-                return Redirect::to('/appeal/ip')->withInput()->withErrors($validator);
-            }            
-        }
+        ]);
 
         if (Appeal::where('appealfor','=',$input['appealfor'])->where('status','!=','ACCEPT')->where('status','!=','EXPIRE')->where('status','!=','DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get())>0) {
             return view('appeals.spam');
@@ -264,7 +267,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -284,7 +287,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $reason = $request->input('comment');
         $user = Auth::id();
@@ -299,7 +302,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -321,7 +324,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -376,7 +379,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -402,7 +405,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -428,7 +431,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -454,7 +457,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -475,7 +478,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -496,7 +499,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -518,7 +521,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -539,7 +542,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -556,7 +559,7 @@ class AppealController extends Controller
     }
     public function privacyhandle(Request $request,$id,$action) {
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
@@ -607,7 +610,7 @@ class AppealController extends Controller
         ]);
 
         $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->server('HTTP_X_FORWARDED_FOR');
+        $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
         Log::create([
