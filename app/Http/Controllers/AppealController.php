@@ -68,7 +68,7 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
-                $perms['dev'] = Permission::checkSecurity(Auth::id(),"DEVELOPER",$info->wiki);
+                $perms['dev'] = $isDeveloper;
 
                 $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
                 $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
@@ -91,9 +91,17 @@ class AppealController extends Controller
                     $userlist[$log->user] = User::findOrFail($log->user)->username;
                 }
 
-                $previousAppeals = Appeal::where('appealfor', $info->appealfor)
-                    ->orWhere('hiddenip', $info->appealfor)
-                    ->whereNot('id', $info->id);
+                $previousAppeals = Appeal::where('wiki', $info->wiki)
+                    ->where(function ($query) use ($info) {
+                        $query->where('appealfor', $info->appealfor)
+                            ->orWhere('hiddenip', $info->appealfor);
+                    })
+                    ->where('id', '!=', $info->id)
+                    ->where('status', '!=','INVALID')
+                    ->where('status', '!=','NOTFOUND')
+                    ->with('handlingAdminObject')
+                    ->orderByDesc('id')
+                    ->get();
 
                 return view('appeals.appeal', [
                     'id' => $id,
