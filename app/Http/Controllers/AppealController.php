@@ -84,7 +84,7 @@ class AppealController extends Controller
                 }
 
                 foreach($logs as $log) {
-                    if (is_null($log->user) || $log->user==0 || in_array($log->user, $userlist)) {
+                    if (is_null($log->user) || $log->user === 0 || $log->user === -1 || in_array($log->user, $userlist)) {
                         continue;
                     }
 
@@ -126,17 +126,22 @@ class AppealController extends Controller
         $closestatus = $info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE";
 
         $id = $info->id;
-        $logs = $info->comments()->get();
+        $logs = $info->comments;
         $userlist = [];
         if (!is_null($info->handlingadmin)) {
             $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
         }
+
         $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
+
         foreach($logs as $log) {
-            if(is_null($log->user) || $log->user==0) {continue;}
-            if(in_array($log->user, $userlist)) {continue;}
-            $userlist[$log->user] = User::findOrFail($log->user)['username'];
+            if(is_null($log->user) || in_array($log->user, $userlist) || $log->user === 0 || $log->user === -1) {
+                continue;
+            }
+
+            $userlist[$log->user] = User::findOrFail($log->user)->username;
         }
+
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
     }
 
@@ -152,10 +157,10 @@ class AppealController extends Controller
         $reason = $request->input('comment');
 
         Log::create([
-            'user' => 0,
+            'user' => -1,
             'referenceobject' => $appeal->id,
             'objecttype' => 'appeal',
-            'action' => 'comment',
+            'action' => 'responded',
             'reason' => $reason,
             'ip' => $ip,
             'ua' => $ua . " " .$lang,

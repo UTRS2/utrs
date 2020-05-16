@@ -362,6 +362,8 @@
                             @if($comment->action !== "comment" && $comment->action!=="responded")
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td><i>{{$userlist[$comment->user]}}</i></td>
                                 @endif
@@ -383,6 +385,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{$userlist[$comment->user]}}</td>
                                 @endif
@@ -400,6 +404,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{$userlist[$comment['commentUser']]}}</td>
                                 @endif
