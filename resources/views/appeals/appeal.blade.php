@@ -236,6 +236,7 @@
         </div>
 
         @if($previousAppeals->isNotEmpty())
+        <br />
             <div class="card my-2">
                 <h4 class="card-header">
                     Previous appeals
@@ -284,7 +285,7 @@
                 </div>
             </div>
         @endif
-
+        <br />
         <div class="card my-2">
             <h4 class="card-header">Appeal Content</h4>
             <div class="card-body">
@@ -343,7 +344,7 @@
                 </div>
             </div>
         </div>
-
+        <br />
         <div class="card my-2">
             <h4 class="card-header">Admin Comments</h4>
             <div class="card-body">
