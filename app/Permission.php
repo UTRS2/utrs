@@ -4,11 +4,40 @@ namespace App;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use function foo\func;
 
 class Permission extends Model
 {
+    protected $appends = ['presentPermissions'];
     protected $primaryKey = 'userid';
     public $timestamps = false;
+
+    private $allPossibilities = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
+
+    public function getPresentPermissionsAttribute()
+    {
+        return collect($this->allPossibilities)
+            ->filter(function ($possiblePerm) {
+                return $this->$possiblePerm;
+            });
+    }
+
+    /**
+     * checks if this permission object has any of specified permissions present
+     * @param array $perms permissions to check
+     * @return boolean
+     */
+    public function hasAnyPerms(array $perms)
+    {
+        $perms = collect($perms)
+            ->map(function ($string) {
+                return Str::lower($string);
+            });
+
+        return $this->present_permissions
+            ->intersect($perms)
+            ->isNotEmpty();
+    }
 
     public static function whoami($id,$wiki) {
         if(is_null($id)) {

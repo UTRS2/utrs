@@ -26,13 +26,8 @@ class AppealController extends Controller
 
         $info = Appeal::find($id);
         if (is_null($info)) {
-            $info = Oldappeal::find($id);
-            abort_if(is_null($info), 404,'Appeal does not exist or you do not have access to it.');
-
-            //Enwiki is hardcoded here as all previous appeals were only on enwiki.
-            //Since that had a different policy at the time, we have to still observe the same privacy level.
-            $perms['admin'] = Permission::checkAdmin(Auth::id(),'enwiki');
-            abort_if(is_null($info), 403,'Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');            
+            $info = Oldappeal::findOrFail($id);
+            $this->authorize('view', $info);
 
             $comments = $info->comments()->get();
             $userlist = [];
@@ -49,74 +44,58 @@ class AppealController extends Controller
 
             return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist'=>$userlist]);
         } else {
+            $this->authorize('view', $info);
             $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
 
-            $closestatus = ($info->status=="ACCEPT" || $info->status=="DECLINE" || $info->status=="EXPIRE");
-            abort_if($info->status == "INVALID" && !$isDeveloper, 404,'This appeal has been marked invalid.');
+            $logs = $info->comments()->get();
+            $userlist = [];
 
-            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || $isDeveloper) {
-                $logs = $info->comments()->get();
-                $userlist = [];
-
-                if (!is_null($info->handlingadmin)) {
-                    $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
-                }
-
-                $cudata = Privatedata::where('appealID','=',$id)->get()->first();
-
-                $perms['checkuser'] = Permission::checkCheckuser(Auth::id(),$info->wiki);
-                $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
-                $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
-                $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
-                $perms['dev'] = $isDeveloper;
-
-                $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
-                $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
-
-                if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
-                    if (!Permission::checkPrivacy(Auth::id(), $info->wiki) && !Permission::checkOversight(Auth::id(), $info->wiki)) {
-                        return view('appeals.privacydeny');
-                    }
-                }
-
-                if ($info->privacylevel == 1 && $perms['admin']) {
-                    return view('appeals.privacydeny');
-                }
-
-                foreach($logs as $log) {
-                    if (is_null($log->user) || $log->user==0 || in_array($log->user, $userlist)) {
-                        continue;
-                    }
-
-                    $userlist[$log->user] = User::findOrFail($log->user)->username;
-                }
-
-                $previousAppeals = Appeal::where('wiki', $info->wiki)
-                    ->where(function ($query) use ($info) {
-                        $query->where('appealfor', $info->appealfor)
-                            ->orWhere('hiddenip', $info->appealfor);
-                    })
-                    ->where('id', '!=', $info->id)
-                    ->where('status', '!=','INVALID')
-                    ->where('status', '!=','NOTFOUND')
-                    ->with('handlingAdminObject')
-                    ->orderByDesc('id')
-                    ->get();
-
-                return view('appeals.appeal', [
-                    'id' => $id,
-                    'info' => $info,
-                    'comments' => $logs,
-                    'userlist' => $userlist,
-                    'cudata' => $cudata,
-                    'checkuserdone' => $checkuserdone,
-                    'perms' => $perms,
-                    'replies' => $replies,
-                    'previousAppeals' => $previousAppeals,
-                ]);
-            } else {
-                return view ('appeals.deny');
+            if (!is_null($info->handlingadmin)) {
+                $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
             }
+
+            $cudata = Privatedata::where('appealID','=',$id)->get()->first();
+
+            $perms['checkuser'] = Permission::checkCheckuser(Auth::id(),$info->wiki);
+            $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(),$info->wiki);
+            $perms['admin'] = Permission::checkAdmin(Auth::id(),$info->wiki);
+            $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(),$info->wiki);
+            $perms['dev'] = $isDeveloper;
+
+            $replies = Sendresponse::where('appealID','=',$id)->where('custom','!=','null')->get();
+            $checkuserdone = !is_null(Log::where('user','=',Auth::id())->where('action','=','checkuser')->where('referenceobject','=',$id)->first());
+
+            foreach($logs as $log) {
+                if (is_null($log->user) || $log->user==0 || in_array($log->user, $userlist)) {
+                    continue;
+                }
+
+                $userlist[$log->user] = User::findOrFail($log->user)->username;
+            }
+
+            $previousAppeals = Appeal::where('wiki', $info->wiki)
+                ->where(function ($query) use ($info) {
+                    $query->where('appealfor', $info->appealfor)
+                        ->orWhere('hiddenip', $info->appealfor);
+                })
+                ->where('id', '!=', $info->id)
+                ->where('status', '!=','INVALID')
+                ->where('status', '!=','NOTFOUND')
+                ->with('handlingAdminObject')
+                ->orderByDesc('id')
+                ->get();
+
+            return view('appeals.appeal', [
+                'id' => $id,
+                'info' => $info,
+                'comments' => $logs,
+                'userlist' => $userlist,
+                'cudata' => $cudata,
+                'checkuserdone' => $checkuserdone,
+                'perms' => $perms,
+                'replies' => $replies,
+                'previousAppeals' => $previousAppeals,
+            ]);
         }
     }
 

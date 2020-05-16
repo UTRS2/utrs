@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\User;
+use App\Appeal;
+use App\Oldappeal;
+use App\Policies\AppealPolicy;
+use App\Policies\OldAppealPolicy;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,7 +19,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+        Appeal::class => AppealPolicy::class,
+        Oldappeal::class => OldAppealPolicy::class,
     ];
 
     /**
@@ -25,6 +32,15 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::before(function (User $user) {
+            if (!$user->verified) {
+                return Response::deny('Your account has not been verified yet.');
+            }
+
+            if ($user->globalPermissions && $user->globalPermissions->hasAnyPerms(['developer'])) {
+                // allow developers
+                return true;
+            }
+        });
     }
 }
