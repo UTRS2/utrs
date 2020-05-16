@@ -231,7 +231,8 @@
                 <div class="card-body">
                     <table class="table table-dark">
                         <tr>
-                            <th>Appeal</th>
+                            <th>Appeal #</th>
+                            <th>Appeal For</th>
                             <th>Status</th>
                             <th>Handling admin</th>
                             <th>Submitted at</th>
@@ -239,17 +240,21 @@
 
                         @foreach($previousAppeals as $appeal)
                             <tr class="{{ $appeal->status === 'ACCEPT' ? 'bg-success' : (in_array($appeal->status,['DECLINE','EXPIRE']) ? 'bg-danger' : '') }}">
-                                <td>
+                                <td style="vertical-align: middle;">
                                     <a href="/appeal/{{ $appeal->id }}" class="btn btn-primary">
                                         #{{ $appeal->id }}
                                     </a>
                                 </td>
 
-                                <td>
+                                <td style="vertical-align: middle;">
+                                    {{ $appeal->appealfor }}
+                                </td>
+
+                                <td style="vertical-align: middle;">
                                     {{ $appeal->status }}
                                 </td>
 
-                                <td>
+                                <td style="vertical-align: middle;">
                                     @if($appeal->handlingAdminObject)
                                         {{ $appeal->handlingAdminObject->username }}
                                     @else
@@ -257,7 +262,7 @@
                                     @endif
                                 </td>
 
-                                <td>
+                                <td style="vertical-align: middle;">
                                     {{ $appeal->submitted }}
                                 </td>
                             </tr>
