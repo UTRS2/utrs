@@ -29,17 +29,6 @@ class VerifyBlockJob implements ShouldQueue
     public function handle()
     {
         if (!MwApiExtras::canEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername())) {
-            Log::create([
-                'user' => 0,
-                'referenceobject' => $this->appeal->id,
-                'objecttype' => 'appeal',
-                'action' => 'account verification',
-                'reason' => 'user can not be e-mailed thru wiki',
-                'ip' => '127.0.0.1',
-                'ua' => '',
-                'protected' => 0,
-            ]);
-
             return;
         }
 
