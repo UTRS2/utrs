@@ -240,7 +240,7 @@
                         @foreach($previousAppeals as $appeal)
                             <tr class="{{ $appeal->status === 'ACCEPT' ? 'bg-success' : (in_array($appeal->status,['DECLINE','EXPIRE']) ? 'bg-danger' : '') }}">
                                 <td>
-                                    <a href="/appeal/{{ $appeal->id }}">
+                                    <a href="/appeal/{{ $appeal->id }}" class="btn btn-primary">
                                         #{{ $appeal->id }}
                                     </a>
                                 </td>
