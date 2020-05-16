@@ -4,6 +4,7 @@ namespace App\Jobs\WikiPermission;
 
 use App\User;
 use App\Permission;
+use App\MwApi\MwApiGetter;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\User as MediawikiUser;
@@ -15,11 +16,6 @@ abstract class BaseWikiPermissionJob
 {
     /** @var User */
     protected $user;
-
-    /**
-     * @return string wiki api endpoint url
-     */
-    abstract function getWikiUrl();
 
     /**
      * @return string wiki in permissions table
@@ -69,8 +65,7 @@ abstract class BaseWikiPermissionJob
 
     protected function getUserPermissions()
     {
-        $api = new MediawikiApi($this->getWikiUrl());
-        $services = new MediawikiFactory($api);
+        $services = MwApiGetter::getServicesForWiki($this->getWikiId());
         $user = $services->newUserGetter()->getFromUsername($this->user->username);
 
         // user does not exist

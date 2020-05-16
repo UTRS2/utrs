@@ -3,10 +3,8 @@
 namespace App\Jobs\WikiPermission;
 
 use App\User;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use App\MwApi\MwApiUrls;
 use Illuminate\Bus\Queueable;
-use App\MediawikiIntegration\WikiApiUrls;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,11 +26,6 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
     {
         $this->user = $user;
         $this->wiki = $wiki;
-    }
-
-    public function getWikiUrl()
-    {
-        return WikiApiUrls::getWikiUrl($this->wiki);
     }
 
     public function getWikiId()

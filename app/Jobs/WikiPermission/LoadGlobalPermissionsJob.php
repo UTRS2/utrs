@@ -3,8 +3,8 @@
 namespace App\Jobs\WikiPermission;
 
 use App\User;
+use App\MwApi\MwApiUrls;
 use Illuminate\Bus\Queueable;
-use App\MediawikiIntegration\WikiApiUrls;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -22,11 +22,6 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
     public function __construct(User $user)
     {
         $this->user = $user;
-    }
-
-    public function getWikiUrl()
-    {
-        return WikiApiUrls::getGlobalWikiUrl();
     }
 
     public function getWikiId()

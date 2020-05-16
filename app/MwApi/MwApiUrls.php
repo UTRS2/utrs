@@ -24,7 +24,7 @@ class MwApiUrls
      */
     public static function getWikiUrl(string $wiki)
     {
-        if (Str::lower($wiki) === 'global') {
+        if (Str::lower($wiki) === 'global' || $wiki === '*') {
             return self::getGlobalWikiUrl();
         }
 
