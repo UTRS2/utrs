@@ -194,7 +194,7 @@ class AppealController extends Controller
     }
     public function appealsubmit(Request $request) {
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -252,7 +252,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -276,7 +276,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -295,7 +295,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -321,7 +321,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -380,7 +380,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -410,7 +410,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -440,7 +440,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -470,7 +470,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -495,7 +495,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -520,7 +520,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -546,7 +546,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -571,7 +571,7 @@ class AppealController extends Controller
         }
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
@@ -592,7 +592,7 @@ class AppealController extends Controller
     }
     public function privacyhandle(Request $request,$id,$action) {
         $ua = $request->server('HTTP_USER_AGENT');
-        if (config('use_xff')) {
+        if (config('app.use_xff')) {
             $ip = $request->server('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $request->server('REMOTE_ADDR');
