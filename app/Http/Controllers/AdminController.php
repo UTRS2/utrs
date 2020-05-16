@@ -62,7 +62,7 @@ class AdminController extends Controller
         if (!$permission) {
             abort(403);
         }
-    
+
         $tableheaders = ['ID','Target','Expires','Reason'];
         $rowcontents = [];
 
@@ -72,7 +72,7 @@ class AdminController extends Controller
             }
 
             $idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
-            $rowcontents[$ban->id] = [$idbutton, $ban->target, $ban->expiry, $ban->reason];
+            $rowcontents[$ban->id] = [$idbutton, htmlspecialchars($ban->target), $ban->expiry, htmlspecialchars($ban->reason)];
         }
 
         return view ('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
