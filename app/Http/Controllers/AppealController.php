@@ -29,6 +29,11 @@ class AppealController extends Controller
             $info = Oldappeal::find($id);
             abort_if(is_null($info), 404,'Appeal does not exist or you do not have access to it.');
 
+            //Enwiki is hardcoded here as all previous appeals were only on enwiki.
+            //Since that had a different policy at the time, we have to still observe the same privacy level.
+            $perms['admin'] = Permission::checkAdmin(Auth::id(),'enwiki');
+            abort_if(is_null($info), 403,'Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');            
+
             $comments = $info->comments()->get();
             $userlist = [];
 

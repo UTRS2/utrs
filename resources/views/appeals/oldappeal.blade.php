@@ -19,7 +19,6 @@
 	    		@endif
 	    		<p class="card-text">
 	    			Appeal status: {{$info['status']}}
-	    			<br />Email Domain: ******{{ '@' }}{{explode("@",$info['email'])[1]}}
 	    			<br />Blocking Admin: {{$info['blockingAdmin']}}
 	    			<br />Time Submitted: {{$info['timestamp']}}
 	    		</p>
