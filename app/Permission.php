@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use function foo\func;
 
 class Permission extends Model
 {

@@ -37,8 +37,8 @@ class AppealPolicy
         }
 
         if ($appeal->status === 'INVALID') {
-            return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['developer']) ? true
-                : $this->deny('This appeal has been marked as invalid.');
+            // Developers can already see everything based on override in AuthServiceProvider
+            return $this->deny('This appeal has been marked as invalid.');
         }
 
         if ($appeal->privacyreview !== $appeal->privacylevel || $appeal->privacylevel === 2) {
@@ -51,7 +51,7 @@ class AppealPolicy
         }
 
         if (in_array($appeal->status, ['ACCEPT', 'DECLINE', 'EXPIRE', 'OPEN', 'PRIVACY', 'ADMIN', 'CHECKUSER'])) {
-
+            return true;
         }
 
         return false;

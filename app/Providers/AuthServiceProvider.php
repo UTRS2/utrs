@@ -37,8 +37,8 @@ class AuthServiceProvider extends ServiceProvider
                 return Response::deny('Your account has not been verified yet.');
             }
 
-            if ($user->globalPermissions && $user->globalPermissions->hasAnyPerms(['developer'])) {
-                // allow developers
+            if ($user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer')) {
+                // allow developers to do everything the'd ever want
                 return true;
             }
         });
