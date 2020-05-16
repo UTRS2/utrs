@@ -18,6 +18,8 @@ use Auth;
 use Validator;
 use Redirect;
 use Illuminate\Support\Arr;
+use App\Rules\SecretEqualsRule;
+use App\Jobs\GetBlockDetailsJob;
 
 class AppealController extends Controller
 {
@@ -244,9 +246,13 @@ class AppealController extends Controller
         if(!is_null($banip)) {
             return view('appeals.ban', ['expire'=>$banip['expiry'],'id'=>$banip['id']]);
         }
+
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id,'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
         $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'create','ip' => $ip, 'ua' => $ua . " " .$lang));
+
+        GetBlockDetailsJob::dispatch($appeal);
+
         return view ('appeals.makeappeal.hash', ['hash'=>$key]);
     }
     public function ipappeal() {
@@ -583,5 +589,39 @@ class AppealController extends Controller
         }
         else {abort(401);}
         return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies]);
+    }
+
+    public function showVerifyOwnershipForm(Request $request, Appeal $appeal, $token)
+    {
+        abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
+        return view('appeals.verifyaccount', ['appeal' => $appeal]);
+    }
+
+    public function verifyAccountOwnership(Request $request, Appeal $appeal)
+    {
+        $request->validate([
+            'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
+            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
+        ]);
+
+        $appeal->update([
+            'verify_token' => null,
+            'user_verified' => true,
+        ]);
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
+        Log::create([
+            'user' => 0,
+            'referenceobject'=> $appeal->id,
+            'objecttype'=>'appeal',
+            'action'=>'account verification',
+            'ip' => $ip,
+            'ua' => $ua . " " .$lang
+        ]);
+
+        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
 }

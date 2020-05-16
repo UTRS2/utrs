@@ -18,6 +18,12 @@ Route::get('/appeal/ip', 'AppealController@ipappeal');
 Route::post('/appeal/ip', 'AppealController@appealsubmit');
 Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
 Route::get('/review', 'AppealController@appeallist');
+
+Route::get('/appeal/{appeal}/verify/{token}', 'AppealController@showVerifyOwnershipForm')
+    ->name('appeal.verifyownership');
+Route::post('/appeal/{appeal}/verify', 'AppealController@verifyAccountOwnership')
+    ->name('appeal.verifyownership.submit');
+
 Route::post('/appeal/checkuser/{id}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
