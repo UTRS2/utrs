@@ -17,6 +17,7 @@ class WikiPermissionJobTest extends TestCase
 
     private function getUser($name = 'Admin')
     {
+        User::unsetEventDispatcher();
         return factory(User::class)->create([
             'username' => $name,
         ]);
