@@ -116,10 +116,10 @@
                                     @if ($info->privacyreview==1 || $info->privacyreview==2)
                                         <div class="alert alert-primary" role="alert">
                                             @if ($info->privacyreview==1)
-                                                It has been requested that this appeal be hidden from public view and only visibleto
+                                                It has been requested that this appeal be hidden from public view and only visible to
                                                 administrators.
                                             @elseif ($info->privacyreview==2)
-                                                It has been requested that this appeal be oversighted and only availible to those on
+                                                It has been requested that this appeal be oversighted and only available to those on
                                                 the privacy team to review.
                                             @endif
                                         </div>
