@@ -207,7 +207,7 @@ class AppealController extends Controller
         $input = Arr::add($input, 'appealsecretkey', $key);
         
         $request->validate([
-            'appealtext' => 'max:4000|required',
+            'appealtext' => 'max:5000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0',
