@@ -38,9 +38,9 @@ class MwApiExtras
         return $response['emailuser']['result'] === 'Success';
     }
 
-    public static function getBlockInfo($wiki, $username)
+    public static function getBlockInfo($wiki, $username, $key = null)
     {
-        $key = filter_var($username, FILTER_VALIDATE_IP) === false ? 'bkusers' : 'bkip';
+        $key = $key ?? filter_var($username, FILTER_VALIDATE_IP) === false ? 'bkusers' : 'bkip';
 
         $api = MwApiGetter::getApiForWiki($wiki);
         $response = $api->getRequest(new SimpleRequest(
