@@ -41,41 +41,41 @@ class AdminController extends Controller
     	return view ('admin.tables', ['title'=>'All Users','tableheaders'=>$tableheaders, 'rowcontents'=>$rowcontents]);
     }
     public function listbans() {
-    	$allbans = Ban::all();
-    	$currentuser = User::findOrFail(Auth::id());
+        $allbans = Ban::all();
+        $currentuser = User::findOrFail(Auth::id());
 
-    	$hasHiddenBanPermission = false;
-    	$permission = false;
+        $hasHiddenBanPermission = false;
+        $permission = false;
 
-    	$wikilist = explode(",",$currentuser->wikis);
+        $wikilist = explode(",",$currentuser->wikis);
 
-    	foreach ($wikilist as $wiki) {
-    		if (!$permission && Permission::checkToolAdmin(Auth::id(), $wiki)) {
-    			$permission = true;
-    		}
-
-    		if (!$hasHiddenBanPermission && Permission::checkPrivacy(Auth::id(), $wiki)) {
-    		    $hasHiddenBanPermission = true;
-            }
-    	}
-
-    	if (!$permission) {
-    		abort(403);
-    	}
-
-    	$tableheaders = ['ID','Target','Expires','Reason'];
-    	$rowcontents = [];
-
-    	foreach ($allbans as $ban) {
-    	    if ($ban->is_hidden && !$hasHiddenBanPermission) {
-    	        continue;
+        foreach ($wikilist as $wiki) {
+            if (!$permission && Permission::checkToolAdmin(Auth::id(), $wiki)) {
+                $permission = true;
             }
 
-    		$idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
-    		$rowcontents[$ban->id] = [$idbutton, $ban->target, $ban->expiry, $ban->reason];
-    	}
+            if (!$hasHiddenBanPermission && Permission::checkPrivacy(Auth::id(), $wiki)) {
+                $hasHiddenBanPermission = true;
+            }
+        }
 
-    	return view ('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
+        if (!$permission) {
+            abort(403);
+        }
+    
+        $tableheaders = ['ID','Target','Expires','Reason'];
+        $rowcontents = [];
+
+        foreach ($allbans as $ban) {
+            if ($ban->is_hidden && !$hasHiddenBanPermission) {
+                continue;
+            }
+
+            $idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
+            $rowcontents[$ban->id] = [$idbutton, $ban->target, $ban->expiry, $ban->reason];
+        }
+
+        return view ('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
     }
 
     public function listsitenotices() {
