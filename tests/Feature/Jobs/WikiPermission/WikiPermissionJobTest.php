@@ -5,7 +5,7 @@ namespace Tests\Feature\Jobs\WikiPermission;
 use Mockery;
 use App\User;
 use ReflectionClass;
-use App\MediawikiIntegration\WikiApiUrls;
+use App\MwApi\MwApiUrls;
 use Mediawiki\DataModel\User as MediawikiUser;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,7 +37,7 @@ class WikiPermissionJobTest extends TestCase
     public function test_it_filters_out_users_with_less_than_500_edits()
     {
         $user = $this->getUser();
-        $job = new LoadLocalPermissionsJob($user, WikiApiUrls::getSupportedWikis()[0]);
+        $job = new LoadLocalPermissionsJob($user, MwApiUrls::getSupportedWikis()[0]);
 
         $groups = ['user', 'sysop'];
 
@@ -56,13 +56,13 @@ class WikiPermissionJobTest extends TestCase
 
     public function test_it_updates_wikis_on_user()
     {
-        $otherWikiId = WikiApiUrls::getSupportedWikis()[1];
+        $otherWikiId = MwApiUrls::getSupportedWikis()[1];
 
         $user = $this->getUser();
-        $user->wikis = WikiApiUrls::getSupportedWikis()[1];
+        $user->wikis = MwApiUrls::getSupportedWikis()[1];
         $user->save();
 
-        $wiki = WikiApiUrls::getSupportedWikis()[0];
+        $wiki = MwApiUrls::getSupportedWikis()[0];
 
         $job = new LoadLocalPermissionsJob($user, $wiki);
 
