@@ -9,12 +9,18 @@ class Appeal extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
-	protected $attributes = [
+    protected $attributes = [
         'privacylevel' => 0,
         'blockfound' => 0
     ];
+
     public function comments()
     {
         return $this->hasMany('App\Log', 'referenceobject','id');
+    }
+
+    public function handlingAdminObject()
+    {
+        return $this->belongsTo(User::class, 'handlingadmin', 'id');
     }
 }
