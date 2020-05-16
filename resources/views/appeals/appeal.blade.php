@@ -155,7 +155,7 @@
                                                 It has been requested that this appeal be hidden from public view and only visible to
                                                 administrators.
                                             @elseif ($info->privacyreview==2)
-                                                It has been requested that this appeal be oversighted and only available to those on
+                                                It has been requested that this appeal be oversighted and only availible to those on
                                                 the privacy team to review.
                                             @endif
                                         </div>
