@@ -9,6 +9,11 @@ class Ban extends Model
 	protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'is_hidden' => 'boolean',
+    ];
+
     public function logs()
     {
         return $this->hasOne('App\Log', 'id','logID');

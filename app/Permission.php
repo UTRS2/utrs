@@ -42,7 +42,7 @@ class Permission extends Model
         }
 
         foreach ($permissionArray as $permissionName) {
-            if ($permission->{Str::lower($permissionName)} == 1) {
+            if ($permission->{Str::lower($permissionName)}) {
                 return true;
             }
         }
