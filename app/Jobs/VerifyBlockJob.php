@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Log;
 use App\Appeal;
 use RuntimeException;
 use App\MwApi\MwApiExtras;
@@ -60,16 +59,5 @@ EOF;
         if (!$result) {
             throw new RuntimeException('Failed sending an e-mail');
         }
-
-        Log::create([
-            'user' => 0,
-            'referenceobject' => $this->appeal->id,
-            'objecttype' => 'appeal',
-            'action' => 'account verification',
-            'reason' => 'user e-mailed thru wiki',
-            'ip' => '127.0.0.1',
-            'ua' => '',
-            'protected' => 0,
-        ]);
     }
 }

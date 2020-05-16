@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Appeal;
-use App\MwApi\MwApiGetter;
 use App\MwApi\MwApiExtras;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,34 +21,42 @@ class GetBlockDetailsJob implements ShouldQueue
         $this->appeal = $appeal;
     }
 
-    public function handle()
+    public function handleBlockData($blockData)
     {
-        if ($this->appeal->wiki === 'global') {
-            $details = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
-        } else {
-            $details = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
-        }
-
-        if (!$details) {
-            $this->appeal->update([
-                'status' => 'NOTFOUND',
-            ]);
-
-            return;
-        }
-
         $status = $this->appeal->privacylevel === $this->appeal->privacyreview ? 'OPEN' : 'PRIVACY';
 
         $this->appeal->update([
             'blockfound' => 1,
-            'blockingadmin' => $details['by'],
-            'blockreason' => $details['reason'],
+            'blockingadmin' => $blockData['by'],
+            'blockreason' => $blockData['reason'],
             'status' => $status,
         ]);
 
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
-        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($details['user'])) {
+        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($blockData['user'])) {
             VerifyBlockJob::dispatch($this->appeal);
         }
+    }
+
+    public function handle()
+    {
+        if ($this->appeal->wiki === 'global') {
+            $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
+        } else {
+            $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
+
+            if (!$blockData) {
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip);
+            }
+        }
+
+        if ($blockData) {
+            $this->handleBlockData($blockData);
+            return;
+        }
+
+        $this->appeal->update([
+            'status' => 'NOTFOUND',
+        ]);
     }
 }
