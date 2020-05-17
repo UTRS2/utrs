@@ -57,6 +57,30 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
+            if "," in userresult[6]:
+                for wiki in userresult[6].split(","):
+                    if checkBlock(user,wiki):
+                        try:username = "User talk:"+username
+                        except:
+                            username = "User talk:"+str(username)
+                        page = masterwiki.pages[username]
+                        #page.save(page.text() + """
+        #== Your UTRS Account ==
+        #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
+                            #""", "UTRS Account for blocked users")
+                        print "SCHEDULE ACCOUNT DELETION: " + username
+
+            else:
+                if checkBlock(user,userresult[6]):
+                    try:username = "User talk:"+username
+                    except:
+                        username = "User talk:"+str(username)
+                    page = masterwiki.pages[username]
+                    #page.save(page.text() + """
+    #== Your UTRS Account ==
+    #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
+                        #""", "UTRS Account for blocked users")
+                    print "SCHEDULE ACCOUNT DELETION: " + username                    
             username = userresult[1]
             if username == None:continue
             params = {'action': 'query',
@@ -314,6 +338,32 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                     if re.search(regex,str(appeal[1])) is None:blockNotFound(target,wiki,appeal[0])
                 continue
+def checkBlock(username,wiki):
+    target = username
+    if wiki == "enwiki" or wiki == "ptwiki":
+        params = {'action': 'query',
+        'format': 'json',
+        'list': 'blocks',
+        'bkusers': target
+        }
+        raw = runAPI(wiki, params)
+        if len(raw["query"]["blocks"])>0:
+            return True
+        else:
+            return False
+    if wiki == "global":
+        params = {'action': 'query',
+        'format': 'json',
+        'list': 'globalallusers',
+        'agufrom': str(target),
+        'agulimit':1,
+        'aguprop':'lockinfo'
+        }
+        raw = runAPI(wiki, params)
+        try:
+            if raw["query"]["globalallusers"][0]["locked"]=="":return True
+        except:
+            return False
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
     mash= username+credentials.secret
