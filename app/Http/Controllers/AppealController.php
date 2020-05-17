@@ -79,7 +79,7 @@ class AppealController extends Controller
                     }
                 }
 
-                if ($info->privacylevel == 1 && $perms['admin']) {
+                if ($info->privacylevel == 1 && !$perms['admin']) {
                     return view('appeals.privacydeny');
                 }
 
