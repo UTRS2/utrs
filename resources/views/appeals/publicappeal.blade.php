@@ -147,7 +147,7 @@
 				      <td>{{$userlist[$comment['commentUser']]}}</td>
 				      <td>{{$comment['timestamp']}}</td>
 				      @if($comment['protected'])
-				        <td><i>Access to comment is restricted.</td>
+						<td><i>Access to comment is restricted.</i></td>
 				        @else
 				            @if($comment['comment']!==NULL)
                                 <td>{{$comment['comment']}}</td>
@@ -166,19 +166,15 @@
             </div>
             <div class="col-6">
             <h5 class="card-title">Drop a comment</h5>
-            {{ Form::open(array('url' => 'appeal/publiccomment/'.$id)) }}
-            {{Form::token()}}
-            {{Form::label('comment', 'Add a comment to this appeal:')}}<br>
-            {{Form::textarea('comment',null,['rows'=>4,'width'=>'-webkit-fill-available'])}}<br><br>
-            <button type="submit" class="btn btn-success">Submit</button>
+            {{ Form::open(array('url' => '/publicappeal/comment')) }}
+				{{ Form::hidden('appealsecretkey', $info->appealsecretkey) }}
+				<div class="form-group">
+					{{ Form::label('comment', 'Add a comment to this appeal:') }}
+					{{ Form::textarea('comment',null, ['rows'=>4, 'class' => 'form-control']) }}
+				</div>
+				<button type="submit" class="btn btn-success">Submit</button>
             {{ Form::close() }}
             </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-        </div>
-  		</div>
+		</div>
 	</div>
 @endsection
