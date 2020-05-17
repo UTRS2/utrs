@@ -105,7 +105,7 @@
                                             {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
-                                        {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                        {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                                     {{ Form::close() }}
                                 @endif
                             @endif
@@ -446,7 +446,7 @@
                                     {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
-                                {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                             {{ Form::close() }}
                         </div>
                     </div>
