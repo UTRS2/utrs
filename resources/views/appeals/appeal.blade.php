@@ -56,7 +56,7 @@
                                 @endif
                                 <br/>
 
-                                <a href="https://en.wikipedia.org/wiki/User:{{$info->appealfor}}"
+                                <a href="https://en.wikipedia.org/wiki/User_talk:{{$info->appealfor}}"
                                    class="btn btn-secondary">
                                     User talk
                                 </a>
