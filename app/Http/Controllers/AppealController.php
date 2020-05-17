@@ -459,7 +459,7 @@ class AppealController extends Controller
         if ($dev && $appeal->status!=="INVALID") {
             $appeal->status = "INVALID";
             $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'invalidate','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'closed - invalidate','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {
