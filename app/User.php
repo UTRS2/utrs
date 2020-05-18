@@ -13,7 +13,7 @@ class User extends Authenticatable
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
-    protected $attributes = ['verified_wikis'];
+    protected $appends = ['verified_wikis'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -38,6 +38,11 @@ class User extends Authenticatable
     public function permissions()
     {
         return $this->hasMany(Permission::class, 'userid', 'id');
+    }
+
+    public function logs()
+    {
+        return $this->morphMany(Log::class, 'object', 'objecttype', 'referenceobject');
     }
 
     /**

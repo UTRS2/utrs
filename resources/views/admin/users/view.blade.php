@@ -59,44 +59,16 @@
                             {{ $permission->wiki }}
                         </td>
 
-                        <td>
-                            {{ $permission->checkuser }}
-                        </td>
-
-                        <td>
-                            {{ $permission->oversight }}
-                        </td>
-
-                        <td>
-                            {{ $permission->steward }}
-                        </td>
-
-                        <td>
-                            {{ $permission->staff }}
-                        </td>
-
-                        <td>
-                            <input name="permissions[{{ $permission->wiki }}][developer]" type="checkbox" class="form-check"
-                                    {{ old('permissions.' . $permission->wiki . '.developer') }}>
-                        </td>
-
-                        <td>
-                            <input name="permissions[{{ $permission->wiki }}][developer]" type="checkbox" class="form-check"
-                                    {{ old('permissions.' . $permission->wiki . '.developer') }}>
-                        </td>
-
-                        <td>
-                            <input name="permissions[{{ $permission->wiki }}][developer]" type="checkbox" class="form-check"
-                                    {{ old('permissions.' . $permission->wiki . '.developer') }}>
-                        </td>
-
-                        <td>
-                            {{ $permission->admin }}
-                        </td>
-
-                        <td>
-                            {{ $permission->user }}
-                        </td>
+                        @foreach(App\Permission::ALL_POSSIBILITIES as $permNode)
+                            <td>
+                                @can('updatePermission', [$user, $permission->wiki, $permNode])
+                                    {{ Form::checkbox('permission[' . $permission->wikiFormKey . '][' . $permNode . ']', 1,
+                                        old('permission.' . $permission->wikiFormKey . '.' . $permNode, $permission->$permNode)) }}
+                                @else
+                                    {{ $permission->$permNode ? 'Yes' : '-' }}
+                                @endcan
+                            </td>
+                        @endforeach
                     </tr>
                 @endforeach
                 </tbody>
@@ -104,10 +76,28 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card mb-4">
         <h5 class="card-header">Save changes</h5>
         <div class="card-body">
+            <div class="form-group">
+                {{ Form::label('reason', 'Reason for changing user permissions') }}
+                {{ Form::input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
+
+                @error('reason')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+
             {{ Form::submit('Save', ['class' => 'btn btn-primary']) }}
+        </div>
+    </div>
+
+    <div class="card">
+        <h5 class="card-header">Logs</h5>
+        <div class="card-body">
+            {{ json_encode($user->logs) }}
         </div>
     </div>
     {{ Form::close() }}

@@ -7,18 +7,24 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $appends = ['presentPermissions'];
-    protected $primaryKey = 'userid';
+    protected $fillable = self::ALL_POSSIBILITIES;
+    protected $appends = ['presentPermissions', 'wikiFormKey'];
     public $timestamps = false;
 
-    private $allPossibilities = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
+    const ALL_POSSIBILITIES = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
 
     public function getPresentPermissionsAttribute()
     {
-        return collect($this->allPossibilities)
+        return collect(self::ALL_POSSIBILITIES)
             ->filter(function ($possiblePerm) {
                 return $this->$possiblePerm;
             });
+    }
+
+    // this is a really stupid hack; but laravel's request()->input('...') doesn't really like form keys with *'s.
+    public function getWikiFormKeyAttribute()
+    {
+        return $this->wiki === '*' ? 'global' : $this->wiki;
     }
 
     /**

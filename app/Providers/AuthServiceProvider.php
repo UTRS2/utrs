@@ -12,6 +12,7 @@ use App\Policies\AppealPolicy;
 use App\Policies\OldAppealPolicy;
 use App\Policies\Admin\BanPolicy;
 use App\Policies\Admin\UserPolicy;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Access\Response;
 use App\Policies\Admin\TemplatePolicy;
 use App\Policies\Admin\SiteNoticePolicy;
@@ -43,13 +44,20 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::before(function (User $user) {
+        Gate::before(function (User $user, $ability, $foo) {
             if (!$user->verified) {
                 return Response::deny('Your account has not been verified yet.');
             }
 
-            if ($user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer')) {
-                // allow developers to do everything the'd ever want
+            // unless this permission is designed with developers in mind...
+            $doNotOverrideDev = [
+                'updatePermission', // UserPolicy
+            ];
+
+            if ($user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer')
+                && !in_array($ability, $doNotOverrideDev)) {
+
+                // allow developers to do everything they'd ever want
                 return true;
             }
         });
