@@ -34,7 +34,7 @@
                         <div class="alert alert-danger" role="alert">
                             <h4 class="alert-heading">Legacy Actions</h4>
                             <p>You are currently reading an appeal made in UTRS 1.8. Backwards compatability is
-                                availible for viewing only. Taking action on legacy appeals is restricted. If you feel
+                                available for viewing only. Taking action on legacy appeals is restricted. If you feel
                                 this is in error, please file a request with the developers.</p>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
             <br/>
             <div class="alert alert-danger" role="alert">
                 <h4 class="alert-heading">Legacy Comments</h4>
-                <p>You are currently reading an appeal made in UTRS 1.8. Backwards compatability is availible for
+                <p>You are currently reading an appeal made in UTRS 1.8. Backwards compatability is available for
                     viewing only. Commenting on legacy appeals is restricted. If you feel this is in error, please file
                     a request with the developers.</p>
             </div>

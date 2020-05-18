@@ -86,13 +86,46 @@
                                        class="btn btn-warning">
                                         Unblock
                                     </a>
-                            @endif
-                            @if($perms['checkuser'])
+                                @endif
+                                @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone && !is_null($cudata))
-                                    IP address: {{ $cudata->ipaddress }}<br/>
-                                    Useragent: {{ $cudata->useragent }}<br/>
-                                    Browser Language: {{ $cudata->language }}
+                                    <br/>
+
+                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{ $cudata->ipaddress }}"
+                                       class="btn btn-secondary">
+                                        User talk
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Contribs
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Find block
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Block log
+                                    </a>
+
+                                    <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Global (b)locks
+                                    </a>
+
+                                    @if($perms['admin'])
+                                        <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{ $cudata->ipaddress }}"
+                                           class="btn btn-warning">
+                                            Unblock
+                                        </a>
+                                    @endif
+                                    IP address: {{$cudata->ipaddress}}<br/>
+                                    Useragent: {{$cudata->useragent}}<br/>
+                                    Browser Language: {{$cudata->language}}
                                 @elseif(is_null($cudata))
                                     <div class="alert alert-danger" role="alert">
                                         The CU data for this appeal has expired.
@@ -117,6 +150,17 @@
                         <div class="col-md-7">
                             @if($info->privacyreview!=0 && $info->status=="PRIVACY" && $perms['admin'])
                                 <div class="row">
+                                    @if ($info->privacyreview==1 || $info->privacyreview==2)
+                                        <div class="alert alert-primary" role="alert">
+                                            @if ($info->privacyreview==1)
+                                                It has been requested that this appeal be hidden from public view and only visible to
+                                                administrators.
+                                            @elseif ($info->privacyreview==2)
+                                                It has been requested that this appeal be oversighted and only available to those on
+                                                the privacy team to review.
+                                            @endif
+                                        </div>
+                                    @endif
                                     <div class="col-4">
                                         <a href="/appeal/privacy/{{ $id }}/publicize" class="btn btn-danger">
                                             Publicize Appeal
@@ -229,6 +273,7 @@
         </div>
 
         @if($previousAppeals->isNotEmpty())
+        <br />
             <div class="card my-2">
                 <h4 class="card-header">
                     Previous appeals
@@ -277,7 +322,7 @@
                 </div>
             </div>
         @endif
-
+        <br />
         <div class="card my-2">
             <h4 class="card-header">Appeal Content</h4>
             <div class="card-body">
@@ -287,17 +332,6 @@
                         <p>{{ $info->appealtext }}</p>
                     </div>
                     <div class="col-md-6">
-                        @if ($info->privacyreview==1 || $info->privacyreview==2)
-                            <div class="alert alert-primary" role="alert">
-                                @if ($info->privacyreview==1)
-                                    It has been requested that this appeal be hidden from public view and only visibleto
-                                    administrators.
-                                @elseif ($info->privacyreview==2)
-                                    It has been requested that this appeal be oversighted and only availible to those on
-                                    the privacy team to review.
-                                @endif
-                            </div>
-                        @endif
                         <div class="row">
                                 <div class="col-6">
                                     @if($info->status=="ACCEPT")
@@ -347,7 +381,7 @@
                 </div>
             </div>
         </div>
-
+        <br />
         <div class="card my-2">
             <h4 class="card-header">Admin Comments</h4>
             <div class="card-body">
