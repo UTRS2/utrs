@@ -90,9 +90,7 @@
                                 @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone && !is_null($cudata))
-                                    <br/>
-
-                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{ $cudata->ipaddress }}"
+                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{$cudata->ipaddress}}"
                                        class="btn btn-secondary">
                                         User talk
                                     </a>
@@ -123,6 +121,7 @@
                                             Unblock
                                         </a>
                                     @endif
+                                    <br/>
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
