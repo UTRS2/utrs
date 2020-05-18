@@ -72,7 +72,7 @@ def verifyusers():
                     print "ACCOUNT DELETION: " + username
                     continue
                 page = masterwiki.pages[userpage]
-                        page.save(page.text() + """
+                page.save(page.text() + """
         == Your UTRS Account ==
         You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
                             """, "UTRS Account - Does not meet requirements")
