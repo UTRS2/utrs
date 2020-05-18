@@ -86,10 +86,43 @@
                                        class="btn btn-warning">
                                         Unblock
                                     </a>
-                            @endif
+                                @endif
                             @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone && !is_null($cudata))
+                                    <br/>
+
+                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{$cudata->ipaddress}}"
+                                       class="btn btn-secondary">
+                                        User talk
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{$cudata->ipaddress}}"
+                                       class="btn btn-light">
+                                        Contribs
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{$cudata->ipaddress}}"
+                                       class="btn btn-light">
+                                        Find block
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{$cudata->ipaddress}}"
+                                       class="btn btn-light">
+                                        Block log
+                                    </a>
+
+                                    <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{$cudata->ipaddress}}"
+                                       class="btn btn-light">
+                                        Global (b)locks
+                                    </a>
+
+                                    @if($perms['admin'])
+                                        <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{$cudata->ipaddress}}"
+                                           class="btn btn-warning">
+                                            Unblock
+                                        </a>
+                                    @endif
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
