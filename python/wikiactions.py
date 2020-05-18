@@ -57,36 +57,36 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
+            username = userresult[1]
             if userresult[6] == None:
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 continue
             if "," in userresult[6]:
                 for wiki in userresult[6].split(","):
-                    if checkBlock(user,wiki):
-                        try:username = "User talk:"+user
+                    if checkBlock(username,wiki):
+                        try:userpage = "User talk:"+username
                         except:
-                            username = "User talk:"+str(user)
-                        page = masterwiki.pages[user]
+                            userpage = "User talk:"+str(username)
+                        page = masterwiki.pages[userpage]
                         #page.save(page.text() + """
         #== Your UTRS Account ==
-        #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
+        #You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
                             #""", "UTRS Account for blocked users")
                         print "SCHEDULE ACCOUNT DELETION: " + username
                         continue
 
             else:
-                if checkBlock(user,userresult[6]):
-                    try:username = "User talk:"+user
+                if checkBlock(username,userresult[6]):
+                    try:username = "User talk:"+username
                     except:
-                        username = "User talk:"+str(user)
-                    page = masterwiki.pages[user]
+                        username = "User talk:"+str(username)
+                    page = masterwiki.pages[userpage]
                     #page.save(page.text() + """
     #== Your UTRS Account ==
-    #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
+    #You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
                         #""", "UTRS Account for blocked users")
                     print "SCHEDULE ACCOUNT DELETION: " + username
                     continue                   
-            username = userresult[1]
             if username == None:continue
             params = {'action': 'query',
             'format': 'json',
@@ -116,7 +116,8 @@ Thanks,
 UTRS Developers"""
             }
             try:
-                raw = callAPI(params)
+                #raw = callAPI(params)
+                print "SEND EMAIL"
             except:
                 try:username = "User talk:"+username
                 except:
@@ -145,7 +146,6 @@ def checkPerms(user, id):
             'usprop': 'groups|editcount|emailable'
             }
     raw = callAPI(params)
-    print "Debug: "+str(raw["query"]["users"][0])
     results = raw["query"]["users"][0]["groups"]
     for result in results:
         if "sysop" in result:
