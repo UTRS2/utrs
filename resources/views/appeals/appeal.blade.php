@@ -46,53 +46,90 @@
                             <h4 class="card-title">Appeal for "{{ $info->appealfor }}"</h4>
                             <p class="card-text">
                                 Appeal number: #{{ $info->id }}
-                                <br/>Appeal status: {{$info->status}}
-                                <br/>Blocking Admin: {{$info->blockingadmin}}
-                                <br/>Block Reason: {{$info->blockreason}}
-                                <br/>Time Submitted: {{$info->submitted}}
-                                <br/>Wiki: {{$info->wiki}}
+                                <br/>Appeal status: {{ $info->status }}
+                                <br/>Blocking Admin: {{ $info->blockingadmin }}
+                                <br/>Block Reason: {{ $info->blockreason }}
+                                <br/>Time Submitted: {{ $info->submitted }}
+                                <br/>Wiki: {{ $info->wiki }}
                                 @if(!is_null($info->handlingadmin))
-                                    <br/>Handling Admin: {{$userlist[$info->handlingadmin]}}
+                                    <br/>Handling Admin: {{ $userlist[$info->handlingadmin] }}
                                 @endif
                                 <br/>
 
-                                <a href="https://en.wikipedia.org/wiki/User:{{$info->appealfor}}"
+                                <a href="https://en.wikipedia.org/wiki/User_talk:{{ $info->appealfor }}"
                                    class="btn btn-secondary">
                                     User talk
                                 </a>
 
-                                <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{$info->appealfor}}"
+                                <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Contribs
                                 </a>
 
-                                <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{$info->appealfor}}"
+                                <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Find block
                                 </a>
 
-                                <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{$info->appealfor}}"
+                                <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Block log
                                 </a>
 
-                                <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{$info->appealfor}}"
+                                <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Global (b)locks
                                 </a>
 
                                 @if($perms['admin'])
-                                    <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{$info->appealfor}}"
+                                    <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{ $info->appealfor }}"
                                        class="btn btn-warning">
                                         Unblock
                                     </a>
-                            @endif
-                            @if($perms['checkuser'])
+                                @endif
+                                @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
-                                @if($checkuserdone)
+                                @if($checkuserdone && !is_null($cudata))
+                                    <br/>
+
+                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{ $cudata->ipaddress }}"
+                                       class="btn btn-secondary">
+                                        User talk
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Contribs
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Find block
+                                    </a>
+
+                                    <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Block log
+                                    </a>
+
+                                    <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{ $cudata->ipaddress }}"
+                                       class="btn btn-light">
+                                        Global (b)locks
+                                    </a>
+
+                                    @if($perms['admin'])
+                                        <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{ $cudata->ipaddress }}"
+                                           class="btn btn-warning">
+                                            Unblock
+                                        </a>
+                                    @endif
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
+                                @elseif(is_null($cudata))
+                                    <div class="alert alert-danger" role="alert">
+                                        The CU data for this appeal has expired.
+                                    </div>
                                 @else
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
@@ -105,7 +142,7 @@
                                             {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
-                                        {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                        {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                                     {{ Form::close() }}
                                 @endif
                             @endif
@@ -113,18 +150,29 @@
                         <div class="col-md-7">
                             @if($info->privacyreview!=0 && $info->status=="PRIVACY" && $perms['admin'])
                                 <div class="row">
+                                    @if ($info->privacyreview==1 || $info->privacyreview==2)
+                                        <div class="alert alert-primary" role="alert">
+                                            @if ($info->privacyreview==1)
+                                                It has been requested that this appeal be hidden from public view and only visible to
+                                                administrators.
+                                            @elseif ($info->privacyreview==2)
+                                                It has been requested that this appeal be oversighted and only available to those on
+                                                the privacy team to review.
+                                            @endif
+                                        </div>
+                                    @endif
                                     <div class="col-4">
-                                        <a href="/appeal/privacy/{{$id}}/publicize" class="btn btn-danger">
+                                        <a href="/appeal/privacy/{{ $id }}/publicize" class="btn btn-danger">
                                             Publicize Appeal
                                         </a>
                                     </div>
                                     <div class="col-4">
-                                        <a href="/appeal/privacy/{{$id}}/privatize" class="btn btn-warning">
+                                        <a href="/appeal/privacy/{{ $id }}/privatize" class="btn btn-warning">
                                             Restrict Appeal
                                         </a>
                                     </div>
                                     <div class="col-4">
-                                        <a href="/appeal/privacy/{{$id}}/oversight" class="btn btn-success">
+                                        <a href="/appeal/privacy/{{ $id }}/oversight" class="btn btn-success">
                                             Oversight Appeal
                                         </a>
                                     </div>
@@ -143,9 +191,9 @@
                                             @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
                                                 @if($perms['functionary'])
                                                     <div>
-                                                        <a href="/appeal/open/{{$id}}" class="btn btn-success">
+                                                        <a href="/appeal/open/{{ $id }}" class="btn btn-success">
                                                             Re-open</a>
-                                                        <a href="/appeal/oversight/{{$id}}" class="btn btn-danger">
+                                                        <a href="/appeal/oversight/{{ $id }}" class="btn btn-danger">
                                                             Oversight appeal</a>
                                                     </div>
                                                 @else
@@ -157,11 +205,11 @@
                                                 <div>
                                                     <div class="mb-2">
                                                         @if($info->handlingadmin==null)
-                                                            <a href="/appeal/reserve/{{$id}}" class="btn btn-success">
+                                                            <a href="/appeal/reserve/{{ $id }}" class="btn btn-success">
                                                                 Reserve
                                                             </a>
                                                         @elseif($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
-                                                            <a href="/appeal/release/{{$id}}" class="btn btn-success">
+                                                            <a href="/appeal/release/{{ $id }}" class="btn btn-success">
                                                                 Release
                                                             </a>
                                                         @elseif($info->handlingadmin!=null && $info->handlingadmin != Auth::id())
@@ -170,44 +218,44 @@
                                                             </button>
                                                         @endif
                                                         @if($perms['dev'])
-                                                            <a href="/appeal/invalidate/{{$id}}" class="btn btn-danger">
+                                                            <a href="/appeal/invalidate/{{ $id }}" class="btn btn-danger">
                                                                 Invalidate
                                                             </a>
                                                         @endif
                                                     </div>
 
                                                     <div class="mb-2">
-                                                        <a href="/appeal/close/{{$id}}/accept" class="btn btn-danger">
+                                                        <a href="/appeal/close/{{ $id }}/accept" class="btn btn-danger">
                                                             Accept appeal
                                                         </a>
 
-                                                        <a href="/appeal/close/{{$id}}/decline" class="btn btn-danger">
+                                                        <a href="/appeal/close/{{ $id }}/decline" class="btn btn-danger">
                                                             Decline appeal
                                                         </a>
                                                     </div>
 
                                                     <div class="mb-2">
-                                                        <a href="/appeal/close/{{$id}}/expire" class="btn btn-danger">
+                                                        <a href="/appeal/close/{{ $id }}/expire" class="btn btn-danger">
                                                             Mark appear as expired
                                                         </a>
                                                     </div>
 
                                                     @if($info->status=="OPEN")
                                                         <div class="mb-2">
-                                                            <a href="/appeal/privacy/{{$id}}" class="btn btn-warning">
+                                                            <a href="/appeal/privacy/{{ $id }}" class="btn btn-warning">
                                                                 Privacy Team
                                                             </a>
-                                                            <a href="/appeal/checkuserreview/{{$id}}" class="btn btn-warning">
+                                                            <a href="/appeal/checkuserreview/{{ $id }}" class="btn btn-warning">
                                                                 CheckUser
                                                             </a>
-                                                            <a href="/appeal/tooladmin/{{$id}}" class="btn btn-warning">
+                                                            <a href="/appeal/tooladmin/{{ $id }}" class="btn btn-warning">
                                                                 Tool admin
                                                             </a>
                                                         </div>
                                                     @endif
                                                     @if(($info->status!=="OPEN" && $info->status!=="EXPIRE" && $info->status!=="DECLINE" && $info->status!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                                         <div class="mb-2">
-                                                            <a href="/appeal/open/{{$id}}" class="btn btn-info">
+                                                            <a href="/appeal/open/{{ $id }}" class="btn btn-info">
                                                                 Return to tool users
                                                             </a>
                                                         </div>
@@ -225,6 +273,7 @@
         </div>
 
         @if($previousAppeals->isNotEmpty())
+        <br />
             <div class="card my-2">
                 <h4 class="card-header">
                     Previous appeals
@@ -273,27 +322,16 @@
                 </div>
             </div>
         @endif
-
+        <br />
         <div class="card my-2">
             <h4 class="card-header">Appeal Content</h4>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <b>Why should you be unblocked?</b>
-                        <p>{{$info->appealtext}}</p>
+                        <p>{{ $info->appealtext }}</p>
                     </div>
                     <div class="col-md-6">
-                        @if ($info->privacyreview==1 || $info->privacyreview==2)
-                            <div class="alert alert-primary" role="alert">
-                                @if ($info->privacyreview==1)
-                                    It has been requested that this appeal be hidden from public view and only visibleto
-                                    administrators.
-                                @elseif ($info->privacyreview==2)
-                                    It has been requested that this appeal be oversighted and only availible to those on
-                                    the privacy team to review.
-                                @endif
-                            </div>
-                        @endif
                         <div class="row">
                                 <div class="col-6">
                                     @if($info->status=="ACCEPT")
@@ -343,7 +381,7 @@
                 </div>
             </div>
         </div>
-
+        <br />
         <div class="card my-2">
             <h4 class="card-header">Admin Comments</h4>
             <div class="card-body">
@@ -363,20 +401,20 @@
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
                                 @else
-                                    <td><i>{{$userlist[$comment->user]}}</i></td>
+                                    <td><i>{{ $userlist[$comment->user] }}</i></td>
                                 @endif
-                                <td><i>{{$comment->timestamp}}</i></td>
+                                <td><i>{{ $comment->timestamp }}</i></td>
                                 @if($comment->protected && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment!==null)
-                                        <td><i>{{$comment->comment}}</i></td>
+                                        <td><i>{{ $comment->comment }}</i></td>
                                     @else
                                         @if(!is_null($comment->reason))
-                                            <td><i>Action: {{$comment->action}},
-                                                    Reason: {{$comment->reason}}</i></td>
+                                            <td><i>Action: {{ $comment->action }},
+                                                    Reason: {{ $comment->reason }}</i></td>
                                         @else
-                                            <td><i>Action: {{$comment->action}}</i></td>
+                                            <td><i>Action: {{ $comment->action }}</i></td>
                                         @endif
                                     @endif
                                 @endif
@@ -384,16 +422,16 @@
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
                                 @else
-                                    <td>{{$userlist[$comment->user]}}</td>
+                                    <td>{{ $userlist[$comment->user] }}</td>
                                 @endif
-                                <td>{{$comment->timestamp}}</td>
+                                <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected && !$perms['functionary'])
                                     <td>Access to comment is restricted.</td>
                                     @else
                                         @if($comment->comment!==null)
-                                            <td>{{$comment->comment}}</td>
+                                            <td>{{ $comment->comment }}</td>
                                         @else
-                                            <td>{{$comment->reason}}</td>
+                                            <td>{{ $comment->reason }}</td>
                                         @endif
                                     @endif
                                 @endif
@@ -401,16 +439,16 @@
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
                                 @else
-                                    <td>{{$userlist[$comment['commentUser']]}}</td>
+                                    <td>{{ $userlist[$comment['commentUser']] }}</td>
                                 @endif
-                                <td>{{$comment->timestamp}}</td>
+                                <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment!==null)
-                                        <td>{{$comment->comment}}</td>
+                                        <td>{{ $comment->comment }}</td>
                                     @else
-                                        <td>{{$comment->reason}}</td>
+                                        <td>{{ $comment->reason }}</td>
                                     @endif
                                 @endif
                             @endif
@@ -427,7 +465,7 @@
                         <div class="col-md-6">
                             <h5 class="card-title">Send a templated reply</h5>
                             @if($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
-                                <a href="/appeal/template/{{$id}}" class="btn btn-info">
+                                <a href="/appeal/template/{{ $id }}" class="btn btn-info">
                                     Send a reply to the user
                                 </a>
                             @else
@@ -446,7 +484,7 @@
                                     {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
-                                {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                             {{ Form::close() }}
                         </div>
                     </div>
