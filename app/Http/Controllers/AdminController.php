@@ -67,12 +67,14 @@ class AdminController extends Controller
         $rowcontents = [];
 
         foreach ($allbans as $ban) {
+            $idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
+            $targetName = htmlspecialchars($ban->target);
+
             if ($ban->is_hidden && !$hasHiddenBanPermission) {
-                continue;
+                $targetName = '<i class="text-muted">(username removed)</i>';
             }
 
-            $idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
-            $rowcontents[$ban->id] = [$idbutton, htmlspecialchars($ban->target), $ban->expiry, htmlspecialchars($ban->reason)];
+            $rowcontents[$ban->id] = [$idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason)];
         }
 
         return view ('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
