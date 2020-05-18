@@ -145,7 +145,7 @@ def checkPerms(user, id):
             'usprop': 'groups|editcount|emailable'
             }
     raw = callAPI(params)
-    print "Debug: "+raw["query"]["users"][0]
+    print "Debug: "+str(raw["query"]["users"][0])
     results = raw["query"]["users"][0]["groups"]
     for result in results:
         if "sysop" in result:
