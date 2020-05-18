@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="card">
-	<h5 class="card-header">{{$title}}</h5>
+	<h5 class="card-header">{{ $title }}</h5>
 	<div class="card-body">
 		@if(isset($new))
 		<a href="/admin/templates/create"><button type="button" class="btn btn-primary">New Template</button></a><br /><br />
@@ -10,7 +10,7 @@
 			<thead>
 				<tr>
 					@foreach($tableheaders as $tableheader)
-					<th scope="col">{{$tableheader}}</th>
+					<th scope="col">{{ $tableheader }}</th>
 					@endforeach
 				</tr>
 			</thead>
