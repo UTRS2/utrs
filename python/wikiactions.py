@@ -67,14 +67,18 @@ def verifyusers():
                 raw = callmetaAPI(params)
                 try:userexist = raw["query"]["users"][0]["userid"]
                 except:
-                    print "SCHEDULE ACCOUNT DELETION: " + username
+                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                    calldb("delete from users where id="+str(user)+";","write")
+                    print "ACCOUNT DELETION: " + username
                     continue
                 page = masterwiki.pages[userpage]
-                        #page.save(page.text() + """
-        #== Your UTRS Account ==
-        #You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
-                            #""", "UTRS Account - Does not meet requirements")
-                print "SCHEDULE ACCOUNT DELETION: " + username
+                        page.save(page.text() + """
+        == Your UTRS Account ==
+        You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
+                            """, "UTRS Account - Does not meet requirements")
+                calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                calldb("delete from users where id="+str(user)+";","write")
+                print "ACCOUNT DELETION: " + username
                 continue
             if "," in userresult[6]:
                 for wiki in userresult[6].split(","):
@@ -83,11 +87,13 @@ def verifyusers():
                         except:
                             userpage = "User talk:"+str(username)
                         page = masterwiki.pages[userpage]
-                        #page.save(page.text() + """
-        #== Your UTRS Account ==
-        #You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
-                            #""", "UTRS Account for blocked users")
-                        print "SCHEDULE ACCOUNT DELETION: " + username
+                        page.save(page.text() + """
+        == Your UTRS Account ==
+        You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
+                            """, "UTRS Account for blocked users")
+                        calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                        calldb("delete from users where id="+str(user)+";","write")
+                        print "ACCOUNT DELETION: " + username
                         continue
 
             else:
@@ -96,11 +102,13 @@ def verifyusers():
                     except:
                         userpage = "User talk:"+str(username)
                     page = masterwiki.pages[userpage]
-                    #page.save(page.text() + """
-    #== Your UTRS Account ==
-    #You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
-                        #""", "UTRS Account for blocked users")
-                    print "SCHEDULE ACCOUNT DELETION: " + username
+                    page.save(page.text() + """
+    == Your UTRS Account ==
+    You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
+                        """, "UTRS Account for blocked users")
+                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                    calldb("delete from users where id="+str(user)+";","write")
+                    print "ACCOUNT DELETION: " + username
                     continue                   
             if username == None:continue
             params = {'action': 'query',
@@ -131,8 +139,7 @@ Thanks,
 UTRS Developers"""
             }
             try:
-                #raw = callAPI(params)
-                print "SEND EMAIL"
+                raw = callAPI(params)
             except:
                 try:username = "User talk:"+username
                 except:
@@ -147,7 +154,7 @@ Right now you do not have wiki email enabled on your onwiki account, and therefo
                 continue  
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
-            #checkPerms(username,user)
+            checkPerms(username,user)
 def checkPerms(user, id):
     enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
     ptperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
@@ -478,7 +485,7 @@ def closeNotFound():
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
-#verifyblock()
-#clearPrivateData()
-#appeallist()
-#closeNotFound()
+verifyblock()
+clearPrivateData()
+appeallist()
+closeNotFound()
