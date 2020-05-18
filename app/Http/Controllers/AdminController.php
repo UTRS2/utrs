@@ -81,7 +81,7 @@ class AdminController extends Controller
         if ($canSeeProtectedBans) {
             $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
         } else {
-            $canSeeProtectedBans = null;
+            $caption = null;
         }
 
         return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'caption' => $caption]);
