@@ -67,17 +67,22 @@ class AdminController extends Controller
         $rowcontents = [];
 
         foreach ($allbans as $ban) {
-            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn btn-primary">' . $ban->id . '</button></a>';
+            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn btn-'.($ban->is_protected ? 'danger' : 'primary').'">' . $ban->id . '</button></a>';
             $targetName = htmlspecialchars($ban->target);
 
             if ($ban->is_protected && !$canSeeProtectedBans) {
-                $targetName = '<i class="text-muted">(username removed)</i>';
+                $targetName = '<i class="text-muted">(ban target removed)</i>';
+            }
+            else if ($ban->is_protected) {
+                $targetName = '<i class="text-danger">'.$targetName.'</i>';
             }
 
             $rowcontents[$ban->id] = [$idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason)];
         }
 
-        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
+        $caption = "Any ban showing in red has been oversighted and should not be shared to others who don't have access to it.";
+
+        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'caption' => $caption]);
     }
 
     public function listsitenotices()
