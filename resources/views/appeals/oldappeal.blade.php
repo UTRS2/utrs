@@ -1,6 +1,12 @@
 @extends('layouts.app')
-@section('content')
 
+@section('title', 'Appeal #' . $info->id)
+@section('content')
+	<div class="mb-1">
+		<a href="/review" class="btn btn-primary">
+			Back to appeal list
+		</a>
+	</div>
 @if($info['status']==="CLOSED")
 	<br />
 	<div class="alert alert-danger" role="alert">This appeal is closed. No further changes can be made to it.</div>
@@ -18,7 +24,8 @@
 	    		<h6 class="card-title">Appeal for "{{$info['ip']}}"</h6>
 	    		@endif
 	    		<p class="card-text">
-	    			Appeal status: {{$info['status']}}
+					Appeal number: #{{ $info->id }}
+					<br />Appeal status: {{$info['status']}}
 	    			<br />Blocking Admin: {{$info['blockingAdmin']}}
 	    			<br />Time Submitted: {{$info['timestamp']}}
 	    		</p>
