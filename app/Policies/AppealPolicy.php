@@ -51,6 +51,7 @@ class AppealPolicy
         }
 
         if (in_array($appeal->status, ['ACCEPT', 'DECLINE', 'EXPIRE', 'OPEN', 'PRIVACY', 'ADMIN', 'CHECKUSER'])) {
+            // note that view also has advanced filters
             return true;
         }
 

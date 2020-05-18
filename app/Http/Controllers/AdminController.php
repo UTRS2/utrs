@@ -17,19 +17,12 @@ class AdminController extends Controller
 {
     public function listusers()
     {
+        $this->authorize('viewAny', User::class);
         $allusers = User::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-        abort_unless($permission, 403, 'Forbidden');
 
         $tableheaders = ['ID', 'Username', 'Verified', 'Wikis'];
         $rowcontents = [];
+
         foreach ($allusers as $user) {
             $idbutton = '<a href="/admin/users/' . $user->id . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
             $verified = $user->verified ? 'Yes' : 'No';
@@ -41,18 +34,9 @@ class AdminController extends Controller
 
     public function listbans()
     {
+        $this->authorize('viewAny', Ban::class);
         $allbans = Ban::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-        if (!$permission) {
-            abort(403);
-        }
+
         $tableheaders = ['ID', 'Target', 'Expires', 'Reason'];
         $rowcontents = [];
         foreach ($allbans as $ban) {
@@ -64,16 +48,8 @@ class AdminController extends Controller
 
     public function listsitenotices()
     {
+        $this->authorize('viewAny', Sitenotice::class);
         $allsitenotice = Sitenotice::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-        abort_unless($permission, 403, 'Forbidden');
 
         $tableheaders = ['ID', 'Message'];
         $rowcontents = [];
@@ -86,25 +62,18 @@ class AdminController extends Controller
 
     public function listtemplates()
     {
+        $this->authorize('viewAny', Template::class);
         $alltemplates = Template::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-
-        abort_unless($permission, 403, 'Forbidden');
 
         $tableheaders = ['ID', 'Target', 'Expires', 'Active'];
         $rowcontents = [];
+
         foreach ($alltemplates as $template) {
             $idbutton = '<a href="/admin/templates/' . $template->id . '"><button type="button" class="btn btn-primary">' . $template->id . '</button></a>';
             $active = $template->active ? 'Yes' : 'No';
             $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
         }
+
         return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true]);
     }
 
@@ -128,12 +97,10 @@ class AdminController extends Controller
 
     public function makeTemplate(Request $request)
     {
-        if (!Permission::checkToolAdmin(Auth::id(), "*")) {
-            abort(401);
-        }
+        $this->authorize('create', Template::class);
+
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
-
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $newtemplate = $request->all();
         $name = $newtemplate['name'];
@@ -143,31 +110,31 @@ class AdminController extends Controller
         return Redirect::to('/admin/templates');
     }
 
-    public function saveTemplate(Request $request, $id)
+    public function saveTemplate(Request $request, Template $template)
     {
-        if (!Permission::checkToolAdmin(Auth::id(), "*")) {
-            abort(401);
-        }
+        $this->authorize('update', $template);
+
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $data = $request->all();
-        $template = Template::findOrFail($id);
-        $template->name = $data['name'];
-        $template->template = $data['template'];
+
+        $template->name = $request->input('name');
+        $template->template = $request->input('template');
         $template->save();
-        $log = Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
-        return Redirect::to('/admin/templates');
+
+        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        return redirect()->to('/admin/templates');
     }
 
     public function showNewTemplate()
     {
+        $this->authorize('create', Template::class);
         return view('admin.newtemplate');
     }
 
-    public function modifyTemplate($id)
+    public function modifyTemplate(Template $template)
     {
-        $template = Template::findOrFail($id);
+        $this->authorize('update', $template);
         return view('admin.edittemplate', ["template" => $template]);
     }
 }

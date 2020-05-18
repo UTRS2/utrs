@@ -28,7 +28,7 @@ class AppealController extends Controller
             $info = Oldappeal::findOrFail($id);
             $this->authorize('view', $info);
 
-            $comments = $info->comments()->get();
+            $comments = $info->comments;
             $userlist = [];
 
             foreach ($comments as $comment) {
@@ -50,11 +50,12 @@ class AppealController extends Controller
             $userlist = [];
 
             if (!is_null($info->handlingadmin)) {
-                $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
+                $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)->username;
             }
 
             $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
 
+            $perms = [];
             $perms['checkuser'] = Permission::checkCheckuser(Auth::id(), $info->wiki);
             $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
             $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
