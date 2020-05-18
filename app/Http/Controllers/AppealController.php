@@ -31,8 +31,8 @@ class AppealController extends Controller
 
             //Enwiki is hardcoded here as all previous appeals were only on enwiki.
             //Since that had a different policy at the time, we have to still observe the same privacy level.
-            $perms['admin'] = Permission::checkAdmin(Auth::id(),'enwiki');
-            abort_if(is_null($info), 403,'Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');            
+            $isAdmin = Permission::checkAdmin(Auth::id(),'enwiki');
+            abort_unless($isAdmin, 403,'Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');
 
             $comments = $info->comments()->get();
             $userlist = [];
@@ -79,7 +79,7 @@ class AppealController extends Controller
                     }
                 }
 
-                if ($info->privacylevel == 1 && $perms['admin']) {
+                if ($info->privacylevel == 1 && !$perms['admin']) {
                     return view('appeals.privacydeny');
                 }
 
@@ -212,7 +212,7 @@ class AppealController extends Controller
         $input = $request->all();
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
-        $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
+        $key = hash('md5', $ip.$ua.$lang.(microtime().rand()));
         $input = Arr::add($input, 'appealsecretkey', $key);
         
         $request->validate([
@@ -459,7 +459,7 @@ class AppealController extends Controller
         if ($dev && $appeal->status!=="INVALID") {
             $appeal->status = "INVALID";
             $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'invalidate','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
+            $log = Log::create(array('user' => $user, 'referenceobject'=>$id,'objecttype'=>'appeal','action'=>'closed - invalidate','ip' => $ip, 'ua' => $ua . " " .$lang, 'protected'=>0));
             return redirect('appeal/'.$id);
         }
         else {

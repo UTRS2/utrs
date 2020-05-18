@@ -56,7 +56,7 @@
                                 @endif
                                 <br/>
 
-                                <a href="https://en.wikipedia.org/wiki/User:{{$info->appealfor}}"
+                                <a href="https://en.wikipedia.org/wiki/User_talk:{{$info->appealfor}}"
                                    class="btn btn-secondary">
                                     User talk
                                 </a>
@@ -89,10 +89,14 @@
                             @endif
                             @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
-                                @if($checkuserdone)
+                                @if($checkuserdone && !is_null($cudata))
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
+                                @elseif(is_null($cudata))
+                                    <div class="alert alert-danger" role="alert">
+                                        The CU data for this appeal has expired.
+                                    </div>
                                 @else
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
@@ -105,7 +109,7 @@
                                             {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
-                                        {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                        {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                                     {{ Form::close() }}
                                 @endif
                             @endif
@@ -447,7 +451,7 @@
                                     {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
-                                {{ Form::button('Submit', ['class' => 'btn btn-success']) }}
+                                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                             {{ Form::close() }}
                         </div>
                     </div>
