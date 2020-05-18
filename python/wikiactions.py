@@ -58,6 +58,7 @@ def verifyusers():
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
             username = userresult[1]
+            checkPerms(username,user)
             if userresult[6] == None:
                 params = {'action': 'query',
                 'format': 'json',
@@ -154,7 +155,6 @@ Right now you do not have wiki email enabled on your onwiki account, and therefo
                 continue  
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
-            checkPerms(username,user)
 def checkPerms(user, id):
     enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
     ptperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
