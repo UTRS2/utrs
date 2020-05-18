@@ -58,6 +58,59 @@ def verifyusers():
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
             username = userresult[1]
+            checkPerms(username,user)
+            if userresult[6] == None:
+                params = {'action': 'query',
+                'format': 'json',
+                'list': 'users',
+                'ususers': user
+                }
+                raw = callAPI(params)
+                try:userexist = raw["query"]["users"][0]["userid"]
+                except:
+                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                    calldb("delete from users where id="+str(user)+";","write")
+                    print "ACCOUNT DELETION: " + username
+                    continue
+                page = masterwiki.pages[userpage]
+                page.save(page.text() + """
+== Your UTRS Account ==
+You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
+                            """, "UTRS Account - Does not meet requirements")
+                calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                calldb("delete from users where id="+str(user)+";","write")
+                print "ACCOUNT DELETION: " + username
+                continue
+            if "," in userresult[6]:
+                for wiki in userresult[6].split(","):
+                    if checkBlock(username,wiki):
+                        try:userpage = "User talk:"+username
+                        except:
+                            userpage = "User talk:"+str(username)
+                        page = masterwiki.pages[userpage]
+                        page.save(page.text() + """
+== Your UTRS Account ==
+You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
+                            """, "UTRS Account for blocked users")
+                        calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                        calldb("delete from users where id="+str(user)+";","write")
+                        print "ACCOUNT DELETION: " + username
+                        continue
+
+            else:
+                if checkBlock(username,userresult[6]):
+                    try:userpage = "User talk:"+username
+                    except:
+                        userpage = "User talk:"+str(username)
+                    page = masterwiki.pages[userpage]
+                    page.save(page.text() + """
+== Your UTRS Account ==
+You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
+                        """, "UTRS Account for blocked users")
+                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                    calldb("delete from users where id="+str(user)+";","write")
+                    print "ACCOUNT DELETION: " + username
+                    continue                   
             if username == None:continue
             params = {'action': 'query',
             'format': 'json',
@@ -86,7 +139,8 @@ http://utrs-beta.wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
 Thanks,
 UTRS Developers"""
             }
-            try:raw = callAPI(params)
+            try:
+                raw = callAPI(params)
             except:
                 try:username = "User talk:"+username
                 except:
@@ -97,10 +151,10 @@ UTRS Developers"""
 Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
                     """, "UTRS Account notice")
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                calldb("delete from users where id="+str(user)+";","write")    
+                calldb("delete from users where id="+str(user)+";","write")
+                continue  
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
-            checkPerms(username,user)
 def checkPerms(user, id):
     enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
     ptperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
@@ -314,6 +368,31 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                     if re.search(regex,str(appeal[1])) is None:blockNotFound(target,wiki,appeal[0])
                 continue
+def checkBlock(target,wiki):
+    if wiki == "enwiki" or wiki == "ptwiki":
+        params = {'action': 'query',
+        'format': 'json',
+        'list': 'blocks',
+        'bkusers': target
+        }
+        raw = runAPI(wiki, params)
+        if len(raw["query"]["blocks"])>0:
+            return True
+        else:
+            return False
+    if wiki == "global":
+        params = {'action': 'query',
+        'format': 'json',
+        'list': 'globalallusers',
+        'agufrom': target,
+        'agulimit':1,
+        'aguprop':'lockinfo'
+        }
+        raw = runAPI(wiki, params)
+        try:
+            if raw["query"]["globalallusers"][0]["locked"]=="":return True
+        except:
+            return False
 def blockNotFound(username,wiki,id):
     print "Block not found email: " + username
     mash= username+credentials.secret

@@ -200,14 +200,18 @@
             </div>
             <div class="col-6">
                 <h5 class="card-title">Drop a comment</h5>
-                {{ Form::open(array('url' => '/publicappeal/comment')) }}
-                {{ Form::hidden('appealsecretkey', $info->appealsecretkey) }}
-                <div class="form-group">
-                    {{ Form::label('comment', 'Add a comment to this appeal:') }}
-                    {{ Form::textarea('comment',null, ['rows'=>4, 'class' => 'form-control']) }}
-                </div>
-                <button type="submit" class="btn btn-success">Submit</button>
-                {{ Form::close() }}
+                @if(!in_array($info->status, ['NOTFOUND', 'EXPIRE', 'ACCEPT', 'DECLINE']))
+                    {{ Form::open(array('url' => '/publicappeal/comment')) }}
+                        {{ Form::hidden('appealsecretkey', $info->appealsecretkey) }}
+                        <div class="form-group">
+                            {{ Form::label('comment', 'Add a comment to this appeal:') }}
+                            {{ Form::textarea('comment', null, ['rows' => 4, 'class' => 'form-control']) }}
+                        </div>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    {{ Form::close() }}
+                @else
+                    <div class="alert alert-danger" role="alert">This appeal is closed. No further comments.</div>
+                @endif
             </div>
         </div>
     </div>
