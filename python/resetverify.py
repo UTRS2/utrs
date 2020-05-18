@@ -29,5 +29,7 @@ def calldb(command,style):
 
 results = calldb("select id from users;","read")
 for result in results:
-	results = calldb("insert into wikitasks (task,actionid) VALUES ('verifyaccount',"+str(id)+");","write")
+	print result
+	quit()
+	calldb("insert into wikitasks (task,actionid) VALUES ('verifyaccount',"+str(id)+");","write")
 	print "RESET VERIFYACCOUNT ON ID: "+str(result[0])
