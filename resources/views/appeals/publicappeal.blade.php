@@ -193,7 +193,7 @@
                             @endforeach
                     </tbody>
                 </table>
-                <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other
+                <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
                     administrators.</i>
                 <br/>
                 <br/>
