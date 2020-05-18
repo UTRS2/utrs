@@ -63,10 +63,10 @@ def verifyusers():
             if "," in userresult[6]:
                 for wiki in userresult[6].split(","):
                     if checkBlock(user,wiki):
-                        try:username = "User talk:"+username
+                        try:username = "User talk:"+user
                         except:
-                            username = "User talk:"+str(username)
-                        page = masterwiki.pages[username]
+                            username = "User talk:"+str(user)
+                        page = masterwiki.pages[user]
                         #page.save(page.text() + """
         #== Your UTRS Account ==
         #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
@@ -75,10 +75,10 @@ def verifyusers():
 
             else:
                 if checkBlock(user,userresult[6]):
-                    try:username = "User talk:"+username
+                    try:username = "User talk:"+user
                     except:
-                        username = "User talk:"+str(username)
-                    page = masterwiki.pages[username]
+                        username = "User talk:"+str(user)
+                    page = masterwiki.pages[user]
                     #page.save(page.text() + """
     #== Your UTRS Account ==
     #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
