@@ -346,8 +346,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     calldb("update appeals set status = 'NOTFOUND' where id="+str(appeal[0])+";","write")
                     if re.search(regex,str(appeal[1])) is None:blockNotFound(target,wiki,appeal[0])
                 continue
-def checkBlock(username,wiki):
-    target = str(username)
+def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
         params = {'action': 'query',
         'format': 'json',
@@ -464,7 +463,7 @@ def closeNotFound():
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
-verifyblock()
-clearPrivateData()
-appeallist()
-closeNotFound()
+#verifyblock()
+#clearPrivateData()
+#appeallist()
+#closeNotFound()
