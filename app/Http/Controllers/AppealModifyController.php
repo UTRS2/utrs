@@ -2,49 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Appeal;
 use App\Log;
-use App\Wikitask;
-use Validator;
+use Illuminate\Http\Request;
 use Redirect;
+use Validator;
 
 class AppealModifyController extends Controller
 {
-    public function changeip($hash) {
-    	$appeal = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
-    	if ($appeal->status !== "NOTFOUND") {
-    		abort(403,"Appeal is not availible to be modified.");
-    	}
-    	return view('appeals.fixip', ['appeal'=>$appeal,'hash'=>$hash]);
+    public function changeip($hash)
+    {
+        $appeal = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
+        if ($appeal->status !== "NOTFOUND") {
+            abort(403, "Appeal is not availible to be modified.");
+        }
+        return view('appeals.fixip', ['appeal' => $appeal, 'hash' => $hash]);
     }
-    public function changeipsubmit(Request $request,$id) {
+
+    public function changeipsubmit(Request $request, $id)
+    {
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $input = $request->all();
-        $hash = $input['hash'];
-        $appeal = Appeal::where('appealsecretkey','=',$hash)->firstOrFail();
-        $rules = array(
+        $hash = $request->input('hash');
+        $appeal = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
+
+        $data = $request->validate([
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0'
-        );
-        $validator = Validator::make($input, $rules);
+        ]);
 
-        if ($validator->fails())
-        {
-            return Redirect::to('/fixappeal/'.$hash)->withInput()->withErrors($validator);
+        if ($request['hiddenip'] !== NULL) {
+            $appeal->hiddenip = $request->input('hiddenip');
         }
-        $appeal->wiki=$request['wiki'];
-        $appeal->appealfor=$request['appealfor'];
-        $appeal->blocktype=$request['blocktype'];
-        if ($request['hiddenip']!==NULL) {
-        	$appeal->hiddenip = $request['hiddenip'];
-        }
-        $appeal->status="VERIFY";
-        $appeal->save();
-        $log = Log::create(array('user' => 0, 'referenceobject'=>$appeal['id'],'objecttype'=>'appeal','action'=>'modifyip','ip' => $ip, 'ua' => $ua . " " .$lang));
+        $appeal->status = "VERIFY";
+        $appeal->update($data);
+        Log::create(array('user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'modifyip', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect('/');
     }
 }

@@ -11,23 +11,18 @@ class Permission extends Model
     public $timestamps = false;
 
     public static function whoami($id,$wiki) {
-        if(is_null($id)) {
-            abort(403,'No logged in user');
-        }
-        if ($wiki=="*") {
-            $specific = Permission::where('userid','=',$id)
+        abort_if(is_null($id),'No logged in user');
+
+        if ($wiki === "*") {
+            return Permission::where('userid','=',$id)
                 ->where('wiki','=','*')
                 ->first();
-            return $specific;
         }
-        else {
-            $specific = Permission::where('userid','=',$id)
-                ->where('wiki', $wiki)
-                ->orWhere('wiki', '*')
-                ->first();
-            return $specific;
-        }
-        abort(500,'Permissions Failure');
+
+        return Permission::where('userid','=',$id)
+            ->where('wiki', $wiki)
+            ->orWhere('wiki', '*')
+            ->first();
     }
 
     public static function hasAnyPermission($userId, $wiki, $permissionArray)
