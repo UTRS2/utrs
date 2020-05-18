@@ -72,6 +72,7 @@ def verifyusers():
         #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
                             #""", "UTRS Account for blocked users")
                         print "SCHEDULE ACCOUNT DELETION: " + username
+                        continue
 
             else:
                 if checkBlock(user,userresult[6]):
@@ -83,7 +84,8 @@ def verifyusers():
     #== Your UTRS Account ==
     #Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
                         #""", "UTRS Account for blocked users")
-                    print "SCHEDULE ACCOUNT DELETION: " + username                    
+                    print "SCHEDULE ACCOUNT DELETION: " + username
+                    continue                   
             username = userresult[1]
             if username == None:continue
             params = {'action': 'query',
@@ -115,7 +117,6 @@ UTRS Developers"""
             }
             try:
                 raw = callAPI(params)
-                calldb("delete from wikitasks where id="+str(wtid)+";","write")
             except:
                 try:username = "User talk:"+username
                 except:
@@ -126,7 +127,8 @@ UTRS Developers"""
 Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
                     """, "UTRS Account notice")
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                calldb("delete from users where id="+str(user)+";","write")    
+                calldb("delete from users where id="+str(user)+";","write")
+                continue  
             calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
             checkPerms(username,user)
@@ -143,6 +145,7 @@ def checkPerms(user, id):
             'usprop': 'groups|editcount|emailable'
             }
     raw = callAPI(params)
+    print "Debug: "+raw["query"]["users"][0]
     results = raw["query"]["users"][0]["groups"]
     for result in results:
         if "sysop" in result:
