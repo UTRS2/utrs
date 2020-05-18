@@ -21,7 +21,8 @@ class Appeal extends Model
 
     public function comments()
     {
-        return $this->hasMany('App\Log', 'referenceobject','id');
+        return $this->hasMany('App\Log', 'referenceobject','id')
+            ->where('objecttype', 'appeal');
     }
 
     public function getWikiEmailUsername()
