@@ -44,7 +44,7 @@ class AdminController extends Controller
         $allbans = Ban::all();
         $currentuser = User::findOrFail(Auth::id());
 
-        $hasHiddenBanPermission = false;
+        $canSeeProtectedBans = false;
         $permission = false;
 
         $wikilist = explode(",",$currentuser->wikis);
@@ -54,8 +54,8 @@ class AdminController extends Controller
                 $permission = true;
             }
 
-            if (!$hasHiddenBanPermission && Permission::checkPrivacy(Auth::id(), $wiki)) {
-                $hasHiddenBanPermission = true;
+            if (!$canSeeProtectedBans && Permission::checkPrivacy(Auth::id(), $wiki)) {
+                $canSeeProtectedBans = true;
             }
         }
 
@@ -70,7 +70,7 @@ class AdminController extends Controller
             $idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
             $targetName = htmlspecialchars($ban->target);
 
-            if ($ban->is_protected && !$hasHiddenBanPermission) {
+            if ($ban->is_protected && !$canSeeProtectedBans) {
                 $targetName = '<i class="text-muted">(username removed)</i>';
             }
 
