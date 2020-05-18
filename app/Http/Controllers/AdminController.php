@@ -46,7 +46,7 @@ class AdminController extends Controller
         $permission = false;
         $wikilist = explode(",", $currentuser->wikis);
         foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki) == True) {
+            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
                 $permission = true;
             }
         }
@@ -69,7 +69,7 @@ class AdminController extends Controller
         $permission = false;
         $wikilist = explode(",", $currentuser->wikis);
         foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki) == True) {
+            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
                 $permission = true;
             }
         }
@@ -79,7 +79,7 @@ class AdminController extends Controller
         $rowcontents = [];
         foreach ($allsitenotice as $sitenotice) {
             $idbutton = '<a href="/admin/sitenotices/' . $sitenotice->id . '"><button type="button" class="btn btn-primary">' . $sitenotice->id . '</button></a>';
-            $rowcontents[$ban->id] = [$idbutton, $sitenotice->message];
+            $rowcontents[$sitenotice->id] = [$idbutton, $sitenotice->message];
         }
         return view('admin.tables', ['title' => 'All Sitenotices', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
     }
@@ -88,16 +88,16 @@ class AdminController extends Controller
     {
         $alltemplates = Template::all();
         $currentuser = User::findOrFail(Auth::id());
-        $permission = False;
+        $permission = false;
         $wikilist = explode(",", $currentuser->wikis);
         foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki) == True) {
-                $permission = True;
+            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
+                $permission = true;
             }
         }
-        if (!$permission) {
-            abort(403);
-        }
+
+        abort_unless($permission, 403, 'Forbidden');
+
         $tableheaders = ['ID', 'Target', 'Expires', 'Active'];
         $rowcontents = [];
         foreach ($alltemplates as $template) {
@@ -105,7 +105,7 @@ class AdminController extends Controller
             $active = $template->active ? 'Yes' : 'No';
             $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
         }
-        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => True]);
+        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true]);
     }
 
     public function verifyAccount()
