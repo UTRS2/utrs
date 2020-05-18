@@ -4,16 +4,17 @@
 	<h5 class="card-header">{{ $title }}</h5>
 	<div class="card-body">
 		@if(isset($new))
-		<a href="/admin/templates/create"><button type="button" class="btn btn-primary">New Template</button></a><br /><br />
+			<a href="/admin/templates/create"><button type="button" class="btn btn-primary">New Template</button></a><br /><br />
 		@endif
-		@if(isset($caption))
-		<i>{{$caption}}</i><br/><br/>
+		@if(isset($caption) && strlen($caption) > 0)
+			<i>{{ $caption }}</i><br/><br/>
 		@endif
+
 		<table class="table table-bordered table-dark">
 			<thead>
 				<tr>
 					@foreach($tableheaders as $tableheader)
-					<th scope="col">{{ $tableheader }}</th>
+						<th scope="col">{{ $tableheader }}</th>
 					@endforeach
 				</tr>
 			</thead>
@@ -21,7 +22,7 @@
 				@foreach($rowcontents as $rowcontent)
 					<tr>
 						@foreach($rowcontent as $field)
-						<td style="vertical-align: middle;">{!! $field !!}</td>
+							<td style="vertical-align: middle;">{!! $field !!}</td>
 						@endforeach
 					</tr>
 				@endforeach
