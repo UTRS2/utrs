@@ -89,10 +89,14 @@
                             @endif
                             @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
-                                @if($checkuserdone)
+                                @if($checkuserdone && !is_null($cudata))
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
+                                @elseif(is_null($cudata))
+                                    <div class="alert alert-danger" role="alert">
+                                        The CU data for this appeal has expired.
+                                    </div>
                                 @else
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
