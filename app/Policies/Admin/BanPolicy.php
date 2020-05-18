@@ -34,6 +34,22 @@ class BanPolicy
     }
 
     /**
+     * Determine whether the user can view the name of the banned user.
+     *
+     * @param User $user
+     * @param Ban $ban
+     * @return bool
+     */
+    public function viewName(User $user, Ban $ban)
+    {
+        if (!$ban->is_protected) {
+            return true;
+        }
+
+        return $user->hasAnySpecifiedPermsOnAnyWiki(['oversight', 'steward', 'staff', 'developer', 'privacy']);
+    }
+
+    /**
      * Determine whether the user can create bans.
      *
      * @param User $user
