@@ -77,9 +77,9 @@ def verifyusers():
 
             else:
                 if checkBlock(username,userresult[6]):
-                    try:username = "User talk:"+username
+                    try:userpage = "User talk:"+username
                     except:
-                        username = "User talk:"+str(username)
+                        userpage = "User talk:"+str(username)
                     page = masterwiki.pages[userpage]
                     #page.save(page.text() + """
     #== Your UTRS Account ==
