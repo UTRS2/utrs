@@ -212,7 +212,7 @@ class AppealController extends Controller
         $input = $request->all();
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
-        $key = hash('md5', $ip.$ua.$lang.date("Ymd"));
+        $key = hash('md5', $ip.$ua.$lang.(microtime().rand()));
         $input = Arr::add($input, 'appealsecretkey', $key);
         
         $request->validate([
