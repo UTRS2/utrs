@@ -14,7 +14,7 @@ class AddHiddenToBans extends Migration
     public function up()
     {
         Schema::table('bans', function (Blueprint $table) {
-            $table->boolean('is_hidden')
+            $table->boolean('is_protected')
                 ->default(0);
         });
     }
@@ -27,7 +27,7 @@ class AddHiddenToBans extends Migration
     public function down()
     {
         Schema::table('bans', function (Blueprint $table) {
-            $table->dropColumn('is_hidden');
+            $table->dropColumn('is_protected');
         });
     }
 }

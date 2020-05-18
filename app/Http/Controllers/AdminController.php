@@ -67,7 +67,7 @@ class AdminController extends Controller
         $rowcontents = [];
 
         foreach ($allbans as $ban) {
-            if ($ban->is_hidden && !$hasHiddenBanPermission) {
+            if ($ban->is_protected && !$hasHiddenBanPermission) {
                 continue;
             }
 
