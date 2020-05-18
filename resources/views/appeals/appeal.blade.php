@@ -90,9 +90,7 @@
                                 @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone && !is_null($cudata))
-                                    <br/>
-
-                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{ $cudata->ipaddress }}"
+                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{$cudata->ipaddress}}"
                                        class="btn btn-secondary">
                                         User talk
                                     </a>
@@ -123,6 +121,7 @@
                                             Unblock
                                         </a>
                                     @endif
+                                    <br/>
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
@@ -400,6 +399,8 @@
                             @if($comment->action !== "comment" && $comment->action!=="responded")
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td><i>{{ $userlist[$comment->user] }}</i></td>
                                 @endif
@@ -421,6 +422,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{ $userlist[$comment->user] }}</td>
                                 @endif
@@ -438,6 +441,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{ $userlist[$comment['commentUser']] }}</td>
                                 @endif
@@ -456,7 +461,7 @@
                         @endforeach
                 </tbody>
             </table>
-                <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other
+                <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
                     administrators or the user involved.</i>
                 <br/>
                 <br/>
