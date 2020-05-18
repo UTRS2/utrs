@@ -37,12 +37,8 @@ class User extends Authenticatable
     ];
 
     public function checkRead() {
-        if ($this->verified) {
-            return True;
-        }
-        else {
-            abort(403,'User is not verified');
-        }
+        abort_unless($this->verified, 403,'User is not verified');
+        return true;
     }
 
     /**
