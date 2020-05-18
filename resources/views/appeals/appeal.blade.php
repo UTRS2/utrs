@@ -399,6 +399,8 @@
                             @if($comment->action !== "comment" && $comment->action!=="responded")
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td><i>{{ $userlist[$comment->user] }}</i></td>
                                 @endif
@@ -420,6 +422,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{ $userlist[$comment->user] }}</td>
                                 @endif
@@ -437,6 +441,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{ $userlist[$comment['commentUser']] }}</td>
                                 @endif
@@ -455,7 +461,7 @@
                         @endforeach
                 </tbody>
             </table>
-                <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other
+                <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
                     administrators or the user involved.</i>
                 <br/>
                 <br/>

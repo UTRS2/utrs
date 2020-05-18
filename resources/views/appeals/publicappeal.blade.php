@@ -126,62 +126,66 @@
                     </thead>
                     <tbody>
                     @foreach($comments as $comment)
-                        @if($comment['action']=="comment")
+                        @if($comment->action=="comment")
                             <tr class="bg-success">
-                        @elseif($comment['action']=="responded")
+                        @elseif($comment->action=="responded")
                             <tr class="bg-primary">
                         @else
                             <tr>
                                 @endif
                                 @if(is_null($comment['commentUser']))
-                                    @if($comment['action']!=="comment" && $comment['action']!=="responded")
-                                        @if($comment['user']==0)
+                                    @if($comment->action!=="comment" && $comment->action!=="responded")
+                                        @if($comment->user==0)
                                             <td><i>System</i></td>
+                                        @elseif($comment->user === -1)
+                                            <td><i>{{ $info->appealfor }}</i></td>
                                         @else
-                                            <td><i>{{$userlist[$comment['user']]}}</i></td>
+                                            <td><i>{{$userlist[$comment->user]}}</i></td>
                                         @endif
-                                        <td><i>{{$comment['timestamp']}}</i></td>
-                                        @if($comment['protected'])
+                                        <td><i>{{$comment->timestamp}}</i></td>
+                                        @if($comment->protected)
                                             <td><i>Access to comment is restricted.</i></td>
                                         @else
-                                            @if($comment['comment']!==NULL)
-                                                <td><i>{{$comment['comment']}}</i></td>
+                                            @if($comment->comment!==null)
+                                                <td><i>{{$comment->comment}}</i></td>
                                             @else
-                                                @if(!is_null($comment['reason']))
-                                                    <td><i>Action: {{$comment['action']}},
-                                                            Reason: {{$comment['reason']}}</i></td>
+                                                @if(!is_null($comment->reason))
+                                                    <td><i>Action: {{$comment->action}},
+                                                            Reason: {{$comment->reason}}</i></td>
                                                 @else
-                                                    <td><i>Action: {{$comment['action']}}</i></td>
+                                                    <td><i>Action: {{$comment->action}}</i></td>
                                                 @endif
                                             @endif
                                         @endif
                                     @else
-                                        @if($comment['user']==0)
+                                        @if($comment->user==0)
                                             <td><i>System</i></td>
+                                        @elseif($comment->user === -1)
+                                            <td><i>{{ $info->appealfor }}</i></td>
                                         @else
-                                            <td>{{$userlist[$comment['user']]}}</td>
+                                            <td>{{$userlist[$comment->user]}}</td>
                                         @endif
-                                        <td>{{$comment['timestamp']}}</td>
-                                        @if($comment['protected'] || $comment['action']=="comment")
+                                        <td>{{$comment->timestamp}}</td>
+                                        @if($comment->protected || $comment->action=="comment")
                                             <td>Access to comment is restricted.</td>
                                         @else
-                                            @if($comment['comment']!==NULL)
-                                                <td>{{$comment['comment']}}</td>
+                                            @if($comment->comment!==null)
+                                                <td>{{$comment->comment}}</td>
                                             @else
-                                                <td>{{$comment['reason']}}</td>
+                                                <td>{{$comment->reason}}</td>
                                             @endif
                                         @endif
                                     @endif
                                 @else
                                     <td>{{$userlist[$comment['commentUser']]}}</td>
-                                    <td>{{$comment['timestamp']}}</td>
-                                    @if($comment['protected'])
+                                    <td>{{$comment->timestamp}}</td>
+                                    @if($comment->protected)
                                         <td><i>Access to comment is restricted.</i></td>
                                     @else
-                                        @if($comment['comment']!==NULL)
-                                            <td>{{$comment['comment']}}</td>
+                                        @if($comment->comment!==null)
+                                            <td>{{$comment->comment}}</td>
                                         @else
-                                            <td>{{$comment['reason']}}</td>
+                                            <td>{{$comment->reason}}</td>
                                         @endif
                                     @endif
                                 @endif
@@ -189,7 +193,7 @@
                             @endforeach
                     </tbody>
                 </table>
-                <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other
+                <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
                     administrators.</i>
                 <br/>
                 <br/>
