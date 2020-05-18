@@ -61,6 +61,10 @@ class Permission extends Model
                 ->first();
         }
 
+        if (!$specific) {
+            return false;
+        }
+
         if ($level == "OVERSIGHT") {
             return $specific->oversight;
         }
