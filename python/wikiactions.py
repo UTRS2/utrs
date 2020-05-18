@@ -347,7 +347,7 @@ A UTRS appeal was filed on your behalf, but we were unable to find the block and
                     if re.search(regex,str(appeal[1])) is None:blockNotFound(target,wiki,appeal[0])
                 continue
 def checkBlock(username,wiki):
-    target = username
+    target = str(username)
     if wiki == "enwiki" or wiki == "ptwiki":
         params = {'action': 'query',
         'format': 'json',
@@ -363,7 +363,7 @@ def checkBlock(username,wiki):
         params = {'action': 'query',
         'format': 'json',
         'list': 'globalallusers',
-        'agufrom': str(target),
+        'agufrom': target,
         'agulimit':1,
         'aguprop':'lockinfo'
         }
