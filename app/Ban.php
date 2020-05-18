@@ -11,7 +11,7 @@ class Ban extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'is_hidden' => 'boolean',
+        'is_protected' => 'boolean',
     ];
 
     public function logs()

@@ -70,7 +70,7 @@ class AdminController extends Controller
             $idbutton = '<a href="/admin/bans/'.$ban->id.'"><button type="button" class="btn btn-primary">'.$ban->id.'</button></a>';
             $targetName = htmlspecialchars($ban->target);
 
-            if ($ban->is_hidden && !$hasHiddenBanPermission) {
+            if ($ban->is_protected && !$hasHiddenBanPermission) {
                 $targetName = '<i class="text-muted">(username removed)</i>';
             }
 
