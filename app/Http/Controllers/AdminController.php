@@ -15,23 +15,6 @@ use Redirect;
 
 class AdminController extends Controller
 {
-    public function listusers()
-    {
-        $this->authorize('viewAny', User::class);
-        $allusers = User::all();
-
-        $tableheaders = ['ID', 'Username', 'Verified', 'Wikis'];
-        $rowcontents = [];
-
-        foreach ($allusers as $user) {
-            $idbutton = '<a href="/admin/users/' . $user->id . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
-            $verified = $user->verified ? 'Yes' : 'No';
-            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $verified, $user->wikis];
-        }
-
-        return view('admin.tables', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
-    }
-
     public function listbans(Request $request)
     {
         $this->authorize('viewAny', Ban::class);

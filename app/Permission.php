@@ -26,7 +26,7 @@ class Permission extends Model
      * @param array $perms permissions to check
      * @return boolean
      */
-    public function hasAnyPerms(array $perms)
+    public function hasAnySpecifiedPerms(array $perms)
     {
         $perms = collect($perms)
             ->map(function ($string) {

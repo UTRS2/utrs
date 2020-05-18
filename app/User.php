@@ -37,8 +37,7 @@ class User extends Authenticatable
 
     public function permissions()
     {
-        return $this->hasMany(Permission::class, 'userid', 'id')
-            ->where('wiki', '!=', '*');
+        return $this->hasMany(Permission::class, 'userid', 'id');
     }
 
     /**
@@ -54,7 +53,7 @@ class User extends Authenticatable
 
         return $this->permissions
             ->contains(function (Permission $permission) use ($wantedPerms) {
-                return $permission->hasAnyPerms($wantedPerms);
+                return $permission->hasAnySpecifiedPerms($wantedPerms);
             });
     }
 
@@ -78,10 +77,10 @@ class User extends Authenticatable
             $wikis[] = '*';
         }
 
-        return $this->localPermissions
+        return $this->permissions
             ->whereIn('wiki', $wikis)
             ->contains(function (Permission $permission) use ($wantedPerms) {
-                return $permission->hasAnyPerms($wantedPerms);
+                return $permission->hasAnySpecifiedPerms($wantedPerms);
             });
     }
 }
