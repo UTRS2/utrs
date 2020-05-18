@@ -57,6 +57,9 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
+            if userresult[6] == None:
+                calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                continue
             if "," in userresult[6]:
                 for wiki in userresult[6].split(","):
                     if checkBlock(user,wiki):
@@ -110,7 +113,9 @@ http://utrs-beta.wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
 Thanks,
 UTRS Developers"""
             }
-            try:raw = callAPI(params)
+            try:
+                raw = callAPI(params)
+                calldb("delete from wikitasks where id="+str(wtid)+";","write")
             except:
                 try:username = "User talk:"+username
                 except:
