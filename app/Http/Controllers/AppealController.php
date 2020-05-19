@@ -644,7 +644,7 @@ class AppealController extends Controller
             'user' => 0,
             'referenceobject'=> $appeal->id,
             'objecttype'=>'appeal',
-            'action'=>'account verification',
+            'action'=>'account verifed',
             'ip' => $ip,
             'ua' => $ua . " " .$lang
         ]);

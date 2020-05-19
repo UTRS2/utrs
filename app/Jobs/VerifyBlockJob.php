@@ -20,11 +20,19 @@ class VerifyBlockJob implements ShouldQueue
 
     private $appeal;
 
+    /**
+     * Construct the VerifyBlock job
+     * @param Appeal $appeal - the Appeal object of the current appeal
+     */
     public function __construct(Appeal $appeal)
     {
         $this->appeal = $appeal;
     }
 
+    /**
+     * Verify the person behind the appeal is actually the user.
+     * @return void|RuntimeException
+     */
     public function handle()
     {
         if (!MwApiExtras::canEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername())) {
