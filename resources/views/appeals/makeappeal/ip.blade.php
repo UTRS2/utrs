@@ -26,6 +26,16 @@
             <div class="card-header">
                 Appeal a block on an IP address
             </div>
+            @if(sizeof($errors)>0)
+                <div class="alert alert-danger" role="alert">
+                    The following errors occured:
+                    <ul>
+                        @foreach ($errors->all() as $message)
+                            <li>{{ $message }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="card-body">
                 {{ Form::open(array('url' => 'appeal/ip')) }}
                 {{ Form::token() }}
@@ -33,11 +43,23 @@
                 {{ Form::label('wiki', 'Which Wiki are you blocked on?') }}<br>
                 {{ Form::select('wiki', array('enwiki' => 'English Wikipedia','ptwiki' => 'Portuguese Wikipedia', 'global' => 'Global Locks/Blocks'), 'enwiki') }}
                 <br>
-                {{ Form::label('username', 'What is the IP address that is blocked?') }}<br>
-                {{ Form::text('username') }}<br>
+                {{ Form::label('appealfor', 'What is the IP address that is blocked?') }}<br>
+                {{ Form::text('appealfor') }}<br>
                 {{ Form::hidden('blocktype', 0) }}
                 <br>
                 <h5 class="card-title">Block appeal information</h5>
+                <br>
+                <div class="alert alert-danger" role="alert">
+                    Please note that your answer to the following question does not guarentee that your appeal will be
+                    private. It will be reviewed by select users and a determination will be made about if the appeal
+                    contains private data and needs to be hidden from public view. Any information you put in this
+                    appeal may be posted publicly.
+                </div>
+                {{ Form::label('privacyreview', 'Does your appeal contain private information?') }}<br>
+                {{ Form::radio('privacyreview', 0) }} No<br>
+                {{ Form::radio('privacyreview', 1) }} No, but I prefer my appeal be private<br>
+                {{ Form::radio('privacyreview', 2) }} Yes, my appeal contains private data<br>
+                <br>
                 <div class="alert alert-warning" role="alert">
                     There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
                     an appeal.
