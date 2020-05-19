@@ -43,3 +43,11 @@ jobs:
         run: vendor/bin/phpunit
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Upgrade Chrome Driver
+        run: php artisan dusk:chrome-driver
+      - name: Start Chrome Driver
+        run: ./vendor/laravel/dusk/bin/chromedriver-linux &
+      - name: Start Laravel Server
+        run: php artisan serve &
+      - name: Run Browser Tests
+        run: php artisan dusk
