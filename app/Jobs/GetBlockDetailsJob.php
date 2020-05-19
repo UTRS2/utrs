@@ -42,7 +42,7 @@ class GetBlockDetailsJob implements ShouldQueue
         ]);
 
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
-        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($blockData['user'])) {
+        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($blockData['user']) && $this->appeal->blocktype !== 0) {
             VerifyBlockJob::dispatch($this->appeal);
         }
     }
