@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $primaryKey = 'userid';
     protected $guarded = ['id'];
     public $timestamps = false;
 

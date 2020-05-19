@@ -2,8 +2,8 @@
 
 namespace App\Jobs\WikiPermission;
 
+use App\MwApi\MwApiExtras;
 use App\User;
-use App\MwApi\MwApiUrls;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,5 +41,10 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
             'checkuser',
             'oversight',
         ];
+    }
+
+    public function checkIsBlocked()
+    {
+        return MwApiExtras::getBlockInfo($this->getWikiId(), $this->user->username) !== null;
     }
 }

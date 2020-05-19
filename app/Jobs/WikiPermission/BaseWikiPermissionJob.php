@@ -5,12 +5,10 @@ namespace App\Jobs\WikiPermission;
 use App\User;
 use App\Permission;
 use App\MwApi\MwApiGetter;
-use Mediawiki\Api\MediawikiApi;
-use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\User as MediawikiUser;
 
 /**
- * Base job class to load user permissions from MediaWiki api.
+ * Base job class to (re)load user permissions from MediaWiki api.
  */
 abstract class BaseWikiPermissionJob
 {
@@ -28,6 +26,11 @@ abstract class BaseWikiPermissionJob
     abstract function getPermissionsToCheck();
 
     /**
+     * @return bool true if {@link $user} is blocked on this wiki, false otherwise
+     */
+    abstract function checkIsBlocked();
+
+    /**
      * @return string wiki name on users.wikis column
      */
     protected function getValueInAllowedWikis()
@@ -37,8 +40,8 @@ abstract class BaseWikiPermissionJob
 
     protected function transformGroupArray(MediawikiUser $user, array $groups)
     {
-        // drop user group if user has less than 500 edits
-        if ($user->getEditcount() < 500) {
+        // drop user group if user is blocked or has less than 500 edits
+        if ($this->checkIsBlocked() || $user->getEditcount() < 500) {
             $groups = array_values(array_filter($groups, function ($group) { return $group !== 'user'; }));
         }
 
@@ -91,6 +94,7 @@ abstract class BaseWikiPermissionJob
             'user' => $this->user->id,
         ]);
 
+        // if user does not have a permission object for this wiki and they don't need one, let's not make one
         if (!$permObject->exists && !in_array('user', $permissions)) {
             return;
         }
