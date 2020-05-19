@@ -9,6 +9,13 @@ use Mediawiki\Api\SimpleRequest;
  */
 class MwApiExtras
 {
+    /**
+     * Checks if the user can email
+     * 
+     * @param  string $wiki - The wiki which the block info will be retrived from
+     * @param  string $username - Username to be searched
+     * @return boolean - if the user can be emailed
+     */
     public static function canEmail($wiki, $username)
     {
         $api = MwApiGetter::getApiForWiki($wiki);
@@ -23,7 +30,15 @@ class MwApiExtras
 
         return !empty($response['query']['users']) && isset($response['query']['users'][0]['emailable']);
     }
-
+    /**
+     * Sends an email through the Wiki API
+     * 
+     * @param  string $wiki - The wiki which the block info will be retrived from
+     * @param  string $username - Username to be searched
+     * @param  string $title - Subject line for the email
+     * @param  string $content - content of the email
+     * @return boolean - if email was sent
+     */
     public static function sendEmail($wiki, $username, $title, $content)
     {
         $api = MwApiGetter::getApiForWiki($wiki);
@@ -38,16 +53,25 @@ class MwApiExtras
         return $response['emailuser']['result'] === 'Success';
     }
 
-    public static function getBlockInfo($wiki, $username, $key = null)
+    /**
+     *
+     * Gets the block info from a wiki
+     * 
+     * @param  string $wiki - The wiki which the block info will be retrived from
+     * @param  string $target - Username to be searched
+     * @param  string $key - to allow additional types of blocks (only 3 really exist though: bkusers, bkip, bkids)
+     * @return array $response - the block information that comes up
+     */
+    public static function getBlockInfo($wiki, $target, $key = null)
     {
-        $key = $key ?? filter_var($username, FILTER_VALIDATE_IP) === false ? 'bkusers' : 'bkip';
+        $key = $key ?? filter_var($target, FILTER_VALIDATE_IP) === false ? 'bkusers' : 'bkip';
 
         $api = MwApiGetter::getApiForWiki($wiki);
         $response = $api->getRequest(new SimpleRequest(
             'query',
             [
                 'list' => 'blocks',
-                $key => $username,
+                $key => $target,
                 'bkprop' => 'by|byid|expiry|flags|id|range|reason|restrictions|timestamp|user|userid',
             ]
         ));
@@ -59,18 +83,24 @@ class MwApiExtras
         return $response['query']['blocks'][0];
     }
 
-    public static function getGlobalBlockInfo($username)
+    /**
+     * Gets the info of global blocks
+     * 
+     * @param  string $target - Username to be searched
+     * @return array - information about the block
+     */
+    public static function getGlobalBlockInfo($target)
     {
         $api = MwApiGetter::getApiForWiki('global');
 
-        if (filter_var($username, FILTER_VALIDATE_IP) !== false) {
+        if (filter_var($target, FILTER_VALIDATE_IP) !== false) {
             // is ip
 
             $response = $api->getRequest(new SimpleRequest(
                 'query',
                 [
                     'list' => 'globalblocks',
-                    'bgaddresses' => $username,
+                    'bgaddresses' => $target,
                     'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
                 ]
             ));
@@ -85,7 +115,7 @@ class MwApiExtras
         $entries = MwApiGetter::getServicesForWiki('global')->newLogListGetter()
             ->getLogList([
                 'letype' => 'globalauth',
-                'letitle' => 'User:' . $username . '@global'
+                'letitle' => 'User:' . $target . '@global'
             ]);
 
         $entry = $entries->getLatest();
@@ -97,7 +127,7 @@ class MwApiExtras
         // this looks something like details of other types
         return [
             'by' => $entry->getUser(),
-            'user' => $username,
+            'user' => $target,
             'timestamp' => $entry->getTimestamp(),
             'reason' => $entry->getComment(),
         ];

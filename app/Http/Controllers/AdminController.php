@@ -43,23 +43,48 @@ class AdminController extends Controller
     {
         $allbans = Ban::all();
         $currentuser = User::findOrFail(Auth::id());
+
+        $canSeeProtectedBans = false;
         $permission = false;
+
         $wikilist = explode(",", $currentuser->wikis);
+
         foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
+            if (!$permission && Permission::checkToolAdmin(Auth::id(), $wiki)) {
                 $permission = true;
             }
+
+            if (!$canSeeProtectedBans && Permission::checkPrivacy(Auth::id(), $wiki)) {
+                $canSeeProtectedBans = true;
+            }
         }
+
         if (!$permission) {
             abort(403);
         }
+
         $tableheaders = ['ID', 'Target', 'Expires', 'Reason'];
         $rowcontents = [];
+
         foreach ($allbans as $ban) {
-            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn btn-primary">' . $ban->id . '</button></a>';
-            $rowcontents[$ban->id] = [$idbutton, $ban->target, $ban->expiry, $ban->reason];
+            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn '.($ban->is_protected ? 'btn-danger' : 'btn-primary').'">' . $ban->id . '</button></a>';
+            $targetName = htmlspecialchars($ban->target);
+
+            if ($ban->is_protected) {
+                $targetName = $canSeeProtectedBans ? '<i class="text-danger">' . $targetName . '</i>'
+                    : '<i class="text-muted">(ban target removed)</i>';
+            }
+
+            $rowcontents[$ban->id] = [$idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason)];
         }
-        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
+
+        if ($canSeeProtectedBans) {
+            $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
+        } else {
+            $caption = null;
+        }
+
+        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'caption' => $caption]);
     }
 
     public function listsitenotices()
@@ -73,6 +98,7 @@ class AdminController extends Controller
                 $permission = true;
             }
         }
+
         abort_unless($permission, 403, 'Forbidden');
 
         $tableheaders = ['ID', 'Message'];

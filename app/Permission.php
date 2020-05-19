@@ -39,7 +39,7 @@ class Permission extends Model
         }
 
         foreach ($permissionArray as $permissionName) {
-            if ($permission->{Str::lower($permissionName)} == 1) {
+            if ($permission->{Str::lower($permissionName)}) {
                 return true;
             }
         }
@@ -60,6 +60,10 @@ class Permission extends Model
                 ->where('wiki', $wiki)
                 ->orWhere('wiki', '*')
                 ->first();
+        }
+
+        if (!$specific) {
+            return false;
         }
 
         if ($level == "OVERSIGHT") {

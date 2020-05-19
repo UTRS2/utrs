@@ -642,9 +642,9 @@ class AppealController extends Controller
 
         Log::create([
             'user' => 0,
-            'referenceobject'=> $appeal->id,
-            'objecttype'=>'appeal',
-            'action'=>'account verification',
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'account verifed',
             'ip' => $ip,
             'ua' => $ua . " " .$lang
         ]);

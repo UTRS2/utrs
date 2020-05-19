@@ -16,11 +16,20 @@ class GetBlockDetailsJob implements ShouldQueue
 
     private $appeal;
 
+    /**
+     * Construct the GetBlockDetails Jobs
+     * @param Appeal $appeal - the Appeal object of the current appeal
+     */
     public function __construct(Appeal $appeal)
     {
         $this->appeal = $appeal;
     }
 
+    /**
+     * Handle the data returned from the API calls
+     * @param array $blockData block details from mediawiki api
+     * @return void
+     */
     public function handleBlockData($blockData)
     {
         $status = $this->appeal->privacylevel === $this->appeal->privacyreview ? 'OPEN' : 'PRIVACY';
@@ -37,7 +46,11 @@ class GetBlockDetailsJob implements ShouldQueue
             VerifyBlockJob::dispatch($this->appeal);
         }
     }
-
+    
+    /**
+     * This processes the block appeal
+     * @return void
+     */
     public function handle()
     {
         if ($this->appeal->wiki === 'global') {
