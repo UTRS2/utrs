@@ -38,7 +38,12 @@ class WikiPermissionJobTest extends TestCase
     public function test_it_filters_out_users_with_less_than_500_edits()
     {
         $user = $this->getUser();
-        $job = new LoadLocalPermissionsJob($user, MwApiUrls::getSupportedWikis()[0]);
+
+        $job = Mockery::mock(LoadLocalPermissionsJob::class, [$user, MwApiUrls::getSupportedWikis()[0]], function ($mock) {
+            $mock->shouldReceive('checkIsBlocked')
+                ->andReturn(false);
+        })
+            ->makePartial();
 
         $groups = ['user', 'sysop'];
 
@@ -53,6 +58,27 @@ class WikiPermissionJobTest extends TestCase
         $oldUser = $this->getMediawikiUser($user->name, 3000);
         $oldUserGroups = $method->invokeArgs($job, [$oldUser, $groups]);
         $this->assertEquals(['user', 'sysop'], $oldUserGroups, 'user with more than 500 edits should have group "user"');
+    }
+
+    public function test_it_filters_out_blocked_users()
+    {
+        $user = $this->getUser();
+
+        $job = Mockery::mock(LoadLocalPermissionsJob::class, [$user, MwApiUrls::getSupportedWikis()[0]], function ($mock) {
+            $mock->shouldReceive('checkIsBlocked')
+                ->andReturn(true);
+        })
+            ->makePartial();
+
+        $groups = ['user', 'sysop'];
+
+        $reflection = new ReflectionClass(get_class($job));
+        $method = $reflection->getMethod('transformGroupArray');
+        $method->setAccessible(true);
+
+        $blockedUser = $this->getMediawikiUser($user->name, 3000);
+        $newUserGroups = $method->invokeArgs($job, [$blockedUser, $groups]);
+        $this->assertEquals(['sysop'], $newUserGroups, 'blocked user should not have group "user"');
     }
 
     public function test_it_updates_wikis_on_user()

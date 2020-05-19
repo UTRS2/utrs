@@ -2,6 +2,7 @@
 
 namespace App\MwApi;
 
+use Illuminate\Support\Facades\Log;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
@@ -17,7 +18,12 @@ class MwApiGetter
         }
 
         $api = new MediawikiApi(MwApiUrls::getWikiUrl($wiki));
-        $api->login(new ApiUser(config('wikis.login.username'), config('wikis.login.password')));
+
+        if (config('wikis.login.username') && config('wikis.login.password')) {
+            $api->login(new ApiUser(config('wikis.login.username'), config('wikis.login.password')));
+        } else {
+            Log::warning('Not logging in to MediaWiki, no credentials provided');
+        }
 
         return self::$loadedApis[$wiki] = $api;
     }
