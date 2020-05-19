@@ -10,12 +10,22 @@ use Illuminate\Support\Str;
  */
 class MwApiUrls
 {
+    public static function getWikiProperty(string $wiki, string $name, $default = null) {
+        $prefix = 'wikis.wikis.' . Str::lower($wiki) . '.';
+
+        if (Str::lower($wiki) === 'global' || $wiki === '*') {
+            $prefix = 'wikis.globalwiki.';
+        }
+
+        return config($prefix . $name, $default);
+    }
+
     /**
      * @return string api url for the global wiki (meta on wmf sites)
      */
     public static function getGlobalWikiUrl()
     {
-        return config('wikis.globalwiki.api_url');
+        return self::getWikiProperty('*', 'api_url');
     }
 
     /**
@@ -24,19 +34,28 @@ class MwApiUrls
      */
     public static function getWikiUrl(string $wiki)
     {
-        if (Str::lower($wiki) === 'global') {
-            return self::getGlobalWikiUrl();
-        }
-
-        return config('wikis.wikis.' . Str::lower($wiki) . '.api_url');
+        return self::getWikiProperty($wiki, 'api_url');
     }
 
     /**
-     * @return array an array of all wikis that have their api url available
+     * @return array an array of individual wikis that have their api url available
      */
     public static function getSupportedWikis()
     {
         return array_keys(config('wikis.wikis'));
+    }
+
+    /**
+     * @return array of id => name pairs of wikis that can have blocks appealed
+     */
+    public static function getWikiDropdown()
+    {
+        return collect(self::getSupportedWikis())
+            ->push('global')
+            ->mapWithKeys(function ($wiki) {
+                return [$wiki => self::getWikiProperty($wiki, 'name')];
+            })
+            ->toArray();
     }
 }
 

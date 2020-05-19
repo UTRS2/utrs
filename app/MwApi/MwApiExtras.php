@@ -80,6 +80,8 @@ class MwApiExtras
             return null;
         }
 
+        $response['query']['blocks'][0]['reason'] = "$key $wiki $target";
+
         return $response['query']['blocks'][0];
     }
 

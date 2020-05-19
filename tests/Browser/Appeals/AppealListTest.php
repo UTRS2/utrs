@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Browser;
+namespace Tests\Browser\Appeals;
 
 use Tests\Traits\TestHasUsers;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class AppealsPageTest extends DuskTestCase
+class AppealListTest extends DuskTestCase
 {
     use DatabaseMigrations;
     use TestHasUsers;
