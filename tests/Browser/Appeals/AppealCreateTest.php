@@ -21,7 +21,20 @@ class AppealCreateTest extends DuskTestCase
                 ->type('appealfor', 'Example')
                 ->click('[for=blocktype-1]')
                 ->click('[for=privacyreview-0]')
-                ->type('appealtext', 'I did not do anything wrong! The admin is corrupt and if I\'m not unblocked, I will be MAD!')
+                ->type('appealtext', 'I did not do anything wrong! The admin is corrupt and if I\'m not unblocked, [hidden per WP:NLT]!')
+                ->press('Submit')
+                ->assertSee('Do not lose this Appeal Key. You can only recover it if you have an account with an email address enabled.');
+        });
+    }
+
+    public function test_can_create_ip_block_appeal()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/')
+                ->clickLink('Appeal IP block')
+                ->type('appealfor', '1.1.1.1')
+                ->click('[for=privacyreview-0]')
+                ->type('appealtext', 'Why did you only block me even thru [other editors name here] was also edit warring? This is unfair! I demand to talk to a supervisor!')
                 ->press('Submit')
                 ->assertSee('Do not lose this Appeal Key. You can only recover it if you have an account with an email address enabled.');
         });
