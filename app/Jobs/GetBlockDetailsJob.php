@@ -62,7 +62,7 @@ class GetBlockDetailsJob implements ShouldQueue
         } else {
             $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
 
-            if (!$blockData) {
+            if (!$blockData && !empty($this->appeal->hiddenip)) {
                 $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip);
             }
 
