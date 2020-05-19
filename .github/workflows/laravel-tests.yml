@@ -55,3 +55,7 @@ jobs:
         run: php artisan dusk
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dusk-screenshots
+          path: tests/Browser/screenshots
