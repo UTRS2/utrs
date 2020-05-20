@@ -20,7 +20,7 @@ class AddHstsHeader
         /** @var Response $response */
         $response = $next($request);
 
-        $time = intval(env('HSTS_MAX_AGE', 0), 10);
+        $time = config('app.hsts_time', 0);
         if ($request->isSecure() && $time > 0) {
             $response->header('Strict-Transport-Security', "max-age=$time");
         }

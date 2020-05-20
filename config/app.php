@@ -229,4 +229,9 @@ return [
 
     ],
 
+    /**
+     * Used to configure maxage in Strict-Transport-Security header.
+     */
+    'hsts_time' => intval(env('HSTS_MAX_AGE', 0), 10),
+
 ];

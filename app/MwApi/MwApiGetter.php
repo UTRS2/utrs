@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
+use Illuminate\Support\Facades\Log;
 
 class MwApiGetter
 {

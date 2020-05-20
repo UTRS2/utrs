@@ -10,6 +10,8 @@ class Permission extends Model
     protected $guarded = ['id'];
     public $timestamps = false;
 
+    const ALL_POSSIBILITIES = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
+
     public static function whoami($id, $wiki)
     {
         abort_if(is_null($id), 'No logged in user');
