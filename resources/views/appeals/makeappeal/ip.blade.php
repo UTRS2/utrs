@@ -37,7 +37,7 @@
                 </div>
             @endif
             <div class="card-body">
-                {{ Form::open(['url' => 'appeal/account']) }}
+                {{ Form::open(['url' => 'appeal/ip']) }}
                 {{ Form::token() }}
 
                 <h5>About you</h5>
