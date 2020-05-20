@@ -49,11 +49,6 @@ class AppealController extends Controller
             $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
 
             $logs = $info->comments()->get();
-            $userlist = [];
-
-            if (!is_null($info->handlingadmin)) {
-                $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)->username;
-            }
 
             $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
 
@@ -66,14 +61,6 @@ class AppealController extends Controller
 
             $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
             $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
-
-            foreach ($logs as $log) {
-                if (is_null($log->user) || $log->user == 0 || in_array($log->user, $userlist)) {
-                    continue;
-                }
-
-                $userlist[$log->user] = User::findOrFail($log->user)->username;
-            }
 
             $previousAppeals = Appeal::where('wiki', $info->wiki)
                 ->where(function ($query) use ($info) {
@@ -91,7 +78,6 @@ class AppealController extends Controller
                 'id' => $id,
                 'info' => $info,
                 'comments' => $logs,
-                'userlist' => $userlist,
                 'cudata' => $cudata,
                 'checkuserdone' => $checkuserdone,
                 'perms' => $perms,

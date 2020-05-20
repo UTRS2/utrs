@@ -1,10 +1,23 @@
 @extends('layouts.app')
+
+@section('title', $user->username)
 @section('content')
     <div class="mb-2">
         <a href="{{ route('admin.users.list') }}" class="btn btn-primary">
             Back to user list
         </a>
     </div>
+
+    @if(sizeof($errors)>0)
+        <div class="alert alert-danger" role="alert">
+            The following errors occured:
+            <ul>
+                @foreach ($errors->all() as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     {{ Form::open(['url' => route('admin.users.update', $user)]) }}
     <div class="card mb-4">
@@ -76,11 +89,24 @@
         </div>
     </div>
 
+    <!-- depends on PR #88
+    <div class="card mb-4">
+        <h5 class="card-header">Options</h5>
+        <div class="card-body">
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    {{ Form::checkbox('refresh_from_wiki', 1, old('refresh_from_wiki') === 1, ['class' => 'custom-control-input', 'id' => 'refresh_from_wiki']) }} {{ Form::label('refresh_from_wiki', 'Reload permissions from attached wikis', ['class' => 'custom-control-label']) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+
     <div class="card mb-4">
         <h5 class="card-header">Save changes</h5>
         <div class="card-body">
             <div class="form-group">
-                {{ Form::label('reason', 'Reason for changing user permissions') }}
+                {{ Form::label('reason', 'Reason') }}
                 {{ Form::input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
 
                 @error('reason')
@@ -97,7 +123,41 @@
     <div class="card">
         <h5 class="card-header">Logs</h5>
         <div class="card-body">
-            {{ json_encode($user->logs) }}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Acting user</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($user->logs as $log)
+                    <tr class="{{ $log->action === 'comment' ? 'bg-success' : '' }}">
+                        @if($log->user == 0)
+                            <td><i>System</i></td>
+                        @else
+                            <td><i><a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a></i></td>
+                        @endif
+                        <td><i>{{ $log->timestamp }}</i></td>
+                        @if($log->protected && !$perms['functionary'])
+                            <td><i>Access to comment is restricted.</i></td>
+                        @else
+                            @if($log->comment!==null)
+                                <td><i>{{ $log->comment }}</i></td>
+                            @else
+                                @if(!is_null($log->reason))
+                                    <td><i>Action: {{ $log->action }},
+                                            Reason: {{ $log->reason }}</i></td>
+                                @else
+                                    <td><i>Action: {{ $log->action }}</i></td>
+                                @endif
+                            @endif
+                        @endif
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
     {{ Form::close() }}

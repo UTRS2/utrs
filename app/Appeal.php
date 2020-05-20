@@ -36,6 +36,7 @@ class Appeal extends Model
         return $this->appealfor;
     }
 
+    // ideally this would be named handlingAdmin and the field would be named handling_admin_id per laravel norms
     public function handlingAdminObject()
     {
         return $this->belongsTo(User::class, 'handlingadmin', 'id');
