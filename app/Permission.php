@@ -85,14 +85,17 @@ class Permission extends Model
     {
         abort_if(is_null($id), 403, 'No logged in user');
 
-        if ($wiki == "*") {
+        if ($wiki === '*' || $wiki === 'global') {
             $specific = Permission::where('userid', '=', $id)
                 ->where('wiki', '=', '*')
                 ->first();
         } else {
+            if (self::checkSecurity($id, $level, '*')) {
+                return true;
+            }
+
             $specific = Permission::where('userid', '=', $id)
                 ->where('wiki', $wiki)
-                ->orWhere('wiki', '*')
                 ->first();
         }
 
