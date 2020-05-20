@@ -2,7 +2,6 @@
 
 namespace App\MwApi;
 
-use Illuminate\Support\Facades\Log;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
