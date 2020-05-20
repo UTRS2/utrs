@@ -248,13 +248,12 @@ class AppealController extends Controller
                 return view('appeals.spam');
             }
         }
-        $banacct = Ban::where('target', '=', $input['appealfor'])->first();
-        $banip = Ban::where('target', '=', $ip)->first();
-        if (!is_null($banacct)) {
-            return view('appeals.ban', ['expire' => $banacct->expiry, 'id' => $banacct['id']]);
-        }
-        if (!is_null($banip)) {
-            return view('appeals.ban', ['expire' => $banip['expiry'], 'id' => $banip['id']]);
+        $banacct = Ban::where('ip','=',0)->get();
+        $banip = Ban::where('ip','=',1)->get();
+        foreach ($banip as $ban) {
+            if (ip_in_range($ban->target)) {
+                return view('appeals.ban', ['expire'=>$ban->expiry],'id'=>$ban->id]);
+            }
         }
 
         $appeal = Appeal::create($input);
