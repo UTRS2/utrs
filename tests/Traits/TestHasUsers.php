@@ -32,10 +32,14 @@ trait TestHasUsers
                 })
                 ->toArray();
 
-            Permission::firstOrCreate([
+            $searchData = [
                 'userid' => $user->id,
                 'wiki' => $wiki,
-            ], $toSet);
+            ];
+
+            $toSet = $toSet + $searchData;
+
+            Permission::firstOrCreate($searchData, $toSet);
 
             if ($toSet['user']) {
                 $wikis[] = $wiki;
