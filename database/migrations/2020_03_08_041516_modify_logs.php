@@ -18,7 +18,7 @@ class ModifyLogs extends Migration
             $table->dropColumn('xff');
             $table->dropColumn('objecttype');
             $table->boolean('protected')->default(0);
-            $table->timestamp('timestamp');
+            $table->timestamp('timestamp')->default(DB::raw('CURRENT_TIMESTAMP'));
             
         });
         Schema::table('logs', function(Blueprint $table) {
