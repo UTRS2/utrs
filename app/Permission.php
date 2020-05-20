@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $fillable = self::ALL_POSSIBILITIES;
     protected $appends = ['presentPermissions', 'wikiFormKey'];
     protected $guarded = ['id'];
     public $timestamps = false;
