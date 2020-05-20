@@ -9,6 +9,7 @@ class Permission extends Model
 {
     protected $fillable = self::ALL_POSSIBILITIES;
     protected $appends = ['presentPermissions', 'wikiFormKey'];
+    protected $guarded = ['id'];
     public $timestamps = false;
 
     const ALL_POSSIBILITIES = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
