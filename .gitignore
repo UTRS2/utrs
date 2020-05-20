@@ -22,7 +22,6 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 .editorconfig
-/config/
 /storage/
 /tests/
 server.php

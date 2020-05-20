@@ -88,8 +88,8 @@ class AdminController extends Controller
 
     public function verifyAccount()
     {
-        if (Auth::user()->verified) {
-            return Redirect::to('/home');
+        if (!Auth::check() || Auth::user()->verified) {
+            return redirect('/');
         } else {
             Wikitask::create(['task' => 'verifyaccount', 'actionid' => Auth::id()]);
             return view('admin.verifyme');
