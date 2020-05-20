@@ -2,11 +2,13 @@
 
 @section('title', $user->username)
 @section('content')
-    <div class="mb-2">
-        <a href="{{ route('admin.users.list') }}" class="btn btn-primary">
-            Back to user list
-        </a>
-    </div>
+    @can('viewAny', \App\User::class)
+        <div class="mb-2">
+            <a href="{{ route('admin.users.list') }}" class="btn btn-primary">
+                Back to user list
+            </a>
+        </div>
+    @endcan
 
     @if(sizeof($errors)>0)
         <div class="alert alert-danger" role="alert">
@@ -89,36 +91,38 @@
         </div>
     </div>
 
-    <!-- depends on PR #88
-    <div class="card mb-4">
-        <h5 class="card-header">Options</h5>
-        <div class="card-body">
-            <div class="form-group">
-                <div class="custom-control custom-checkbox">
-                    {{ Form::checkbox('refresh_from_wiki', 1, old('refresh_from_wiki') === 1, ['class' => 'custom-control-input', 'id' => 'refresh_from_wiki']) }} {{ Form::label('refresh_from_wiki', 'Reload permissions from attached wikis', ['class' => 'custom-control-label']) }}
+    @can('update', $user)
+        <!-- depends on PR #88
+        <div class="card mb-4">
+            <h5 class="card-header">Options</h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        {{ Form::checkbox('refresh_from_wiki', 1, old('refresh_from_wiki') === 1, ['class' => 'custom-control-input', 'id' => 'refresh_from_wiki']) }} {{ Form::label('refresh_from_wiki', 'Reload permissions from attached wikis', ['class' => 'custom-control-label']) }}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    -->
+        -->
 
-    <div class="card mb-4">
-        <h5 class="card-header">Save changes</h5>
-        <div class="card-body">
-            <div class="form-group">
-                {{ Form::label('reason', 'Reason') }}
-                {{ Form::input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
+        <div class="card mb-4">
+            <h5 class="card-header">Save changes</h5>
+            <div class="card-body">
+                <div class="form-group">
+                    {{ Form::label('reason', 'Reason') }}
+                    {{ Form::input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
 
-                @error('reason')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
+                    @error('reason')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
+                {{ Form::submit('Save', ['class' => 'btn btn-primary']) }}
             </div>
-
-            {{ Form::submit('Save', ['class' => 'btn btn-primary']) }}
         </div>
-    </div>
+    @endcan
 
     <div class="card">
         <h5 class="card-header">Logs</h5>
@@ -137,7 +141,11 @@
                         @if($log->user == 0)
                             <td><i>System</i></td>
                         @else
-                            <td><i><a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a></i></td>
+                            @can('view', $log->userObject)
+                                <td><i><a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a></i></td>
+                            @else
+                                <td><i>{{ $log->userObject->username }}</i></td>
+                            @endcan
                         @endif
                         <td><i>{{ $log->timestamp }}</i></td>
                         @if($log->protected && !$perms['functionary'])

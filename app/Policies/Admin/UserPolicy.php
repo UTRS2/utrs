@@ -30,6 +30,11 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
+        if ($user->id === $model->id) {
+            // allow user to view their own profile
+            return true;
+        }
+
         return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
     }
 
