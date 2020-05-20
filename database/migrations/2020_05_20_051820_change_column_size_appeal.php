@@ -15,7 +15,7 @@ class ChangeColumnSizeAppeal extends Migration
     {
         Schema::table('appeals', function (Blueprint $table) {
             $table->string('blockreason', 500)->nullable()->change();
-        }
+        });
     }
 
     /**
@@ -27,6 +27,6 @@ class ChangeColumnSizeAppeal extends Migration
     {
         Schema::table('appeals', function (Blueprint $table) {
             $table->string('blockreason')->nullable()->change();
-        }
+        });
     }
 }
