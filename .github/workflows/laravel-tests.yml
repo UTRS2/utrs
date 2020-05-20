@@ -44,7 +44,8 @@ jobs:
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Upgrade Chrome Driver
-        run: php artisan dusk:chrome-driver
+        run: php artisan dusk:chrome-driver 81
+        # if this breaks, look up from https://github.com/actions/virtual-environments/blob/ubuntu18/20200512.2/images/linux/Ubuntu1804-README.md or updated version
       - name: Start Chrome Driver
         run: ./vendor/laravel/dusk/bin/chromedriver-linux &
       - name: Start Laravel Server
