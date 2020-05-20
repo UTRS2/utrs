@@ -44,7 +44,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::before(function (User $user, $ability, $foo) {
+        Gate::before(function (User $user, $ability) {
             if (!$user->verified) {
                 return Response::deny('Your account has not been verified yet.');
             }
