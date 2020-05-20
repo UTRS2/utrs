@@ -7,8 +7,10 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $primaryKey = 'userid';
+    protected $guarded = ['id'];
     public $timestamps = false;
+
+    const ALL_POSSIBILITIES = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
 
     public static function whoami($id, $wiki)
     {
@@ -38,7 +40,7 @@ class Permission extends Model
         }
 
         foreach ($permissionArray as $permissionName) {
-            if ($permission->{Str::lower($permissionName)} == 1) {
+            if ($permission->{Str::lower($permissionName)}) {
                 return true;
             }
         }
@@ -59,6 +61,10 @@ class Permission extends Model
                 ->where('wiki', $wiki)
                 ->orWhere('wiki', '*')
                 ->first();
+        }
+
+        if (!$specific) {
+            return false;
         }
 
         if ($level == "OVERSIGHT") {

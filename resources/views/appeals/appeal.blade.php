@@ -45,7 +45,14 @@
                         <div class="col-md-5">
                             <h4 class="card-title">Appeal for "{{ $info->appealfor }}"</h4>
                             <p class="card-text">
-                                Appeal number: #{{ $info->id }}
+                                Appeal number: #{{ $info->id }}&nbsp;
+                                @if($info->user_verified)
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                <br/><i>This appeal has been verified<br/>to the the account on the wiki.</i>
+                                @else
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
+                                <br/><i>This appeal has not been/will not <br/>be verified to the the account on the wiki.</i>
+                                @endif
                                 <br/>Appeal status: {{ $info->status }}
                                 <br/>Blocking Admin: {{ $info->blockingadmin }}
                                 <br/>Block Reason: {{ $info->blockreason }}
@@ -399,6 +406,8 @@
                             @if($comment->action !== "comment" && $comment->action!=="responded")
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td><i>{{ $userlist[$comment->user] }}</i></td>
                                 @endif
@@ -420,6 +429,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{ $userlist[$comment->user] }}</td>
                                 @endif
@@ -437,6 +448,8 @@
                             @else
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
+                                @elseif($comment->user === -1)
+                                    <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     <td>{{ $userlist[$comment['commentUser']] }}</td>
                                 @endif
@@ -455,7 +468,7 @@
                         @endforeach
                 </tbody>
             </table>
-                <i>Lines that are in blue indicate a response to the user. Lines in green are comments from other
+                <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
                     administrators or the user involved.</i>
                 <br/>
                 <br/>

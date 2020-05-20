@@ -16,6 +16,8 @@ use App\User;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use App\Rules\SecretEqualsRule;
+use App\Jobs\GetBlockDetailsJob;
 
 class AppealController extends Controller
 {
@@ -82,8 +84,8 @@ class AppealController extends Controller
                     return view('appeals.privacydeny');
                 }
 
-                foreach ($logs as $log) {
-                    if (is_null($log->user) || $log->user == 0 || in_array($log->user, $userlist)) {
+                foreach($logs as $log) {
+                    if (is_null($log->user) || $log->user === 0 || $log->user === -1 || in_array($log->user, $userlist)) {
                         continue;
                     }
 
@@ -126,22 +128,23 @@ class AppealController extends Controller
         $closestatus = $info->status == "ACCEPT" || $info->status == "DECLINE" || $info->status == "EXPIRE";
 
         $id = $info->id;
-        $logs = $info->comments()->get();
+        $logs = $info->comments;
         $userlist = [];
         if (!is_null($info->handlingadmin)) {
             $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
         }
+
         $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
+
         foreach ($logs as $log) {
-            if (is_null($log->user) || $log->user == 0) {
+            if (is_null($log->user) || in_array($log->user, $userlist) || $log->user === 0 || $log->user === -1) {
                 continue;
             }
-            if (in_array($log->user, $userlist)) {
-                continue;
-            }
-            $userlist[$log->user] = User::findOrFail($log->user)['username'];
+
+            $userlist[$log->user] = User::findOrFail($log->user)->username;
         }
-        return view('appeals.publicappeal', ['id' => $id, 'info' => $info, 'comments' => $logs, 'userlist' => $userlist, 'replies' => $replies, 'hash' => $hash]);
+
+        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
     }
 
     public function publicComment(Request $request)
@@ -157,10 +160,10 @@ class AppealController extends Controller
         $reason = $request->input('comment');
 
         Log::create([
-            'user' => 0,
+            'user' => -1,
             'referenceobject' => $appeal->id,
             'objecttype' => 'appeal',
-            'action' => 'comment',
+            'action' => 'responded',
             'reason' => $reason,
             'ip' => $ip,
             'ua' => $ua . " " . $lang,
@@ -253,9 +256,13 @@ class AppealController extends Controller
         if (!is_null($banip)) {
             return view('appeals.ban', ['expire' => $banip['expiry'], 'id' => $banip['id']]);
         }
+
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id, 'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
-        $log = Log::create(array('user' => 0, 'referenceobject' => $appeal['id'], 'objecttype' => 'appeal', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        Log::create(['user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . ' ' . $lang]);
+
+        GetBlockDetailsJob::dispatch($appeal);
+
         return view('appeals.makeappeal.hash', ['hash' => $key]);
     }
 
@@ -270,8 +277,9 @@ class AppealController extends Controller
     public function checkuser($id, Request $request)
     {
         if (!Auth::check()) {
-            $response->assertUnauthorized();
+            abort(403, 'No logged in user');
         }
+
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
@@ -280,19 +288,20 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $reason = $request->input('reason');
         $checkuser = Permission::checkCheckuser($user, $appeal->wiki);
-        if ($checkuser) {
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 1));
-            return redirect('appeal/' . $id);
-        } else {
-            $response->assertUnauthorized();
+        if (!$checkuser) {
+            abort(403, 'You are not a checkuser.');
         }
+
+        Log::create(['user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 1]);
+        return redirect('appeal/' . $id);
     }
 
     public function comment($id, Request $request)
     {
         if (!Auth::check()) {
-            $response->assertUnauthorized();
+            abort(403, 'No logged in user');
         }
+
         User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
@@ -352,38 +361,37 @@ class AppealController extends Controller
     public function viewtemplates($id)
     {
         if (!Auth::check()) {
-            $response->assertUnauthorized();
+            abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
+
+        Auth::user()->checkRead();
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_unless($admin,403, 'You are not an administrator.');
+
         $userlist = [];
-        $userlist[Auth::id()] = User::findOrFail(Auth::id())['username'];
-        if ($admin) {
-            $templates = Template::where('active', '=', 1)->get();
-            return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'userlist' => $userlist]);
-        } else {
-            $response->assertUnauthorized();
-        }
+        $userlist[Auth::id()] = Auth::user()->username;
+
+        $templates = Template::where('active', '=', 1)->get();
+        return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'userlist' => $userlist]);
     }
 
     public function respondCustom($id)
     {
         if (!Auth::check()) {
-            $response->assertUnauthorized();
+            abort(403, 'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_unless($admin,403, 'You are not an administrator.');
+
         $userlist = [];
-        $userlist[Auth::id()] = User::findOrFail(Auth::id())['username'];
-        if ($admin) {
-            return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
-        } else {
-            $response->assertUnauthorized();
-        }
+        $userlist[Auth::id()] = Auth::user()->username;
+
+        return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
     }
 
     public function reserve($id, Request $request)
@@ -398,18 +406,13 @@ class AppealController extends Controller
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        if ($admin) {
-            if (!isset($appeal->handlingadmin)) {
-                $appeal->handlingadmin = Auth::id();
-                $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            } else {
-                abort(403);
-            }
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
-        }
+        abort_unless($admin,403, 'You are not an administrator.');
+        abort_if($appeal->handlingadmin, 403, 'This appeal has already been reserved.');
+        $appeal->handlingadmin = Auth::id();
+        $appeal->save();
+        Log::create(['user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0]);
+
+        return redirect('appeal/' . $id);
     }
 
     public function release($id, Request $request)
@@ -609,5 +612,39 @@ class AppealController extends Controller
             abort(401);
         }
         return view('appeals.publicappeal', ['id' => $id, 'info' => $info, 'comments' => $logs, 'userlist' => $userlist, 'replies' => $replies]);
+    }
+
+    public function showVerifyOwnershipForm(Request $request, Appeal $appeal, $token)
+    {
+        abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
+        return view('appeals.verifyaccount', ['appeal' => $appeal]);
+    }
+
+    public function verifyAccountOwnership(Request $request, Appeal $appeal)
+    {
+        $request->validate([
+            'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
+            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
+        ]);
+
+        $appeal->update([
+            'verify_token' => null,
+            'user_verified' => true,
+        ]);
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
+        Log::create([
+            'user' => 0,
+            'referenceobject'=> $appeal->id,
+            'objecttype'=>'appeal',
+            'action'=>'account verifed',
+            'ip' => $ip,
+            'ua' => $ua . " " .$lang
+        ]);
+
+        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
 }
