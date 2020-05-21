@@ -111,7 +111,7 @@ class MwApiExtras
                 'query',
                 [
                     'list' => 'globalblocks',
-                    'bgaddresses' => $target,
+                    'bgip' => $target,
                     'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
                 ]
             ));
