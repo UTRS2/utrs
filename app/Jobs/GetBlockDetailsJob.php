@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Appeal;
 use App\MwApi\MwApiExtras;
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -66,8 +67,11 @@ class GetBlockDetailsJob implements ShouldQueue
                 $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip);
             }
 
-            if (!$blockData) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor, 'bkids');
+            if (!$blockData
+                && Str::startsWith($this->appeal->appealfor, '#')
+                && is_numeric(substr($this->appeal->appealfor, 1))
+            ) {
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), 'bkids');
             }
         }
 
