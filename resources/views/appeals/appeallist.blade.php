@@ -67,6 +67,7 @@
                     <th scope="col">ID #</th>
                     <th scope="col">Subject</th>
                     <th scope="col">Block Type</th>
+                    <th scope="col">Wiki</th>
                     <th scope="col">Status</th>
                     <th scope="col">Blocking Admin</th>
                     <th scope="col">Block Reason</th>
@@ -101,6 +102,7 @@
                             @elseif($appeal['blocktype']==2)
                                 <td style="vertical-align: middle;">IP underneath account</td>
                             @endif
+                            <td style="vertical-align: middle;">{{ $appeal->wiki }}</td>
                             <td style="vertical-align: middle;">{{ $appeal['status'] }}</td>
                             <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
                             <td style="vertical-align: middle;">{{ $appeal['blockreason'] }}</td>
