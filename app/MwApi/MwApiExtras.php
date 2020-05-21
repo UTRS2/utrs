@@ -65,7 +65,9 @@ class MwApiExtras
      */
     public static function getBlockInfo($wiki, $target, $key = null)
     {
-        $key = $key ?? (filter_var($target, FILTER_VALIDATE_IP) === false && !IPUtils::isIpRange($target)) ? 'bkusers' : 'bkip';
+        if (!$key) {
+            $key = (filter_var($target, FILTER_VALIDATE_IP) === false && !IPUtils::isIpRange($target)) ? 'bkusers' : 'bkip';
+        }
 
         $api = MwApiGetter::getApiForWiki($wiki);
         $response = $api->getRequest(new SimpleRequest(
