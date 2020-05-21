@@ -181,6 +181,7 @@ def checkPerms(user, id):
     ##############################
     ###Ptwiki checks##############
     raw = callptwikiAPI(params)
+    print raw
     results = raw["query"]["users"][0]["groups"]
     for result in results:
         if "sysop" in result:
