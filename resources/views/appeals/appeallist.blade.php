@@ -66,8 +66,6 @@
                 <tr>
                     <th scope="col">ID #</th>
                     <th scope="col">Subject</th>
-                    <th scope="col">Block Type</th>
-                    <th scope="col">Wiki</th>
                     <th scope="col">Status</th>
                     <th scope="col">Blocking Admin</th>
                     <th scope="col">Block Reason</th>
@@ -91,19 +89,25 @@
                     @elseif($appeal['status']=="PRIVACY")
                         <tr class="bg-danger">
                             @endif
-                            <td style="vertical-align: middle;"><a href="/appeal/{{ $appeal['id'] }}">
-                                    <button type="button" class="btn btn-primary">{{ $appeal['id'] }}</button>
-                                </a></td>
+                            <td style="vertical-align: middle;">
+                                <a href="/appeal/{{ $appeal['id'] }}" class="btn btn-primary">
+                                    #{{ $appeal->id }}
+                                </a>
+                            </td>
                             <td style="vertical-align: middle;">{{ $appeal['appealfor'] }}</td>
-                            @if($appeal['blocktype']==0)
-                                <td style="vertical-align: middle;">IP address</td>
-                            @elseif($appeal['blocktype']==1)
-                                <td style="vertical-align: middle;">Account</td>
-                            @elseif($appeal['blocktype']==2)
-                                <td style="vertical-align: middle;">IP underneath account</td>
-                            @endif
-                            <td style="vertical-align: middle;">{{ $appeal->wiki }}</td>
-                            <td style="vertical-align: middle;">{{ $appeal['status'] }}</td>
+                            <td style="vertical-align: middle">
+                                {{ $appeal->status }}<br/>
+                                @if($appeal->blocktype === 0)
+                                    Blocked IP address
+                                @elseif($appeal->blocktype === 1)
+                                    Blocked account
+                                @elseif($appeal->blocktype === 2)
+                                    Blocked IP underneath account
+                                @else
+                                    Unknown type {{ $appeal->blocktype }}
+                                @endif<br/>
+                                on {{ $appeal->wiki }}
+                            </td>
                             <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
                             <td style="vertical-align: middle;">{{ $appeal['blockreason'] }}</td>
                             <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
