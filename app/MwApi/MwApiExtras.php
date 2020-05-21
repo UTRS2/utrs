@@ -65,6 +65,10 @@ class MwApiExtras
      */
     public static function getBlockInfo($wiki, $target, $key = null)
     {
+        if (!$target) {
+            return null;
+        }
+
         if (!$key) {
             $key = (filter_var($target, FILTER_VALIDATE_IP) === false && !IPUtils::isIpRange($target)) ? 'bkusers' : 'bkip';
         }
@@ -94,6 +98,10 @@ class MwApiExtras
      */
     public static function getGlobalBlockInfo($target)
     {
+        if (!$target) {
+            return null;
+        }
+
         $api = MwApiGetter::getApiForWiki('global');
 
         if (filter_var($target, FILTER_VALIDATE_IP) !== false || IPUtils::isIpRange($target)) {
