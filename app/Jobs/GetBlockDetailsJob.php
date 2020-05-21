@@ -57,7 +57,7 @@ class GetBlockDetailsJob implements ShouldQueue
         if ($this->appeal->wiki === 'global') {
             $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
 
-            if (!$blockData) {
+            if (!$blockData && !empty($this->appeal->hiddenip)) {
                 $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip);
             }
         } else {
