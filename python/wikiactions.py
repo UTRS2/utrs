@@ -57,7 +57,8 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
-            username = userresult[1]
+            username = str(userresult[1])
+            userpage = "User talk:"+username
             checkPerms(username,user)
             if userresult[6] == None:
                 params = {'action': 'query',
