@@ -57,7 +57,8 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select * from users where id = '"+str(user)+"';","read")
         for userresult in userresults:
-            username = userresult[1]
+            username = str(userresult[1])
+            userpage = "User talk:"+username
             checkPerms(username,user)
             if userresult[6] == None:
                 params = {'action': 'query',
@@ -168,29 +169,33 @@ def checkPerms(user, id):
             'usprop': 'groups|editcount|emailable'
             }
     raw = callAPI(params)
-    results = raw["query"]["users"][0]["groups"]
-    for result in results:
-        if "sysop" in result:
-            enperms["sysop"]=True
-        if "checkuser" in result:
-            enperms["checkuser"]=True
-        if "oversight" in result:
-            enperms["oversight"]=True
-    editcount = raw["query"]["users"][0]["editcount"]
-    if editcount >500:enperms["user"]=True
+    try:
+        results = raw["query"]["users"][0]["groups"]
+        for result in results:
+            if "sysop" in result:
+                enperms["sysop"]=True
+            if "checkuser" in result:
+                enperms["checkuser"]=True
+            if "oversight" in result:
+                enperms["oversight"]=True
+        editcount = raw["query"]["users"][0]["editcount"]
+        if editcount >500:enperms["user"]=True
+    except:print "Skip enwiki"
     ##############################
     ###Ptwiki checks##############
     raw = callptwikiAPI(params)
-    results = raw["query"]["users"][0]["groups"]
-    for result in results:
-        if "sysop" in result:
-            ptperms["sysop"]=True
-        if "checkuser" in result:
-            ptperms["checkuser"]=True
-        if "oversight" in result:
-            ptperms["oversight"]=True
-    editcount = raw["query"]["users"][0]["editcount"]
-    if editcount >500:ptperms["user"]=True
+    try:
+        results = raw["query"]["users"][0]["groups"]
+        for result in results:
+            if "sysop" in result:
+                ptperms["sysop"]=True
+            if "checkuser" in result:
+                ptperms["checkuser"]=True
+            if "oversight" in result:
+                ptperms["oversight"]=True
+        editcount = raw["query"]["users"][0]["editcount"]
+        if editcount >500:ptperms["user"]=True
+    except:print "Skip ptwiki"
     ##############################
     ###Meta checks##############
     params = {'action': 'query',
@@ -201,21 +206,23 @@ def checkPerms(user, id):
             'aguprop': 'groups'
             }
     raw = callmetaAPI(params)
-    results = raw["query"]["globalallusers"][0]["groups"]
-    for result in results:
-        if "steward" in result:
-            metaperms["steward"]=True
-        if "staff" in result:
-            metaperms["staff"]=True
-    params = {'action': 'query',
-            'format': 'json',
-            'list': 'users',
-            'ususers': user,
-            'usprop': 'editcount'
-            }
-    raw = callmetaAPI(params)
-    editcount = raw["query"]["users"][0]["editcount"]
-    if editcount >500:metaperms["user"]=True
+    try:
+        results = raw["query"]["globalallusers"][0]["groups"]
+        for result in results:
+            if "steward" in result:
+                metaperms["steward"]=True
+            if "staff" in result:
+                metaperms["staff"]=True
+        params = {'action': 'query',
+                'format': 'json',
+                'list': 'users',
+                'ususers': user,
+                'usprop': 'editcount'
+                }
+        raw = callmetaAPI(params)
+        editcount = raw["query"]["users"][0]["editcount"]
+        if editcount >500:metaperms["user"]=True
+    except:print "Skip meta"
     ###################################
     ###Set allowed Wikis###############
     string = ""
