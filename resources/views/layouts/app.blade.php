@@ -11,7 +11,7 @@
     <script type="text/javascript">@yield('scripts')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
-<body>
+<body> {{-- classes potentially purged by purgecss that should still be kept: modal-open --}}
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand nav-item" href="/">{{ config('app.name') }}</a>
     @auth

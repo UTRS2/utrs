@@ -16,11 +16,22 @@
             </div>
         @endif
 
+        @if(sizeof($errors)>0)
+            <div class="alert alert-danger" role="alert">
+                The following errors occured:
+                <ul>
+                    @foreach ($errors->all() as $message)
+                        <li>{{ $message }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="card my-2">
             <h4 class="card-header">Appeal details</h4>
             <div class="card-body">
                 <div>
-                    @if($info->privacyreview!=0 && $info->status=="PRIVACY")
+                    @if($info->privacyreview != 0 && $info->status == "PRIVACY")
                         <div class="row">
                             <div class="col-12">
                                 <div class="alert alert-primary" role="alert">
@@ -251,9 +262,9 @@
                                                             <a href="/appeal/privacy/{{ $id }}" class="btn btn-warning">
                                                                 Privacy Team
                                                             </a>
-                                                            <a href="/appeal/checkuserreview/{{ $id }}" class="btn btn-warning">
+                                                            <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
                                                                 CheckUser
-                                                            </a>
+                                                            </button>
                                                             <a href="/appeal/tooladmin/{{ $id }}" class="btn btn-warning">
                                                                 Tool admin
                                                             </a>
@@ -501,6 +512,33 @@
                         </div>
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="checkuserModal" tabindex="-1" role="dialog" aria-labelledby="checkuserModalTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkuserModalTitle">Submit to CheckUser review</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {{ Form::open(['url' => route('appeal.action.checkuser', $info)]) }}
+                {{ Form::token() }}
+                <div class="modal-body">
+
+                    <div class="form-group mb-4">
+                        {{ Form::label('cu_reason', 'What would you like the checkuser to review in this appeal?') }}
+                        {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    {{ Form::submit('Submit', ['class' => 'btn btn-primary']) }}
+                </div>
+                {{ Form::close() }}
             </div>
         </div>
     </div>

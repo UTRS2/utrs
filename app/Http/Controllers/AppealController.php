@@ -72,7 +72,11 @@ class AppealController extends Controller
                 $perms['dev'] = $isDeveloper;
 
                 $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
-                $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
+
+                $checkuserdone = $info->comments()
+                    ->where('user', Auth::id())
+                    ->where('action', 'checkuser')
+                    ->exists();
 
                 if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
                     if (!Permission::checkPrivacy(Auth::id(), $info->wiki) && !Permission::checkOversight(Auth::id(), $info->wiki)) {
@@ -533,26 +537,39 @@ class AppealController extends Controller
         }
     }
 
-    public function checkuserreview($id, Request $request)
+    public function checkuserreview(Request $request, Appeal $appeal)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
+        abort_unless(Auth::check(), 403, 'No logged in user');
         User::findOrFail(Auth::id())->checkRead();
-        $ua = $request->server('HTTP_USER_AGENT');
+
+        $ua = $request->header('User-Agent');
+        $lang = $request->header('Accept-Language');
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
+
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        if ($admin && $appeal->status !== "CHECKUSER") {
-            $appeal->status = "CHECKUSER";
-            $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'sent for checkuser review', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
-        }
+
+        $reason = $request->validate([
+            'cu_reason' => 'required|string|min:3|max:190',
+        ])['cu_reason'];
+
+        abort_unless($admin && $appeal->status !== 'CHECKUSER', 403, 'Forbidden');
+
+        $appeal->status = 'CHECKUSER';
+        $appeal->save();
+
+        Log::create([
+            'user' => $user,
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'sent for checkuser review',
+            'reason' => $reason,
+            'ip' => $ip,
+            'ua' => $ua . ' ' . $lang,
+            'protected' => 0
+        ]);
+
+        return redirect()->back();
     }
 
     public function admin($id, Request $request)
