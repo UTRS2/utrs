@@ -33,6 +33,15 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
         return $this->wiki;
     }
 
+    public function getGroupName(string $groupName)
+    {
+        if ($groupName === 'sysop') {
+            return 'admin';
+        }
+
+        return parent::getGroupName($groupName);
+    }
+
     public function getPermissionsToCheck()
     {
         return [

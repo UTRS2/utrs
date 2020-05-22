@@ -31,6 +31,16 @@ abstract class BaseWikiPermissionJob
     abstract function checkIsBlocked();
 
     /**
+     * if necessary, change group values gotten from the MediaWiki API before writing them into the database
+     * @param string $groupName group in MediaWiki side
+     * @return string column name in {@link Permission}
+     */
+    public function getGroupName(string $groupName)
+    {
+        return $groupName;
+    }
+
+    /**
      * @return string wiki name on users.wikis column
      */
     protected function getValueInAllowedWikis()
@@ -76,7 +86,8 @@ abstract class BaseWikiPermissionJob
             return [];
         }
 
-        return $this->transformGroupArray($user, $user->getGroups());
+        $groups = array_map('self::getGroupName', $user->getGroups());
+        return $this->transformGroupArray($user, $groups);
     }
 
     /**
@@ -85,9 +96,11 @@ abstract class BaseWikiPermissionJob
     public function handle()
     {
         $permissions = $this->getUserPermissions();
-        $permissionsToUpdate = array_map(function ($permission) use ($permissions) {
-            return in_array($permission, $permissions) ? 1 : 0;
-        }, $this->getPermissionsToCheck());
+        $permissionsToUpdate = collect($this->getPermissionsToCheck())
+            ->mapWithKeys(function ($permissionName) use ($permissions) {
+                return [$permissionName => in_array($permissionName, $permissions) ? 1 : 0];
+            })
+            ->toArray();
 
         $permObject = Permission::firstOrNew([
             'wiki' => $this->getWikiId(),
