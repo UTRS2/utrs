@@ -171,6 +171,12 @@ class AppealController extends Controller
             'protected' => 0
         ]);
 
+        if ($appeal->status === Appeal::STATUS_AWAITNG_REPLY) {
+            $appeal->update([
+                'status' => Appeal::STATUS_OPEN,
+            ]);
+        }
+
         return redirect()->back();
     }
 
