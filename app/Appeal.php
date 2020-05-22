@@ -7,8 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Appeal extends Model
 {
+    const REPLY_STATUS_CHANGE_OPTIONS = [
+        self::STATUS_OPEN          => self::STATUS_OPEN,
+        self::STATUS_AWAITNG_REPLY => self::STATUS_AWAITNG_REPLY,
+        self::STATUS_ACCEPT        => self::STATUS_ACCEPT,
+        self::STATUS_DECLINE       => self::STATUS_DECLINE,
+        self::STATUS_EXPIRE        => self::STATUS_EXPIRE,
+    ];
+
     const STATUS_OPEN = 'OPEN';
     const STATUS_VERIFY = 'VERIFY'; // appeals that are waiting to be checked from MediaWiki API
+    const STATUS_AWAITNG_REPLY = 'AWAITING_REPLY';
 
     // statuses that are waiting for a specific person/group of them
     const STATUS_PRIVACY = 'PRIVACY'; // waiting for privacy review

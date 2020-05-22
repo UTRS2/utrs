@@ -28,10 +28,8 @@
             there is an ongoing discussion there about their unblock request.
         </div>
         <br/>
-        <button type="button" class="btn btn-danger" onclick="window.history.back();">Return to appeal</button>
-        <a href="/appeal/custom/{{ $appeal->id }}">
-            <button type="button" class="btn btn-info">Use a custom reply</button>
-        </a><br/><br/>
+        <a type="button" class="btn btn-danger" href="/appeal/{{ $appeal->id }}">Return to appeal</a>
+        <a href="{{ route('appeal.customresponse', $appeal) }}" class="btn btn-info">Use a custom reply</a><br/><br/>
         <table class="table">
             <thead>
             <tr>

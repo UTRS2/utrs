@@ -17,6 +17,7 @@ use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
+use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
 
 class AppealController extends Controller
@@ -55,7 +56,7 @@ class AppealController extends Controller
             $closestatus = ($info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE);
             abort_if($info->status == Appeal::STATUS_INVALID && !$isDeveloper, 404, 'This appeal has been marked invalid.');
 
-            if (($info->status == Appeal::STATUS_OPEN || $info->status == Appeal::STATUS_PRIVACY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
+            if (($info->status == Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITNG_REPLY || $info->status == Appeal::STATUS_PRIVACY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
                 $logs = $info->comments()->get();
                 $userlist = [];
 
@@ -336,25 +337,57 @@ class AppealController extends Controller
         }
     }
 
-    public function respondCustomSubmit($id, Request $request)
+    public function respondCustomSubmit(Request $request, Appeal $appeal)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
+        abort_unless(Auth::check(), 403, 'No logged in user');
         User::findOrFail(Auth::id())->checkRead();
+
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
+
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        if ($admin && $appeal->handlingadmin == Auth::id()) {
-            $mail = Sendresponse::create(array('appealID' => $id, 'template' => 0, 'custom' => $request->input('custom')));
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'responded', 'reason' => $request->input('custom'), 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
+        abort_unless($admin && $appeal->handlingadmin === $user, 403, 'Forbidden');
+
+        $status = $request->validate([
+            'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+        ])['status'];
+
+        if ($status && $status !== $appeal->status) {
+            $appeal->update([
+                'status' => $status,
+            ]);
+
+            Log::create([
+                'user' => $user,
+                'referenceobject' => $appeal->id,
+                'objecttype' => 'appeal',
+                'action' => 'set status as ' . $status,
+                'ip' => $ip,
+                'ua' => $ua . ' ' . $lang,
+                'protected' => 0,
+            ]);
         }
+
+        Sendresponse::create([
+            'appealID' => $appeal->id,
+            'template' => 0,
+            'custom' => $request->input('custom'),
+        ]);
+
+        Log::create([
+            'user' => $user,
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'responded',
+            'reason' => $request->input('custom'),
+            'ip' => $ip,
+            'ua' => $ua . " " . $lang,
+            'protected' => 0,
+        ]);
+
+        return redirect('appeal/' . $appeal->id);
     }
 
     public function viewtemplates($id)
@@ -376,14 +409,12 @@ class AppealController extends Controller
         return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'userlist' => $userlist]);
     }
 
-    public function respondCustom($id)
+    public function respondCustom(Appeal $appeal)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
+        abort_unless(Auth::check(), 403, 'No logged in user');
         User::findOrFail(Auth::id())->checkRead();
+
         $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin,403, 'You are not an administrator.');
 
