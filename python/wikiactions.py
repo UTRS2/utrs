@@ -64,7 +64,7 @@ def verifyusers():
                 params = {'action': 'query',
                 'format': 'json',
                 'list': 'users',
-                'ususers': user
+                'ususers': username
                 }
                 raw = callAPI(params)
                 try:userexist = raw["query"]["users"][0]["userid"]

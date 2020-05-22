@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Appeal;
 use App\Log;
 use Illuminate\Http\Request;
+use App\Jobs\GetBlockDetailsJob;
 
 class AppealModifyController extends Controller
 {
@@ -37,7 +38,11 @@ class AppealModifyController extends Controller
 
         $appeal->status = Appeal::STATUS_VERIFY;
         $appeal->update($data);
+
         Log::create(array('user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'modifyip', 'ip' => $ip, 'ua' => $ua . " " . $lang));
-        return redirect('/');
+
+        GetBlockDetailsJob::dispatch($appeal);
+
+        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
 }
