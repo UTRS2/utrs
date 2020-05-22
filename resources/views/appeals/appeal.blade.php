@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@php use App\Appeal; @endphp
 
 @section('title', 'Appeal #' . $id)
 @section('content')
@@ -9,7 +10,7 @@
             </a>
         </div>
 
-        @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
+        @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
             <br/>
             <div class="alert alert-danger" role="alert">
                 This appeal is closed. No further changes can be made to it.
@@ -20,7 +21,7 @@
             <h4 class="card-header">Appeal details</h4>
             <div class="card-body">
                 <div>
-                    @if($info->privacyreview!=0 && $info->status=="PRIVACY")
+                    @if($info->privacyreview !== 0 && $info->status === Appeal::STATUS_PRIVACY)
                         <div class="row">
                             <div class="col-12">
                                 <div class="alert alert-primary" role="alert">
@@ -154,7 +155,7 @@
                             @endif
                         </div>
                         <div class="col-md-7">
-                            @if($info->privacyreview!=0 && $info->status=="PRIVACY" && $perms['admin'])
+                            @if($info->privacyreview !== 0 && $info->status === Appeal::STATUS_PRIVACY && $perms['admin'])
                                 <div class="row">
                                     @if ($info->privacyreview==1 || $info->privacyreview==2)
                                         <div class="alert alert-primary" role="alert">
@@ -194,7 +195,7 @@
                                                 appeal.
                                             </div>
                                         @else
-                                            @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
+                                            @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
                                                 @if($perms['functionary'])
                                                     <div>
                                                         <a href="/appeal/open/{{ $id }}" class="btn btn-success">
@@ -214,11 +215,11 @@
                                                             <a href="/appeal/reserve/{{ $id }}" class="btn btn-success">
                                                                 Reserve
                                                             </a>
-                                                        @elseif($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
+                                                        @elseif($info->handlingadmin != null && $info->handlingadmin == Auth::id())
                                                             <a href="/appeal/release/{{ $id }}" class="btn btn-success">
                                                                 Release
                                                             </a>
-                                                        @elseif($info->handlingadmin!=null && $info->handlingadmin != Auth::id())
+                                                        @elseif($info->handlingadmin != null && $info->handlingadmin != Auth::id())
                                                             <button class="btn btn-success" disabled>
                                                                 Reserve
                                                             </button>
@@ -246,7 +247,7 @@
                                                         </a>
                                                     </div>
 
-                                                    @if($info->status=="OPEN")
+                                                    @if($info->status === Appeal::STATUS_OPEN)
                                                         <div class="mb-2">
                                                             <a href="/appeal/privacy/{{ $id }}" class="btn btn-warning">
                                                                 Privacy Team
@@ -259,7 +260,7 @@
                                                             </a>
                                                         </div>
                                                     @endif
-                                                    @if(($info->status!=="OPEN" && $info->status!=="EXPIRE" && $info->status!=="DECLINE" && $info->status!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
+                                                    @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                                         <div class="mb-2">
                                                             <a href="/appeal/open/{{ $id }}" class="btn btn-info">
                                                                 Return to tool users
@@ -296,7 +297,7 @@
                         </tr>
 
                         @foreach($previousAppeals as $appeal)
-                            <tr class="{{ $appeal->status === 'ACCEPT' ? 'bg-success' : (in_array($appeal->status,['DECLINE','EXPIRE']) ? 'bg-danger' : '') }}">
+                            <tr class="{{ $appeal->status === Appeal::STATUS_ACCEPT ? 'bg-success' : (in_array($appeal->status, [Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE]) ? 'bg-danger' : '') }}">
                                 <td style="vertical-align: middle;">
                                     <a href="/appeal/{{ $appeal->id }}" class="btn btn-primary">
                                         #{{ $appeal->id }}
@@ -340,17 +341,17 @@
                     <div class="col-md-6">
                         <div class="row">
                                 <div class="col-6">
-                                    @if($info->status=="ACCEPT")
+                                    @if($info->status === Appeal::STATUS_ACCEPT)
                                         <center>This appeal was approved.<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info->status=="EXPIRE")
+                                    @elseif($info->status === Appeal::STATUS_EXPIRE)
                                         <center>This appeal expired.<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info->status=="DECLINE")
+                                    @elseif($info->status === Appeal::STATUS_DECLINE)
                                         <center>This appeal was denied.<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
@@ -374,7 +375,7 @@
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Oxygen480-actions-irc-unvoice.svg/200px-Oxygen480-actions-irc-unvoice.svg.png"
                                                     class="img-fluid"></center>
-                                    @elseif($info->privacylevel==2 || ($info->privacylevel!==$info->privacyreview))
+                                    @elseif($info->privacylevel==2 || ($info->privacylevel !== $info->privacyreview))
                                         <center>This appeal is oversighted or under privacy review. Only logged in
                                             Privacy Team members have access to this appeal.
                                             <br/><img
@@ -403,7 +404,7 @@
                 @foreach($comments as $comment)
                     <tr class="{{ $comment->action === 'comment' ? 'bg-success' : ($comment->action === 'responded' ? 'bg-primary' : '') }}">
                         @if(is_null($comment['commentUser']))
-                            @if($comment->action !== "comment" && $comment->action!=="responded")
+                            @if($comment->action !== "comment" && $comment->action !== "responded")
                                 @if($comment->user==0)
                                     <td><i>System</i></td>
                                 @elseif($comment->user === -1)
@@ -415,7 +416,7 @@
                                 @if($comment->protected && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
-                                    @if($comment->comment!==null)
+                                    @if($comment->comment !== null)
                                         <td><i>{{ $comment->comment }}</i></td>
                                     @else
                                         @if(!is_null($comment->reason))
@@ -438,7 +439,7 @@
                                 @if($comment->protected && !$perms['functionary'])
                                     <td>Access to comment is restricted.</td>
                                     @else
-                                        @if($comment->comment!==null)
+                                        @if($comment->comment !== null)
                                             <td>{{ $comment->comment }}</td>
                                         @else
                                             <td>{{ $comment->reason }}</td>
@@ -457,7 +458,7 @@
                                 @if($comment->protected && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
-                                    @if($comment->comment!==null)
+                                    @if($comment->comment !== null)
                                         <td>{{ $comment->comment }}</td>
                                     @else
                                         <td>{{ $comment->reason }}</td>
@@ -476,7 +477,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5 class="card-title">Send a templated reply</h5>
-                            @if($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
+                            @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
                                 <a href="/appeal/template/{{ $id }}" class="btn btn-info">
                                     Send a reply to the user
                                 </a>
