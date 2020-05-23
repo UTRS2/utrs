@@ -39,13 +39,13 @@ def calldb(command,style):
 
 def revokeReadPerms(userid):
     userid = str(userid)
-    calldb("update permissions set user=0 where id = "+userid+" and wikis = 'enwiki';","write")
+    calldb("update permissions set user=0 where id = "+userid+" and wiki = 'enwiki';","write")
 
 def checkAllPerms():
     result = calldb("select * from users where wikis = 'enwiki';","read")
     for user in result:
         id = user[0]
-        username = user[1]
+        username = str(user[1])
         params = {'action': 'query',
                 'format': 'json',
                 'list': 'users',
@@ -57,8 +57,14 @@ def checkAllPerms():
             results = raw["query"]["users"][0]["groups"]
             for result in results:
                 if "sysop" in result:return #no modification needed
-                else:revokeReadPerms(user[0])
-        except:revokeReadPerms(user[0])
+                else:
+                    print "Going to revoke: "+username
+                    quit()
+                    revokeReadPerms(user[0])
+        except:
+            print "Going to revoke: "+username
+            quit()
+            revokeReadPerms(user[0])
         ###################################
         ###Set allowed Wikis###############
         if "enwiki" in user[6]:
