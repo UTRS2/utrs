@@ -57,6 +57,7 @@ def checkAllPerms():
             results = raw["query"]["users"][0]["groups"]
             print results
             for result in results:
+                print "I see sysop for: "+username
                 if "sysop" in result:continue #no modification needed
             print "Going to revoke: "+username
             quit()
