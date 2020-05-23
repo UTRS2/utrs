@@ -28,7 +28,7 @@ class SuspendPrivacy extends Migration
     {
         Schema::table('appeals', function (Blueprint $table) {
             $table->tinyInteger('privacylevel')->change();
-            $table->boolean('privacyreview');->change();
+            $table->boolean('privacyreview')->change();
         });
     }
 }
