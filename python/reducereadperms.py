@@ -43,6 +43,7 @@ def revokeReadPerms(userid):
 
 def checkAllPerms():
     result = calldb("select * from users where wikis = 'enwiki';","read")
+    print result
     for user in result:
         id = user[0]
         username = str(user[1])
