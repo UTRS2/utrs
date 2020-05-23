@@ -68,22 +68,6 @@
                     Only administrators will be able to see your appeal.
                 </div>
 
-                <div class="form-group mb-4">
-                    Does your appeal contain private information?
-
-                    <div class="custom-control custom-radio">
-                        {{ Form::radio('privacyreview', 0, old('privacyreview') === 0, ['class' => 'custom-control-input', 'id' => 'privacyreview-0']) }} {{ Form::label('privacyreview-0', 'No', ['class' => 'custom-control-label']) }}
-                    </div>
-
-                    <div class="custom-control custom-radio">
-                        {{ Form::radio('privacyreview', 1, old('privacyreview') === 1, ['class' => 'custom-control-input', 'id' => 'privacyreview-1']) }} {{ Form::label('privacyreview-1', 'No, but I prefer my appeal be private', ['class' => 'custom-control-label']) }}
-                    </div>
-
-                    <div class="custom-control custom-radio">
-                        {{ Form::radio('privacyreview', 2, old('privacyreview') === 2, ['class' => 'custom-control-input', 'id' => 'privacyreview-2']) }} {{ Form::label('privacyreview-2', 'Yes, my appeal contains private data', ['class' => 'custom-control-label']) }}
-                    </div>
-                </div>
-
                 <div class="alert alert-warning" role="alert">
                     There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
                     an appeal.
