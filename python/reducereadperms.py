@@ -46,6 +46,7 @@ def checkAllPerms():
     for user in result:
         id = user[0]
         username = str(user[1])
+        sysop=False
         params = {'action': 'query',
                 'format': 'json',
                 'list': 'users',
@@ -59,7 +60,8 @@ def checkAllPerms():
             for result in results:
                 if "sysop" in result:
                     print "I see sysop for: "+username
-                    continue #no modification needed
+                    sysop=True #no modification needed
+            if sysop == True:continue
             print "Going to revoke: "+username
             quit()
             revokeReadPerms(user[0])
