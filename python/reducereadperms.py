@@ -45,7 +45,7 @@ def checkAllPerms():
     result = calldb("select * from users where wikis RLIKE 'enwiki';","read")
     for user in result:
         id = user[0]
-        username = str(user[1])
+        username = user[1]
         sysop=False
         params = {'action': 'query',
                 'format': 'json',
