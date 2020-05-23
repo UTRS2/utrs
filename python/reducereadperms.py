@@ -44,10 +44,12 @@ def revokeReadPerms(userid):
 def checkAllPerms():
     result = calldb("select * from users where  wiki = 'enwiki';","read")
     for user in result:
+        id = user[0]
+        username = user[1]
         params = {'action': 'query',
                 'format': 'json',
                 'list': 'users',
-                'ususers': user,
+                'ususers': username,
                 'usprop': 'groups'
                 }
         raw = callAPI(params)
