@@ -60,12 +60,8 @@ def checkAllPerms():
                 if "sysop" in result:
                     sysop=True #no modification needed
             if sysop == True:continue
-            print "Going to revoke: "+username
-            quit()
             revokeReadPerms(user[0])
         except:
-            print "Going to revoke: "+username
-            quit()
             revokeReadPerms(user[0])
         ###################################
         ###Set allowed Wikis###############
