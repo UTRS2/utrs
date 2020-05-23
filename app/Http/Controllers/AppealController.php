@@ -56,7 +56,7 @@ class AppealController extends Controller
             $appeal = Appeal::findOrFail($id);
             $user = Auth::id();
             $admin = Permission::checkAdmin($user, $appeal->wiki);
-            abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+            abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
 
             $closestatus = ($info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE);
             abort_if($info->status == Appeal::STATUS_INVALID && !$isDeveloper, 404, 'This appeal has been marked invalid.');
@@ -288,7 +288,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -313,7 +313,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -334,7 +334,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -354,8 +354,11 @@ class AppealController extends Controller
     public function respondCustomSubmit(Request $request, Appeal $appeal)
     {
         abort_unless(Auth::check(), 403, 'No logged in user');
-        User::findOrFail(Auth::id())->checkRead();
-
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -495,7 +498,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -542,7 +545,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -565,7 +568,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -588,7 +591,7 @@ class AppealController extends Controller
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
