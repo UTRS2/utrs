@@ -72,12 +72,12 @@ def checkAllPerms():
                 for wiki in wikis:
                     if wiki=="enwiki":continue
                     else:
-                        rebuildwikis.append([wiki])
+                        rebuildwikis.append(wiki)
                 if len(rebuildwikis) > 1:
-                    newwikis = str(rebuildwikis.join(","))
+                    newwikis = str(",".join(rebuildwikis))
                     calldb("update users set wikis = '"+newwikis+"' where id="+str(id)+";","write")
                 else:
-                    newwikis = str(rebuildwikis)
+                    newwikis = str(rebuildwikis[0])
                     calldb("update users set wikis = '"+newwikis+"' where id="+str(id)+";","write")
             else:
                 calldb("update users set wikis = NULL where id="+str(id)+";","write")
