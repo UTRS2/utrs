@@ -55,12 +55,12 @@ def verifyusers():
     for result in results:
         wtid=result[0]
         user = result[2]
-        userresults = calldb("select id,username from users where id = '"+str(user)+"';","read")
+        userresults = calldb("select id,username from users where id = '"+str(user)+"';","read")[0]
         
         username = str(userresults[1])
         userpage = "User talk:"+username
         checkPerms(username,user)
-        userresults = calldb("select * from users where id = '"+str(user)+"';","read")
+        userresults = calldb("select * from users where id = '"+str(user)+"';","read")[0]
         if userresult[6] == None:
             params = {'action': 'query',
             'format': 'json',
