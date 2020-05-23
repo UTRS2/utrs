@@ -55,11 +55,9 @@
                 <h5>Block appeal information</h5>
 
                 <div class="alert alert-warning" role="alert">
-                    Only administrators will be able to see your appeal.
-                </div>
-
-                <div class="alert alert-warning" role="alert">
-                    There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
+                    Please note that if your appeal doesn't contain any private data, you will be redirected to appeal on your talkpage.
+                    Only administrators will be able to see your appeal on this tool.
+                    <br/>There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
                     an appeal.
                 </div>
 
