@@ -39,10 +39,10 @@ def calldb(command,style):
 
 def revokeReadPerms(userid):
     userid = str(userid)
-    calldb("update permissions set user=0 where id = "+userid+" and wiki = 'enwiki';","write")
+    calldb("update permissions set user=0 where id = "+userid+" and wikis = 'enwiki';","write")
 
 def checkAllPerms():
-    result = calldb("select * from users where  wiki = 'enwiki';","read")
+    result = calldb("select * from users where wikis = 'enwiki';","read")
     for user in result:
         id = user[0]
         username = user[1]
