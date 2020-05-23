@@ -59,7 +59,7 @@ def verifyusers():
         for userresult in userresults:
             username = str(userresult[1])
             userpage = "User talk:"+username
-            checkPerms(username,user)
+            userresult[6] = checkPerms(username,user)
             if userresult[6] == None:
                 params = {'action': 'query',
                 'format': 'json',
@@ -241,6 +241,7 @@ def checkPerms(user, id):
         calldb("insert into permissions (userid,wiki,oversight,checkuser,admin,user) values ("+str(id)+",'ptwiki',"+str(int(ptperms["oversight"]))+","+str(int(ptperms["checkuser"]))+","+str(int(ptperms["sysop"]))+",1);","write")
     if metaperms['user']:
         calldb("insert into permissions (userid,wiki,steward,staff,user) values ("+str(id)+",'*',"+str(int(metaperms["steward"]))+","+str(int(metaperms["staff"]))+",1);","write")
+    return string
 def verifyblock():
     results = calldb("select * from appeals where status = 'VERIFY';","read")
     for appeal in results:
