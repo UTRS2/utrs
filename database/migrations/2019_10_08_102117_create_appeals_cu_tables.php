@@ -47,6 +47,6 @@ class CreateAppealsCuTables extends Migration
     public function down()
     {
         Schema::dropIfExists('appeals');
-        Schema::dropIfExists('privatedata');
+        Schema::dropIfExists('privatedatas');
     }
 }

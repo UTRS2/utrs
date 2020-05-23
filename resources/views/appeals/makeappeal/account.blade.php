@@ -24,7 +24,7 @@
             If you have any questions, you can contact us. Please note: We will not expedite, approve, deny, or edit
             your appeal. It is for information only.
         </div>
-        <div class="card" style="align-content: left">
+        <div class="card">
             <div class="card-header">
                 Appeal a block on an account
             </div>
@@ -39,40 +39,46 @@
                         </ul>
                     </div>
                 @endif
-                {{ Form::open(array('url' => 'appeal/account')) }}
+
+                {{ Form::open(['url' => 'appeal/account']) }}
                 {{ Form::token() }}
-                <h5 class="card-title">About you</h5>
-                {{ Form::label('wiki', 'Which Wiki are you blocked on?') }}<br>
-                {{ Form::select('wiki', array('enwiki' => 'English Wikipedia','ptwiki' => 'Portuguese Wikipedia', 'global' => 'Global Locks/Blocks'), 'enwiki') }}
-                <br>
-                {{ Form::label('appealfor', 'What is your Username?') }}<br>
-                {{ Form::text('appealfor') }}<br>
-                <br>
-                {{ Form::label('blocktype', 'Is your account directly blocked?') }}<br>
-                {{ Form::radio('blocktype', 1) }} Yes<br>
-                {{ Form::radio('blocktype', 2) }} No, the underlying IP address is blocked<br>
-                <br>
-                <h5 class="card-title">Block appeal information</h5>
-                <br>
-                <div class="alert alert-danger" role="alert">
-                    Please note that your answer to the following question does not guarentee that your appeal will be
-                    private. It will be reviewed by select users and a determination will be made about if the appeal
-                    contains private data and needs to be hidden from public view. Any information you put in this
-                    appeal may be posted publicly.
+                <h5>About you</h5>
+                <div class="form-group mb-4">
+                    {{ Form::label('wiki', 'Which Wiki are you blocked on?') }}<br>
+                    {{ Form::select('wiki', \App\MwApi\MwApiUrls::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
                 </div>
-                {{ Form::label('privacyreview', 'Does your appeal contain private information?') }}<br>
-                {{ Form::radio('privacyreview', 0) }} No<br>
-                {{ Form::radio('privacyreview', 1) }} No, but I prefer my appeal be private<br>
-                {{ Form::radio('privacyreview', 2) }} Yes, my appeal contains private data<br>
-                <br>
+                <div class="form-group mb-4">
+                    {{ Form::label('appealfor', 'What is your Username?') }}
+                    {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
+                </div>
+                <div class="form-group mb-4">
+                    Is your account directly blocked?
+                    <div class="custom-control custom-radio">
+                        {{ Form::radio('blocktype', 1, old('blocktype') === 1, ['class' => 'custom-control-input', 'id' => 'blocktype-1']) }} {{ Form::label('blocktype-1', 'Yes', ['class' => 'custom-control-label']) }}
+                    </div>
+
+                    <div class="custom-control custom-radio">
+                        {{ Form::radio('blocktype', 2, old('blocktype') === 2, ['class' => 'custom-control-input', 'id' => 'blocktype-2']) }} {{ Form::label('blocktype-2', 'No, the underlying IP address is blocked', ['class' => 'custom-control-label']) }}
+                    </div>
+                </div>
+
+                <h5>Block appeal information</h5>
+
+                <div class="alert alert-warning" role="alert">
+                    Only administrators will be able to see your appeal.
+                </div>
+
                 <div class="alert alert-warning" role="alert">
                     There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
                     an appeal.
                 </div>
-                {{ Form::label('blocktype', 'Why should you be unblocked?') }}<br>
-                {{ Form::textarea('appealtext') }}<br>
-                <br>
-                <button type="submit" class="btn btn-success">Submit</button>
+
+                <div class="form-group mb-4">
+                    {{ Form::label('appealtext', 'Why should you be unblocked?') }}
+                    {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
+                </div>
+
+                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                 {{ Form::close() }}
             </div>
         </div>

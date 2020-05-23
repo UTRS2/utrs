@@ -2,6 +2,7 @@
 
 namespace App\MwApi;
 
+use App\Utils\IPUtils;
 use Mediawiki\Api\SimpleRequest;
 
 /**
@@ -64,7 +65,13 @@ class MwApiExtras
      */
     public static function getBlockInfo($wiki, $target, $key = null)
     {
-        $key = $key ?? filter_var($target, FILTER_VALIDATE_IP) === false ? 'bkusers' : 'bkip';
+        if (!$target) {
+            return null;
+        }
+
+        if (!$key) {
+            $key = (filter_var($target, FILTER_VALIDATE_IP) === false && !IPUtils::isIpRange($target)) ? 'bkusers' : 'bkip';
+        }
 
         $api = MwApiGetter::getApiForWiki($wiki);
         $response = $api->getRequest(new SimpleRequest(
@@ -91,16 +98,20 @@ class MwApiExtras
      */
     public static function getGlobalBlockInfo($target)
     {
+        if (!$target) {
+            return null;
+        }
+
         $api = MwApiGetter::getApiForWiki('global');
 
-        if (filter_var($target, FILTER_VALIDATE_IP) !== false) {
+        if (filter_var($target, FILTER_VALIDATE_IP) !== false || IPUtils::isIpRange($target)) {
             // is ip
 
             $response = $api->getRequest(new SimpleRequest(
                 'query',
                 [
                     'list' => 'globalblocks',
-                    'bgaddresses' => $target,
+                    'bgip' => $target,
                     'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
                 ]
             ));

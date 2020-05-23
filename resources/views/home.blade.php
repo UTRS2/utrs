@@ -42,10 +42,10 @@
                 <div class="card bg-light mb-3 text-center" style="max-width: 18rem;">
                     <div class="card-header">Login</div>
                     <div class="card-body">
-                        <h5 class="card-title">For users that are here</h5>
+                        <h5 class="card-title">For <b>administrators</b> that are here</h5>
                         <p class="card-text">to comment on, process or assist with appeals,
-                            please select the button below. Please note that only user accounts
-                            over 500 edits are allowed to participate in this form.</p>
+                            please select the button below. Please note that only 
+                            <b>administrators</b> are allowed to participate in this form.</p>
                         @auth
                             <a href="/review" class="btn btn-primary">Go to Appeals</a>
                         @endauth

@@ -7,6 +7,7 @@ use App\Log;
 use Illuminate\Http\Request;
 use Redirect;
 use Validator;
+use App\Jobs\GetBlockDetailsJob;
 
 class AppealModifyController extends Controller
 {
@@ -36,9 +37,14 @@ class AppealModifyController extends Controller
         if ($request['hiddenip'] !== NULL) {
             $appeal->hiddenip = $request->input('hiddenip');
         }
+
         $appeal->status = "VERIFY";
         $appeal->update($data);
+
         Log::create(array('user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'modifyip', 'ip' => $ip, 'ua' => $ua . " " . $lang));
-        return redirect('/');
+
+        GetBlockDetailsJob::dispatch($appeal);
+
+        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
 }

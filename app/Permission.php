@@ -7,8 +7,10 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $primaryKey = 'userid';
+    protected $guarded = ['id'];
     public $timestamps = false;
+
+    const ALL_POSSIBILITIES = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'privacy', 'admin', 'user'];
 
     public static function whoami($id, $wiki)
     {

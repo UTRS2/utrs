@@ -37,37 +37,36 @@
                 </div>
             @endif
             <div class="card-body">
-                {{ Form::open(array('url' => 'appeal/ip')) }}
+                {{ Form::open(['url' => 'appeal/ip']) }}
                 {{ Form::token() }}
-                <h5 class="card-title">About you</h5>
-                {{ Form::label('wiki', 'Which Wiki are you blocked on?') }}<br>
-                {{ Form::select('wiki', array('enwiki' => 'English Wikipedia','ptwiki' => 'Portuguese Wikipedia', 'global' => 'Global Locks/Blocks'), 'enwiki') }}
-                <br>
-                {{ Form::label('appealfor', 'What is the IP address that is blocked?') }}<br>
-                {{ Form::text('appealfor') }}<br>
-                {{ Form::hidden('blocktype', 0) }}
-                <br>
-                <h5 class="card-title">Block appeal information</h5>
-                <br>
-                <div class="alert alert-danger" role="alert">
-                    Please note that your answer to the following question does not guarentee that your appeal will be
-                    private. It will be reviewed by select users and a determination will be made about if the appeal
-                    contains private data and needs to be hidden from public view. Any information you put in this
-                    appeal may be posted publicly.
+
+                <h5>About you</h5>
+                <div class="form-group mb-4">
+                    {{ Form::label('wiki', 'Which Wiki are you blocked on?') }}<br>
+                    {{ Form::select('wiki', \App\MwApi\MwApiUrls::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
                 </div>
-                {{ Form::label('privacyreview', 'Does your appeal contain private information?') }}<br>
-                {{ Form::radio('privacyreview', 0) }} No<br>
-                {{ Form::radio('privacyreview', 1) }} No, but I prefer my appeal be private<br>
-                {{ Form::radio('privacyreview', 2) }} Yes, my appeal contains private data<br>
-                <br>
+                {{ Form::hidden('blocktype', 0) }}
+
+                <div class="form-group mb-4">
+                    {{ Form::label('appealfor', 'What is the IP address that is blocked?') }}
+                    {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
+                </div>
+
+                <h5>Block appeal information</h5>
+
                 <div class="alert alert-warning" role="alert">
-                    There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
+                    Please note that if your appeal doesn't contain any private data, you will be redirected to appeal on your talkpage.
+                    Only administrators will be able to see your appeal on this tool.
+                    <br/>There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
                     an appeal.
                 </div>
-                {{ Form::label('blocktype', 'Why should you be unblocked?') }}<br>
-                {{ Form::textarea('appealtext') }}<br>
-                <br>
-                <button type="submit" class="btn btn-success">Submit</button>
+
+                <div class="form-group mb-4">
+                    {{ Form::label('appealtext', 'Why should you be unblocked?') }}
+                    {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
+                </div>
+
+                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
                 {{ Form::close() }}
             </div>
         </div>
