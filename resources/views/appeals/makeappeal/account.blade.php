@@ -64,11 +64,8 @@
 
                 <h5>Block appeal information</h5>
 
-                <div class="alert alert-danger" role="alert">
-                    Please note that your answer to the following question does not guarentee that your appeal will be
-                    private. It will be reviewed by select users and a determination will be made about if the appeal
-                    contains private data and needs to be hidden from public view. Any information you put in this
-                    appeal may be posted publicly.
+                <div class="alert alert-warning" role="alert">
+                    Only administrators will be able to see your appeal.
                 </div>
 
                 <div class="form-group mb-4">

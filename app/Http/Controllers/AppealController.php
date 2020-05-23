@@ -230,8 +230,7 @@ class AppealController extends Controller
             'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
-            'blocktype' => 'required|numeric|max:2|min:0',
-            'privacyreview' => 'required|numeric|max:2|min:0'
+            'blocktype' => 'required|numeric|max:2|min:0'
         ]);
 
         if (Appeal::where('appealfor', '=', $input['appealfor'])->where('status', '!=', 'ACCEPT')->where('status', '!=', 'EXPIRE')->where('status', '!=', 'DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get()) > 0) {
