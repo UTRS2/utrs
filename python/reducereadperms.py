@@ -42,7 +42,7 @@ def revokeReadPerms(userid):
     calldb("update permissions set user=0 where id = "+userid+" and wiki = 'enwiki';","write")
 
 def checkAllPerms():
-    result = calldb("select * from users where wikis = 'enwiki';","read")
+    result = calldb("select * from users where wikis RLIKE 'enwiki';","read")
     for user in result:
         id = user[0]
         username = str(user[1])
@@ -56,10 +56,8 @@ def checkAllPerms():
         raw = callAPI(params)
         try:
             results = raw["query"]["users"][0]["groups"]
-            print results
             for result in results:
                 if "sysop" in result:
-                    print "I see sysop for: "+username
                     sysop=True #no modification needed
             if sysop == True:continue
             print "Going to revoke: "+username
