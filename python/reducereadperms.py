@@ -58,10 +58,9 @@ def checkAllPerms():
             print results
             for result in results:
                 if "sysop" in result:return #no modification needed
-                else:
-                    print "Going to revoke: "+username
-                    quit()
-                    revokeReadPerms(user[0])
+            print "Going to revoke: "+username
+            quit()
+            revokeReadPerms(user[0])
         except:
             print "Going to revoke: "+username
             quit()
