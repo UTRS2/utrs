@@ -77,3 +77,4 @@ def checkAllPerms():
                     calldb("update users set wikis = '"+newwikis+"' where id="+str(id)+";","write")
             else:
                 calldb("update users set wikis = NULL where id="+str(id)+";","write")
+checkAllPerms()
