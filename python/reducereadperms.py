@@ -64,7 +64,7 @@ def checkAllPerms():
                 wikis = user[6].split(',')
                 rebuildwikis = []
                 for wiki in wikis:
-                    if wiki="enwiki":continue
+                    if wiki=="enwiki":continue
                     else:
                         rebuildwikis.append([wiki])
                 if len(rebuildwikis) > 1:
