@@ -55,6 +55,7 @@ def checkAllPerms():
         raw = callAPI(params)
         try:
             results = raw["query"]["users"][0]["groups"]
+            print results
             for result in results:
                 if "sysop" in result:return #no modification needed
                 else:
