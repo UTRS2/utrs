@@ -136,7 +136,7 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
 """
 Thank you for registering your account with UTRS. Please verify your account by going to the following link.
 
-http://utrs-beta.wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
+http://"""+credentials.utrshost+""".wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
 
 Thanks,
 UTRS Developers"""
@@ -408,7 +408,7 @@ def blockNotFound(username,wiki,id):
     text="""
 Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
 
-http://utrs-beta.wmflabs.org/fixblock/"""+str(confirmhash)+"""
+http://"""+credentials.utrshost+""".wmflabs.org/fixblock/"""+str(confirmhash)+"""
 
 Thanks,
 UTRS Developers"""
@@ -475,7 +475,7 @@ def appeallist():
     results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRE' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
     for result in results:
         username = result[1].encode('utf-8').strip()
-        fulltext += "\n|-\n|[https://utrs-beta.wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
+        fulltext += "\n|-\n|[https://"""+credentials.utrshost+""".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
     fulltext +="\n|}"
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
