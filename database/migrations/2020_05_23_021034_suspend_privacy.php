@@ -14,7 +14,7 @@ class SuspendPrivacy extends Migration
     public function up()
     {
         Schema::table('appeals', function (Blueprint $table) {
-            $table->tinyInteger('privacylevel')->nullable()->change();
+            $table->integer('privacylevel')->nullable()->change();
             $table->boolean('privacyreview')->nullable()->change();
         });
     }
@@ -27,7 +27,7 @@ class SuspendPrivacy extends Migration
     public function down()
     {
         Schema::table('appeals', function (Blueprint $table) {
-            $table->tinyInteger('privacylevel')->change();
+            $table->integer('privacylevel')->change();
             $table->boolean('privacyreview')->change();
         });
     }
