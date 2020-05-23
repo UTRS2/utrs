@@ -3,12 +3,12 @@
 @section('title', 'Templates')
 @section('scripts')
     function toggleShow(id) {
-    document.getElementById("template"+id).style.display="block";
-    document.getElementById("template"+id+"hidden").style.display="none";
+        document.getElementById("template"+id).style.display="block";
+        document.getElementById("template"+id+"hidden").style.display="none";
     }
     function toggleHide(id) {
-    document.getElementById("template"+id).style.display="none";
-    document.getElementById("template"+id+"hidden").style.display="block";
+        document.getElementById("template"+id).style.display="none";
+        document.getElementById("template"+id+"hidden").style.display="block";
     }
 @endsection
 @section('content')
