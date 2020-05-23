@@ -174,12 +174,11 @@ def checkPerms(user, id):
         for result in results:
             if "sysop" in result:
                 enperms["sysop"]=True
+                enperms["user"]=True
             if "checkuser" in result:
                 enperms["checkuser"]=True
             if "oversight" in result:
                 enperms["oversight"]=True
-        editcount = raw["query"]["users"][0]["editcount"]
-        if editcount >500:enperms["user"]=True
     except:print "Skip enwiki"
     ##############################
     ###Ptwiki checks##############
@@ -189,12 +188,11 @@ def checkPerms(user, id):
         for result in results:
             if "sysop" in result:
                 ptperms["sysop"]=True
+                ptperms["user"]=True
             if "checkuser" in result:
                 ptperms["checkuser"]=True
             if "oversight" in result:
                 ptperms["oversight"]=True
-        editcount = raw["query"]["users"][0]["editcount"]
-        if editcount >500:ptperms["user"]=True
     except:print "Skip ptwiki"
     ##############################
     ###Meta checks##############
