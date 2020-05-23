@@ -34,11 +34,13 @@
             @foreach($templates as $template)
                 <tr>
                     <td>{{ $template->id }}</td>
-                    <td>{{ $template['name'] }}</td>
+                    <td>{{ $template->name }}</td>
                     <td>
                         <div id="template{{ $template->id }}" style="display: none">
-                            Hello {{ $appeal['appealfor'] }}, <br/><br/>{{ $template['template'] }}
-                            <br/><br/>{{ $userlist[Auth::id()] }}<br/>English Wikipedia Administrator
+                            Hello {{ $appeal->appealfor }},<br/><br/>
+                            {{ $template->template }}<br/><br/>
+                            {{ $userlist[Auth::id()] }}<br/>
+                            {{ \App\MwApi\MwApiUrls::getWikiProperty($appeal->wiki, 'responding_user_title') }}
                         </div>
                         <div id="template{{ $template->id }}hidden">Template hidden</div>
                     </td>

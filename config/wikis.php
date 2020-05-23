@@ -13,6 +13,7 @@ return [
         'name' => 'Global locks/blocks',
         'api_url' => env('WIKI_URL_GLOBAL', 'https://meta.wikimedia.org/w/api.php'),
         'url_base' => 'https://meta.wikimedia.org/wiki/',
+        'responding_user_title' => 'Wikimedia Steward',
     ],
 
     'wikis' => [
@@ -20,11 +21,13 @@ return [
             'name' => 'English Wikipedia',
             'api_url' => env('WIKI_URL_ENWIKI', 'https://en.wikipedia.org/w/api.php'),
             'url_base' => 'https://en.wikipedia.org/wiki/',
+            'responding_user_title' => 'English Wikipedia Administrator',
         ],
         'ptwiki' => [
             'name' => 'Portuguese Wikipedia',
             'api_url' => env('WIKI_URL_PTWIKI', 'https://pt.wikipedia.org/w/api.php'),
             'url_base' => 'https://pt.wikipedia.org/wiki/',
+            'responding_user_title' => 'Portuguese Wikipedia Administrator',
         ],
     ],
 ];

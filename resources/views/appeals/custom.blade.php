@@ -17,7 +17,7 @@
                     {{ Form::textarea('custom', null, ['class' => 'form-control', 'rows' => 10, 'style' => 'height: 10rem;']) }}
                 </div>
                 {{ $userlist[Auth::id()] }}<br/>
-                English Wikipedia Administrator
+                {{ \App\MwApi\MwApiUrls::getWikiProperty($appeal->wiki, 'responding_user_title') }}
             </div>
         </div>
 
