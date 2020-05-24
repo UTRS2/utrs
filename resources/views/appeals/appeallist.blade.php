@@ -103,7 +103,7 @@
                             @endif
                             <td style="vertical-align: middle;">{{ $appeal['status'] }}</td>
                             <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
-                            <td style="vertical-align: middle;">{{ $appeal['blockreason'] }}</td>
+                            <td style="vertical-align: middle;">{!! $appeal->formatted_block_reason !!}</td>
                             <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
                         </tr>
                         @endforeach
