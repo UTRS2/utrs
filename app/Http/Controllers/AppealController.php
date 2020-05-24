@@ -33,7 +33,7 @@ class AppealController extends Controller
             //Enwiki is hardcoded here as all previous appeals were only on enwiki.
             //Since that had a different policy at the time, we have to still observe the same privacy level.
             $isAdmin = Permission::checkAdmin(Auth::id(), 'enwiki');
-            abort_unless($isAdmin, 403, 'Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');
+            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for');
 
             $comments = $info->comments()->get();
             $userlist = [];
@@ -51,6 +51,11 @@ class AppealController extends Controller
             return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist' => $userlist]);
         } else {
             $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
+            User::findOrFail(Auth::id())->checkRead();
+            $appeal = Appeal::findOrFail($id);
+            $user = Auth::id();
+            $admin = Permission::checkAdmin($user, $appeal->wiki);
+            abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
 
             $closestatus = ($info->status == "ACCEPT" || $info->status == "DECLINE" || $info->status == "EXPIRE");
             abort_if($info->status == "INVALID" && !$isDeveloper, 404, 'This appeal has been marked invalid.');
@@ -176,7 +181,6 @@ class AppealController extends Controller
     public function appeallist()
     {
         $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY", "NOTFOUND", "INVALID"];
-        $privacynoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "NOTFOUND", "INVALID"];
         $devnoview = ["ACCEPT", "DECLINE", "EXPIRE", "INVALID"];
         $tooladmin = False;
         if (!Auth::check()) {
@@ -192,13 +196,8 @@ class AppealController extends Controller
             if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
                 $tooladmin = true;
             }
-
             if (Permission::checkSecurity(Auth::id(), "DEVELOPER", "*")) {
                 $appeals = Appeal::whereNotIn('status', $devnoview)->get();
-            } elseif (Permission::checkPrivacy(Auth::id(), $wiki) && Auth::user()['wikis'] != "*") {
-                $appeals = Appeal::where('wiki', '=', $wiki)->whereNotIn('status', $privacynoview)->get();
-            } elseif (Permission::checkPrivacy(Auth::id(), $wiki)) {
-                $appeals = Appeal::whereNotIn('status', $privacynoview)->get();
             } elseif (Auth::user()['wikis'] == "*") {
                 $appeals = Appeal::whereNotIn('status', $regularnoview)->get();
             } else {
@@ -231,8 +230,7 @@ class AppealController extends Controller
             'appealtext' => 'max:4000|required',
             'appealfor' => 'required',
             'wiki' => 'required',
-            'blocktype' => 'required|numeric|max:2|min:0',
-            'privacyreview' => 'required|numeric|max:2|min:0'
+            'blocktype' => 'required|numeric|max:2|min:0'
         ]);
 
         if (Appeal::where('appealfor', '=', $input['appealfor'])->where('status', '!=', 'ACCEPT')->where('status', '!=', 'EXPIRE')->where('status', '!=', 'DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get()) > 0) {
@@ -248,13 +246,12 @@ class AppealController extends Controller
                 return view('appeals.spam');
             }
         }
-        $banacct = Ban::where('target', '=', $input['appealfor'])->first();
-        $banip = Ban::where('target', '=', $ip)->first();
-        if (!is_null($banacct)) {
-            return view('appeals.ban', ['expire' => $banacct->expiry, 'id' => $banacct['id']]);
-        }
-        if (!is_null($banip)) {
-            return view('appeals.ban', ['expire' => $banip['expiry'], 'id' => $banip['id']]);
+        $banacct = Ban::where('ip','=',0)->get();
+        $banip = Ban::where('ip','=',1)->get();
+        foreach ($banip as $ban) {
+            if (self::ip_in_range($ip,$ban->target)) {
+                return view('appeals.ban', ['expire'=>$ban->expiry,'id'=>$ban->id]);
+            }
         }
 
         $appeal = Appeal::create($input);
@@ -279,8 +276,11 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-
         User::findOrFail(Auth::id())->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -301,8 +301,11 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-
-        User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -319,13 +322,16 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        
+        
         $templateObject = Template::find($template);
         $text = $templateObject->template;
         if ($admin && $appeal->handlingadmin == Auth::id()) {
@@ -342,13 +348,14 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
         if ($admin && $appeal->handlingadmin == Auth::id()) {
             $mail = Sendresponse::create(array('appealID' => $id, 'template' => 0, 'custom' => $request->input('custom')));
             $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'responded', 'reason' => $request->input('custom'), 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
@@ -446,14 +453,16 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $tooladmin = Permission::checkCheckuser($user, $appeal->wiki) || Permission::checkOversight($user, $appeal->wiki);
-        if ($tooladmin) {
+        if ($admin) {
             if ($appeal->status == "ACCEPT" || $appeal->status == "EXPIRE" || $appeal->status == "DECLINE" || $appeal->status == "CHECKUSER" || $appeal->status == "ADMIN") {
                 $appeal->status = "OPEN";
                 $appeal->save();
@@ -495,39 +504,18 @@ class AppealController extends Controller
             abort(403, 'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
         if ($admin) {
             $appeal->status = strtoupper($type);
             $appeal->save();
             $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'closed - ' . $type, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            return redirect('/review');
-        } else {
-            abort(403);
-        }
-    }
-
-    public function privacy($id, Request $request)
-    {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        if ($admin && $appeal->status !== "PRIVACY") {
-            $appeal->status = "PRIVACY";
-            $appeal->privacyreview = 2;
-            $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'sent for privacy review', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
             return redirect('/review');
         } else {
             abort(403);
@@ -539,13 +527,14 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
         if ($admin && $appeal->status !== "CHECKUSER") {
             $appeal->status = "CHECKUSER";
             $appeal->save();
@@ -561,13 +550,14 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
+        Auth::user()->checkRead();
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
         if ($admin && $appeal->status !== "ADMIN") {
             $appeal->status = "ADMIN";
             $appeal->save();
@@ -576,42 +566,6 @@ class AppealController extends Controller
         } else {
             abort(403);
         }
-    }
-
-    public function privacyhandle(Request $request, $id, $action)
-    {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $appeal = Appeal::findOrFail($id);
-        $user = Auth::id();
-        if (Permission::checkPrivacy(Auth::id(), $appeal->wiki) || Permission::checkOversight(Auth::id(), $info->wiki)) {
-            if ($action == "publicize") {
-                $appeal->privacyreview = 0;
-                $appeal->privacylevel = 0;
-                $appeal->status = "OPEN";
-                $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'publicized', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            }
-            if ($action == "privatize") {
-                $appeal->privacyreview = 1;
-                $appeal->privacylevel = 1;
-                $appeal->status = "OPEN";
-                $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'privatized', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            }
-            if ($action == "oversight") {
-                $appeal->privacyreview = 2;
-                $appeal->privacylevel = 2;
-                $appeal->status = "OPEN";
-                $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'oversighted', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            }
-            return redirect('appeal/' . $id);
-        } else {
-            abort(401);
-        }
-        return view('appeals.publicappeal', ['id' => $id, 'info' => $info, 'comments' => $logs, 'userlist' => $userlist, 'replies' => $replies]);
     }
 
     public function showVerifyOwnershipForm(Request $request, Appeal $appeal, $token)
@@ -646,5 +600,24 @@ class AppealController extends Controller
         ]);
 
         return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
+    }
+
+    /**
+     * Check if a given ip is in a network
+     * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
+     * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
+     * @return boolean true if the ip is in this range / false if not.
+     */
+    public static function ip_in_range( $ip, $range ) {
+        if ( strpos( $range, '/' ) == false ) {
+            $range .= '/32';
+        }
+        // $range is in IP/CIDR format eg 127.0.0.1/24
+        list( $range, $netmask ) = explode( '/', $range, 2 );
+        $range_decimal = ip2long( $range );
+        $ip_decimal = ip2long( $ip );
+        $wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+        $netmask_decimal = ~ $wildcard_decimal;
+        return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
     }
 }

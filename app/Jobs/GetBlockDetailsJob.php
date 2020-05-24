@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Appeal;
 use App\MwApi\MwApiExtras;
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,7 +33,7 @@ class GetBlockDetailsJob implements ShouldQueue
      */
     public function handleBlockData($blockData)
     {
-        $status = $this->appeal->privacylevel === $this->appeal->privacyreview ? 'OPEN' : 'PRIVACY';
+        $status = 'OPEN';
 
         $this->appeal->update([
             'blockfound' => 1,
@@ -56,18 +57,18 @@ class GetBlockDetailsJob implements ShouldQueue
         if ($this->appeal->wiki === 'global') {
             $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
 
-            if (!$blockData) {
+            if (!$blockData && !empty($this->appeal->hiddenip)) {
                 $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip);
             }
         } else {
-            $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
+            if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), 'bkids');
+            } else {
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
+            }
 
             if (!$blockData && !empty($this->appeal->hiddenip)) {
                 $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip);
-            }
-
-            if (!$blockData) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor, 'bkids');
             }
         }
 
