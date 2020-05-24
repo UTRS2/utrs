@@ -12,19 +12,19 @@ return [
     'globalwiki' => [
         'name' => 'Global locks/blocks',
         'api_url' => env('WIKI_URL_GLOBAL', 'https://meta.wikimedia.org/w/api.php'),
-        'url_base' => 'https://meta.wikimedia.org/wiki/',
+        'url_base' => 'https://meta.wikimedia.org/',
     ],
 
     'wikis' => [
         'enwiki' => [
             'name' => 'English Wikipedia',
             'api_url' => env('WIKI_URL_ENWIKI', 'https://en.wikipedia.org/w/api.php'),
-            'url_base' => 'https://en.wikipedia.org/wiki/',
+            'url_base' => 'https://en.wikipedia.org/',
         ],
         'ptwiki' => [
             'name' => 'Portuguese Wikipedia',
             'api_url' => env('WIKI_URL_PTWIKI', 'https://pt.wikipedia.org/w/api.php'),
-            'url_base' => 'https://pt.wikipedia.org/wiki/',
+            'url_base' => 'https://pt.wikipedia.org/',
         ],
     ],
 ];

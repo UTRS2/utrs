@@ -14,9 +14,11 @@
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.0",
+        "laravel/slack-notification-channel": "^2.0",
         "laravel/socialite": "^4.3",
         "laravel/tinker": "^1.0",
-        "laravelcollective/html": "^6.1"
+        "laravelcollective/html": "^6.1",
+        "spatie/laravel-backup": "^6.10"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",

@@ -54,6 +54,13 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'dump' => [
+                //'dump_binary_path' => '/path/to/the/binary', // only the path, so without `mysqldump` or `pg_dump`
+                'use_single_transaction',
+                'timeout' => 60 * 10, // 5 minute timeout
+                //'exclude_tables' => ['table1', 'table2'],
+                //'add_extra_option' => '--optionname=optionvalue', 
+            ]  
         ],
 
         'pgsql' => [
