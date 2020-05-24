@@ -12,7 +12,6 @@ class WikiSocialiteProvider extends AbstractProvider
         $user = $this->server->getUserDetails($token = $this->getToken(), $this->shouldBypassCache($token->getIdentifier(), $token->getSecret()));
         $data = [
             'name' => $user->username,
-            'email' => $user->email,
             'groups' => $user->groups,
         ];
 
