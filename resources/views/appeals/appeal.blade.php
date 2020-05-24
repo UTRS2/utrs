@@ -43,22 +43,22 @@
                                 @endif
                                 <br/>
 
-                                <a href="https://en.wikipedia.org/wiki/User_talk:{{ $info->appealfor }}"
+                                <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/User_talk:{{ $info->appealfor }}"
                                    class="btn btn-secondary">
                                     User talk
                                 </a>
 
-                                <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{ $info->appealfor }}"
+                                <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/Special:Contributions/{{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Contribs
                                 </a>
 
-                                <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{ $info->appealfor }}"
+                                <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/Special:BlockList/{{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Find block
                                 </a>
 
-                                <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{ $info->appealfor }}"
+                                <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}w/index.php?title=Special:Log/block&page=User:{{ $info->appealfor }}"
                                    class="btn btn-light">
                                     Block log
                                 </a>
@@ -69,7 +69,7 @@
                                 </a>
 
                                 @if($perms['admin'])
-                                    <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{ $info->appealfor }}"
+                                    <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/Special:Unblock/{{ $info->appealfor }}"
                                        class="btn btn-warning">
                                         Unblock
                                     </a>
@@ -77,22 +77,22 @@
                                 @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone && !is_null($cudata))
-                                    <a href="https://en.wikipedia.org/wiki/User_talk:{{$cudata->ipaddress}}"
+                                    <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/User_talk:{{$cudata->ipaddress}}"
                                        class="btn btn-secondary">
                                         User talk
                                     </a>
 
-                                    <a href="https://en.wikipedia.org/wiki/Special:Contributions/{{ $cudata->ipaddress }}"
+                                    <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/Special:Contributions/{{ $cudata->ipaddress }}"
                                        class="btn btn-light">
                                         Contribs
                                     </a>
 
-                                    <a href="https://en.wikipedia.org/wiki/Special:BlockList/{{ $cudata->ipaddress }}"
+                                    <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/Special:BlockList/{{ $cudata->ipaddress }}"
                                        class="btn btn-light">
                                         Find block
                                     </a>
 
-                                    <a href="https://en.wikipedia.org/w/index.php?title=Special:Log/block&page=User:{{ $cudata->ipaddress }}"
+                                    <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}w/index.php?title=Special:Log/block&page=User:{{ $cudata->ipaddress }}"
                                        class="btn btn-light">
                                         Block log
                                     </a>
@@ -103,7 +103,7 @@
                                     </a>
 
                                     @if($perms['admin'])
-                                        <a href="https://en.wikipedia.org/wiki/Special:Unblock/{{ $cudata->ipaddress }}"
+                                        <a href="{{ \App\MwApi\MwApiUrls::getWikiProperty($info->wiki, 'url_base') }}wiki/Special:Unblock/{{ $cudata->ipaddress }}"
                                            class="btn btn-warning">
                                             Unblock
                                         </a>
