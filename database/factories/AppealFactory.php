@@ -10,7 +10,7 @@ $factory->define(Appeal::class, function (Faker $faker) {
     return [
         'appealfor' => $faker->firstName,
         'privacylevel' => 0,
-        'privacyreview' => null,
+        'privacyreview' => 0,
         'blocktype' => 1,
         'status' => Appeal::STATUS_OPEN,
         'blockfound' => 1,
@@ -19,7 +19,7 @@ $factory->define(Appeal::class, function (Faker $faker) {
         'submitted' => $faker->dateTimeBetween('-3 days', '-1 hour'),
         'appealsecretkey' => implode('', $faker->words()),
         'appealtext' => $faker->sentence,
-        'wiki' => $faker->randomElement(MwApiUrls::getSupportedWikis()),
+        'wiki' => MwApiUrls::getSupportedWikis()[0],
         'user_verified' => 0,
     ];
 });

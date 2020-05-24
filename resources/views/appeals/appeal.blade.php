@@ -144,7 +144,7 @@
                                             appeal.
                                         </div>
                                     @else
-                                        @if($info->status==="ACCEPT" || $info->status==="DECLINE" || $info->status==="EXPIRE")
+                                        @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
                                             @if($perms['functionary'])
                                                 <div>
                                                     <a href="/appeal/open/{{ $id }}" class="btn btn-success">
@@ -160,15 +160,15 @@
                                         @else
                                             <div>
                                                 <div class="mb-2">
-                                                    @if($info->handlingadmin==null)
+                                                    @if($info->handlingadmin == null)
                                                         <a href="/appeal/reserve/{{ $id }}" class="btn btn-success">
                                                             Reserve
                                                         </a>
-                                                    @elseif($info->handlingadmin!=null && $info->handlingadmin == Auth::id())
+                                                    @elseif($info->handlingadmin != null && $info->handlingadmin == Auth::id())
                                                         <a href="/appeal/release/{{ $id }}" class="btn btn-success">
                                                             Release
                                                         </a>
-                                                    @elseif($info->handlingadmin!=null && $info->handlingadmin != Auth::id())
+                                                    @elseif($info->handlingadmin != null && $info->handlingadmin != Auth::id())
                                                         <button class="btn btn-success" disabled>
                                                             Reserve
                                                         </button>
@@ -196,7 +196,7 @@
                                                     </a>
                                                 </div>
 
-                                                @if($info->status=="OPEN")
+                                                @if($info->status === Appeal::STATUS_OPEN)
                                                     <div class="mb-2">
                                                         <a href="/appeal/checkuserreview/{{ $id }}" class="btn btn-warning">
                                                             CheckUser
@@ -206,7 +206,7 @@
                                                         </a>
                                                     </div>
                                                 @endif
-                                                @if(($info->status!=="OPEN" && $info->status!=="EXPIRE" && $info->status!=="DECLINE" && $info->status!=="ACCEPT") && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
+                                                @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['dev']))
                                                     <div class="mb-2">
                                                         <a href="/appeal/open/{{ $id }}" class="btn btn-info">
                                                             Return to tool users
@@ -330,7 +330,7 @@
                     <tr class="{{ $comment->action === 'comment' ? 'bg-success' : ($comment->action === 'responded' ? 'bg-primary' : '') }}">
                         @if(is_null($comment['commentUser']))
                             @if($comment->action !== "comment" && $comment->action !== "responded")
-                                @if($comment->user==0)
+                                @if($comment->user == 0)
                                     <td><i>System</i></td>
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
@@ -353,7 +353,7 @@
                                     @endif
                                 @endif
                             @else
-                                @if($comment->user==0)
+                                @if($comment->user == 0)
                                     <td><i>System</i></td>
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
@@ -372,7 +372,7 @@
                                     @endif
                                 @endif
                             @else
-                                @if($comment->user==0)
+                                @if($comment->user == 0)
                                     <td><i>System</i></td>
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
