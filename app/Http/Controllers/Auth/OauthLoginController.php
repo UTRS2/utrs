@@ -31,7 +31,13 @@ class OauthLoginController extends Controller
         ], [
             'password' => '',
             'wikis' => '',
+            'verified' => true,
         ]);
+
+        if (!$user->verified) {
+            $user->verified = true;
+            $user->save();
+        }
 
         Auth::login($user, true);
         return redirect()->intended('/');
