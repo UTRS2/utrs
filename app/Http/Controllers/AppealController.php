@@ -61,7 +61,7 @@ class AppealController extends Controller
             $closestatus = ($info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE);
             abort_if($info->status == Appeal::STATUS_INVALID && !$isDeveloper, 404, 'This appeal has been marked invalid.');
 
-            if (($info->status == Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITNG_REPLY || $info->status == Appeal::STATUS_PRIVACY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
+            if (($info->status == Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITNG_REPLY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
                 $logs = $info->comments()->get();
                 $userlist = [];
 
@@ -187,7 +187,7 @@ class AppealController extends Controller
 
     public function appeallist()
     {
-        $regularnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_PRIVACY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID];
+        $regularnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID];
         $devnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID];
 
         $tooladmin = false;
@@ -497,17 +497,19 @@ class AppealController extends Controller
         Auth::user()->checkRead();
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
+
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
 
-        if ($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_EXpIRE || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_CHECKUSER || $appeal->status == Appeal::STATUS_ADMIN) {
+        if ($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_EXPIRE || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_CHECKUSER || $appeal->status == Appeal::STATUS_ADMIN) {
             $appeal->status = Appeal::STATUS_OPEN;
             $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 're-open', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
+            Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 're-open', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
         } else {
             abort(403);
         }
