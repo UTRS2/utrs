@@ -42,7 +42,7 @@ class Appeal extends Model
         return $this->belongsTo(User::class, 'handlingadmin', 'id');
     }
 
-    public function getFormattedBlockReason($linkClass = '')
+    public function getFormattedBlockReason($linkExtra = '')
     {
         if (!$this->blockreason || strlen($this->blockreason) === 0) {
             return '';
@@ -55,7 +55,7 @@ class Appeal extends Model
 
         foreach ($linkMatches as $link) {
             $linkText = sizeof($link) === 3 ? $link[2] : $link[1];
-            $linkHtml = '<a href="' . $linkPrefix . htmlspecialchars($link[1]) . '" class="' . $linkClass . '">' . htmlspecialchars($linkText) . '</a>';
+            $linkHtml = '<a href="' . $linkPrefix . htmlspecialchars($link[1]) . '" ' . $linkExtra . '">' . htmlspecialchars($linkText) . '</a>';
 
             $reason = str_replace($link[0], $linkHtml, $reason);
         }
@@ -63,7 +63,7 @@ class Appeal extends Model
         preg_match_all('/{{([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:=\-\/\|]+))?}}/', $reason, $templateMatches, PREG_SET_ORDER);
 
         foreach ($templateMatches as $template) {
-            $templateHtml = '{{<a href="' . $linkPrefix . 'Template:' . htmlspecialchars($template[1]) . '" class="' . $linkClass . '">' . htmlspecialchars($template[1]) . '</a>';
+            $templateHtml = '{{<a href="' . $linkPrefix . 'Template:' . htmlspecialchars($template[1]) . '" ' . $linkExtra . '">' . htmlspecialchars($template[1]) . '</a>';
 
             if (sizeof($template) === 3) {
                 $templateHtml .= '|' . htmlspecialchars($template[2]);
