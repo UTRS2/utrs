@@ -10,7 +10,6 @@ class Appeal extends Model
 {
     public $timestamps = false;
     public $guarded = ['id'];
-    public $appends = ['formattedBlockReason'];
 
     protected $attributes = [
         'privacylevel' => 0,
@@ -43,20 +42,20 @@ class Appeal extends Model
         return $this->belongsTo(User::class, 'handlingadmin', 'id');
     }
 
-    public function getFormattedBlockReasonAttribute()
+    public function getFormattedBlockReason($linkClass = '')
     {
         if (!$this->blockreason || strlen($this->blockreason) === 0) {
             return '';
         }
 
-        $linkPrefix = MwApiUrls::getWikiProperty($this->wiki, 'url_base');
+        $linkPrefix = MwApiUrls::getWikiProperty($this->wiki, 'url_base') . 'wiki/';
         $reason = htmlspecialchars($this->blockreason);
 
         preg_match_all('/\[\[([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:\-\/]+))?\]\]/', $reason, $linkMatches, PREG_SET_ORDER);
 
         foreach ($linkMatches as $link) {
             $linkText = sizeof($link) === 3 ? $link[2] : $link[1];
-            $linkHtml = '<a href="' . $linkPrefix . htmlspecialchars($link[1]) . '">' . htmlspecialchars($linkText) . '</a>';
+            $linkHtml = '<a href="' . $linkPrefix . htmlspecialchars($link[1]) . '" class="' . $linkClass . '">' . htmlspecialchars($linkText) . '</a>';
 
             $reason = str_replace($link[0], $linkHtml, $reason);
         }
@@ -64,7 +63,7 @@ class Appeal extends Model
         preg_match_all('/{{([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:=\-\/\|]+))?}}/', $reason, $templateMatches, PREG_SET_ORDER);
 
         foreach ($templateMatches as $template) {
-            $templateHtml = '{{<a href="' . $linkPrefix . 'Template:' . htmlspecialchars($template[1]) . '">' . htmlspecialchars($template[1]) . '</a>';
+            $templateHtml = '{{<a href="' . $linkPrefix . 'Template:' . htmlspecialchars($template[1]) . '" class="' . $linkClass . '">' . htmlspecialchars($template[1]) . '</a>';
 
             if (sizeof($template) === 3) {
                 $templateHtml .= '|' . htmlspecialchars($template[2]);
