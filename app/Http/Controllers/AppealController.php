@@ -14,10 +14,13 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
+use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
+use Illuminate\Database\Eloquent\Builder;
 
 class AppealController extends Controller
 {
@@ -205,6 +208,36 @@ class AppealController extends Controller
             }
         }
         return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $tooladmin]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->validate(['search' => 'required|min:1'])['search'];
+
+        $number = is_numeric($search) ? intval($search) : null;
+
+        // if search starts with a "#" and is followed by numbers, it should be treated as number
+        if (!$number && Str::startsWith($search, '#') && is_numeric(substr($search, 1))) {
+            $number = intval(substr($search, 1), 10);
+        }
+
+        $appeal = Appeal::where('appealfor', $search)
+            ->when($number, function (Builder $query, $number) {
+                return $query->orWhere('id', $number);
+            })
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$appeal) {
+            return redirect()
+                ->back(302, [], route('appeal.list'))
+                ->withErrors([
+                    'search' => 'No results found.'
+                ]);
+        }
+
+        return redirect()
+            ->to('/appeal/' . $appeal->id);
     }
 
     public function accountappeal()

@@ -23,6 +23,29 @@
         </div>
     @endif
     <br/>
+
+    <div class="card mt-2 mb-4">
+        <h5 class="card-header">Search appeals</h5>
+        <div class="card-body">
+            {{ Form::open(['url' => route('appeal.search'), 'method' => 'GET']) }}
+            {{ Form::label('search', 'Search for Appeal ID or appealant') }}
+            <div class="input-group">
+                {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
+                <div class="input-group-append">
+                    {{ Form::submit('Search', ['class' => 'btn btn-primary']) }}
+                </div>
+
+                @if($errors->has('search'))
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->first('search') }}</strong>
+                    </span>
+                @endif
+            </div>
+
+            {{ Form::close() }}
+        </div>
+    </div>
+
     <div class="card">
         <h5 class="card-header">Current appeals</h5>
         <div class="card-body">
@@ -39,11 +62,7 @@
                 </thead>
                 <tbody>
                 @foreach($appeals as $appeal)
-                    @if($appeal['status']=="NEW")
-                        <tr>
-                    @elseif($appeal['status']=="USER")
-                        <tr>
-                    @elseif($appeal['status']=="ADMIN")
+                    @if($appeal['status']=="ADMIN")
                         <tr class="bg-primary">
                     @elseif($appeal['status']=="TOOLADMIN")
                         <tr class="bg-info">
@@ -53,7 +72,9 @@
                         <tr class="bg-warning">
                     @elseif($appeal['status']=="PRIVACY")
                         <tr class="bg-danger">
-                            @endif
+                    @else
+                        <tr>
+                    @endif
                             <td style="vertical-align: middle;">
                                 <a href="/appeal/{{ $appeal['id'] }}" class="btn btn-primary">
                                     #{{ $appeal->id }}
