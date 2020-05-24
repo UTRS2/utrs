@@ -325,45 +325,63 @@ class AppealController extends Controller
         return redirect('appeal/' . $id);
     }
 
-    public function respond($id, $template, Request $request)
+    public function respond(Request $request, Appeal $appeal, Template $template)
     {
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
         Auth::user()->checkRead();
-        $appeal = Appeal::findOrFail($id);
+
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_unless($admin, 403, 'You are not an administrator on the wiki this appeal is for');
+        abort_unless($appeal->handlingadmin === $user, 403, 'You are not the handling administrator.');
+
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        
-        
-        $templateObject = Template::find($template);
-        $text = $templateObject->template;
-        if ($admin && $appeal->handlingadmin == Auth::id()) {
-            $mail = Sendresponse::create(array('appealID' => $id, 'template' => $template));
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'responded', 'reason' => $text, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
+
+        $status = $request->validate([
+            'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+        ])['status'];
+
+        if ($status && $status !== $appeal->status) {
+            $appeal->update([
+                'status' => $status,
+            ]);
+
+            Log::create([
+                'user' => $user,
+                'referenceobject' => $appeal->id,
+                'objecttype' => 'appeal',
+                'action' => 'set status as ' . $status,
+                'ip' => $ip,
+                'ua' => $ua . ' ' . $lang,
+                'protected' => 0,
+            ]);
         }
+
+        Sendresponse::create(['appealID' => $appeal->id, 'template' => $template->id]);
+        Log::create([
+            'user' => $user,
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'responded',
+            'reason' => $template->template,
+            'ip' => $ip,
+            'ua' => $ua . " " . $lang,
+            'protected' => 0,
+        ]);
+
+        return redirect('appeal/' . $appeal->id);
     }
 
     public function respondCustomSubmit(Request $request, Appeal $appeal)
     {
         abort_unless(Auth::check(), 403, 'No logged in user');
         Auth::user()->checkRead();
-        $appeal = Appeal::findOrFail($id);
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
 
+        $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin, 403, 'You are not an administrator on the wiki this appeal is for');
         abort_unless($appeal->handlingadmin === $user, 403, 'You are not the handling administrator.');
@@ -371,6 +389,10 @@ class AppealController extends Controller
         $status = $request->validate([
             'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
         ])['status'];
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
         if ($status && $status !== $appeal->status) {
             $appeal->update([
@@ -408,23 +430,19 @@ class AppealController extends Controller
         return redirect('appeal/' . $appeal->id);
     }
 
-    public function viewtemplates($id)
+    public function viewtemplates(Appeal $appeal)
     {
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
 
         Auth::user()->checkRead();
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        $user = Auth::user();
+        $admin = Permission::checkAdmin($user->id, $appeal->wiki);
         abort_unless($admin,403, 'You are not an administrator.');
 
-        $userlist = [];
-        $userlist[Auth::id()] = Auth::user()->username;
-
         $templates = Template::where('active', '=', 1)->get();
-        return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'userlist' => $userlist]);
+        return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'username' => $user->username]);
     }
 
     public function respondCustom(Appeal $appeal)

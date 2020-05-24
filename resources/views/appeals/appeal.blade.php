@@ -403,7 +403,7 @@
                         <div class="col-md-6">
                             <h5 class="card-title">Send a templated reply</h5>
                             @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
-                                <a href="/appeal/template/{{ $id }}" class="btn btn-info">
+                                <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
                                     Send a reply to the user
                                 </a>
                             @else

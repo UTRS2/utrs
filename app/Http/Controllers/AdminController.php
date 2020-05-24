@@ -12,9 +12,15 @@ use App\Wikitask;
 use Auth;
 use Illuminate\Http\Request;
 use Redirect;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function listusers()
     {
         $allusers = User::all();
@@ -115,6 +121,7 @@ class AdminController extends Controller
         $alltemplates = Template::all();
         $currentuser = User::findOrFail(Auth::id());
         $permission = false;
+
         $wikilist = explode(",", $currentuser->wikis);
         foreach ($wikilist as $wiki) {
             if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
@@ -124,7 +131,7 @@ class AdminController extends Controller
 
         abort_unless($permission, 403, 'Forbidden');
 
-        $tableheaders = ['ID', 'Target', 'Expires', 'Active'];
+        $tableheaders = ['ID', 'Name', 'Contents', 'Active'];
         $rowcontents = [];
         foreach ($alltemplates as $template) {
             $idbutton = '<a href="/admin/templates/' . $template->id . '"><button type="button" class="btn btn-primary">' . $template->id . '</button></a>';
@@ -154,36 +161,61 @@ class AdminController extends Controller
 
     public function makeTemplate(Request $request)
     {
-        if (!Permission::checkToolAdmin(Auth::id(), "*")) {
-            abort(401);
-        }
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
+        $currentuser = User::findOrFail(Auth::id());
+        $permission = false;
 
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $newtemplate = $request->all();
-        $name = $newtemplate['name'];
-        $template = $newtemplate['template'];
-        $creation = Template::create(['name' => $name, 'template' => $template, 'active' => 1]);
-        $log = Log::create(array('user' => Auth::id(), 'referenceobject' => $creation->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
-        return Redirect::to('/admin/templates');
+        $wikilist = explode(",", $currentuser->wikis);
+        foreach ($wikilist as $wiki) {
+            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
+                $permission = true;
+            }
+        }
+
+        abort_unless($permission, 403, 'Forbidden');
+
+        $ua = $request->userAgent();
+        $ip = $request->ip();
+        $lang = $request->header('Accept-Language');
+
+        $data = $request->validate([
+            'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')],
+            'template' => 'required|min:2|max:2048',
+        ]);
+
+        $data['active'] = 1;
+
+        $template = Template::create($data);
+
+        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        return redirect()->to('/admin/templates');
     }
 
-    public function saveTemplate(Request $request, $id)
+    public function updateTemplate(Request $request, Template $template)
     {
-        if (!Permission::checkToolAdmin(Auth::id(), "*")) {
-            abort(401);
+        $currentuser = User::findOrFail(Auth::id());
+        $permission = false;
+
+        $wikilist = explode(",", $currentuser->wikis);
+        foreach ($wikilist as $wiki) {
+            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
+                $permission = true;
+            }
         }
-        $ua = $request->server('HTTP_USER_AGENT');
+
+        abort_unless($permission, 403, 'Forbidden');
+
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $data = $request->all();
-        $template = Template::findOrFail($id);
-        $template->name = $data['name'];
-        $template->template = $data['template'];
-        $template->save();
-        $log = Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
-        return Redirect::to('/admin/templates');
+        $lang = $request->header('Accept-Language');
+
+        $data = $request->validate([
+            'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')->ignore($template->id)],
+            'template' => 'required|min:2|max:2048',
+        ]);
+
+        $template->update($data);
+        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        return redirect()->to('/admin/templates');
     }
 
     public function showNewTemplate()
@@ -191,9 +223,8 @@ class AdminController extends Controller
         return view('admin.newtemplate');
     }
 
-    public function modifyTemplate($id)
+    public function editTemplate(Template $template)
     {
-        $template = Template::findOrFail($id);
         return view('admin.edittemplate', ["template" => $template]);
     }
 }
