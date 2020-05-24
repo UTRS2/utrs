@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use App\Wikitask;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,13 @@ class OauthLoginController extends Controller
         if (!$user->verified) {
             $user->verified = true;
             $user->save();
+        }
+
+        if ($user->wasRecentlyCreated) {
+            Wikitask::create([
+                'task' => 'verifyaccount',
+                'actionid' => $user->id,
+            ]);
         }
 
         Auth::login($user, true);
