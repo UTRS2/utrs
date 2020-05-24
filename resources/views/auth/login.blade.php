@@ -10,6 +10,10 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        Due to database issues all data from April 29 to May 23 has been lost. 
+                        This includes all user accounts, and they will need to be remade.
+                    </div>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
