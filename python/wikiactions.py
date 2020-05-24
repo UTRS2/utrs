@@ -113,7 +113,6 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
                 continue                   
-        calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
         calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkPerms(user, id):
     enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
