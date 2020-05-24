@@ -68,4 +68,28 @@ class AppealCommentsTest extends DuskTestCase
             $this->assertEquals(Appeal::STATUS_AWAITNG_REPLY, $appeal->status);
         });
     }
+
+    public function test_custom_reply()
+    {
+        $this->browse(function (Browser $browser) {
+            $appeal = factory(Appeal::class)->create();
+
+            $browser->loginAs($this->getUser())
+                ->visit('/appeal/' . $appeal->id)
+                ->assertSee(Appeal::STATUS_OPEN)
+                ->assertDontSee('Send a reply to user')
+                ->clickLink('Reserve')
+                ->clickLink('Send a reply to the user')
+                ->assertSee('On this screen, you will see a list of templates to choose from in responding to a user')
+                ->clickLink('Reply custom text')
+                ->type('custom', 'Go away.')
+                ->press('Submit')
+                ->assertSee(Appeal::STATUS_OPEN)
+                ->assertDontSee('set status as ');
+
+            $appeal->refresh();
+
+            $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
+        });
+    }
 }
