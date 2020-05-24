@@ -20,7 +20,6 @@ class Appeal extends Model
     const STATUS_AWAITNG_REPLY = 'AWAITING_REPLY';
 
     // statuses that are waiting for a specific person/group of them
-    const STATUS_PRIVACY = 'PRIVACY'; // waiting for privacy review
     const STATUS_ADMIN = 'ADMIN'; // tooladmin? idk
     const STATUS_CHECKUSER = 'CHECKUSER'; // waiting for a CheckUser check
 
