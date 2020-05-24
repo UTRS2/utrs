@@ -18,7 +18,8 @@ class MwApiUrls
      * @param  any $default - default to return in key doesn't exist in config
      * @return string - the wiki property value
      */
-    public static function getWikiProperty(string $wiki, string $name, $default = null) {
+    public static function getWikiProperty(string $wiki, string $name, $default = null)
+    {
         $prefix = 'wikis.wikis.' . Str::lower($wiki) . '.';
 
         if (Str::lower($wiki) === 'global' || $wiki === '*') {
