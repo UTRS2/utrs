@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Ban;
+use App\Log;
 use App\Appeal;
 use App\MwApi\MwApiExtras;
 use Illuminate\Support\Str;
@@ -35,6 +37,30 @@ class GetBlockDetailsJob implements ShouldQueue
     {
         $status = 'OPEN';
 
+        if (isset($blockData['user']) && !empty($blockData['user']) && $this->appeal->appealfor !== $blockData['user']) {
+            $this->appeal->appealfor = $blockData['user'];
+
+            $ban = Ban::where('ip', '=', 0)
+                ->where('target', $this->appeal->appealfor)
+                ->active()
+                ->first();
+
+            if ($ban) {
+                $status = 'INVALID';
+            }
+
+            Log::create([
+                'user' => 0,
+                'referenceobject' => $this->appeal->id,
+                'objecttype' => 'appeal',
+                'action' => 'closed - invalidate',
+                'reason' => 'account banned from UTRS',
+                'ip' => '127.0.0.1',
+                'ua' => 'Laravel',
+                'protected' => 0
+            ]);
+        }
+
         $this->appeal->update([
             'blockfound' => 1,
             'blockingadmin' => $blockData['by'],
@@ -43,7 +69,8 @@ class GetBlockDetailsJob implements ShouldQueue
         ]);
 
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
-        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($blockData['user']) && $this->appeal->blocktype !== 0) {
+        if (!$this->appeal->user_verified && !$this->appeal->verify_token
+            && isset($blockData['user']) && $this->appeal->blocktype !== 0 && $this->appeal->status !== 'INVALID') {
             VerifyBlockJob::dispatch($this->appeal);
         }
     }

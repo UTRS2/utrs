@@ -18,7 +18,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
-use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -279,11 +278,23 @@ class AppealController extends Controller
                 return view('appeals.spam');
             }
         }
-        $banacct = Ban::where('ip','=',0)->get();
-        $banip = Ban::where('ip','=',1)->get();
+
+        $ban = Ban::where('ip','=',0)
+            ->where('target', $input['appealfor'])
+            ->active()
+            ->first();
+
+        if ($ban) {
+            return view('appeals.ban', ['expire' => $ban->expiry, 'id' => $ban->id]);
+        }
+
+        $banip = Ban::where('ip','=',1)
+            ->active()
+            ->get();
+
         foreach ($banip as $ban) {
             if (self::ip_in_range($ip,$ban->target)) {
-                return view('appeals.ban', ['expire'=>$ban->expiry,'id'=>$ban->id]);
+                return view('appeals.ban', ['expire' => $ban->expiry, 'id' => $ban->id]);
             }
         }
 
