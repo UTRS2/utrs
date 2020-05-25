@@ -82,16 +82,6 @@ class AppealController extends Controller
                 $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
                 $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
 
-                if ($info->privacyreview != $info->privacylevel || $info->privacylevel == 2) {
-                    if (!Permission::checkPrivacy(Auth::id(), $info->wiki) && !Permission::checkOversight(Auth::id(), $info->wiki)) {
-                        return view('appeals.privacydeny');
-                    }
-                }
-
-                if ($info->privacylevel == 1 && !$perms['admin']) {
-                    return view('appeals.privacydeny');
-                }
-
                 foreach($logs as $log) {
                     if (is_null($log->user) || $log->user === 0 || $log->user === -1 || in_array($log->user, $userlist)) {
                         continue;
