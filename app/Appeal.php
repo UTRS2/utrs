@@ -3,13 +3,14 @@
 namespace App;
 
 use RuntimeException;
+use App\MwApi\MwApiUrls;
 use Illuminate\Database\Eloquent\Model;
 
 class Appeal extends Model
 {
-    protected $primaryKey = 'id';
     public $timestamps = false;
-    protected $guarded = ['id'];
+    public $guarded = ['id'];
+
     protected $attributes = [
         'privacylevel' => 0,
         'blockfound' => 0
@@ -39,5 +40,40 @@ class Appeal extends Model
     public function handlingAdminObject()
     {
         return $this->belongsTo(User::class, 'handlingadmin', 'id');
+    }
+
+    public function getFormattedBlockReason($linkExtra = '')
+    {
+        if (!$this->blockreason || strlen($this->blockreason) === 0) {
+            return '';
+        }
+
+        $linkPrefix = MwApiUrls::getWikiProperty($this->wiki, 'url_base') . 'wiki/';
+        $reason = htmlspecialchars($this->blockreason);
+
+        preg_match_all('/\[\[([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:\-\/]+))?\]\]/', $reason, $linkMatches, PREG_SET_ORDER);
+
+        foreach ($linkMatches as $link) {
+            $linkText = sizeof($link) === 3 ? $link[2] : $link[1];
+            $linkHtml = '<a href="' . $linkPrefix . htmlspecialchars($link[1]) . '" ' . $linkExtra . '">' . htmlspecialchars($linkText) . '</a>';
+
+            $reason = str_replace($link[0], $linkHtml, $reason);
+        }
+
+        preg_match_all('/{{([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:=\-\/\|]+))?}}/', $reason, $templateMatches, PREG_SET_ORDER);
+
+        foreach ($templateMatches as $template) {
+            $templateHtml = '{{<a href="' . $linkPrefix . 'Template:' . htmlspecialchars($template[1]) . '" ' . $linkExtra . '">' . htmlspecialchars($template[1]) . '</a>';
+
+            if (sizeof($template) === 3) {
+                $templateHtml .= '|' . htmlspecialchars($template[2]);
+            }
+
+            $templateHtml .= '}}';
+
+            $reason = str_replace($template[0], $templateHtml, $reason);
+        }
+
+        return $reason;
     }
 }
