@@ -614,7 +614,7 @@ class AppealController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
         $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
-        if ($dev && $appeal->status == "NOTFOUND") {
+        if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {
             GetBlockDetailsJob::dispatch($appeal);
             Log::create([
                 'user' => Auth::id(),
