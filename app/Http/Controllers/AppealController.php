@@ -63,7 +63,7 @@ class AppealController extends Controller
             $closestatus = ($info->status == "ACCEPT" || $info->status == "DECLINE" || $info->status == "EXPIRE");
             abort_if($info->status == "INVALID" && !$isDeveloper, 404, 'This appeal has been marked invalid.');
 
-            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || $isDeveloper) {
+            if (($info->status == "OPEN" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || $isDeveloper) {
                 $logs = $info->comments()->get();
                 $userlist = [];
 
@@ -173,7 +173,7 @@ class AppealController extends Controller
 
     public function appeallist()
     {
-        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY", "NOTFOUND", "INVALID"];
+        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "NOTFOUND", "INVALID"];
         $devnoview = ["ACCEPT", "DECLINE", "EXPIRE", "INVALID"];
         $tooladmin = False;
         if (!Auth::check()) {
