@@ -40,7 +40,7 @@
                     </div>
                 @endif
 
-                {{ Form::open(['url' => 'appeal/account']) }}
+                {{ Form::open(['url' => route('public.appeal.store')]) }}
                 {{ Form::token() }}
                 <h5>About you</h5>
                 <div class="form-group mb-4">

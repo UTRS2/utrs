@@ -47,10 +47,17 @@ class MwApiUrls
     }
 
     /**
+     * @param bool $includeGlobal if true, 'global' will be included, otherwise not
      * @return array an array of individual wikis that have their api url available
      */
-    public static function getSupportedWikis()
+    public static function getSupportedWikis($includeGlobal = false)
     {
+        if ($includeGlobal) {
+            return collect(self::getSupportedWikis(false))
+                ->push('global')
+                ->toArray();
+        }
+
         return array_keys(config('wikis.wikis'));
     }
 
@@ -59,8 +66,7 @@ class MwApiUrls
      */
     public static function getWikiDropdown()
     {
-        return collect(self::getSupportedWikis())
-            ->push('global')
+        return collect(self::getSupportedWikis(true))
             ->mapWithKeys(function ($wiki) {
                 return [$wiki => self::getWikiProperty($wiki, 'name')];
             })

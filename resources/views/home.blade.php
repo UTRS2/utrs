@@ -5,7 +5,7 @@
         <b>IMPORTANT MESSAGE</b><br/>
         During this time, no emails will be sent out for appeals except for blocks that are not found for
             accounts. That means you need to keep your appeal secret key on hand at all times (DON'T SHARE IT) and check
-            back regularly.</b><br/><br/>
+            back regularly.<br/><br/>
     </div>
     <center>
         <div class="col-md-1"></div>
@@ -17,7 +17,7 @@
                         <h5 class="card-title">If you have a user account</h5>
                         <p class="card-text">on Wikipedia and are blocked, please select the button below
                             to start your appeal.</p>
-                        <a href="appeal/account" class="btn btn-primary">Appeal my block</a>
+                        <a href="{{ route('public.appeal.create.account') }}" class="btn btn-primary">Appeal my block</a>
                     </div>
                 </div>
                 <div class="card bg-light mb-3 text-center" style="max-width: 18rem;">
@@ -26,7 +26,7 @@
                         <h5 class="card-title">If you <b>DO NOT</b> have a user account</h5>
                         <p class="card-text">on Wikipedia and are blocked, please select the button below
                             to start your appeal.</p>
-                        <a href="appeal/ip" class="btn btn-primary">Appeal IP block</a>
+                        <a href="{{ route('public.appeal.create.ip') }}" class="btn btn-primary">Appeal IP block</a>
                     </div>
                 </div>
                 <div class="card bg-light mb-3 text-center" style="max-width: 18rem;">
@@ -60,17 +60,16 @@
                     </div>
                     <h5 class="card-title">If you already have an appeal</h5>
                     <p class="card-text">Please enter your appeal key below</p>
-                    {{ Form::open(array('url' => 'publicappeal', 'method' => 'GET')) }}
-                    <div class="input-group mb-3" style="display: block;">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"
-                                  id="basic-addon1">#</span>{{ Form::text('hash', null, ['class'=>'form-control','placeholder'=>'Appeal Key']) }}
+                    {{ Form::open(['url' => route('public.appeal.view'), 'method' => 'GET']) }}
+                        <div class="input-group mb-3" style="display: block;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">#</span>
+                                {{ Form::text('hash', null, ['class'=>'form-control','placeholder'=>'Appeal Key']) }}
+                            </div>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     {{ Form::close() }}
                     <a href="#" class="btn btn-danger">Forgot Appeal Key</a>
-                    </form>
                 </div>
             </div>
         </div>

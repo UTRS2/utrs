@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Appeal;
-use App\Ban;
 use App\Log;
 use App\Oldappeal;
 use App\Olduser;
@@ -16,9 +15,6 @@ use App\User;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use App\Rules\SecretEqualsRule;
-use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -129,58 +125,6 @@ class AppealController extends Controller
         }
     }
 
-    public function publicappeal(Request $request)
-    {
-        $hash = $request->input('hash');
-        $info = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
-        $closestatus = $info->status == "ACCEPT" || $info->status == "DECLINE" || $info->status == "EXPIRE";
-
-        $id = $info->id;
-        $logs = $info->comments;
-        $userlist = [];
-        if (!is_null($info->handlingadmin)) {
-            $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
-        }
-
-        $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
-
-        foreach ($logs as $log) {
-            if (is_null($log->user) || in_array($log->user, $userlist) || $log->user === 0 || $log->user === -1) {
-                continue;
-            }
-
-            $userlist[$log->user] = User::findOrFail($log->user)->username;
-        }
-
-        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
-    }
-
-    public function publicComment(Request $request)
-    {
-        $key = $request->input('appealsecretkey');
-        $appeal = Appeal::where('appealsecretkey', $key)->firstOrFail();
-
-        abort_if($appeal->status == "ACCEPT" || $appeal->status == "DECLINE" || $appeal->status == "EXPIRE", 400, "Appeal is closed");
-
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $reason = $request->input('comment');
-
-        Log::create([
-            'user' => -1,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
-            'action' => 'responded',
-            'reason' => $reason,
-            'ip' => $ip,
-            'ua' => $ua . " " . $lang,
-            'protected' => 0
-        ]);
-
-        return redirect()->back();
-    }
-
     public function appeallist()
     {
         $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY", "NOTFOUND", "INVALID"];
@@ -246,54 +190,6 @@ class AppealController extends Controller
             return view('appeals.loggedin');
         }
         return view('appeals.makeappeal.account');
-    }
-
-    public function appealsubmit(Request $request)
-    {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $input = $request->all();
-        Arr::forget($input, '_token');
-        $input = Arr::add($input, 'status', 'VERIFY');
-        $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
-        $input = Arr::add($input, 'appealsecretkey', $key);
-
-        $request->validate([
-            'appealtext' => 'max:4000|required',
-            'appealfor' => 'required',
-            'wiki' => 'required',
-            'blocktype' => 'required|numeric|max:2|min:0'
-        ]);
-
-        if (Appeal::where('appealfor', '=', $input['appealfor'])->where('status', '!=', 'ACCEPT')->where('status', '!=', 'EXPIRE')->where('status', '!=', 'DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get()) > 0) {
-            return view('appeals.spam');
-        }
-
-        $appealbyname = Appeal::where('appealfor', '=', $input['appealfor'])->orderBy('id', 'desc')->first();
-        if (!is_null($appealbyname)) {
-            $lastdate = $appealbyname['submitted'];
-            $now = date('Y-m-d H:i:s');
-            $interval = strtotime($now) - strtotime($lastdate);
-            if ($interval < 172800) {
-                return view('appeals.spam');
-            }
-        }
-        $banacct = Ban::where('ip','=',0)->get();
-        $banip = Ban::where('ip','=',1)->get();
-        foreach ($banip as $ban) {
-            if (self::ip_in_range($ip,$ban->target)) {
-                return view('appeals.ban', ['expire'=>$ban->expiry,'id'=>$ban->id]);
-            }
-        }
-
-        $appeal = Appeal::create($input);
-        $cudata = Privatedata::create(array('appealID' => $appeal->id, 'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
-        Log::create(['user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . ' ' . $lang]);
-
-        GetBlockDetailsJob::dispatch($appeal);
-
-        return view('appeals.makeappeal.hash', ['hash' => $key]);
     }
 
     public function ipappeal()
@@ -601,39 +497,6 @@ class AppealController extends Controller
         }
     }
 
-    public function showVerifyOwnershipForm(Request $request, Appeal $appeal, $token)
-    {
-        abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
-        return view('appeals.verifyaccount', ['appeal' => $appeal]);
-    }
-
-    public function verifyAccountOwnership(Request $request, Appeal $appeal)
-    {
-        $request->validate([
-            'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
-            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
-        ]);
-
-        $appeal->update([
-            'verify_token' => null,
-            'user_verified' => true,
-        ]);
-
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-
-        Log::create([
-            'user' => 0,
-            'referenceobject'=> $appeal->id,
-            'objecttype'=>'appeal',
-            'action'=>'account verifed',
-            'ip' => $ip,
-            'ua' => $ua . " " .$lang
-        ]);
-
-        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
-    }
     public function findagain($id, Request $request)
     {
         if (!Auth::check()) {
@@ -662,24 +525,5 @@ class AppealController extends Controller
             abort(403,'Not developer/Not NOTFOUND');
         }
         return redirect('appeal/' . $id);
-    }
-
-    /**
-     * Check if a given ip is in a network
-     * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
-     * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
-     * @return boolean true if the ip is in this range / false if not.
-     */
-    public static function ip_in_range( $ip, $range ) {
-        if ( strpos( $range, '/' ) == false ) {
-            $range .= '/32';
-        }
-        // $range is in IP/CIDR format eg 127.0.0.1/24
-        list( $range, $netmask ) = explode( '/', $range, 2 );
-        $range_decimal = ip2long( $range );
-        $ip_decimal = ip2long( $ip );
-        $wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
-        $netmask_decimal = ~ $wildcard_decimal;
-        return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
     }
 }

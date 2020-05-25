@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('appeal.verifyownership.submit', $appeal) }}" method="POST">
+                <form action="{{ route('public.appeal.verifyownership.submit', $appeal) }}" method="POST">
                     @csrf
 
                     <input type="hidden" name="verify_token" value="{{ $appeal->verify_token }}">

@@ -22,7 +22,7 @@ class Appeal extends Model
 
     public function comments()
     {
-        return $this->hasMany('App\Log', 'referenceobject','id')
+        return $this->hasMany(Log::class, 'referenceobject','id')
             ->where('objecttype', 'appeal');
     }
 

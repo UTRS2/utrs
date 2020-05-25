@@ -11,20 +11,29 @@
 |
 */
 
-Route::get('/', 'Controller@home');
-Route::get('/appeal/account', 'AppealController@accountappeal');
-Route::post('/appeal/account', 'AppealController@appealsubmit');
-Route::get('/appeal/ip', 'AppealController@ipappeal');
-Route::post('/appeal/ip', 'AppealController@appealsubmit');
+Route::view('/', 'home')->name('home');
+Route::redirect('/home', '/');
+
+Route::prefix('/public')->middleware('guest')->group(function () {
+    Route::view('/appeal/ip', 'appeals.public.makeappeal.ip')->name('public.appeal.create.ip');
+    Route::view('/appeal/account', 'appeals.public.makeappeal.account')->name('public.appeal.create.account');
+
+    Route::post('/appeal/store', 'Appeal\PublicAppealController@store')->name('public.appeal.store');
+
+    Route::get('/appeal/view', 'Appeal\PublicAppealController@view')->name('public.appeal.view');
+    Route::post('/appeal/comment', 'Appeal\PublicAppealController@addComment')->name('public.appeal.comment');
+
+    Route::get('/appeal/modify/{hash}', 'Appeal\PublicAppealModifyController@showForm')->name('public.appeal.modify');
+    Route::post('/appeal/modify', 'Appeal\PublicAppealModifyController@submit')->name('public.appeal.modify.submit');
+
+    Route::get('/appeal/verify/{appeal}/{token}', 'Appeal\PublicAppealController@showVerifyOwnershipForm')->name('public.appeal.verifyownership');
+    Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
+});
+
 Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
-
-Route::get('/appeal/{appeal}/verify/{token}', 'AppealController@showVerifyOwnershipForm')
-    ->name('appeal.verifyownership');
-Route::post('/appeal/{appeal}/verify', 'AppealController@verifyAccountOwnership')
-    ->name('appeal.verifyownership.submit');
 
 Route::post('/appeal/checkuser/{id}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
@@ -42,11 +51,7 @@ Route::get('/appeal/template/{id}', 'AppealController@viewtemplates');
 Route::get('/appeal/template/{id}/{template}', 'AppealController@respond');
 Route::get('/appeal/custom/{id}', 'AppealController@respondCustom');
 Route::post('/appeal/custom/{id}', 'AppealController@respondCustomSubmit');
-Route::get('/publicappeal', 'AppealController@publicappeal');
-Route::post('/publicappeal/comment', 'AppealController@publicComment');
 Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
-Route::get('/fixappeal/{hash}', 'AppealModifyController@changeip');
-Route::post('/fixip/{id}', 'AppealModifyController@changeipsubmit');
 
 Route::get('/admin/users', 'AdminController@listusers');
 Route::get('/admin/bans', 'AdminController@listbans');
@@ -59,7 +64,6 @@ Route::get('admin/templates/{id}', 'AdminController@modifyTemplate');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/verifyaccount','AdminController@verifyAccount');
 Route::get('/verify/{code}','AdminController@verify');
 Route::get('/pending','HomeController@pending');

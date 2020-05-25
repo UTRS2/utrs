@@ -11,6 +11,10 @@
         <br>
         <center>Your Appeal key is:<br>
             <h2>{{ $hash }}</h2></center>
+        <br/>
+        <a href="{{ route('public.appeal.view') . '?' . http_build_query([ 'hash' => $hash ]) }}" class="btn btn-success">
+            View appeal details
+        </a>
     </div>
 
 @endsection
