@@ -18,7 +18,7 @@
 
             <div class="form-group">
                 {{ Form::label('template', 'What should the template say?') }}
-                {{ Form::textarea('template', old('template', $template->template), ['class' => 'form-control']) }}
+                {{ Form::textarea('template', old('template', $template->template), ['class' => 'form-control h-25', 'rows'=>'5']) }}
             </div>
 
             <button type="submit" class="btn btn-success">Submit</button>
