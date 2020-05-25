@@ -34,7 +34,7 @@
                                 @endif
                                 <br/>Appeal status: {{ $info->status }}
                                 <br/>Blocking Admin: {{ $info->blockingadmin }}
-                                <br/>Block Reason: {{ $info->blockreason }}
+                                <br/>Block Reason: {!! $info->getFormattedBlockReason() !!}
                                 <br/>Time Submitted: {{ $info->submitted }}
                                 <br/>Wiki: {{ $info->wiki }}
                                 @if(!is_null($info->handlingadmin))
@@ -172,7 +172,7 @@
                                                             Reserve
                                                         </button>
                                                     @endif
-                                                    @if($perms['dev'])
+                                                    @if($perms['developer'])
                                                         <a href="/appeal/invalidate/{{ $id }}" class="btn btn-danger">
                                                             Invalidate
                                                         </a>
@@ -209,6 +209,13 @@
                                                     <div class="mb-2">
                                                         <a href="/appeal/open/{{ $id }}" class="btn btn-info">
                                                             Return to tool users
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                                @if($perms['developer'] && ($info->status=="NOTFOUND" || $info->status=="VERIFY"))
+                                                    <div class="mb-2">
+                                                        <a href="/appeal/findagain/{{ $id }}" class="btn btn-info">
+                                                            Re-verify block
                                                         </a>
                                                     </div>
                                                 @endif

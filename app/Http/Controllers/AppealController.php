@@ -14,10 +14,13 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
+use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
+use Illuminate\Database\Eloquent\Builder;
 
 class AppealController extends Controller
 {
@@ -33,7 +36,7 @@ class AppealController extends Controller
             //Enwiki is hardcoded here as all previous appeals were only on enwiki.
             //Since that had a different policy at the time, we have to still observe the same privacy level.
             $isAdmin = Permission::checkAdmin(Auth::id(), 'enwiki');
-            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for');
+            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for.');
 
             $comments = $info->comments()->get();
             $userlist = [];
@@ -55,12 +58,12 @@ class AppealController extends Controller
             $appeal = Appeal::findOrFail($id);
             $user = Auth::id();
             $admin = Permission::checkAdmin($user, $appeal->wiki);
-            abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+            abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for.");
 
             $closestatus = ($info->status == "ACCEPT" || $info->status == "DECLINE" || $info->status == "EXPIRE");
             abort_if($info->status == "INVALID" && !$isDeveloper, 404, 'This appeal has been marked invalid.');
 
-            if (($info->status == "OPEN" || $info->status == "PRIVACY" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || $isDeveloper) {
+            if (($info->status == "OPEN" || $info->status == "ADMIN" || $info->status == "CHECKUSER" || $closestatus) || $isDeveloper) {
                 $logs = $info->comments()->get();
                 $userlist = [];
 
@@ -74,20 +77,10 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(), $info->wiki);
-                $perms['dev'] = $isDeveloper;
+                $perms['developer'] = boolval($isDeveloper);
 
                 $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
                 $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
-
-                if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
-                    if (!Permission::checkPrivacy(Auth::id(), $info->wiki) && !Permission::checkOversight(Auth::id(), $info->wiki)) {
-                        return view('appeals.privacydeny');
-                    }
-                }
-
-                if ($info->privacylevel == 1 && !$perms['admin']) {
-                    return view('appeals.privacydeny');
-                }
 
                 foreach($logs as $log) {
                     if (is_null($log->user) || $log->user === 0 || $log->user === -1 || in_array($log->user, $userlist)) {
@@ -180,7 +173,7 @@ class AppealController extends Controller
 
     public function appeallist()
     {
-        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "PRIVACY", "NOTFOUND", "INVALID"];
+        $regularnoview = ["ACCEPT", "DECLINE", "EXPIRE", "VERIFY", "NOTFOUND", "INVALID"];
         $devnoview = ["ACCEPT", "DECLINE", "EXPIRE", "INVALID"];
         $tooladmin = False;
         if (!Auth::check()) {
@@ -205,6 +198,36 @@ class AppealController extends Controller
             }
         }
         return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $tooladmin]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->validate(['search' => 'required|min:1'])['search'];
+
+        $number = is_numeric($search) ? intval($search) : null;
+
+        // if search starts with a "#" and is followed by numbers, it should be treated as number
+        if (!$number && Str::startsWith($search, '#') && is_numeric(substr($search, 1))) {
+            $number = intval(substr($search, 1), 10);
+        }
+
+        $appeal = Appeal::where('appealfor', $search)
+            ->when($number, function (Builder $query, $number) {
+                return $query->orWhere('id', $number);
+            })
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$appeal) {
+            return redirect()
+                ->back(302, [], route('appeal.list'))
+                ->withErrors([
+                    'search' => 'No results found.'
+                ]);
+        }
+
+        return redirect()
+            ->to('/appeal/' . $appeal->id);
     }
 
     public function accountappeal()
@@ -600,6 +623,35 @@ class AppealController extends Controller
         ]);
 
         return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
+    }
+    public function findagain($id, Request $request)
+    {
+        if (!Auth::check()) {
+            abort(403, 'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
+        $user = Auth::id();
+        $appeal = Appeal::findOrFail($id);
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
+        $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
+        if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {
+            GetBlockDetailsJob::dispatch($appeal);
+            Log::create([
+                'user' => Auth::id(),
+                'referenceobject'=> $appeal->id,
+                'objecttype'=>'appeal',
+                'action'=>'reverify block',
+                'ip' => $ip,
+                'ua' => $ua . " " .$lang
+            ]);
+
+        } else {
+            abort(403,'Not developer/Not NOTFOUND');
+        }
+        return redirect('appeal/' . $id);
     }
 
     /**
