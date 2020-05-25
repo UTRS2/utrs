@@ -74,7 +74,7 @@
                                 on {{ $appeal->wiki }}
                             </td>
                             <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
-                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #ccc;"') !!}</td>
+                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #00ffea;"') !!}</td>
                             <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
                         </tr>
                         @endforeach
