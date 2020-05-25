@@ -173,7 +173,7 @@
                                                             Reserve
                                                         </button>
                                                     @endif
-                                                    @if($perms['dev'])
+                                                    @if($perms['developer'])
                                                         <a href="/appeal/invalidate/{{ $id }}" class="btn btn-danger">
                                                             Invalidate
                                                         </a>
@@ -210,6 +210,13 @@
                                                     <div class="mb-2">
                                                         <a href="/appeal/open/{{ $id }}" class="btn btn-info">
                                                             Return to tool users
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                                @if($perms['developer'] && ($info->status=="NOTFOUND" || $info->status=="VERIFY"))
+                                                    <div class="mb-2">
+                                                        <a href="/appeal/findagain/{{ $id }}" class="btn btn-info">
+                                                            Re-verify block
                                                         </a>
                                                     </div>
                                                 @endif
