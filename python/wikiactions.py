@@ -476,7 +476,7 @@ def appeallist():
     for result in results:
         username = result[1].encode('utf-8').strip()
         if username.startswith('#'):
-            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[Special:BlockList/"+username+"|Block ID "+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
+            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[https://en.wikipedia.org/wiki/Special:BlockList?wpTarget="+username.replace('#','%23')+" Block ID "+username+"]\n|"+str(result[9])+"\n|"+str(result[5])
         else:
             fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
     fulltext +="\n|}"
