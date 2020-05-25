@@ -624,6 +624,7 @@ class AppealController extends Controller
         } else {
             abort(403);
         }
+        return redirect('appeal/' . $id);
     }
 
     /**
