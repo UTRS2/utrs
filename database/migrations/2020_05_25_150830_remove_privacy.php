@@ -13,13 +13,23 @@ class RemovePrivacy extends Migration
      */
     public function up()
     {
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn('privacy');
-        });
-        Schema::table('appeals', function (Blueprint $table) {
-            $table->dropColumn('privacyreview');
-            $table->dropColumn('privacylevel');
-        });
+        if (Schema::hasColumn('permissions', 'privacy')) {
+            Schema::table('permissions', function (Blueprint $table) {
+                $table->dropColumn('privacy');
+            });
+        }
+
+        if (Schema::hasColumn('appeals', 'privacyreview')) {
+            Schema::table('appeals', function (Blueprint $table) {
+                $table->dropColumn('privacyreview');
+            });
+        }
+
+        if (Schema::hasColumn('appeals', 'privacylevel')) {
+            Schema::table('appeals', function (Blueprint $table) {
+                $table->dropColumn('privacylevel');
+            });
+        }
     }
 
     /**
