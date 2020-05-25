@@ -601,13 +601,17 @@ class AppealController extends Controller
 
         return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
     }
-    public function findagain(Appeal $appeal)
+    public function findagain($id, Request $request)
     {
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
-        
+        $user = Auth::id();
+        $appeal = Appeal::findOrFail($id);
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
         $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
         if ($dev && $appeal->status == "NOTFOUND") {
@@ -622,7 +626,7 @@ class AppealController extends Controller
             ]);
 
         } else {
-            abort(403);
+            abort(403,'Not developer/Not NOTFOUND');
         }
         return redirect('appeal/' . $id);
     }
