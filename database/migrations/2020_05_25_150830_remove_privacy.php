@@ -13,23 +13,14 @@ class RemovePrivacy extends Migration
      */
     public function up()
     {
-        if (Schema::hasColumn('permissions', 'privacy')) {
-            Schema::table('permissions', function (Blueprint $table) {
-                $table->dropColumn('privacy');
-            });
-        }
+        Schema::table('permissions', function (Blueprint $table) {
+            $table->dropColumn('privacy');
+        });
 
-        if (Schema::hasColumn('appeals', 'privacyreview')) {
-            Schema::table('appeals', function (Blueprint $table) {
-                $table->dropColumn('privacyreview');
-            });
-        }
-
-        if (Schema::hasColumn('appeals', 'privacylevel')) {
-            Schema::table('appeals', function (Blueprint $table) {
-                $table->dropColumn('privacylevel');
-            });
-        }
+        Schema::table('appeals', function (Blueprint $table) {
+            $table->dropColumn('privacyreview');
+            $table->dropColumn('privacylevel');
+        });
     }
 
     /**
@@ -40,8 +31,8 @@ class RemovePrivacy extends Migration
     public function down()
     {
         Schema::table('appeals', function (Blueprint $table) {
-            $table->integer('privacylevel')->nullable()->change();
-            $table->boolean('privacyreview')->nullable()->change();
+            $table->integer('privacylevel')->nullable();
+            $table->boolean('privacyreview')->nullable();
         });
         Schema::table('permissions', function (Blueprint $table) {
             $table->boolean('privacy')->default(0);
