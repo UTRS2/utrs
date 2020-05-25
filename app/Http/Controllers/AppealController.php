@@ -74,7 +74,7 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(), $info->wiki);
-                $perms['dev'] = $isDeveloper;
+                $perms['developer'] = boolval($isDeveloper);
 
                 $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
                 $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
@@ -600,6 +600,30 @@ class AppealController extends Controller
         ]);
 
         return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
+    }
+    public function findagain(Appeal $appeal)
+    {
+        if (!Auth::check()) {
+            abort(403, 'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
+        
+
+        $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
+        if ($dev && $appeal->status == "NOTFOUND") {
+            GetBlockDetailsJob::dispatch($appeal);
+            Log::create([
+                'user' => Auth::id(),
+                'referenceobject'=> $appeal->id,
+                'objecttype'=>'appeal',
+                'action'=>'reverify block',
+                'ip' => $ip,
+                'ua' => $ua . " " .$lang
+            ]);
+
+        } else {
+            abort(403);
+        }
     }
 
     /**

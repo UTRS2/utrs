@@ -30,6 +30,7 @@ Route::get('/appeal/respond/{id}', 'AppealController@respond');
 Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
 Route::get('/appeal/release/{id}', 'AppealController@release');
 Route::get('/appeal/open/{id}', 'AppealController@open');
+Route::get('/appeal/findagain/{id}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
 Route::get('/appeal/checkuserreview/{id}', 'AppealController@checkuserreview');
 Route::get('/appeal/privacy/{id}', 'AppealController@privacy');
