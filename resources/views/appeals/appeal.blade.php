@@ -212,7 +212,7 @@
                                                         </a>
                                                     </div>
                                                 @endif
-                                                @if($perms['developer'] && $info->status=="NOTFOUND")
+                                                @if($perms['developer'] && ($info->status=="NOTFOUND" || $info->status=="VERIFY"))
                                                     <div class="mb-2">
                                                         <a href="/appeal/findagain/{{ $id }}" class="btn btn-info">
                                                             Re-verify block
