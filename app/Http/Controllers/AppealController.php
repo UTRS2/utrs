@@ -36,7 +36,7 @@ class AppealController extends Controller
             //Enwiki is hardcoded here as all previous appeals were only on enwiki.
             //Since that had a different policy at the time, we have to still observe the same privacy level.
             $isAdmin = Permission::checkAdmin(Auth::id(), 'enwiki');
-            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for-');
+            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for.');
 
             $comments = $info->comments()->get();
             $userlist = [];
