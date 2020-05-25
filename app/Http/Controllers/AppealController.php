@@ -36,7 +36,7 @@ class AppealController extends Controller
             //Enwiki is hardcoded here as all previous appeals were only on enwiki.
             //Since that had a different policy at the time, we have to still observe the same privacy level.
             $isAdmin = Permission::checkAdmin(Auth::id(), 'enwiki');
-            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for');
+            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for-');
 
             $comments = $info->comments()->get();
             $userlist = [];
@@ -58,7 +58,7 @@ class AppealController extends Controller
             $appeal = Appeal::findOrFail($id);
             $user = Auth::id();
             $admin = Permission::checkAdmin($user, $appeal->wiki);
-            abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+            abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for.");
 
             $closestatus = ($info->status == "ACCEPT" || $info->status == "DECLINE" || $info->status == "EXPIRE");
             abort_if($info->status == "INVALID" && !$isDeveloper, 404, 'This appeal has been marked invalid.');
@@ -82,7 +82,7 @@ class AppealController extends Controller
                 $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
                 $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
 
-                if ($info->privacyreview !== $info->privacylevel || $info->privacylevel == 2) {
+                if ($info->privacyreview != $info->privacylevel || $info->privacylevel == 2) {
                     if (!Permission::checkPrivacy(Auth::id(), $info->wiki) && !Permission::checkOversight(Auth::id(), $info->wiki)) {
                         return view('appeals.privacydeny');
                     }
