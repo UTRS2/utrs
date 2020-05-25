@@ -47,18 +47,18 @@ class GetBlockDetailsJob implements ShouldQueue
 
             if ($ban) {
                 $status = 'INVALID';
-            }
 
-            Log::create([
-                'user' => 0,
-                'referenceobject' => $this->appeal->id,
-                'objecttype' => 'appeal',
-                'action' => 'closed - invalidate',
-                'reason' => 'account banned from UTRS',
-                'ip' => '127.0.0.1',
-                'ua' => 'Laravel',
-                'protected' => 0
-            ]);
+                Log::create([
+                    'user' => 0,
+                    'referenceobject' => $this->appeal->id,
+                    'objecttype' => 'appeal',
+                    'action' => 'closed - invalidate',
+                    'reason' => 'account banned from UTRS',
+                    'ip' => '127.0.0.1',
+                    'ua' => 'Laravel',
+                    'protected' => 0
+                ]);
+            }
         }
 
         $this->appeal->update([
