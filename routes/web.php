@@ -17,7 +17,9 @@ Route::post('/appeal/account', 'AppealController@appealsubmit');
 Route::get('/appeal/ip', 'AppealController@ipappeal');
 Route::post('/appeal/ip', 'AppealController@appealsubmit');
 Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
-Route::get('/review', 'AppealController@appeallist');
+
+Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
+Route::get('/locate', 'AppealController@search')->name('appeal.search');
 
 Route::get('/appeal/{appeal}/verify/{token}', 'AppealController@showVerifyOwnershipForm')
     ->name('appeal.verifyownership');
@@ -30,6 +32,7 @@ Route::get('/appeal/respond/{id}', 'AppealController@respond');
 Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
 Route::get('/appeal/release/{id}', 'AppealController@release');
 Route::get('/appeal/open/{id}', 'AppealController@open');
+Route::get('/appeal/findagain/{id}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
 Route::get('/appeal/checkuserreview/{id}', 'AppealController@checkuserreview');
 Route::get('/appeal/privacy/{id}', 'AppealController@privacy');

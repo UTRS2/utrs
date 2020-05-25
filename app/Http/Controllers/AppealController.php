@@ -14,10 +14,13 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
+use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
+use Illuminate\Database\Eloquent\Builder;
 
 class AppealController extends Controller
 {
@@ -74,7 +77,7 @@ class AppealController extends Controller
                 $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
                 $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
                 $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(), $info->wiki);
-                $perms['dev'] = $isDeveloper;
+                $perms['developer'] = boolval($isDeveloper);
 
                 $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
                 $checkuserdone = !is_null(Log::where('user', '=', Auth::id())->where('action', '=', 'checkuser')->where('referenceobject', '=', $id)->first());
@@ -205,6 +208,36 @@ class AppealController extends Controller
             }
         }
         return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $tooladmin]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->validate(['search' => 'required|min:1'])['search'];
+
+        $number = is_numeric($search) ? intval($search) : null;
+
+        // if search starts with a "#" and is followed by numbers, it should be treated as number
+        if (!$number && Str::startsWith($search, '#') && is_numeric(substr($search, 1))) {
+            $number = intval(substr($search, 1), 10);
+        }
+
+        $appeal = Appeal::where('appealfor', $search)
+            ->when($number, function (Builder $query, $number) {
+                return $query->orWhere('id', $number);
+            })
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$appeal) {
+            return redirect()
+                ->back(302, [], route('appeal.list'))
+                ->withErrors([
+                    'search' => 'No results found.'
+                ]);
+        }
+
+        return redirect()
+            ->to('/appeal/' . $appeal->id);
     }
 
     public function accountappeal()
@@ -600,6 +633,35 @@ class AppealController extends Controller
         ]);
 
         return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
+    }
+    public function findagain($id, Request $request)
+    {
+        if (!Auth::check()) {
+            abort(403, 'No logged in user');
+        }
+        User::findOrFail(Auth::id())->checkRead();
+        $user = Auth::id();
+        $appeal = Appeal::findOrFail($id);
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
+        $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
+        if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {
+            GetBlockDetailsJob::dispatch($appeal);
+            Log::create([
+                'user' => Auth::id(),
+                'referenceobject'=> $appeal->id,
+                'objecttype'=>'appeal',
+                'action'=>'reverify block',
+                'ip' => $ip,
+                'ua' => $ua . " " .$lang
+            ]);
+
+        } else {
+            abort(403,'Not developer/Not NOTFOUND');
+        }
+        return redirect('appeal/' . $id);
     }
 
     /**
