@@ -12,7 +12,6 @@ class Appeal extends Model
     public $guarded = ['id'];
 
     protected $attributes = [
-        'privacylevel' => 0,
         'blockfound' => 0
     ];
 

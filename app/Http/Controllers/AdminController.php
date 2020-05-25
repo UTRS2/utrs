@@ -54,7 +54,7 @@ class AdminController extends Controller
                 $permission = true;
             }
 
-            if (!$canSeeProtectedBans && Permission::checkPrivacy(Auth::id(), $wiki)) {
+            if (!$canSeeProtectedBans && Permission::checkOversight(Auth::id(), $wiki)) {
                 $canSeeProtectedBans = true;
             }
         }
