@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
 
 class AppealController extends Controller
 {
@@ -121,7 +122,7 @@ class AppealController extends Controller
         $devnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID];
 
         $tooladmin = false;
-      
+
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
