@@ -16,34 +16,34 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_replying_to_marked_as_awaiting_reply()
     {
-        $this->browse(function (Browser $browser) {
-            $appeal = factory(Appeal::class)->create([
-                'status' => Appeal::STATUS_AWAITING_REPLY,
-            ]);
+        $appeal = factory(Appeal::class)->create([
+            'status' => Appeal::STATUS_AWAITING_REPLY,
+        ]);
 
-            $browser->visit('/publicappeal?hash=' . $appeal->appealsecretkey)
+        $this->browse(function (Browser $browser) use ($appeal) {
+            $browser->visit('/public/appeal/view?hash=' . $appeal->appealsecretkey)
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
                 ->press('Submit')
                 ->assertSee('This is an example comment')
                 ->assertSee(Appeal::STATUS_OPEN)
                 ->assertDontSee(Appeal::STATUS_AWAITING_REPLY);
-
-            $appeal->refresh();
-
-            $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
         });
+
+        $appeal->refresh();
+
+        $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
     }
 
     public function test_using_template()
     {
-        $this->browse(function (Browser $browser) {
-            $appeal = factory(Appeal::class)->create();
+        $appeal = factory(Appeal::class)->create();
 
-            factory(Template::class, 5)->create();
-            $lastTemplate = factory(Template::class)->create();
-            $lastTemplateStart = explode("\n", $lastTemplate->template)[0];
+        factory(Template::class, 5)->create();
+        $lastTemplate = factory(Template::class)->create();
+        $lastTemplateStart = explode("\n", $lastTemplate->template)[0];
 
+        $this->browse(function (Browser $browser) use ($appeal, $lastTemplate, $lastTemplateStart) {
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(Appeal::STATUS_OPEN)
@@ -62,18 +62,18 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->assertDontSee(Appeal::STATUS_OPEN)
                 ->assertSee($lastTemplateStart);
-
-            $appeal->refresh();
-
-            $this->assertEquals(Appeal::STATUS_AWAITING_REPLY, $appeal->status);
         });
+
+        $appeal->refresh();
+
+        $this->assertEquals(Appeal::STATUS_AWAITING_REPLY, $appeal->status);
     }
 
     public function test_custom_reply()
     {
-        $this->browse(function (Browser $browser) {
-            $appeal = factory(Appeal::class)->create();
+        $appeal = factory(Appeal::class)->create();
 
+        $this->browse(function (Browser $browser) use ($appeal) {
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(Appeal::STATUS_OPEN)
@@ -86,10 +86,10 @@ class AppealCommentsTest extends DuskTestCase
                 ->press('Submit')
                 ->assertSee(Appeal::STATUS_OPEN)
                 ->assertDontSee('set status as ');
-
-            $appeal->refresh();
-
-            $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
         });
+
+        $appeal->refresh();
+
+        $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
     }
 }
