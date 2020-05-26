@@ -10,7 +10,7 @@ trait TestHasUsers
 {
     protected $userDefaultPermissions = [
         'enwiki' => [
-            'user', 'sysop',
+            'user', 'admin',
         ]
     ];
 

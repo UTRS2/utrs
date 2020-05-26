@@ -47,20 +47,27 @@ Route::get('/appeal/checkuserreview/{id}', 'AppealController@checkuserreview');
 Route::get('/appeal/privacy/{id}', 'AppealController@privacy');
 Route::get('/appeal/admin/{id}', 'AppealController@admin');
 Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
-Route::get('/appeal/template/{id}', 'AppealController@viewtemplates');
-Route::get('/appeal/template/{id}/{template}', 'AppealController@respond');
-Route::get('/appeal/custom/{id}', 'AppealController@respondCustom');
-Route::post('/appeal/custom/{id}', 'AppealController@respondCustomSubmit');
+
+Route::get('/appeal/template/{appeal}', 'AppealController@viewtemplates')->name('appeal.template');
+Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')->name('appeal.template.submit');
+
+Route::get('/appeal/custom/{appeal}', 'AppealController@respondCustom')->name('appeal.customresponse');
+Route::post('/appeal/custom/{appeal}', 'AppealController@respondCustomSubmit')->name('appeal.customresponse.submit');
+
+Route::get('/publicappeal', 'AppealController@publicappeal');
+Route::post('/publicappeal/comment', 'AppealController@publicComment');
+
 Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
 
 Route::get('/admin/users', 'AdminController@listusers');
 Route::get('/admin/bans', 'AdminController@listbans');
 Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
 Route::get('/admin/templates', 'AdminController@listtemplates');
-Route::post('admin/templates/create', 'AdminController@makeTemplate');
-Route::post('admin/templates/{id}', 'AdminController@saveTemplate');
+
 Route::get('admin/templates/create', 'AdminController@showNewTemplate');
-Route::get('admin/templates/{id}', 'AdminController@modifyTemplate');
+Route::post('admin/templates/create', 'AdminController@makeTemplate');
+Route::get('admin/templates/{template}', 'AdminController@editTemplate')->name('admin.templates.edit');
+Route::post('admin/templates/{template}', 'AdminController@updateTemplate')->name('admin.templates.update');
 
 Auth::routes();
 
