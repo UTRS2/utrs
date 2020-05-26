@@ -31,12 +31,9 @@ class AppealModifyController extends Controller
         $data = $request->validate([
             'appealfor' => 'required',
             'wiki' => 'required',
-            'blocktype' => 'required|numeric|max:2|min:0'
+            'blocktype' => 'required|numeric|max:2|min:0',
+            'hiddenip' => 'nullable|ip',
         ]);
-
-        if ($request['hiddenip'] !== NULL) {
-            $appeal->hiddenip = $request->input('hiddenip');
-        }
 
         $appeal->status = "VERIFY";
         $appeal->update($data);
