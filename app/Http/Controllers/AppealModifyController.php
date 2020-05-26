@@ -33,7 +33,7 @@ class AppealModifyController extends Controller
             'appealfor' => 'required',
             'wiki' => 'required',
             'blocktype' => 'required|numeric|max:2|min:0',
-            'hiddenip' => 'nullable',
+            'hiddenip' => 'nullable|ip',
         ]);
 
         $appeal->status = Appeal::STATUS_VERIFY;
