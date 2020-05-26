@@ -54,8 +54,7 @@ Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')-
 Route::get('/appeal/custom/{appeal}', 'AppealController@respondCustom')->name('appeal.customresponse');
 Route::post('/appeal/custom/{appeal}', 'AppealController@respondCustomSubmit')->name('appeal.customresponse.submit');
 
-Route::get('/publicappeal', 'AppealController@publicappeal');
-Route::post('/publicappeal/comment', 'AppealController@publicComment');
+Route::get('/publicappeal', 'Appeal\PublicAppealController@redirectLegacy');
 
 Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
 

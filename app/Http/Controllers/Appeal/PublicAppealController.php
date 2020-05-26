@@ -169,4 +169,9 @@ class PublicAppealController extends Controller
         return redirect()
             ->to(route('public.appeal.view') . '?' . http_build_query([ 'hash' => $appeal->appealsecretkey ]));
     }
+
+    public function redirectLegacy(Request $request)
+    {
+        return redirect()->route('public.appeal.view', ['hash' => $request->input('hash')]);
+    }
 }
