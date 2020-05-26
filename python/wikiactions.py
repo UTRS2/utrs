@@ -233,7 +233,7 @@ def checkPerms(user, id):
     if metaperms['user']:
         if string != "":string +=",global"
         else:string +="global"
-    if string = "":calldb("update users set wikis = NULL where id="+str(id)+";","write")
+    if string == "":calldb("update users set wikis = NULL where id="+str(id)+";","write")
     else:calldb("update users set wikis = '"+string+"' where id="+str(id)+";","write")
     ###################################
     ###Set permissions#################
