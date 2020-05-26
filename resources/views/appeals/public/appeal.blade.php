@@ -6,34 +6,48 @@
         <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
     @endif
     @if($appeal->status === "NOTFOUND")
-        <div class="alert alert-danger" role="alert">The block for your appeal could not be found. Please <a
-                    href="{{ route('public.appeal.modify', $appeal->appealsecretkey) }}" class="alert-link">modify the
-                information</a>.
+        <div class="alert alert-danger" role="alert">
+            {!! str_replace(':link', '<a href="' . route('public.appeal.modify', $appeal->appealsecretkey) .'" class="alert-link">' . htmlspecialchars(__('appeals.not-found-link-text')) . '</a>', htmlspecialchars(__('appeals.not-found-text'))) !!}
         </div>
     @endif
     <div class="card mb-4 mt-4">
         <h5 class="card-header">{{ __('appeals.section-headers.details') }}</h5>
         <div class="card-body">
-            <div class="row">
-                <div class="col-5">
-                    <h4 class="card-title">Appeal for "{{ $appeal->appealfor }}"</h4>
-                    <p class="card-text">
-                        Appeal status: {{ $appeal->status }}
-                        <br/>Blocking Admin: {{ $appeal['blockingadmin'] }}
-                        <br/>Block reason: {!! $appeal->getFormattedBlockReason() !!}
-                        <br/>Time Submitted: {{ $appeal['submitted'] }}
-                        @if($appeal->handlingAdminObject)
-                            <br/>Handling Admin: {{ $appeal->handlingAdminObject->username }}
-                        @endif
+            <h4>{{ __('appeals.appeal-title', ['name' => $appeal->appealfor]) }}</h4>
+            <div class="mt-4">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>{{ __('appeals.details-status') }}</th>
+                        <td>{{ $appeal->status }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ __('appeals.details-block-admin') }}</th>
+                        <td>{{ $appeal->blockingadmin }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ __('appeals.details-block-reason') }}</th>
+                        <td>{!! $appeal->getFormattedBlockReason() !!}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ __('appeals.details-submitted') }}</th>
+                        <td>{{ $appeal->submitted }}</td>
+                    </tr>
+                    @if($appeal->handlingAdminObject)
+                        <tr>
+                            <th>{{ __('appeals.details-handling-admin') }}</th>
+                            <td>{{ $appeal->handlingAdminObject->username }}</td>
+                        </tr>
+                    @endif
+                    </tbody>
+                </table>
 
-                        @if($appeal['status'] == "NOTFOUND")
-                            <a href="{{ route('public.appeal.modify', $appeal->appealsecretkey) }}"
-                               class="btn btn-success">
-                                Fix block information
-                            </a>
-                        @endif
-                    </p>
-                </div>
+                @if($appeal->status == "NOTFOUND")
+                    <a href="{{ route('public.appeal.modify', $appeal->appealsecretkey) }}"
+                       class="btn btn-success">
+                        {{ __('appeals.not-found-button') }}
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -43,8 +57,8 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-9">
-                    <b>Why should you be unblocked?</b>
-                    <p>{{ $appeal['appealtext'] }}</p>
+                    <b>{{ __('appeals.content-question-why') }}?</b>
+                    <p>{{ $appeal->appealtext }}</p>
                 </div>
                 <div class="col-md-3">
                     @if($appeal->status === "ACCEPT")
@@ -81,12 +95,12 @@
     <div class="card mb-4">
         <h5 class="card-header">{{ __('appeals.section-headers.comments') }}</h5>
         <div class="card-body">
-            <table class="table table-bordered table-dark">
+            <table class="table table-dark">
                 <thead>
                 <tr>
-                    <th scope="col">Commenting User</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Comment</th>
+                    <th scope="col">{{ __('generic.logs-user') }}</th>
+                    <th scope="col">{{ __('generic.logs-user') }}</th>
+                    <th scope="col">{{ __('generic.logs-action') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -100,7 +114,7 @@
                             @endif
                             @if($comment->action!=="comment" && $comment->action!=="responded")
                                 @if($comment->user==0)
-                                    <td><i>System</i></td>
+                                    <td><i>{{ __('generic.logs-system') }}</i></td>
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $appeal->appealfor }}</i></td>
                                 @else
@@ -108,7 +122,7 @@
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
                                 @if($comment->protected)
-                                    <td><i>Access to comment is restricted.</i></td>
+                                    <td><i>{{ __('generic.logs-private') }}</i></td>
                                 @else
                                     @if($comment->comment!==null)
                                         <td><i>{{ $comment->comment }}</i></td>
@@ -123,7 +137,7 @@
                                 @endif
                             @else
                                 @if($comment->user==0)
-                                    <td><i>System</i></td>
+                                    <td><i>{{ __('generic.logs-system') }}</i></td>
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $appeal->appealfor }}</i></td>
                                 @else
@@ -131,7 +145,7 @@
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected || $comment->action=="comment")
-                                    <td>Access to comment is restricted.</td>
+                                    <td><i>{{ __('generic.logs-private') }}</i></td>
                                 @else
                                     @if($comment->comment!==null)
                                         <td>{{ $comment->comment }}</td>
@@ -141,11 +155,10 @@
                                 @endif
                             @endif
                         </tr>
-                        @endforeach
+                    @endforeach
                 </tbody>
             </table>
-            <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
-                administrators.</i>
+            <i>{{ __('appeals.comment-color-text') }}</i>
         </div>
     </div>
 
@@ -156,7 +169,7 @@
                 {{ Form::open(array('url' => route('public.appeal.comment'))) }}
                 {{ Form::hidden('appealsecretkey', $appeal->appealsecretkey) }}
                 <div class="form-group">
-                    {{ Form::label('comment', 'Add a comment to this appeal:') }}
+                    {{ Form::label('comment', __('appeals.comment-input-text')) }}
                     {{ Form::textarea('comment', null, ['rows' => 4, 'class' => 'form-control']) }}
                 </div>
                 <button type="submit" class="btn btn-success">{{ __('generic.submit') }}</button>
