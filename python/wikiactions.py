@@ -55,51 +55,37 @@ def verifyusers():
     for result in results:
         wtid=result[0]
         user = result[2]
-        userresults = calldb("select * from users where id = '"+str(user)+"';","read")
-        for userresult in userresults:
-            username = str(userresult[1])
-            userpage = "User talk:"+username
-            checkPerms(username,user)
-            if userresult[6] == None:
-                params = {'action': 'query',
-                'format': 'json',
-                'list': 'users',
-                'ususers': user
-                }
-                raw = callAPI(params)
-                try:userexist = raw["query"]["users"][0]["userid"]
-                except:
-                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                    calldb("delete from users where id="+str(user)+";","write")
-                    print "ACCOUNT DELETION: " + username
-                    continue
-                page = masterwiki.pages[userpage]
-                page.save(page.text() + """
-== Your UTRS Account ==
-You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
-                            """, "UTRS Account - Does not meet requirements")
+        userresults = calldb("select id,username from users where id = '"+str(user)+"';","read")[0]
+        
+        username = str(userresults[1])
+        userpage = "User talk:"+username
+        checkPerms(username,user)
+        userresult = calldb("select * from users where id = '"+str(user)+"';","read")[0]
+        if userresult[6] == None:
+            params = {'action': 'query',
+            'format': 'json',
+            'list': 'users',
+            'ususers': username
+            }
+            raw = callAPI(params)
+            try:userexist = raw["query"]["users"][0]["userid"]
+            except:
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
                 continue
-            if "," in userresult[6]:
-                for wiki in userresult[6].split(","):
-                    if checkBlock(username,wiki):
-                        try:userpage = "User talk:"+username
-                        except:
-                            userpage = "User talk:"+str(username)
-                        page = masterwiki.pages[userpage]
-                        page.save(page.text() + """
+            page = masterwiki.pages[userpage]
+            page.save(page.text() + """
 == Your UTRS Account ==
-You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
-                            """, "UTRS Account for blocked users")
-                        calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                        calldb("delete from users where id="+str(user)+";","write")
-                        print "ACCOUNT DELETION: " + username
-                        continue
-
-            else:
-                if checkBlock(username,userresult[6]):
+You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
+                        """, "UTRS Account - Does not meet requirements")
+            calldb("delete from wikitasks where id="+str(wtid)+";","write")
+            calldb("delete from users where id="+str(user)+";","write")
+            print "ACCOUNT DELETION: " + username
+            continue
+        if "," in userresult[6]:
+            for wiki in userresult[6].split(","):
+                if checkBlock(username,wiki):
                     try:userpage = "User talk:"+username
                     except:
                         userpage = "User talk:"+str(username)
@@ -111,50 +97,21 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                     calldb("delete from wikitasks where id="+str(wtid)+";","write")
                     calldb("delete from users where id="+str(user)+";","write")
                     print "ACCOUNT DELETION: " + username
-                    continue                   
-            if username == None:continue
-            params = {'action': 'query',
-            'format': 'json',
-            'meta': 'tokens'
-            }
-            raw = callAPI(params)
-            try:code = raw["query"]["tokens"]["csrftoken"]
-            except:
-                print raw
-                print "FAILURE: Param not accepted."
-                quit()
-            mash= username+credentials.secret
-            mash = mash.encode('utf-8')
-            confirmhash = hashlib.md5(mash)
-            params = {'action': 'emailuser',
-            'format': 'json',
-            'target': username,
-            'subject': 'UTRS Wiki Account Verification',
-            'token': code.encode(),
-            'text': 
-"""
-Thank you for registering your account with UTRS. Please verify your account by going to the following link.
+                    continue
 
-http://utrs-beta.wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
-
-Thanks,
-UTRS Developers"""
-            }
-            try:
-                raw = callAPI(params)
-            except:
-                try:username = "User talk:"+username
+        else:
+            if checkBlock(username,userresult[6]):
+                try:userpage = "User talk:"+username
                 except:
-                    username = "User talk:"+str(username)
-                page = masterwiki.pages[username]
+                    userpage = "User talk:"+str(username)
+                page = masterwiki.pages[userpage]
                 page.save(page.text() + """
 == Your UTRS Account ==
-Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
-                    """, "UTRS Account notice")
+You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
+                    """, "UTRS Account for blocked users")
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 calldb("delete from users where id="+str(user)+";","write")
                 continue  
-            calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
@@ -189,7 +146,7 @@ def blockNotFound(username,wiki,id):
     text="""
 Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
 
-http://utrs-beta.wmflabs.org/fixblock/"""+str(confirmhash)+"""
+http://"""+credentials.utrshost+""".wmflabs.org/fixblock/"""+str(confirmhash)+"""
 
 Thanks,
 UTRS Developers"""
@@ -256,7 +213,10 @@ def appeallist():
     results = calldb("select * from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRE' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
     for result in results:
         username = result[1].encode('utf-8').strip()
-        fulltext += "\n|-\n|[https://utrs-beta.wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
+        if username.startswith('#'):
+            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[https://en.wikipedia.org/wiki/Special:BlockList?wpTarget="+username.replace('#','%23')+" Block ID "+username+"]\n|"+str(result[9])+"\n|"+str(result[5])
+        else:
+            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[9])+"\n|"+str(result[5])
     fulltext +="\n|}"
     page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")

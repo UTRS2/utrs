@@ -33,7 +33,7 @@ class GetBlockDetailsJob implements ShouldQueue
      */
     public function handleBlockData($blockData)
     {
-        $status = $this->appeal->privacylevel === $this->appeal->privacyreview ? 'OPEN' : 'PRIVACY';
+        $status = 'OPEN';
 
         $this->appeal->update([
             'blockfound' => 1,
