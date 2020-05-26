@@ -63,7 +63,7 @@ class AppealController extends Controller
             $closestatus = ($info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE);
             abort_if($info->status == Appeal::STATUS_INVALID && !$isDeveloper, 404, 'This appeal has been marked invalid.');
 
-            if (($info->status == Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITNG_REPLY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
+            if (($info->status == Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
                 $logs = $info->comments()->get();
                 $userlist = [];
 
@@ -168,7 +168,7 @@ class AppealController extends Controller
             'protected' => 0
         ]);
 
-        if ($appeal->status === Appeal::STATUS_AWAITNG_REPLY) {
+        if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
             $appeal->update([
                 'status' => Appeal::STATUS_OPEN,
             ]);
@@ -722,7 +722,7 @@ class AppealController extends Controller
             $range .= '/32';
         }
         // $range is in IP/CIDR format eg 127.0.0.1/24
-        list( $range, $netmask ) = explode( '/', $range, 2 );
+        [ $range, $netmask ] = explode( '/', $range, 2 );
         $range_decimal = ip2long( $range );
         $ip_decimal = ip2long( $ip );
         $wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;

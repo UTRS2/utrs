@@ -196,7 +196,7 @@
                                                     </a>
                                                 </div>
 
-                                                @if($info->status === Appeal::STATUS_OPEN)
+                                                @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
                                                     <div class="mb-2">
                                                         <a href="/appeal/checkuserreview/{{ $id }}" class="btn btn-warning">
                                                             CheckUser
@@ -206,7 +206,7 @@
                                                         </a>
                                                     </div>
                                                 @endif
-                                                @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
+                                                @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_AWAITING_REPLY && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                                     <div class="mb-2">
                                                         <a href="/appeal/open/{{ $id }}" class="btn btn-info">
                                                             Return to tool users

@@ -18,16 +18,16 @@ class AppealCommentsTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $appeal = factory(Appeal::class)->create([
-                'status' => Appeal::STATUS_AWAITNG_REPLY,
+                'status' => Appeal::STATUS_AWAITING_REPLY,
             ]);
 
             $browser->visit('/publicappeal?hash=' . $appeal->appealsecretkey)
-                ->assertSee(Appeal::STATUS_AWAITNG_REPLY)
+                ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
                 ->press('Submit')
                 ->assertSee('This is an example comment')
                 ->assertSee(Appeal::STATUS_OPEN)
-                ->assertDontSee(Appeal::STATUS_AWAITNG_REPLY);
+                ->assertDontSee(Appeal::STATUS_AWAITING_REPLY);
 
             $appeal->refresh();
 
@@ -47,7 +47,7 @@ class AppealCommentsTest extends DuskTestCase
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(Appeal::STATUS_OPEN)
-                ->assertDontSee(Appeal::STATUS_AWAITNG_REPLY)
+                ->assertDontSee(Appeal::STATUS_AWAITING_REPLY)
                 ->assertDontSee('Send a reply to user')
                 ->assertDontSee($lastTemplateStart)
                 ->clickLink('Reserve')
@@ -57,15 +57,15 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee($lastTemplate->name)
                 ->press($lastTemplate->name)
                 ->assertSee($lastTemplateStart)
-                ->select('#status-' . $lastTemplate->id, Appeal::STATUS_AWAITNG_REPLY)
+                ->select('#status-' . $lastTemplate->id, Appeal::STATUS_AWAITING_REPLY)
                 ->press('Submit')
-                ->assertSee(Appeal::STATUS_AWAITNG_REPLY)
+                ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->assertDontSee(Appeal::STATUS_OPEN)
                 ->assertSee($lastTemplateStart);
 
             $appeal->refresh();
 
-            $this->assertEquals(Appeal::STATUS_AWAITNG_REPLY, $appeal->status);
+            $this->assertEquals(Appeal::STATUS_AWAITING_REPLY, $appeal->status);
         });
     }
 

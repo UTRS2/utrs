@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Appeal;
 use App\Ban;
 use App\Log;
 use App\Permission;
@@ -180,7 +181,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')],
             'template' => 'required|min:2|max:2048',
-            'default_status' => 'required'
+            'default_status' => ['required', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
         ]);
 
         $data['active'] = 1;
@@ -212,7 +213,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')->ignore($template->id)],
             'template' => 'required|min:2|max:2048',
-            'default_status' => 'required'
+            'default_status' => ['required', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
         ]);
 
         $template->update($data);
