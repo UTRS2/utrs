@@ -68,9 +68,10 @@ Route::post('admin/templates/create', 'AdminController@makeTemplate');
 Route::get('admin/templates/{template}', 'AdminController@editTemplate')->name('admin.templates.edit');
 Route::post('admin/templates/{template}', 'AdminController@updateTemplate')->name('admin.templates.update');
 
-Auth::routes();
+Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
+Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
+Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
 
 Route::get('/verifyaccount','AdminController@verifyAccount');
 Route::get('/verify/{code}','AdminController@verify');
 Route::get('/pending','HomeController@pending');
-Route::get('/logout', 'HomeController@crashandburn');

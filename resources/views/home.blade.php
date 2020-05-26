@@ -40,8 +40,7 @@
                             <a href="/review" class="btn btn-primary">Go to Appeals</a>
                         @endauth
                         @guest
-                            <a href="/login" class="btn btn-primary">Login</a>
-                            <a href="/register" class="btn btn-primary">Register</a>
+                            <a href="/oauth" class="btn btn-primary">Login with Wikimedia account</a>
                         @endguest
                     </div>
                 </div>
