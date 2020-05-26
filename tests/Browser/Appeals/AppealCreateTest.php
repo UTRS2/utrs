@@ -30,7 +30,7 @@ class AppealCreateTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                ->clickLink('Appeal IP block')
+                ->clickLink('Appeal my IP block')
                 ->type('appealfor', '1.1.1.1')
                 ->type('appealtext', 'Why did you only block me even thru [other editors name here] was also edit warring? This is unfair! I demand to talk to a supervisor!')
                 ->press('Submit')

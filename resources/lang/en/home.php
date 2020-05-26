@@ -12,7 +12,7 @@ return [
     'appeal-ip-header' => 'Blocked IP',
     'appeal-ip-title'  => 'If you DO NOT have a user account',
     'appeal-ip-text'   => 'on Wikipedia and are blocked, please select the button below to start your appeal.',
-    'appeal-ip-button' => 'Appeal my block',
+    'appeal-ip-button' => 'Appeal my IP block',
 
     'admin-header' => 'Log in',
     'admin-title'  => 'For administrators that are here',
