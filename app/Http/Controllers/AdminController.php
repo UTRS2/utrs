@@ -180,6 +180,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')],
             'template' => 'required|min:2|max:2048',
+            'default_status' => 'required'
         ]);
 
         $data['active'] = 1;
@@ -211,6 +212,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')->ignore($template->id)],
             'template' => 'required|min:2|max:2048',
+            'default_status' => 'required'
         ]);
 
         $template->update($data);
