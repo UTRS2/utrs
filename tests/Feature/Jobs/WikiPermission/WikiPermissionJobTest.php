@@ -48,7 +48,7 @@ class WikiPermissionJobTest extends TestCase
         $groups = ['user', 'admin'];
 
         $reflection = new ReflectionClass(get_class($job));
-        $method = $reflection->getMethod('transformGroupArray');
+        $method = $reflection->getMethod('validateToolUserPermission');
         $method->setAccessible(true);
 
         $newUser = $this->getMediawikiUser($user->name, 30);
@@ -73,7 +73,7 @@ class WikiPermissionJobTest extends TestCase
         $groups = ['user'];
 
         $reflection = new ReflectionClass(get_class($job));
-        $method = $reflection->getMethod('transformGroupArray');
+        $method = $reflection->getMethod('validateToolUserPermission');
         $method->setAccessible(true);
 
         $nonAdminUser = $this->getMediawikiUser($user->name, 12345);
@@ -94,7 +94,7 @@ class WikiPermissionJobTest extends TestCase
         $groups = ['user', 'admin'];
 
         $reflection = new ReflectionClass(get_class($job));
-        $method = $reflection->getMethod('transformGroupArray');
+        $method = $reflection->getMethod('validateToolUserPermission');
         $method->setAccessible(true);
 
         $blockedUser = $this->getMediawikiUser($user->name, 3000);
@@ -115,7 +115,7 @@ class WikiPermissionJobTest extends TestCase
         $job = new LoadLocalPermissionsJob($user, $wiki);
 
         $job->updateDoesExist(true);
-        $this->assertEquals($otherWikiId . ',' . $job->getWikiId(), $user->wikis);
+        $this->assertEquals($otherWikiId . ',' . $job->getPermissionWikiId(), $user->wikis);
 
         $job->updateDoesExist(false);
         $this->assertEquals($otherWikiId, $user->wikis);

@@ -29,7 +29,7 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
         $this->wiki = $wiki;
     }
 
-    public function getWikiId()
+    public function getPermissionWikiId()
     {
         return $this->wiki;
     }
@@ -60,6 +60,6 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
 
     public function checkIsBlocked()
     {
-        return MwApiExtras::getBlockInfo($this->getWikiId(), $this->user->username) !== null;
+        return MwApiExtras::getBlockInfo($this->getPermissionWikiId(), $this->user->username) !== null;
     }
 }

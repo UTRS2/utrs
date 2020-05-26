@@ -25,12 +25,12 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
         $this->user = $user;
     }
 
-    public function getWikiId()
+    public function getPermissionWikiId()
     {
         return '*';
     }
 
-    protected function getValueInAllowedWikis()
+    protected function getUserAllowedWikiId()
     {
         return 'global';
     }
