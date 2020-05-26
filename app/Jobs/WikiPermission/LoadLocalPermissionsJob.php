@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Mediawiki\DataModel\User as MediawikiUser;
 
 class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQueue
 {
@@ -40,6 +41,11 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
         }
 
         return parent::getGroupName($groupName);
+    }
+
+    public function shouldHaveUser(MediawikiUser $user, array $groups)
+    {
+        return in_array('admin', $groups);
     }
 
     public function getPermissionsToCheck()

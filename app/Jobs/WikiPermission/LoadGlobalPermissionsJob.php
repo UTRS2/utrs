@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Mediawiki\DataModel\User as MediawikiUser;
 
 class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQueue
 {
@@ -32,6 +33,11 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
     protected function getValueInAllowedWikis()
     {
         return 'global';
+    }
+
+    public function shouldHaveUser(MediawikiUser $user, array $groups)
+    {
+        return in_array('steward', $groups) || in_array('staff', $groups);
     }
 
     public function getPermissionsToCheck()

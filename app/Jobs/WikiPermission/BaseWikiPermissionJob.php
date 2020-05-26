@@ -26,6 +26,14 @@ abstract class BaseWikiPermissionJob
     abstract function getPermissionsToCheck();
 
     /**
+     * useful for removing user without another group being present
+     * @param MediawikiUser $user
+     * @param array $groups
+     * @return boolean if false, the 'user' group will be removed
+     */
+    abstract function shouldHaveUser(MediawikiUser $user, array $groups);
+
+    /**
      * @return bool true if {@link $user} is blocked on this wiki, false otherwise
      */
     abstract function checkIsBlocked();
@@ -51,7 +59,7 @@ abstract class BaseWikiPermissionJob
     protected function transformGroupArray(MediawikiUser $user, array $groups)
     {
         // drop user group if user is blocked or has less than 500 edits
-        if ($this->checkIsBlocked() || $user->getEditcount() < 500) {
+        if (!$this->shouldHaveUser($user, $groups) || $this->checkIsBlocked() || $user->getEditcount() < 500) {
             $groups = array_values(array_filter($groups, function ($group) { return $group !== 'user'; }));
         }
 
