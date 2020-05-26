@@ -20,6 +20,7 @@ use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
 
 class AppealController extends Controller
 {
