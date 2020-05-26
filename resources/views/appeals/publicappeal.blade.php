@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@php use App\Appeal; @endphp
 
 @section('title', 'Your Appeal')
 @section('content')
@@ -184,12 +185,12 @@
             </div>
             <div class="col-6">
                 <h5 class="card-title">Drop a comment</h5>
-                @if(!in_array($info->status, ['NOTFOUND', 'EXPIRE', 'ACCEPT', 'DECLINE']))
+                @if(!in_array($info->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE]))
                     {{ Form::open(array('url' => '/publicappeal/comment')) }}
                         {{ Form::hidden('appealsecretkey', $info->appealsecretkey) }}
                         <div class="form-group">
                             {{ Form::label('comment', 'Add a comment to this appeal:') }}
-                            {{ Form::textarea('comment', null, ['rows' => 4, 'class' => 'form-control']) }}
+                            {{ Form::textarea('comment', old('comment'), ['rows' => 4, 'class' => 'form-control']) }}
                         </div>
                         <button type="submit" class="btn btn-success">Submit</button>
                     {{ Form::close() }}

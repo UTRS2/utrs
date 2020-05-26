@@ -113,49 +113,6 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
                 continue                   
-        if username == None:continue
-        params = {'action': 'query',
-        'format': 'json',
-        'meta': 'tokens'
-        }
-        raw = callAPI(params)
-        try:code = raw["query"]["tokens"]["csrftoken"]
-        except:
-            print raw
-            print "FAILURE: Param not accepted."
-            quit()
-        mash= username+credentials.secret
-        mash = mash.encode('utf-8')
-        confirmhash = hashlib.md5(mash)
-        params = {'action': 'emailuser',
-        'format': 'json',
-        'target': username,
-        'subject': 'UTRS Wiki Account Verification',
-        'token': code.encode(),
-        'text': 
-"""
-Thank you for registering your account with UTRS. Please verify your account by going to the following link.
-
-http://"""+credentials.utrshost+""".wmflabs.org/verify/"""+str(confirmhash.hexdigest())+"""
-
-Thanks,
-UTRS Developers"""
-        }
-        try:
-            raw = callAPI(params)
-        except:
-            try:username = "User talk:"+username
-            except:
-                username = "User talk:"+str(username)
-            page = masterwiki.pages[username]
-            page.save(page.text() + """
-== Your UTRS Account ==
-Right now you do not have wiki email enabled on your onwiki account, and therefore we are unable to verify you are who you say you are. To prevent duplicate notices to your talkpage about this, the account has been deleted and you will need to reregister. ~~~~
-                """, "UTRS Account notice")
-            calldb("delete from wikitasks where id="+str(wtid)+";","write")
-            calldb("delete from users where id="+str(user)+";","write")
-            continue  
-        calldb("update users set u_v_token = '"+confirmhash.hexdigest()+"' where id="+str(user)+";","write")
         calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkPerms(user, id):
     enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
@@ -233,7 +190,8 @@ def checkPerms(user, id):
     if metaperms['user']:
         if string != "":string +=",global"
         else:string +="global"
-    calldb("update users set wikis = '"+string+"' where id="+str(id)+";","write")
+    if string == "":calldb("update users set wikis = NULL where id="+str(id)+";","write")
+    else:calldb("update users set wikis = '"+string+"' where id="+str(id)+";","write")
     ###################################
     ###Set permissions#################
     if enperms['user']:
