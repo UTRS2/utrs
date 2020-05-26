@@ -1,8 +1,9 @@
 @extends('layouts.app')
+@php use App\Appeal; @endphp
 
 @section('title', 'Your Appeal')
 @section('content')
-    @if($appeal->status === "ACCEPT" || $appeal->status === "DECLINE" || $appeal->status === "EXPIRE" || $appeal->status === 'INVALID')
+    @if(in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE]))
         <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
     @endif
     @if($appeal->status === "NOTFOUND")
@@ -165,12 +166,12 @@
     <div class="card mb-4">
         <h5 class="card-header">{{ __('appeals.section-headers.add-comment') }}</h5>
         <div class="card-body">
-            @if(!in_array($appeal->status, ['NOTFOUND', 'EXPIRE', 'ACCEPT', 'DECLINE', 'INVALID']))
+            @if(!in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_INVALID]))
                 {{ Form::open(array('url' => route('public.appeal.comment'))) }}
                 {{ Form::hidden('appealsecretkey', $appeal->appealsecretkey) }}
                 <div class="form-group">
                     {{ Form::label('comment', __('appeals.comment-input-text')) }}
-                    {{ Form::textarea('comment', null, ['rows' => 4, 'class' => 'form-control']) }}
+                    {{ Form::textarea('comment', old('comment'), ['rows' => 4, 'class' => 'form-control']) }}
                 </div>
                 <button type="submit" class="btn btn-success">{{ __('generic.submit') }}</button>
                 {{ Form::close() }}

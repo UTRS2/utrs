@@ -108,7 +108,7 @@ class PublicAppealController extends Controller
         $key = $request->input('appealsecretkey');
         $appeal = Appeal::where('appealsecretkey', $key)->firstOrFail();
 
-        abort_if($appeal->status == "ACCEPT" || $appeal->status == "DECLINE" || $appeal->status == "EXPIRE", 400, "Appeal is closed");
+        abort_if($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_EXPIRE, 400, "Appeal is closed");
 
         $ua = $request->userAgent();
         $ip = $request->ip();
@@ -125,6 +125,12 @@ class PublicAppealController extends Controller
             'ua'              => $ua . ' ' . $lang,
             'protected'       => 0,
         ]);
+
+        if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
+            $appeal->update([
+                'status' => Appeal::STATUS_OPEN,
+            ]);
+        }
 
         return redirect()->back();
     }
