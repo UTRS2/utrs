@@ -78,7 +78,7 @@ class WikiPermissionJobTest extends TestCase
 
         $nonAdminUser = $this->getMediawikiUser($user->name, 12345);
         $newUserGroups = $method->invokeArgs($job, [$nonAdminUser, $groups]);
-        $this->assertEquals([''], $newUserGroups, 'user that is not administrator should not have group "user"');
+        $this->assertEquals([], $newUserGroups, 'user that is not administrator should not have group "user"');
     }
 
     public function test_it_filters_out_blocked_users()
