@@ -8,6 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 
 class Appeal extends Model
 {
+    const REPLY_STATUS_CHANGE_OPTIONS = [
+        self::STATUS_OPEN           => self::STATUS_OPEN,
+        self::STATUS_AWAITING_REPLY => self::STATUS_AWAITING_REPLY,
+        self::STATUS_ACCEPT         => self::STATUS_ACCEPT,
+        self::STATUS_DECLINE        => self::STATUS_DECLINE,
+        self::STATUS_EXPIRE         => self::STATUS_EXPIRE,
+    ];
+
+    const STATUS_OPEN = 'OPEN';
+    const STATUS_VERIFY = 'VERIFY'; // appeals that are waiting to be checked from MediaWiki API
+    const STATUS_AWAITING_REPLY = 'AWAITING_REPLY';
+
+    // statuses that are waiting for a specific person/group of them
+    const STATUS_ADMIN = 'ADMIN'; // tooladmin? idk
+    const STATUS_CHECKUSER = 'CHECKUSER'; // waiting for a CheckUser check
+
+    // closed statuses
+    const STATUS_INVALID = 'INVALID'; // duplicates etc, only visible to devs
+    const STATUS_NOTFOUND = 'NOTFOUND'; // for users that are not blocked
+    const STATUS_ACCEPT = 'ACCEPT';
+    const STATUS_DECLINE = 'DECLINE';
+    const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
+
     public $timestamps = false;
     public $guarded = ['id'];
 
