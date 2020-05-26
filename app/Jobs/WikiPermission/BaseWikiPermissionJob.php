@@ -56,7 +56,13 @@ abstract class BaseWikiPermissionJob
         return $this->getWikiId();
     }
 
-    protected function transformGroupArray(MediawikiUser $user, array $groups)
+    /**
+     * Validate if the tool user should be authorized to have the user permission
+     * @param  MediawikiUser $user   An instance of MediawikiUser related to the onwiki users
+     * @param  array         $groups The groups to filter through
+     * @return [type]                The final list of groups
+     */
+    protected function validateToolUserPermission(MediawikiUser $user, array $groups)
     {
         // drop user group if user is blocked or has less than 500 edits
         if (!$this->shouldHaveUser($user, $groups) || $this->checkIsBlocked() || $user->getEditcount() < 500) {
@@ -67,6 +73,7 @@ abstract class BaseWikiPermissionJob
     }
 
     /**
+     * If the user does not exist on the wiki, then remove it from their permissions, otherwise add it
      * @param bool $exists true if this user exists on the wiki this job is querying
      */
     public function updateDoesExist(bool $exists)
@@ -83,7 +90,11 @@ abstract class BaseWikiPermissionJob
 
         $this->user->wikis = implode(',', $wikis);
     }
-
+    /**
+     * Get the onwiki permissions for a user
+     * @param $this This user is used to obtain the relevant information
+     * @return empty array| [description]
+     */
     protected function getUserPermissions()
     {
         $services = MwApiGetter::getServicesForWiki($this->getWikiId());
@@ -95,7 +106,7 @@ abstract class BaseWikiPermissionJob
         }
 
         $groups = array_map('self::getGroupName', $user->getGroups());
-        return $this->transformGroupArray($user, $groups);
+        return $this->validateToolUserPermission($user, $groups);
     }
 
     /**
