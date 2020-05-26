@@ -59,7 +59,6 @@ def verifyusers():
         
         username = str(userresults[1])
         userpage = "User talk:"+username
-        checkPerms(username,user)
         userresult = calldb("select * from users where id = '"+str(user)+"';","read")[0]
         if userresult[6] == None:
             params = {'action': 'query',
@@ -111,6 +110,7 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                     """, "UTRS Account for blocked users")
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 calldb("delete from users where id="+str(user)+";","write")
+                print "ACCOUNT DELETION: " + username
                 continue  
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkBlock(target,wiki):
