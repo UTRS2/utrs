@@ -6,16 +6,33 @@
         <div class="alert alert-info" role="alert">
             This page allows you to create a custom response to the user.
         </div>
-        <br/>
-        Dear {{ $appeal->appealfor }},<br/>
-        <br/>
-        {{ Form::open(array('url' => 'appeal/custom/'.$appeal['id'])) }}
+
+        {{ Form::open(['url' => route('appeal.customresponse.submit', $appeal)]) }}
         {{ Form::token() }}
-        {{ Form::textarea('custom',null,['rows'=>10]) }}<br><br>
-        {{ $userlist[Auth::id()] }}<br/>
-        English Wikipedia Administrator<br/>
+        <div class="card mb-4">
+            <h5 class="card-header">Response</h5>
+            <div class="card-body">
+                Dear {{ $appeal->appealfor }},
+                <div class="form-group">
+                    {{ Form::textarea('custom', null, ['class' => 'form-control', 'rows' => 10, 'style' => 'height: 10rem;']) }}
+                </div>
+                {{ $userlist[Auth::id()] }}<br/>
+                {{ \App\MwApi\MwApiUrls::getWikiProperty($appeal->wiki, 'responding_user_title') }}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <h5 class="card-header">Options</h5>
+            <div class="card-body">
+                <div class="form-group">
+                    {{ Form::label('status', 'Change appeal status to:') }}
+                    {{ Form::select('status', \App\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('status', $appeal->status), ['class' => 'form-control']) }}
+                </div>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-success">Submit</button>
-        <button type="button" class="btn btn-danger" onclick="window.history.back();">Return to appeal</button>
+        <a type="button" class="btn btn-danger" href="/appeal/{{ $appeal->id }}">Return to appeal</a>
         {{ Form::close() }}
     </div>
     <div class="col-1"></div>
