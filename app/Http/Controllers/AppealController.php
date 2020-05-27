@@ -6,6 +6,7 @@ use App;
 use App\Appeal;
 use App\Ban;
 use App\Log;
+use App\MwApi\MwApiUrls;
 use App\Oldappeal;
 use App\Olduser;
 use App\Permission;
@@ -179,33 +180,39 @@ class AppealController extends Controller
 
     public function appeallist()
     {
+        $isTooladmin = false;
+        $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
+      
+        abort_unless(Auth::check(), 403, 'No logged in user');
+        /** @var User $user */
+        $user = Auth::user();
+
+        $user->checkRead();
+
+        if ($user->wikis === '*' || $isDeveloper) {
+            $wikis = collect(MwApiUrls::getSupportedWikis())
+                ->push('global');
+        } else {
+            $wikis = collect(explode(',', $user->wikis ?? ''))
+                ->filter(function ($wiki) use ($user) {
+                    return Permission::checkAdmin($user->id, $wiki);
+                });
+        }
+
+        foreach ($wikis as $wiki) {
+            if (!$isTooladmin && Permission::checkToolAdmin(Auth::id(), $wiki)) {
+                $isTooladmin = true;
+            }
+        }
+
         $regularnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID];
         $devnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID];
 
-        $tooladmin = false;
-      
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
-        if (Auth::user()['wikis'] == "*") {
-            $wikis = ["*"];
-        } else {
-            $wikis = explode(",", (Auth::user()['wikis']));
-        }
-        foreach ($wikis as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $tooladmin = true;
-            }
-            if (Permission::checkSecurity(Auth::id(), "DEVELOPER", "*")) {
-                $appeals = Appeal::whereNotIn('status', $devnoview)->get();
-            } elseif (Auth::user()['wikis'] == "*") {
-                $appeals = Appeal::whereNotIn('status', $regularnoview)->get();
-            } else {
-                $appeals = Appeal::where('wiki', '=', $wiki)->whereNotIn('status', $regularnoview)->get();
-            }
-        }
-        return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $tooladmin]);
+        $appeals = Appeal::whereIn('wiki', $wikis)
+            ->whereIn('status', $isDeveloper ? $devnoview : $regularnoview)
+            ->get();
+
+        return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $isTooladmin]);
     }
 
     public function search(Request $request)
