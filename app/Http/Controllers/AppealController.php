@@ -180,14 +180,14 @@ class AppealController extends Controller
 
     public function appeallist()
     {
-        $isTooladmin = false;
-        $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
-      
         abort_unless(Auth::check(), 403, 'No logged in user');
         /** @var User $user */
         $user = Auth::user();
 
         $user->checkRead();
+
+        $isTooladmin = false;
+        $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
 
         if ($user->wikis === '*' || $isDeveloper) {
             $wikis = collect(MwApiUrls::getSupportedWikis())
