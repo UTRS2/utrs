@@ -205,11 +205,12 @@ class AppealController extends Controller
             }
         }
 
-        $regularnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID];
-        $devnoview = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID];
+        $hiddenStatuses = $isDeveloper
+            ? [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID]
+            : [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID];
 
         $appeals = Appeal::whereIn('wiki', $wikis)
-            ->whereIn('status', $isDeveloper ? $devnoview : $regularnoview)
+            ->whereNotIn('status', $hiddenStatuses)
             ->get();
 
         return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $isTooladmin]);
