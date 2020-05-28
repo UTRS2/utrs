@@ -213,7 +213,7 @@ class AppealController extends Controller
             ->whereNotIn('status', $hiddenStatuses)
             ->get();
 
-        return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $isTooladmin]);
+        return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty()]);
     }
 
     public function search(Request $request)
