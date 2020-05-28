@@ -12,7 +12,7 @@ class OldAppealPolicy
 
     public function view(User $user, Oldappeal $oldappeal)
     {
-        return $user->hasAnySpecifiedLocalOrGlobalPerms('enwiki', 'sysop') ? true
+        return $user->hasAnySpecifiedLocalOrGlobalPerms('enwiki', 'admin') ? true
             : $this->deny('Non-English Wikipedia administrators do not have access to appeals made in UTRS 1.');
     }
 }

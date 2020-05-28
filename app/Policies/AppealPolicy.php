@@ -27,12 +27,12 @@ class AppealPolicy
      * Determine whether the user can view the appeal.
      *
      * @param User $user
-     * @param  \App\Appeal  $appeal
+     * @param Appeal $appeal
      * @return mixed
      */
     public function view(User $user, Appeal $appeal)
     {
-        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['sysop'])) {
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['admin'])) {
             return false;
         }
 
@@ -65,14 +65,14 @@ class AppealPolicy
      * Determine whether the user can update the appeal.
      *
      * @param User $user
-     * @param  \App\Appeal  $appeal
+     * @param Appeal $appeal
      * @return mixed
      */
     public function update(User $user, Appeal $appeal)
     {
         Gate::authorize('view', $appeal);
 
-        return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['sysop']) ? true
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['admin']) ? true
             : $this->deny('Only administrators can take actions on appeals.');
     }
 }

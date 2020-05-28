@@ -52,7 +52,7 @@ class AppealController extends Controller
             $this->authorize('view', $info);
             $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
 
-            $logs = $info->comments()->get();
+            $logs = $info->comments;
 
             $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
 
@@ -157,8 +157,8 @@ class AppealController extends Controller
 
         $user->checkRead();
 
-        $isTooladmin = false;
-        $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
+        $isTooladmin = $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
+        $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
 
         if ($user->wikis === '*' || $isDeveloper) {
             $wikis = collect(MwApiUrls::getSupportedWikis())
@@ -166,14 +166,8 @@ class AppealController extends Controller
         } else {
             $wikis = collect(explode(',', $user->wikis ?? ''))
                 ->filter(function ($wiki) use ($user) {
-                    return Permission::checkAdmin($user->id, $wiki);
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'sysop');
                 });
-        }
-
-        foreach ($wikis as $wiki) {
-            if (!$isTooladmin && Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $isTooladmin = true;
-            }
         }
 
         $hiddenStatuses = $isDeveloper
