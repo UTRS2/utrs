@@ -693,7 +693,7 @@ class AppealController extends Controller
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
-        $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
+        $dev = Permission::checkSecurity($user, "DEVELOPER", "*");
         if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {
             GetBlockDetailsJob::dispatch($appeal);
             Log::create([
