@@ -116,7 +116,8 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                 continue                   
         calldb("delete from wikitasks where id="+str(wtid)+";","write")
         for wiki in userresult[6].split(","):
-            try:sendemail(username,"UTRS Account Activated","""
+            try:
+                sendemail(username,"UTRS Account Activated","""
 Your UTRS Account has now completed permissions verification and you should be able to use your account.
 
 UTRS Development Team""",wiki)
