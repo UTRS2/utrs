@@ -166,7 +166,7 @@ class AppealController extends Controller
         } else {
             $wikis = collect(explode(',', $user->wikis ?? ''))
                 ->filter(function ($wiki) use ($user) {
-                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'sysop');
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
                 });
         }
 
