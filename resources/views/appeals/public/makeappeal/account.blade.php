@@ -25,60 +25,48 @@
             your appeal. It is for information only.
         </div>
         <div class="card">
-            <div class="card-header">
-                Appeal a block on an account
-            </div>
+            <h5 class="card-header">
+                {{ __('appeals.forms.header-account') }}
+            </h5>
             <div class="card-body">
-                @if(sizeof($errors)>0)
-                    <div class="alert alert-danger" role="alert">
-                        The following errors occured:
-                        <ul>
-                            @foreach ($errors->all() as $message)
-                                <li>{{ $message }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                @component('components.errors')
+                @endcomponent
 
                 {{ Form::open(['url' => route('public.appeal.store')]) }}
                 {{ Form::token() }}
-                <h5>About you</h5>
+                <h5>{{ __('appeals.forms.about-you') }}</h5>
                 <div class="form-group mb-4">
-                    {{ Form::label('wiki', 'Which Wiki are you blocked on?') }}<br>
+                    {{ Form::label('wiki', __('appeals.forms.block-wiki')) }}<br>
                     {{ Form::select('wiki', \App\MwApi\MwApiUrls::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
                 </div>
                 <div class="form-group mb-4">
-                    {{ Form::label('appealfor', 'What is your Username?') }}
+                    {{ Form::label('appealfor', __('appeals.forms.block-username')) }}
                     {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
                 </div>
                 <div class="form-group mb-4">
-                    Is your account directly blocked?
+                    {{ __('appeals.forms.direct-question') }}
                     <div class="custom-control custom-radio">
-                        {{ Form::radio('blocktype', 1, old('blocktype') === 1, ['class' => 'custom-control-input', 'id' => 'blocktype-1']) }} {{ Form::label('blocktype-1', 'Yes', ['class' => 'custom-control-label']) }}
+                        {{ Form::radio('blocktype', 1, old('blocktype') === 1, ['class' => 'custom-control-input', 'id' => 'blocktype-1']) }} {{ Form::label('blocktype-1', __('appeals.forms.direct-yes'), ['class' => 'custom-control-label']) }}
                     </div>
 
                     <div class="custom-control custom-radio">
-                        {{ Form::radio('blocktype', 2, old('blocktype') === 2, ['class' => 'custom-control-input', 'id' => 'blocktype-2']) }} {{ Form::label('blocktype-2', 'No, the underlying IP address is blocked', ['class' => 'custom-control-label']) }}
+                        {{ Form::radio('blocktype', 2, old('blocktype') === 2, ['class' => 'custom-control-input', 'id' => 'blocktype-2']) }} {{ Form::label('blocktype-2', __('appeals.forms.direct-no'), ['class' => 'custom-control-label']) }}
                     </div>
                 </div>
 
-                <h5>Block appeal information</h5>
+                <h5>{{ __('appeals.forms.appeal-info') }}</h5>
 
-                <div class="alert alert-warning" role="alert">
-                    Only administrators will be able to see your appeal.
-                </div>
-
-                <div class="alert alert-warning" role="alert">
-                    There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
-                    an appeal.
-                </div>
+                    <div class="alert alert-warning" role="alert">
+                        {{ __('appeals.forms.admin-only-notice') }}
+                        <br/>{{ __('appeals.forms.word-notice') }}
+                    </div>
 
                 <div class="form-group mb-4">
-                    {{ Form::label('appealtext', 'Why should you be unblocked?') }}
+                    {{ Form::label('appealtext', __('appeals.forms.question-why')) }}
                     {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
                 </div>
 
-                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
+                {{ Form::submit(__('generic.submit'), ['class' => 'btn btn-success']) }}
                 {{ Form::close() }}
             </div>
         </div>

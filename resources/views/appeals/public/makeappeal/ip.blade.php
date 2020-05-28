@@ -22,21 +22,14 @@
             If you have any questions, you can contact us. Please note: We will not expedite, approve, deny, or edit
             your appeal. It is for information only.
         </div>
-        <div class="card" style="align-content: left">
-            <div class="card-header">
-                Appeal a block on an IP address
-            </div>
-            @if(sizeof($errors)>0)
-                <div class="alert alert-danger" role="alert">
-                    The following errors occured:
-                    <ul>
-                        @foreach ($errors->all() as $message)
-                            <li>{{ $message }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        <div class="card">
+            <h5 class="card-header">
+                {{ __('appeals.forms.header-ip') }}
+            </h5>
             <div class="card-body">
+                @component('components.errors')
+                @endcomponent
+
                 {{ Form::open(['url' => route('public.appeal.store')]) }}
                 {{ Form::token() }}
 
@@ -52,21 +45,19 @@
                     {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
                 </div>
 
-                <h5>Block appeal information</h5>
+                <h5>{{ __('appeals.forms.appeal-info') }}</h5>
 
                 <div class="alert alert-warning" role="alert">
-                    Please note that if your appeal doesn't contain any private data, you will be redirected to appeal on your talkpage.
-                    Only administrators will be able to see your appeal on this tool.
-                    <br/>There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing
-                    an appeal.
+                    {{ __('appeals.forms.admin-only-notice') }}
+                    <br/>{{ __('appeals.forms.word-notice') }}
                 </div>
 
                 <div class="form-group mb-4">
-                    {{ Form::label('appealtext', 'Why should you be unblocked?') }}
+                    {{ Form::label('appealtext', __('appeals.forms.question-why')) }}
                     {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
                 </div>
 
-                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
+                {{ Form::submit(__('generic.submit'), ['class' => 'btn btn-success']) }}
                 {{ Form::close() }}
             </div>
         </div>
