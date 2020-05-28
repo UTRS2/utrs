@@ -19,7 +19,7 @@ class AppealPolicy
      */
     public function viewAny(User $user)
     {
-        // advanced filters on controller
+        // filters on controller
         return $user->hasAnySpecifiedPermsOnAnyWiki(['user']);
     }
 
@@ -32,30 +32,18 @@ class AppealPolicy
      */
     public function view(User $user, Appeal $appeal)
     {
-        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['user', 'sysop'])) {
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['sysop'])) {
             return false;
         }
 
-        if ($appeal->status === 'INVALID') {
+        if ($appeal->status === Appeal::STATUS_INVALID) {
             // Developers can already see everything based on override in AuthServiceProvider
             return $this->deny('This appeal has been marked as invalid.');
         }
 
-        if ($appeal->privacyreview !== $appeal->privacylevel || $appeal->privacylevel === 2) {
-            return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['oversight', 'steward', 'staff', 'developer', 'privacy']) ? true
-                : $this->deny('The appeal you are trying to access is currently being reviewed by the privacy team. You do not have sufficient permissions to view it.');
-        }
-
-        if ($appeal->privacylevel === 1) {
-            return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['sysop']);
-        }
-
-        if (in_array($appeal->status, ['ACCEPT', 'DECLINE', 'EXPIRE', 'OPEN', 'PRIVACY', 'ADMIN', 'CHECKUSER'])) {
-            // note that view also has advanced filters
-            return true;
-        }
-
-        return false;
+        // view also has some filters
+        return in_array($appeal->status, [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_AWAITING_REPLY,
+                                          Appeal::STATUS_OPEN, Appeal::STATUS_ADMIN, Appeal::STATUS_CHECKUSER]);
     }
 
     /**
