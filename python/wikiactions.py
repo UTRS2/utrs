@@ -57,7 +57,8 @@ def verifyusers():
         user = result[2]
         userresults = calldb("select id,username from users where id = '"+str(user)+"';","read")[0]
         
-        username = str(userresults[1])
+        try:username = str(userresults[1])
+        except:username = userresults[1]
         userpage = "User talk:"+username
         checkPerms(username,user)
         userresult = calldb("select * from users where id = '"+str(user)+"';","read")[0]
@@ -114,6 +115,13 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                 print "ACCOUNT DELETION: " + username
                 continue                   
         calldb("delete from wikitasks where id="+str(wtid)+";","write")
+        for wiki in userresult[6].split(","):
+            try:sendemail(username,"UTRS Account Activated","""
+Your UTRS Account has now completed permissions verification and you should be able to use your account.
+
+UTRS Development Team""",wiki)
+                break
+            except:print "Failed verification email on " + wiki
 def checkPerms(user, id):
     enperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
     ptperms = {"user":False,"sysop":False,"checkuser":False,"oversight":False}
@@ -410,7 +418,10 @@ def sendemail(target,subject,text,wiki):
     'token': code.encode(),
     'text': text
             }
-    raw = callAPI(params)
+    try:raw = callAPI(params)
+    except:
+        print "Couldn't send email"
+        print [target,subject,text,wiki]
 def clearPrivateData():
     results = calldb("select * from privatedatas;","read")
     for result in results:
