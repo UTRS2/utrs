@@ -555,6 +555,7 @@ class AppealController extends Controller
             $appeal->status = Appeal::STATUS_OPEN;
             $appeal->save();
             Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 're-open', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
+            return redirect('appeal/' . $id);
         } else {
             abort(403);
         }
