@@ -287,13 +287,13 @@ class AppealController extends Controller
             return view('appeals.ban', ['expire' => $ban->expiry, 'id' => $ban->id]);
         }
 
-        $banip = Ban::where('ip','=',1)
+        $baniplist = Ban::where('ip','=',1)
             ->active()
             ->get();
 
-        foreach ($banip as $ban) {
-            if (self::ip_in_range($ip,$ban->target)) {
-                return view('appeals.ban', ['expire' => $ban->expiry, 'id' => $ban->id]);
+        foreach ($baniplist as $banip) {
+            if (self::ip_in_range($ip,$banip->target)) {
+                return view('appeals.ban', ['expire' => $banip->expiry, 'id' => $banip->id]);
             }
         }
 
