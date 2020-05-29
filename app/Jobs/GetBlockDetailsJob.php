@@ -54,8 +54,8 @@ class GetBlockDetailsJob implements ShouldQueue
                     'objecttype' => 'appeal',
                     'action' => 'closed - invalidate',
                     'reason' => 'account banned from UTRS',
-                    'ip' => '127.0.0.1',
-                    'ua' => 'Laravel',
+                    'ip' => 'DB entry',
+                    'ua' => 'DB/Laravel',
                     'protected' => 0
                 ]);
             }
