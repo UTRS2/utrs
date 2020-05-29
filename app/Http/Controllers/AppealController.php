@@ -128,7 +128,8 @@ class AppealController extends Controller
     {
         $hash = $request->input('hash');
         $info = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
-        $closestatus = $info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE;
+        //Invalid is like a trashcan/not dealing with that admins never see
+        $closestatus = $info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE  || $info->status == Appeal::STATUS_INVALID;
 
         $id = $info->id;
         $logs = $info->comments;
@@ -584,7 +585,7 @@ class AppealController extends Controller
         if ($dev && $appeal->status !== Appeal::STATUS_INVALID) {
             $appeal->status = Appeal::STATUS_INVALID;
             $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'closed - invalidate', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE));
+            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'closed - invalidate', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_ADMIN));
             return redirect('appeal/' . $id);
         } else {
             abort(403);
