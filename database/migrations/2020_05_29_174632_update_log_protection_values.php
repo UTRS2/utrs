@@ -12,12 +12,10 @@ class UpdateLogProtectionValues extends Migration
      */
     public function up()
     {
-        DB::transaction(function () {
-            Log::where('protected', 1)
-                ->update([
-                    'protected' => 2,
-                ]);
-        });
+        Log::where('protected', 1)
+            ->update([
+                'protected' => 2,
+            ]);
     }
 
     /**
@@ -27,11 +25,9 @@ class UpdateLogProtectionValues extends Migration
      */
     public function down()
     {
-        DB::transaction(function () {
-            Log::where('protected', 2)
-                ->update([
-                    'protected' => 1,
-                ]);
-        });
+        Log::where('protected', 2)
+            ->update([
+                'protected' => 1,
+            ]);
     }
 }
