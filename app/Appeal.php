@@ -23,10 +23,11 @@ class Appeal extends Model
     // statuses that are waiting for a specific person/group of them
     const STATUS_ADMIN = 'ADMIN'; // tooladmin? idk
     const STATUS_CHECKUSER = 'CHECKUSER'; // waiting for a CheckUser check
+    // hidden statuses
+    const STATUS_NOTFOUND = 'NOTFOUND'; // for users where the block is not found
 
     // closed statuses
     const STATUS_INVALID = 'INVALID'; // duplicates etc, only visible to devs
-    const STATUS_NOTFOUND = 'NOTFOUND'; // for users that are not blocked
     const STATUS_ACCEPT = 'ACCEPT';
     const STATUS_DECLINE = 'DECLINE';
     const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
