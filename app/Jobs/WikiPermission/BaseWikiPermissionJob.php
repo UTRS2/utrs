@@ -26,10 +26,10 @@ abstract class BaseWikiPermissionJob
     abstract function getPermissionsToCheck();
 
     /**
-     * function to remove "user" group from this user if specific conditions are met
-     * @param MediawikiUser $user mediawiki user object
-     * @param array $groups array of permission database names this user has
-     * @return boolean if false, the 'user' group will be removed
+     * Function to remove "user" group from this user if specific conditions are met
+     * @param  MediawikiUser $user   mediawiki user object
+     * @param  array         $groups array of permission database names this user has
+     * @return boolean               if false, the 'user' group will be removed
      */
     abstract function shouldHaveUser(MediawikiUser $user, array $groups);
 
@@ -39,9 +39,9 @@ abstract class BaseWikiPermissionJob
     abstract function checkIsBlocked();
 
     /**
-     * if necessary, change group values gotten from the MediaWiki API before writing them into the database
-     * @param string $groupName group in MediaWiki side
-     * @return string column name in {@link Permission}
+     * If necessary, change group values gotten from the MediaWiki API before writing them into the database
+     * @param  string $groupName user group in MediaWiki side
+     * @return string            column name in {@link Permission}
      */
     public function getGroupName(string $groupName)
     {
