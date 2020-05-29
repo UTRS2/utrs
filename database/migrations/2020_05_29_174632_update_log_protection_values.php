@@ -13,20 +13,7 @@ class UpdateLogProtectionValues extends Migration
     public function up()
     {
         DB::transaction(function () {
-            // do a round-robin swap:
-            // first  1 => 3
-            // second 2 => 1
-            // third  3 => 2
-
             Log::where('protected', 1)
-                ->update([
-                    'protected' => 3,
-                ]);
-            Log::where('protected', 2)
-                ->update([
-                    'protected' => 1,
-                ]);
-            Log::where('protected', 3)
                 ->update([
                     'protected' => 2,
                 ]);
@@ -41,22 +28,9 @@ class UpdateLogProtectionValues extends Migration
     public function down()
     {
         DB::transaction(function () {
-            // do a round-robin swap:
-            // first  1 => 3
-            // second 2 => 1
-            // third  3 => 2
-
-            Log::where('protected', 1)
-                ->update([
-                    'protected' => 3,
-                ]);
             Log::where('protected', 2)
                 ->update([
                     'protected' => 1,
-                ]);
-            Log::where('protected', 3)
-                ->update([
-                    'protected' => 2,
                 ]);
         });
     }
