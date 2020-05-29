@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@php use App\Appeal; @endphp
+@php use App\Appeal; use App\Log; @endphp
 
 @section('title', 'Your Appeal')
 @section('content')
@@ -128,7 +128,7 @@
                                             <td><i>{{$userlist[$comment->user]}}</i></td>
                                         @endif
                                         <td><i>{{$comment->timestamp}}</i></td>
-                                        @if($comment->protected)
+                                        @if($comment->protected !== Log::LOG_PROTECTION_NONE)
                                             <td><i>Access to comment is restricted.</i></td>
                                         @else
                                             @if($comment->comment!==null)
@@ -151,7 +151,7 @@
                                             <td>{{$userlist[$comment->user]}}</td>
                                         @endif
                                         <td>{{$comment->timestamp}}</td>
-                                        @if($comment->protected || $comment->action=="comment")
+                                        @if($comment->protected !== Log::LOG_PROTECTION_NONE || $comment->action=="comment")
                                             <td>Access to comment is restricted.</td>
                                         @else
                                             @if($comment->comment!==null)
@@ -164,7 +164,7 @@
                                 @else
                                     <td>{{$userlist[$comment['commentUser']]}}</td>
                                     <td>{{$comment->timestamp}}</td>
-                                    @if($comment->protected)
+                                    @if($comment->protected !== Log::LOG_PROTECTION_NONE)
                                         <td><i>Access to comment is restricted.</i></td>
                                     @else
                                         @if($comment->comment!==null)

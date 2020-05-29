@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@php use App\Appeal; @endphp
+@php use App\Appeal; use App\Log; @endphp
 
 @section('title', 'Appeal #' . $id)
 @section('content')
@@ -356,7 +356,7 @@
                                     <td><i>{{ $userlist[$comment->user] }}</i></td>
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
-                                @if($comment->protected && !$perms['functionary'])
+                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment !== null)
@@ -379,7 +379,7 @@
                                     <td>{{ $userlist[$comment->user] }}</td>
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected && !$perms['functionary'])
+                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td>Access to comment is restricted.</td>
                                     @else
                                         @if($comment->comment !== null)
@@ -398,7 +398,7 @@
                                     <td>{{ $userlist[$comment['commentUser']] }}</td>
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected && !$perms['functionary'])
+                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment !== null)
