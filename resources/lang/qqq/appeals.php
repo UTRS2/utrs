@@ -34,4 +34,40 @@ return [
         'INVALID' => 'Shown as a status message in the interface.',
         'default' => 'Shown as a status message in the interface.',
     ],
+
+    'forms' => [
+        'header-account' => 'Shown as a header on when creating an appeal.',
+        'header-ip'      => 'Shown as a header on when creating an appeal.',
+        'header-verify'  => 'Shown as a header on when verifying account ownership.',
+        'header-modify'  => 'Shown as a header on when modifying appeal details.',
+
+        'about-you'      => 'Section header in appeal creation form.',
+        'block-wiki'     => 'Field label in appeal creation form.',
+        'block-username' => 'Field label in appeal creation form.',
+        'block-ip'       => 'Field label in appeal creation form.',
+
+        'direct-question' => 'Field label in appeal creation form.',
+        'direct-yes'      => 'Select option in appeal creation form.',
+        'direct-no'       => 'Select option in appeal creation form.',
+        'direct-ip'       => 'Select option in appeal creation form.',
+
+        'edit-notice'       => 'Information text shown when modifying appeal details.',
+        'hiddenip-question' => 'Field label in appeal creation form. ":option" will be replaced by the message "appeals.form.direct-no".',
+
+        'appeal-info' => 'Section header in appeal creation form.',
+
+        'admin-only-notice' => 'Information text shown when creating an appeal.',
+        'word-notice'       => 'Information text shown when creating an appeal.',
+        'question-why'      => 'Field label in appeal creation form.',
+
+        'verify-secret'      => 'Field label in appeal verification form.',
+        'verify-secret-help' => 'Field information text in appeal verification form.',
+    ],
+
+    'key' => [
+        'header'              => 'Header used in the screen giving user their appeal key',
+        'do-not-lose'         => 'Information text shown along the appeal key.',
+        'your-key-is'         => 'Information text shown along the appeal key.',
+        'view-appeal-details' => 'Button text shown along the appeal key.',
+    ],
 ];
