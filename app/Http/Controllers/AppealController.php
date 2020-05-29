@@ -356,7 +356,7 @@ class AppealController extends Controller
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $checkuser = Permission::checkAdmin($user, $appeal->wiki);
-        $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'comment', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE));
+        $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'comment', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_ADMIN));
         return redirect('appeal/' . $id);
     }
 
