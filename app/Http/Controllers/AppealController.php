@@ -623,7 +623,7 @@ class AppealController extends Controller
             'cu_reason' => 'required|string|min:3|max:190',
         ])['cu_reason'];
 
-        abort_unless($admin && $appeal->status !== Appeal::STATUS_CHECKUSER, 403, 'Forbidden');
+        abort_unless($admin && $appeal->status == Appeal::STATUS_OPEN, 403, 'Forbidden');
 
         $appeal->status = Appeal::STATUS_CHECKUSER;
         $appeal->save();
