@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Modify appeal')
+@section('title', htmlspecialchars(__('appeals.forms.header-modify')))
 @section('content')
 
     <div class="alert alert-info" role="alert">

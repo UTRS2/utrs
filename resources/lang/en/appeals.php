@@ -63,4 +63,11 @@ return [
         'verify-secret'      => 'Appeal key',
         'verify-secret-help' => 'You should have received this when you created your appeal.',
     ],
+
+    'key' => [
+        'header'              => 'Appeal submitted',
+        'do-not-lose'         => 'Do not lose this Appeal Key. You can only recover it if you have an account with an email address enabled.',
+        'your-key-is'         => 'Your Appeal key is:',
+        'view-appeal-details' => 'View appeal details',
+    ],
 ];

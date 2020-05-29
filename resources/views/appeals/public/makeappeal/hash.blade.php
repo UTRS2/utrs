@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Appeal submitted')
+@section('title', htmlspecialchars(__('appeals.key.header')))
 @section('content')
-
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
-        <div class="alert alert-danger" role="alert">
-            Do not lose this Appeal Key. You can only recover it if you have an account with an email address enabled.
+    <div class="card">
+        <h5 class="card-header">{{ __('appeals.key.header') }}</h5>
+        <div class="card-body">
+            <div class="alert alert-danger" role="alert">
+                {{ __('appeals.key.do-not-lose') }}
+            </div>
+            <br>
+            <center>{{ __('appeals.key.your-key-is') }}<br>
+                <h2>{{ $hash }}</h2></center>
+            <br/>
+            <a href="{{ route('public.appeal.view') . '?' . http_build_query([ 'hash' => $hash ]) }}" class="btn btn-success">
+                {{ __('appeals.key.view-appeal-details') }}
+            </a>
         </div>
-        <br>
-        <center>Your Appeal key is:<br>
-            <h2>{{ $hash }}</h2></center>
-        <br/>
-        <a href="{{ route('public.appeal.view') . '?' . http_build_query([ 'hash' => $hash ]) }}" class="btn btn-success">
-            View appeal details
-        </a>
     </div>
-
 @endsection
