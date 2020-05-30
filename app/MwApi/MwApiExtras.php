@@ -63,8 +63,13 @@ class MwApiExtras
      * @param  string $key - to allow additional types of blocks (only 3 really exist though: bkusers, bkip, bkids)
      * @return array $response - the block information that comes up
      */
-    public static function getBlockInfo($wiki, $target, $key = null)
+    public static function getBlockInfo($wiki, $target, $key = null, $appealid)
     {
+        if (!$appealid) {
+            Log::critical("The appeal ID has not been set when calling getBlockInfo() - Terminating - Unknown Source");
+            //and die here too
+            throw new Exception("AppealID Not Set - getBlockInfo()");
+        }
         if (!$target) {
             return null;
         }
@@ -74,14 +79,18 @@ class MwApiExtras
         }
 
         $api = MwApiGetter::getApiForWiki($wiki);
-        $response = $api->getRequest(new SimpleRequest(
-            'query',
-            [
-                'list' => 'blocks',
-                $key => $target,
-                'bkprop' => 'by|byid|expiry|flags|id|range|reason|restrictions|timestamp|user|userid',
-            ]
-        ));
+        try {
+            $response = $api->getRequest(new SimpleRequest(
+                'query',
+                [
+                    'list' => 'blocks',
+                    $key => $target,
+                    'bkprop' => 'by|byid|expiry|flags|id|range|reason|restrictions|timestamp|user|userid',
+                ]
+            ));
+        } catch (Exception $e) {
+            Log::error("MediaWiki API Failure: ".$e->getMessage()." on appealID #".$appealid);
+        }    
 
         if (empty($response['query']['blocks'])) {
             return null;
@@ -96,8 +105,13 @@ class MwApiExtras
      * @param  string $target - Username to be searched
      * @return array - information about the block
      */
-    public static function getGlobalBlockInfo($target)
+    public static function getGlobalBlockInfo($target,$appealid)
     {
+        if (!$appealid) {
+            Log::critical("The appeal ID has not been set when calling getBlockInfo() - Terminating - Unknown Source");
+            //and die here too
+            throw new Exception("AppealID Not Set - getBlockInfo()");
+        }
         if (!$target) {
             return null;
         }
@@ -107,14 +121,18 @@ class MwApiExtras
         if (filter_var($target, FILTER_VALIDATE_IP) !== false || IPUtils::isIpRange($target)) {
             // is ip
 
-            $response = $api->getRequest(new SimpleRequest(
-                'query',
-                [
-                    'list' => 'globalblocks',
-                    'bgip' => $target,
-                    'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
-                ]
-            ));
+            try {
+                $response = $api->getRequest(new SimpleRequest(
+                    'query',
+                    [
+                        'list' => 'globalblocks',
+                        'bgip' => $target,
+                        'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
+                    ]
+                ));
+            catch (Exception $e) {
+                Log::error("MediaWiki API Failure: ".$e->getMessage()." on appealID #".$appealid);
+            }
 
             if (empty($response['query']['globalblocks'])) {
                 return null;

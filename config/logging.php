@@ -36,7 +36,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['daily','slack'],
         ],
 
         'single' => [
@@ -54,10 +54,10 @@ return [
 
         'slack' => [
             'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Laravel Log',
-            'emoji' => ':boom:',
-            'level' => 'critical',
+            'url' => env('SLACK_SYSERROR_URL'),
+            'username' => 'UTRS',
+            'emoji' => ':no_entry:',
+            'level' => 'warning',
         ],
 
         'papertrail' => [
