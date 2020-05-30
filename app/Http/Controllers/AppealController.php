@@ -22,6 +22,7 @@ use App\Rules\SecretEqualsRule;
 use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log as LaravelLog;
 
 class AppealController extends Controller
 {
@@ -301,6 +302,15 @@ class AppealController extends Controller
         $appeal = Appeal::create($input);
         $cudata = Privatedata::create(array('appealID' => $appeal->id, 'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
         Log::create(['user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . ' ' . $lang]);
+
+        /**
+         * Yes, this is a hard hack and not optimal, but we are still
+         * allowing these appeals to be created till other master tasks 
+         * either prevent it or we go live with those wikis
+        **/
+        if ($appeal->wiki == "ptwiki" || $appeal->wiki == "global") {
+            LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #'.$appeal->id);
+        }
 
         GetBlockDetailsJob::dispatch($appeal);
 
