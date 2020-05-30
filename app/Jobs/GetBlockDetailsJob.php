@@ -82,20 +82,20 @@ class GetBlockDetailsJob implements ShouldQueue
     public function handle()
     {
         if ($this->appeal->wiki === 'global') {
-            $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
+            $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor, $this->appeal->id);
 
             if (!$blockData && !empty($this->appeal->hiddenip)) {
-                $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip);
+                $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip, $this->appeal->id);
             }
         } else {
             if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), 'bkids');
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
             } else {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor, $this->appeal->id);
             }
 
             if (!$blockData && !empty($this->appeal->hiddenip)) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip);
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip, $this->appeal->id);
             }
         }
 
