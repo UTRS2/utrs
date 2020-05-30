@@ -12,12 +12,9 @@ use App\Policies\AppealPolicy;
 use App\Policies\OldAppealPolicy;
 use App\Policies\Admin\BanPolicy;
 use App\Policies\Admin\UserPolicy;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Access\Response;
 use App\Policies\Admin\TemplatePolicy;
 use App\Policies\Admin\SiteNoticePolicy;
-use App\OAuth\WikiSocialiteServer;
-use App\OAuth\WikiSocialiteProvider;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -45,7 +42,6 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
         Gate::before(function (User $user, $ability) {
             if (!$user->verified) {
                 return Response::deny('Your account has not been verified yet.');
@@ -63,16 +59,5 @@ class AuthServiceProvider extends ServiceProvider
                 return true;
             }
         });
-
-        $socialite = $this->app->make('Laravel\Socialite\Contracts\Factory');
-        $socialite->extend(
-            'wiki',
-            function ($app) use ($socialite) {
-                $config = $app['config']['services.wiki'];
-                return new WikiSocialiteProvider(
-                    $this->app['request'], new WikiSocialiteServer($config),
-                );
-            }
-        );
     }
 }

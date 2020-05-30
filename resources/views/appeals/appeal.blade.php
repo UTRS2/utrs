@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@php use App\Appeal; @endphp
+@php use App\Appeal; use App\Log; @endphp
 
 @section('title', 'Appeal #' . $id)
 @section('content')
@@ -14,6 +14,17 @@
             <br/>
             <div class="alert alert-danger" role="alert">
                 This appeal is closed. No further changes can be made to it.
+            </div>
+        @endif
+
+        @if(sizeof($errors)>0)
+            <div class="alert alert-danger" role="alert">
+                The following errors occured:
+                <ul>
+                    @foreach ($errors->all() as $message)
+                        <li>{{ $message }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
@@ -198,9 +209,9 @@
 
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
                                                     <div class="mb-2">
-                                                        <a href="/appeal/checkuserreview/{{ $id }}" class="btn btn-warning">
+                                                        <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
                                                             CheckUser
-                                                        </a>
+                                                        </button>
                                                         <a href="/appeal/tooladmin/{{ $id }}" class="btn btn-warning">
                                                             Tool admin
                                                         </a>
@@ -220,10 +231,10 @@
                                                         </a>
                                                     </div>
                                                 @endif
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endif
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -349,7 +360,7 @@
                                     @endif
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
-                                @if($comment->protected && !$perms['functionary'])
+                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment !== null)
@@ -376,7 +387,7 @@
                                     @endif
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected && !$perms['functionary'])
+                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td>Access to comment is restricted.</td>
                                     @else
                                         @if($comment->comment !== null)
@@ -399,7 +410,7 @@
                                     @endif
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected && !$perms['functionary'])
+                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment !== null)
@@ -446,6 +457,33 @@
                         </div>
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="checkuserModal" tabindex="-1" role="dialog" aria-labelledby="checkuserModalTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkuserModalTitle">Submit to CheckUser review</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {{ Form::open(['url' => route('appeal.action.checkuser', $info)]) }}
+                {{ Form::token() }}
+                <div class="modal-body">
+
+                    <div class="form-group mb-4">
+                        {{ Form::label('cu_reason', 'What would you like the checkuser to review in this appeal?') }}
+                        {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    {{ Form::submit('Submit', ['class' => 'btn btn-primary']) }}
+                </div>
+                {{ Form::close() }}
             </div>
         </div>
     </div>

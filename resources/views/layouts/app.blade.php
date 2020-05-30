@@ -12,7 +12,7 @@
     <script type="text/javascript">@yield('scripts')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
-<body>
+<body> {{-- classes potentially purged by purgecss that should still be kept: modal-open modal-backdrop fade show --}}
 <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
     <a class="navbar-brand" href="/">{{ config('app.name') }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
