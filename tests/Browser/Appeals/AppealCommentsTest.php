@@ -40,10 +40,14 @@ class AppealCommentsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $appeal = factory(Appeal::class)->create();
 
-            factory(Template::class, 2)->create();
-            $targetTemplate = factory(Template::class)->create();
+            factory(Template::class, 2)->create([ 'active' => true, ]);
+
+            $targetTemplate = factory(Template::class)->create([ 'active' => true, ]);
             $targetTemplateTextStart = explode("\n", $targetTemplate->template)[0];
-            factory(Template::class, 2)->create();
+
+            factory(Template::class, 2)->create([ 'active' => true, ]);
+
+            $nonActiveTemplate = factory(Template::class)->create([ 'active' => false, ]);
 
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
@@ -56,6 +60,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee('On this screen, you will see a list of templates to choose from in responding to a user')
                 ->assertDontSee($targetTemplateTextStart)
                 ->assertSee($targetTemplate->name)
+                ->assertDontSee($nonActiveTemplate->name)
                 ->press($targetTemplate->name)
                 ->assertSee($targetTemplateTextStart)
                 ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
