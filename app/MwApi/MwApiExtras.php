@@ -105,7 +105,7 @@ class MwApiExtras
      * @param  string $target - Username to be searched
      * @return array - information about the block
      */
-    public static function getGlobalBlockInfo($target,$appealid)
+    public static function getGlobalBlockInfo($target, $appealid)
     {
         if (!$appealid) {
             Log::critical("The appeal ID has not been set when calling getBlockInfo() - Terminating - Unknown Source");
@@ -130,7 +130,7 @@ class MwApiExtras
                         'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
                     ]
                 ));
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 Log::error("MediaWiki API Failure: ".$e->getMessage()." on appealID #".$appealid);
             }
 
