@@ -2,10 +2,9 @@
 
 namespace App;
 
-use App\MediawikiIntegration\WikiApiUrls;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
+use App\MwApi\MwApiUrls;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -48,7 +47,7 @@ class User extends Authenticatable
     {
         LoadGlobalPermissionsJob::dispatch($this);
 
-        foreach (WikiApiUrls::getSupportedWikis() as $wiki) {
+        foreach (MwApiUrls::getSupportedWikis() as $wiki) {
             LoadLocalPermissionsJob::dispatch($this, $wiki);
         }
     }
