@@ -3,6 +3,8 @@
 namespace App\MwApi;
 
 use App\Utils\IPUtils;
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Mediawiki\Api\SimpleRequest;
 
 /**
