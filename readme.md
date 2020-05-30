@@ -1,20 +1,18 @@
-Getting UTRS2 working in a dev environment
+# UTRS 2.0
+
+## Getting UTRS2 working in a dev environment
 
 1. Clone into a directory
-2. mkdir storage/framework
-3. mkdir storage/framework/sessions
-4. mkdir storage/framework/views
-5. mkdir storage/framework/cache
-6. composer install
-7. cp .env.example .env
-8. edit the DB details in .env
-9. php artisan key:generate
-10. php artisan migrate:fresh
+2. composer install
+3. cp .env.example .env
+4. edit the DB details in .env
+5. php artisan key:generate
+6. php artisan migrate:fresh
 
-The /public subdirectory is the webroot. You can either use 'php artisan serve' to run a standalone webserver, or point your webserver of choice at /public
+The /public subdirectory is the webroot. You can either use `php artisan serve` to run a standalone webserver, or point your webserver of choice at /public
 
-== Jobs ==
-***For this to work, you need to have your own urls set up for config/wikis.php***
+## Jobs
+For this to work, you need to have your own urls set up for config/wikis.php<br/>
 This application requires a job queue to verify blocks and do other critical and regualar tasks. Below is a guide to setting up:
 
 1. pecl install redis
@@ -22,8 +20,10 @@ This application requires a job queue to verify blocks and do other critical and
 3. sudo adduser supervisor
 4. sudo apt-get install supervisor
 5. Add the following block at /etc/supervisor/conf.d/utrs.conf, example, replacing /path/tos:
-***DO NOT CHANGE ANY OF THESE VALUES EXCEPT THE PATHS***
 
+DO NOT CHANGE ANY OF THESE VALUES EXCEPT THE PATHS
+
+```
 [program:utrs-worker]
 process_name=%(program_name)s_%(process_num)02d
 command=php /path/to/artisan queue:work --sleep=3 --tries=3
@@ -34,6 +34,7 @@ numprocs=1
 redirect_stderr=true
 stdout_logfile=/path/to/log/file.log
 stopwaitsecs=300
+```
 
 6. sudo supervisord
 
