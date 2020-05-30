@@ -581,7 +581,7 @@ class AppealController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
-        $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
+        $dev = Permission::checkSecurity($user, "DEVELOPER", "*");
         if ($dev && $appeal->status !== Appeal::STATUS_INVALID) {
             $appeal->status = Appeal::STATUS_INVALID;
             $appeal->save();
