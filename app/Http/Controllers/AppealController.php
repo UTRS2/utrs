@@ -19,9 +19,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
-use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log as LaravelLog;
 
 class AppealController extends Controller
@@ -291,11 +291,23 @@ class AppealController extends Controller
                 return view('appeals.spam');
             }
         }
-        $banacct = Ban::where('ip','=',0)->get();
-        $banip = Ban::where('ip','=',1)->get();
-        foreach ($banip as $ban) {
-            if (self::ip_in_range($ip,$ban->target)) {
-                return view('appeals.ban', ['expire'=>$ban->expiry,'id'=>$ban->id]);
+
+        $ban = Ban::where('ip','=',0)
+            ->where('target', $input['appealfor'])
+            ->active()
+            ->first();
+
+        if ($ban) {
+            return view('appeals.ban', ['expire' => $ban->expiry, 'id' => $ban->id]);
+        }
+
+        $baniplist = Ban::where('ip','=',1)
+            ->active()
+            ->get();
+
+        foreach ($baniplist as $banip) {
+            if (self::ip_in_range($ip,$banip->target)) {
+                return view('appeals.ban', ['expire' => $banip->expiry, 'id' => $banip->id]);
             }
         }
 
