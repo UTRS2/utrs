@@ -60,17 +60,18 @@ class MwApiExtras
      * 
      * @param  string $wiki - The wiki which the block info will be retrived from
      * @param  string $target - Username to be searched
+     * @param  int    $appealid - ID of the appeal being queried (for logging)
      * @param  string $key - to allow additional types of blocks (only 3 really exist though: bkusers, bkip, bkids)
      * @return array $response - the block information that comes up
      */
-    public static function getBlockInfo($wiki, $target, $key = null, $appealid)
+    public static function getBlockInfo($wiki, $target, $appealid, $key = null)
     {
         if (!$appealid) {
             Log::critical("The appeal ID has not been set when calling getBlockInfo() - Terminating - Unknown Source");
-            //and die here too
-            throw new Exception("AppealID Not Set - getBlockInfo()");
+            return null;
         }
         if (!$target) {
+            Log::critical("The target has not been set when calling getBlockInfo() for appealID #".$appealid." - Terminating");
             return null;
         }
 
@@ -90,6 +91,7 @@ class MwApiExtras
             ));
         } catch (Exception $e) {
             Log::error("MediaWiki API Failure: ".$e->getMessage()." on appealID #".$appealid);
+            return null;
         }    
 
         if (empty($response['query']['blocks'])) {
@@ -103,16 +105,17 @@ class MwApiExtras
      * Gets the info of global blocks
      * 
      * @param  string $target - Username to be searched
+     * @param  int    $appealid - ID of the appeal being queried (for logging)
      * @return array - information about the block
      */
     public static function getGlobalBlockInfo($target, $appealid)
     {
         if (!$appealid) {
-            Log::critical("The appeal ID has not been set when calling getBlockInfo() - Terminating - Unknown Source");
-            //and die here too
-            throw new Exception("AppealID Not Set - getBlockInfo()");
+            Log::critical("The appeal ID has not been set when calling getGlobalBlockInfo() - Terminating - Unknown Source");
+            return null;
         }
         if (!$target) {
+            Log::critical("The target has not been set when calling getGlobalBlockInfo() for appealID #".$appealid." - Terminating");
             return null;
         }
 
@@ -132,6 +135,7 @@ class MwApiExtras
                 ));
             } catch (Exception $e) {
                 Log::error("MediaWiki API Failure: ".$e->getMessage()." on appealID #".$appealid);
+                return null;
             }
 
             if (empty($response['query']['globalblocks'])) {
