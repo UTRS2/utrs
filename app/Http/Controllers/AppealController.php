@@ -704,7 +704,7 @@ class AppealController extends Controller
 
     public function verifyAccountOwnership(Request $request, Appeal $appeal)
     {
-        abort_if((!$request->verify_token || !request->secret_key),400,'Invalid appeal data to verify user');
+        abort_if((!$appeal->verify_token || !$appeal->secret_key),400,'Invalid appeal data to verify user');
         $request->validate([
             'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
             'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
