@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@php use App\Appeal; @endphp
+@php use App\Appeal; use App\Log; @endphp
 
 @section('title', 'Your Appeal')
 @section('content')
     @if(in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE]))
         <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
     @endif
-    @if($appeal->status === "NOTFOUND")
+    @if($appeal->status === Appeal::STATUS_NOTFOUND)
         <div class="alert alert-danger" role="alert">
             {!! str_replace(':link', '<a href="' . route('public.appeal.modify', $appeal->appealsecretkey) .'" class="alert-link">' . htmlspecialchars(__('appeals.not-found-link-text')) . '</a>', htmlspecialchars(__('appeals.not-found-text'))) !!}
         </div>
@@ -43,7 +43,7 @@
                     </tbody>
                 </table>
 
-                @if($appeal->status == "NOTFOUND")
+                @if($appeal->status == Appeal::STATUS_NOTFOUND)
                     <a href="{{ route('public.appeal.modify', $appeal->appealsecretkey) }}"
                        class="btn btn-success">
                         {{ __('appeals.not-found-button') }}
@@ -62,22 +62,22 @@
                     <p>{{ $appeal->appealtext }}</p>
                 </div>
                 <div class="col-md-3">
-                    @if($appeal->status === "ACCEPT")
+                    @if($appeal->status === Appeal::STATUS_ACCEPT)
                         <center>{{ __('appeals.status-texts.ACCEPT') }}<br/>
                             <br/><img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
                                     class="img-fluid"></center>
-                    @elseif($appeal->status === "EXPIRE")
+                    @elseif($appeal->status === Appeal::STATUS_EXPIRE)
                         <center>{{ __('appeals.status-texts.EXPIRE') }}<br/>
                             <br/><img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
                                     class="img-fluid"></center>
-                    @elseif($appeal->status === "DECLINE")
+                    @elseif($appeal->status === Appeal::STATUS_DECLINE)
                         <center>{{ __('appeals.status-texts.DECLINE') }}<br/>
                             <br/><img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
                                     class="img-fluid"></center>
-                    @elseif($appeal->status === "INVALID")
+                    @elseif($appeal->status === Appeal::STATUS_INVALID)
                         <center>{{ __('appeals.status-texts.INVALID') }}<br/>
                             <br/><img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
@@ -122,7 +122,7 @@
                                     <td><i>{{ $comment->userObject->username }}</i></td>
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
-                                @if($comment->protected)
+                                @if($comment->protected !== Log::LOG_PROTECTION_NONE)
                                     <td><i>{{ __('generic.logs-private') }}</i></td>
                                 @else
                                     @if($comment->comment!==null)
@@ -145,7 +145,7 @@
                                     <td><i>{{ $comment->userObject->username }}</i></td>
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected || $comment->action=="comment")
+                                @if($comment->protected !== Log::LOG_PROTECTION_NONE || $comment->action=="comment")
                                     <td><i>{{ __('generic.logs-private') }}</i></td>
                                 @else
                                     @if($comment->comment!==null)

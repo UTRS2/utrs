@@ -13,8 +13,8 @@ use App\Rules\SecretEqualsRule;
 use App\Sendresponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log as LaravelLog;
 use Symfony\Component\HttpFoundation\IpUtils;
 
 class PublicAppealController extends Controller
@@ -25,23 +25,21 @@ class PublicAppealController extends Controller
         $ip = $request->ip();
         $lang = $request->header('Accept-Language');
 
-        $input = $request->all();
-        Arr::forget($input, '_token');
-        $input = Arr::add($input, 'status', 'VERIFY');
-        $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
-        $input = Arr::add($input, 'appealsecretkey', $key);
-
-        $request->validate([
-            'appealtext' => 'max:4000|required',
+        $data = $request->validate([
+            'appealtext' => 'required|max:4000',
             'appealfor'  => 'required',
             'wiki'       => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
             'blocktype'  => 'required|numeric|max:2|min:0',
         ]);
 
+        $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
+        $data['appealsecretkey'] = $key;
+        $data['status'] = Appeal::STATUS_VERIFY;
+
         $recentAppealExists = Appeal::where('appealfor', $request->input('appealfor'))
             ->where(function (Builder $query) {
                 return $query
-                    ->whereNotIn('status', ['ACCEPT', 'EXPIRE', 'DECLINE'])
+                    ->whereNotIn('status', [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE])
                     ->orWhere('submitted', '>=', now()->modify('-2 days'));
             })
             ->exists();
@@ -51,7 +49,7 @@ class PublicAppealController extends Controller
         }
 
         $ban = Ban::where('ip', '=', 0)
-            ->where('target', $input['appealfor'])
+            ->where('target', $data['appealfor'])
             ->active()
             ->first();
 
@@ -59,6 +57,7 @@ class PublicAppealController extends Controller
             return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
         }
 
+        // TODO: do not loop thru all existing ip bans, instead search for specific bans for the IP (range)
         $banip = Ban::where('ip', '=', 1)
             ->active()
             ->get();
@@ -69,25 +68,36 @@ class PublicAppealController extends Controller
             }
         }
 
-        $appeal = Appeal::create($input);
+        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
+            $appeal = Appeal::create($data);
 
-        Privatedata::create([
-            'appealID'  => $appeal->id,
-            'ipaddress' => $ip,
-            'useragent' => $ua,
-            'language'  => $lang,
-        ]);
+            Privatedata::create([
+                'appealID'  => $appeal->id,
+                'ipaddress' => $ip,
+                'useragent' => $ua,
+                'language'  => $lang,
+            ]);
 
-        Log::create([
-            'user'            => -1,
-            'referenceobject' => $appeal->id,
-            'objecttype'      => 'appeal',
-            'action'          => 'create',
-            'ip'              => $ip,
-            'ua'              => $ua . ' ' . $lang,
-        ]);
+            Log::create([
+                'user'            => -1,
+                'referenceobject' => $appeal->id,
+                'objecttype'      => 'appeal',
+                'action'          => 'create',
+                'ip'              => $ip,
+                'ua'              => $ua . ' ' . $lang,
+            ]);
 
-        GetBlockDetailsJob::dispatch($appeal);
+            GetBlockDetailsJob::dispatch($appeal);
+        });
+
+        /**
+         * Yes, this is a hard hack and not optimal, but we are still
+         * allowing these appeals to be created till other master tasks
+         * either prevent it or we go live with those wikis
+         **/
+        if ($appeal->wiki == "ptwiki" || $appeal->wiki == "global") {
+            LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #'.$appeal->id);
+        }
 
         return view('appeals.public.makeappeal.hash', [ 'hash' => $key ]);
     }
@@ -108,7 +118,7 @@ class PublicAppealController extends Controller
         $key = $request->input('appealsecretkey');
         $appeal = Appeal::where('appealsecretkey', $key)->firstOrFail();
 
-        abort_if($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_EXPIRE, 400, "Appeal is closed");
+        abort_if($appeal->status === Appeal::STATUS_ACCEPT || $appeal->status === Appeal::STATUS_DECLINE || $appeal->status === Appeal::STATUS_EXPIRE || $appeal->status === Appeal::STATUS_INVALID, 400, "Appeal is closed");
 
         $ua = $request->userAgent();
         $ip = $request->ip();
@@ -123,7 +133,7 @@ class PublicAppealController extends Controller
             'reason'          => $reason,
             'ip'              => $ip,
             'ua'              => $ua . ' ' . $lang,
-            'protected'       => 0,
+            'protected'       => Log::LOG_PROTECTION_NONE,
         ]);
 
         if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
