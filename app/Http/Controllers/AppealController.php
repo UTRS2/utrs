@@ -19,12 +19,6 @@ use Illuminate\Http\Request;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Arr;
-use App\Rules\SecretEqualsRule;
-use App\Jobs\GetBlockDetailsJob;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log as LaravelLog;
 
 class AppealController extends Controller
 {

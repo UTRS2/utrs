@@ -48,7 +48,7 @@ class AppealCommentsTest extends DuskTestCase
 
         $nonActiveTemplate = factory(Template::class)->create([ 'active' => false, ]);
 
-        $this->browse(function (Browser $browser) use ($appeal, $lastTemplate, $lastTemplateStart) {
+        $this->browse(function (Browser $browser) use ($appeal, $targetTemplate, $targetTemplateTextStart, $nonActiveTemplate) {
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(Appeal::STATUS_OPEN)
