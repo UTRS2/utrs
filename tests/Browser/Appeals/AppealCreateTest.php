@@ -13,6 +13,17 @@ class AppealCreateTest extends DuskTestCase
     use DatabaseMigrations;
     use TestHasUsers;
 
+    public function test_logged_in_user_cant_make_appeal()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->loginAs($this->getUser())
+                ->visit('/')
+                ->clickLink('Appeal my IP block')
+                ->assertDontSee('What wiki are you blocked on?')
+                ->assertSee('This action can only be performed by users who are not logged in.');
+        });
+    }
+
     public function test_can_create_account_block_appeal()
     {
         $this->browse(function (Browser $browser) {

@@ -18,7 +18,8 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
-            return redirect('/');
+            return redirect('/')
+                ->with('message', 'This action can only be performed by users who are not logged in.');
         }
 
         return $next($request);

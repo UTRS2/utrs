@@ -3,7 +3,7 @@
 
 @section('title', 'Your Appeal')
 @section('content')
-    @if(in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE]))
+    @if(in_array($appeal->status, [Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE]))
         <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
     @endif
     @if($appeal->status === Appeal::STATUS_NOTFOUND)
