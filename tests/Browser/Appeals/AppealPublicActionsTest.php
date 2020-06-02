@@ -40,7 +40,7 @@ class AppealPublicActionsTest extends DuskTestCase
                 ->assertSee('You are now modifying your appeal to be resubmitted. Please ensure the information is correct.')
                 ->assertInputValue('appealfor', $appeal->appealfor)
                 ->type('appealfor', 'Blocked user')
-                ->click('Submit')
+                ->press('Submit')
                 ->assertSee('Appeal for "Blocked user"');
         });
     }
