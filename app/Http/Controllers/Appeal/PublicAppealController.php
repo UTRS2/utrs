@@ -89,6 +89,8 @@ class PublicAppealController extends Controller
             ]);
 
             GetBlockDetailsJob::dispatch($appeal);
+
+            return $appeal;
         });
 
         /**
