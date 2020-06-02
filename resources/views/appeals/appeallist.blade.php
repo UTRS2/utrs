@@ -67,11 +67,9 @@
                     @elseif($appeal['status']=="TOOLADMIN")
                         <tr class="bg-info">
                     @elseif($appeal['status']=="CHECKUSER")
-                        <tr class="bg-warning">
+                        <tr class="bg-warning" style="color: #212529!important;">
                     @elseif($appeal['status']=="PROXY")
-                        <tr class="bg-warning">
-                    @elseif($appeal['status']=="PRIVACY")
-                        <tr class="bg-danger">
+                        <tr class="bg-warning" style="color: #212529!important;">
                     @else
                         <tr>
                     @endif
@@ -95,7 +93,7 @@
                                 on {{ $appeal->wiki }}
                             </td>
                             <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
-                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #00ffea;"') !!}</td>
+                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #00ffea!important;"') !!}</td>
                             <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
                         </tr>
                         @endforeach

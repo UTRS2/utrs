@@ -39,9 +39,14 @@ class AppealCommentsTest extends DuskTestCase
     {
         $appeal = factory(Appeal::class)->create();
 
-        factory(Template::class, 5)->create();
-        $lastTemplate = factory(Template::class)->create();
-        $lastTemplateStart = explode("\n", $lastTemplate->template)[0];
+        factory(Template::class, 2)->create([ 'active' => true, ]);
+
+        $targetTemplate = factory(Template::class)->create([ 'active' => true, ]);
+        $targetTemplateTextStart = explode("\n", $targetTemplate->template)[0];
+
+        factory(Template::class, 2)->create([ 'active' => true, ]);
+
+        $nonActiveTemplate = factory(Template::class)->create([ 'active' => false, ]);
 
         $this->browse(function (Browser $browser) use ($appeal, $lastTemplate, $lastTemplateStart) {
             $browser->loginAs($this->getUser())
@@ -49,19 +54,20 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee(Appeal::STATUS_OPEN)
                 ->assertDontSee(Appeal::STATUS_AWAITING_REPLY)
                 ->assertDontSee('Send a reply to user')
-                ->assertDontSee($lastTemplateStart)
+                ->assertDontSee($targetTemplateTextStart)
                 ->clickLink('Reserve')
                 ->clickLink('Send a reply to the user')
                 ->assertSee('On this screen, you will see a list of templates to choose from in responding to a user')
-                ->assertDontSee($lastTemplateStart)
-                ->assertSee($lastTemplate->name)
-                ->press($lastTemplate->name)
-                ->assertSee($lastTemplateStart)
-                ->select('#status-' . $lastTemplate->id, Appeal::STATUS_AWAITING_REPLY)
+                ->assertDontSee($targetTemplateTextStart)
+                ->assertSee($targetTemplate->name)
+                ->assertDontSee($nonActiveTemplate->name)
+                ->press($targetTemplate->name)
+                ->assertSee($targetTemplateTextStart)
+                ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
                 ->press('Submit')
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->assertDontSee(Appeal::STATUS_OPEN)
-                ->assertSee($lastTemplateStart);
+                ->assertSee($targetTemplateTextStart);
         });
 
         $appeal->refresh();

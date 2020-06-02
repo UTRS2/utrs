@@ -12,7 +12,6 @@ use App\User;
 use App\Wikitask;
 use Auth;
 use Illuminate\Http\Request;
-use Redirect;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
