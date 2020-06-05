@@ -30,7 +30,7 @@ Route::post('/appeal/checkuser/{id}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
 Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
-Route::get('/appeal/release/{id}', 'AppealController@release');
+Route::post('/appeal/release/{id}', 'AppealController@release')->name('appeal.action.release');
 Route::get('/appeal/open/{id}', 'AppealController@open');
 Route::get('/appeal/findagain/{id}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
