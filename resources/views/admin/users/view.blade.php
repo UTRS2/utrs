@@ -61,7 +61,6 @@
                         <th>WMF Staff</th>
                         <th>UTRS Developer</th>
                         <th>Tool admin</th>
-                        <th>Privacy</th>
                         <th>Sysop</th>
                         <th>User</th>
                     </tr>
