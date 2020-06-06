@@ -66,7 +66,6 @@ class UserPolicy
         $permissionsNeeded = [
             'developer' => ['developer'], // only developers can assign developer permissions
             'tooladmin' => ['tooladmin', 'developer'], // tooladmins can make other people to tooladmins,
-            'privacy' => ['developer'], // TODO: this should allow users with both tooladmin and privacy rights should be able to assign privacy
         ];
 
         if (!Arr::exists($permissionsNeeded, $permission)) {
