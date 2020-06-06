@@ -46,7 +46,7 @@ class BanPolicy
             return true;
         }
 
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['oversight', 'steward', 'staff', 'developer', 'privacy']);
+        return $user->hasAnySpecifiedPermsOnAnyWiki(['oversight', 'steward', 'staff', 'developer']);
     }
 
     /**
