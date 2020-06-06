@@ -30,7 +30,7 @@ class GetBlockDetailsJob implements ShouldQueue
 
     /**
      * Handle the data returned from the API calls
-     * @param  [type] $blockData [description]
+     * @param array $blockData block details from mediawiki api
      * @return void
      */
     public function handleBlockData($blockData)

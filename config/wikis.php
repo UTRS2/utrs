@@ -5,8 +5,8 @@
  */
 return [
     'login' => [
-        'username' => env('MEDIAWIKI_USERNAME'),
-        'password' => env('MEDIAWIKI_PASSWORD'),
+        'username' => env('MEDIAWIKI_USERNAME', ''),
+        'password' => env('MEDIAWIKI_PASSWORD', ''),
     ],
 
     'globalwiki' => [
