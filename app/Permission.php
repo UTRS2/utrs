@@ -155,6 +155,6 @@ class Permission extends Model
 
     public static function checkToolAdmin($id, $wiki)
     {
-        return self::hasAnyPermission($id, $wiki, ['tooladmin', 'oversight', 'checkuser']) || self::hasAnyPermission($id, '*', ['developer', 'steward', 'staff', 'developer', 'privacy']);
+        return self::hasAnyPermission($id, $wiki, ['tooladmin', 'oversight', 'checkuser']) || self::hasAnyPermission($id, '*', ['tooladmin', 'developer', 'steward', 'staff', 'developer', 'privacy']);
     }
 }

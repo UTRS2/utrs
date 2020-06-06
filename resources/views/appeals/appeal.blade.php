@@ -175,15 +175,19 @@
                                                         <a href="/appeal/reserve/{{ $id }}" class="btn btn-success">
                                                             Reserve
                                                         </a>
-                                                    @elseif($info->handlingadmin != null && $info->handlingadmin == Auth::id())
-                                                        <a href="/appeal/release/{{ $id }}" class="btn btn-success">
-                                                            Release
-                                                        </a>
-                                                    @elseif($info->handlingadmin != null && $info->handlingadmin != Auth::id())
+                                                    @elseif($info->handlingadmin == Auth::id() || $perms['tooladmin'] || $perms['developer'])
+                                                        <form action="{{ route('appeal.action.release', $info) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-success">
+                                                                @if($info->handlingadmin != Auth::id()) Force @endif
+                                                                Release
+                                                            </button>
+                                                        </form>
+                                                    @else
                                                         <button class="btn btn-success" disabled>
                                                             Reserve
                                                         </button>
-                                                    @endif
+                                                    @endif {{-- disabled button --}}
                                                     @if($perms['developer'])
                                                         <a href="/appeal/invalidate/{{ $id }}" class="btn btn-danger">
                                                             Invalidate
