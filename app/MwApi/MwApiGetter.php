@@ -18,12 +18,12 @@ class MwApiGetter
         }
 
         $api = new MediawikiApi(MwApiUrls::getWikiUrl($wiki));
+
         if (config('wikis.login.username') && config('wikis.login.password')) {
             $api->login(new ApiUser(config('wikis.login.username'), config('wikis.login.password')));
         } else {
             Log::warning('Not logging in to MediaWiki, no credentials provided');
         }
-
 
         return self::$loadedApis[$wiki] = $api;
     }
