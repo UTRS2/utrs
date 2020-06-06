@@ -6,6 +6,7 @@ use App\Ban;
 use App\Log;
 use App\Appeal;
 use App\MwApi\MwApiExtras;
+use App\Utils\IPUtils;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,15 +30,38 @@ class GetBlockDetailsJob implements ShouldQueue
     }
 
     /**
+     * Utility method to check if block target given by user needs correcting
+     * @param string $givenBlockTarget Block target given by the blocked user in the form
+     * @param string $actualBlockTarget Block target queried from MediaWiki API
+     * @return bool true if block target should be corrected in the database, false otherwise
+     */
+    private function shouldCorrectBlockTarget(string $givenBlockTarget, string $actualBlockTarget)
+    {
+        // if it's already correct, no need to do anything
+        if (strtolower($givenBlockTarget) === strtolower($actualBlockTarget)) {
+            return false;
+        }
+
+        // if it's a range and given ip is inside it, no need to do anything
+        if (IPUtils::isIpRange($actualBlockTarget) && IPUtils::isIp($givenBlockTarget)
+            && IPUtils::isIpInsideRange($actualBlockTarget, $givenBlockTarget)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Handle the data returned from the API calls
      * @param array $blockData block details from mediawiki api
      * @return void
      */
     public function handleBlockData($blockData)
     {
-        $status = 'OPEN';
+        $status = Appeal::STATUS_OPEN;
 
-        if (isset($blockData['user']) && !empty($blockData['user']) && $this->appeal->appealfor !== $blockData['user']) {
+        if (isset($blockData['user']) && !empty($blockData['user'])
+            && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $blockData['user'])) {
             $this->appeal->appealfor = $blockData['user'];
 
             $ban = Ban::where('ip', '=', 0)
@@ -46,7 +70,7 @@ class GetBlockDetailsJob implements ShouldQueue
                 ->first();
 
             if ($ban) {
-                $status = 'INVALID';
+                $status = Appeal::STATUS_INVALID;
 
                 Log::create([
                     'user' => 0,
@@ -70,7 +94,8 @@ class GetBlockDetailsJob implements ShouldQueue
 
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
         if (!$this->appeal->user_verified && !$this->appeal->verify_token
-            && isset($blockData['user']) && $this->appeal->blocktype !== 0 && $this->appeal->status !== 'INVALID') {
+            && isset($blockData['user']) && $this->appeal->blocktype !== 0
+            && $this->appeal->status !== Appeal::STATUS_INVALID) {
             VerifyBlockJob::dispatch($this->appeal);
         }
     }
@@ -105,7 +130,7 @@ class GetBlockDetailsJob implements ShouldQueue
         }
 
         $this->appeal->update([
-            'status' => 'NOTFOUND',
+            'status' => Appeal::STATUS_NOTFOUND,
         ]);
     }
 }
