@@ -704,6 +704,7 @@ class AppealController extends Controller
 
     public function verifyAccountOwnership(Request $request, Appeal $appeal)
     {
+        abort_unless((strlen($appeal->verify_token) > 0 && strlen($appeal->appealsecretkey) > 0), 400, "This appeal can't be verified");
         $request->validate([
             'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
             'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
@@ -720,9 +721,9 @@ class AppealController extends Controller
 
         Log::create([
             'user' => 0,
-            'referenceobject'=> $appeal->id,
-            'objecttype'=>'appeal',
-            'action'=>'account verifed',
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'account verifed',
             'ip' => $ip,
             'ua' => $ua . " " .$lang
         ]);
