@@ -162,7 +162,7 @@ class AppealController extends Controller
 
         $user->checkRead();
 
-        $isTooladmin = $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
+        $isTooladmin = $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin') || $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
 
         if ($user->wikis === '*' || $isDeveloper) {
