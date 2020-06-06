@@ -91,7 +91,6 @@
     </div>
 
     @can('update', $user)
-        <!-- depends on PR #88
         <div class="card mb-4">
             <h5 class="card-header">Options</h5>
             <div class="card-body">
@@ -102,7 +101,7 @@
                 </div>
             </div>
         </div>
-        -->
+        
 
         <div class="card mb-4">
             <h5 class="card-header">Save changes</h5>
