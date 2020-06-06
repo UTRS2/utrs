@@ -42,8 +42,7 @@ class AppealPolicy
         }
 
         // view also has some filters
-        return in_array($appeal->status, [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_AWAITING_REPLY,
-                                          Appeal::STATUS_OPEN, Appeal::STATUS_ADMIN, Appeal::STATUS_CHECKUSER]);
+        return !in_array($appeal->status, Appeal::REGULAR_NO_VIEW_STATUS);
     }
 
     /**

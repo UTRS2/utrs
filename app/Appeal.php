@@ -16,6 +16,12 @@ class Appeal extends Model
         self::STATUS_EXPIRE         => self::STATUS_EXPIRE,
     ];
 
+    const REGULAR_NO_VIEW_STATUS = [
+        self::STATUS_INVALID        => self::STATUS_INVALID,
+        self::STATUS_NOTFOUND       => self::STATUS_NOTFOUND,
+        self::STATUS_VERIFY         => self::STATUS_VERIFY,
+    ];
+
     const STATUS_OPEN = 'OPEN';
     const STATUS_VERIFY = 'VERIFY'; // appeals that are waiting to be checked from MediaWiki API
     const STATUS_AWAITING_REPLY = 'AWAITING_REPLY';
