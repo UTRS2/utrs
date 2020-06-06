@@ -99,6 +99,7 @@ class User extends Authenticatable
             ->contains(function (Permission $permission) use ($wantedPerms) {
                 return $permission->hasAnySpecifiedPerms($wantedPerms);
             });
+    }
 
     /**
      * Queue jobs to load and update permissions of this user on all supported wikis
