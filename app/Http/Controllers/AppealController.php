@@ -16,7 +16,6 @@ use App\User;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 
@@ -562,35 +561,5 @@ class AppealController extends Controller
         } else {
             abort(403);
         }
-    }
-
-    public function findagain($id, Request $request)
-    {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-
-        $dev = Permission::checkSecurity($user, "DEVELOPER", "*");
-        if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {
-            GetBlockDetailsJob::dispatch($appeal);
-            Log::create([
-                'user' => Auth::id(),
-                'referenceobject'=> $appeal->id,
-                'objecttype'=>'appeal',
-                'action'=>'reverify block',
-                'ip' => $ip,
-                'ua' => $ua . " " .$lang
-            ]);
-
-        } else {
-            abort(403,'Not developer/Not NOTFOUND');
-        }
-        return redirect('appeal/' . $id);
     }
 }

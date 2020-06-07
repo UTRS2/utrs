@@ -7,6 +7,33 @@ use PHPUnit\Framework\TestCase;
 
 class IPUtilsTest extends TestCase
 {
+    public function test_detects_ipv4_addresses()
+    {
+        $this->assertTrue(IPUtils::isIp('1.2.3.4'));
+        $this->assertTrue(IPUtils::isIp('100.200.1.1'));
+        $this->assertTrue(IPUtils::isIp('255.255.255.255'));
+    }
+
+    public function test_detects_ipv6_addresses()
+    {
+        $this->assertTrue(IPUtils::isIp('2606:4700:4700::1111'));
+        $this->assertTrue(IPUtils::isIp('2400:cb00:2048:1::c629:d7a2'));
+    }
+
+    public function test_does_not_detect_malformed_ipv4_addresses()
+    {
+        $this->assertFalse(IPUtils::isIp('1.1.1.256'));
+        $this->assertFalse(IPUtils::isIp('1.1.1'));
+        $this->assertFalse(IPUtils::isIp('1.1.1.1.1'));
+    }
+
+    public function test_does_not_detect_ipv4_ranges_as_addresses()
+    {
+        $this->assertFalse(IPUtils::isIp('10.1.1.0/24'));
+        $this->assertFalse(IPUtils::isIp('10.20.16.0/21'));
+        $this->assertFalse(IPUtils::isIp('10.66.23.123/32'));
+    }
+
     public function test_detects_ipv4_ranges()
     {
         $this->assertTrue(IPUtils::isIpRange('10.1.1.0/24'));
