@@ -58,6 +58,12 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
+        if ($user->id === $model->id) {
+            // allow user to view their own profile; currently this only means that they can refresh their permissions
+            // if adding more capabilities for user profiles in the future, please make sure that this won't create any security issues
+            return true;
+        }
+
         return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
     }
 
