@@ -21,7 +21,7 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function listbans()
+    public function listbans(Request $request)
     {
         $this->authorize('viewAny', Ban::class);
         $allbans = Ban::all();

@@ -46,7 +46,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+        return false;
     }
 
     /**

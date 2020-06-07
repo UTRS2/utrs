@@ -72,7 +72,7 @@ class UserController extends Controller
             $allChanges = [];
 
             if (isset($data['refresh_from_wiki']) && $data['refresh_from_wiki'] == 1) {
-                // $user->queuePermissionChecks(); // depends on PR #88
+                $user->queuePermissionChecks();
                 $allChanges[] = 'queue wiki permission reload';
             }
 
