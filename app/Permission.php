@@ -27,6 +27,11 @@ class Permission extends Model
         return $this->wiki === '*' ? 'global' : $this->wiki;
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userid');
+    }
+
     /**
      * checks if this permission object has any of specified permissions present
      * @param array $perms permissions to check
