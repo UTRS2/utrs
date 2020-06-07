@@ -6,15 +6,17 @@ use App\Appeal;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
+use App\MwApi\MwApiUrls;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PublicAppealModifyController extends Controller
 {
     public function showForm($hash)
     {
-        $appeal = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
+        $appeal = Appeal::where('appealsecretkey', $hash)->firstOrFail();
 
-        if ($appeal->status !== "NOTFOUND") {
+        if ($appeal->status !== Appeal::STATUS_NOTFOUND) {
             abort(403, "Appeal is not available to be modified.");
         }
 
@@ -28,21 +30,18 @@ class PublicAppealModifyController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $hash = $request->input('hash');
 
-        $appeal = Appeal::where('appealsecretkey', '=', $hash)
-            ->where('status', 'NOTFOUND')
+        $appeal = Appeal::where('appealsecretkey', $hash)
+            ->where('status', Appeal::STATUS_NOTFOUND)
             ->firstOrFail();
 
         $data = $request->validate([
-            'appealfor' => 'required',
-            'wiki'      => 'required',
+            'appealfor' => 'required|max:100',
+            'wiki'      => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
             'blocktype' => 'required|numeric|max:2|min:0',
+            'hiddenip'  => 'nullable|ip',
         ]);
 
-        if ($request['hiddenip'] !== null) {
-            $appeal->hiddenip = $request->input('hiddenip');
-        }
-
-        $appeal->status = "VERIFY";
+        $appeal->status = Appeal::STATUS_VERIFY;
         $appeal->update($data);
 
         Log::create([

@@ -14,8 +14,8 @@ use App\Sendresponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log as LaravelLog;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\IpUtils;
 
 class PublicAppealController extends Controller
@@ -28,7 +28,7 @@ class PublicAppealController extends Controller
 
         $data = $request->validate([
             'appealtext' => 'required|max:4000',
-            'appealfor'  => 'required',
+            'appealfor'  => 'required|max:100',
             'wiki'       => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
             'blocktype'  => 'required|numeric|max:2|min:0',
         ]);
@@ -40,7 +40,7 @@ class PublicAppealController extends Controller
         $recentAppealExists = Appeal::where('appealfor', $request->input('appealfor'))
             ->where(function (Builder $query) {
                 return $query
-                    ->whereNotIn('status', [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE])
+                    ->whereNotIn('status', [ Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE ])
                     ->orWhere('submitted', '>=', now()->modify('-2 days'));
             })
             ->exists();
@@ -99,7 +99,7 @@ class PublicAppealController extends Controller
          * either prevent it or we go live with those wikis
          **/
         if ($appeal->wiki == "ptwiki" || $appeal->wiki == "global") {
-            LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #'.$appeal->id);
+            LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #' . $appeal->id);
         }
 
         return view('appeals.public.makeappeal.hash', [ 'hash' => $key ]);
@@ -156,6 +156,8 @@ class PublicAppealController extends Controller
 
     public function verifyAccountOwnership(Request $request, Appeal $appeal)
     {
+        abort_unless((strlen($appeal->verify_token) > 0 && strlen($appeal->appealsecretkey) > 0), 400, "This appeal can't be verified");
+
         $request->validate([
             'verify_token' => [ 'required', new SecretEqualsRule($appeal->verify_token) ],
             'secret_key'   => [ 'required', new SecretEqualsRule($appeal->appealsecretkey) ],
@@ -185,6 +187,6 @@ class PublicAppealController extends Controller
 
     public function redirectLegacy(Request $request)
     {
-        return redirect()->route('public.appeal.view', ['hash' => $request->input('hash')]);
+        return redirect()->route('public.appeal.view', [ 'hash' => $request->input('hash') ]);
     }
 }
