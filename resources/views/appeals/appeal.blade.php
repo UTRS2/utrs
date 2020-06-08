@@ -216,9 +216,12 @@
                                                         <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
                                                             CheckUser
                                                         </button>
-                                                        <a href="/appeal/tooladmin/{{ $id }}" class="btn btn-warning">
-                                                            Tool admin
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.tooladmin', $info) }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            <button class="btn btn-warning">
+                                                                Tool admin
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 @endif
                                                 @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_AWAITING_REPLY && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
