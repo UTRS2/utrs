@@ -45,7 +45,7 @@ Route::get('/appeal/findagain/{id}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
 Route::post('/appeal/checkuserreview/{appeal}', 'AppealController@checkuserreview')->name('appeal.action.checkuser');
 Route::get('/appeal/privacy/{id}', 'AppealController@privacy');
-Route::get('/appeal/admin/{id}', 'AppealController@admin');
+Route::post('/appeal/tooladmin/{appeal}', 'AppealController@admin')->name('appeal.action.tooladmin');
 Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
 
 Route::get('/appeal/template/{appeal}', 'AppealController@viewtemplates')->name('appeal.template');

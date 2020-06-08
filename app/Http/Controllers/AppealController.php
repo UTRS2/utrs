@@ -540,26 +540,32 @@ class AppealController extends Controller
         return redirect()->back();
     }
 
-    public function admin($id, Request $request)
+    public function admin(Request $request, Appeal $appeal)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
+        abort_unless(Auth::check(), 403, 'No logged in user');
         Auth::user()->checkRead();
-        $appeal = Appeal::findOrFail($id);
+
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if($appeal->status === Appeal::STATUS_ADMIN, 400, 'This appeal is already waiting for tool administrator review.');
+
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        if ($admin && $appeal->status !== Appeal::STATUS_ADMIN) {
-            $appeal->status = Appeal::STATUS_ADMIN;
-            $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'sent for admin review', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE));
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
-        }
+        $lang = $request->header('Accept-Language');
+
+        $appeal->status = Appeal::STATUS_ADMIN;
+        $appeal->save();
+        Log::create([
+            'user' => $user,
+            'referenceobject' => $appeal->id,
+            'objecttype' => 'appeal',
+            'action' => 'sent for admin review',
+            'ip' => $ip,
+            'ua' => $ua . " " . $lang,
+            'protected' => Log::LOG_PROTECTION_NONE
+        ]);
+
+        return redirect()->back();
     }
 }
