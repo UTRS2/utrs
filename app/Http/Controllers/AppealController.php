@@ -696,8 +696,8 @@ class AppealController extends Controller
             'action' => 'sent for admin review',
             'ip' => $ip,
             'ua' => $ua . " " . $lang,
-            'protected' => Log::LOG_PROTECTION_NONE]
-        );
+            'protected' => Log::LOG_PROTECTION_NONE
+        ]);
 
         return redirect()->back();
     }
