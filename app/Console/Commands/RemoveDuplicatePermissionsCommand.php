@@ -18,7 +18,7 @@ class RemoveDuplicatePermissionsCommand extends Command
 
     public function handle()
     {
-        if (!isset($this->argument('--dry'))) {
+        if ($this->argument('--dry')!==NULL) {
             if (!$this->confirm('You are about to run a live database change. Are you sure? (Did you test it?)')) {
                 return 1;
             }
@@ -33,7 +33,7 @@ class RemoveDuplicatePermissionsCommand extends Command
         $progressBar->display();
 
         foreach ($duplicates as $duplicate) {
-            if (!isset($this->argument('--dry'))) {
+            if ($this->argument('--dry')!==NULL) {
                 /** @var Permission $duplicate */
                 $this->info("Removing duplicates for user $duplicate->userid in wiki $duplicate->wiki...");
 
