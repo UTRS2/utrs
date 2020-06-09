@@ -58,7 +58,10 @@ Route::get('/publicappeal', 'Appeal\PublicAppealController@redirectLegacy');
 
 Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
 
-Route::get('/admin/users', 'AdminController@listusers');
+Route::get('/admin/users', 'Admin\UserController@index')->name('admin.users.list');
+Route::get('/admin/users/{user}', 'Admin\UserController@show')->name('admin.users.view');
+Route::post('/admin/users/{user}', 'Admin\UserController@update')->name('admin.users.update');
+
 Route::get('/admin/bans', 'AdminController@listbans');
 Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
 Route::get('/admin/templates', 'AdminController@listtemplates');

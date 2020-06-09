@@ -15,7 +15,7 @@ class MwApiUrls
      * 
      * @param  string $wiki - the wiki called to get the config on
      * @param  string $name - the key for the config
-     * @param  any $default - default to return in key doesn't exist in config
+     * @param  $default - default to return in key doesn't exist in config
      * @return string - the wiki property value
      */
     public static function getWikiProperty(string $wiki, string $name, $default = null)

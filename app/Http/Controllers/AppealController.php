@@ -27,13 +27,8 @@ class AppealController extends Controller
 
         $info = Appeal::find($id);
         if (is_null($info)) {
-            $info = Oldappeal::find($id);
-            abort_if(is_null($info), 404, 'Appeal does not exist or you do not have access to it.');
-
-            //Enwiki is hardcoded here as all previous appeals were only on enwiki.
-            //Since that had a different policy at the time, we have to still observe the same privacy level.
-            $isAdmin = Permission::checkAdmin(Auth::id(), 'enwiki');
-            abort_unless($isAdmin, 403, 'You are not an administrator on the wiki this appeal is for.');
+            $info = Oldappeal::findOrFail($id);
+            $this->authorize('view', $info);
 
             $comments = $info->comments;
             $userlist = [];
@@ -50,73 +45,48 @@ class AppealController extends Controller
 
             return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist' => $userlist]);
         } else {
-            $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
-            User::findOrFail(Auth::id())->checkRead();
-            $appeal = Appeal::findOrFail($id);
-            $user = Auth::id();
-            $admin = Permission::checkAdmin($user, $appeal->wiki);
-            abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for.");
+            $this->authorize('view', $info);
+            $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
 
-            $closestatus = ($info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE);
-            abort_if($info->status == Appeal::STATUS_INVALID && !$isDeveloper, 404, 'This appeal has been marked invalid.');
+            $logs = $info->comments;
 
-            if (($info->status == Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY || $info->status == Appeal::STATUS_ADMIN || $info->status == Appeal::STATUS_CHECKUSER || $closestatus) || $isDeveloper) {
-                $logs = $info->comments()->get();
-                $userlist = [];
+            $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
 
-                if (!is_null($info->handlingadmin)) {
-                    $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
-                }
+            $perms = [];
+            $perms['checkuser'] = Permission::checkCheckuser(Auth::id(), $info->wiki);
+            $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
+            $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
+            $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(), $info->wiki);
+            $perms['developer'] = $isDeveloper;
 
-                $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
+            $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
+            $checkuserdone = $info->comments()
+                ->where('user', Auth::id())
+                ->where('action', 'checkuser')
+                ->exists();
 
-                $perms['checkuser'] = Permission::checkCheckuser(Auth::id(), $info->wiki);
-                $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
-                $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
-                $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(), $info->wiki);
-                $perms['developer'] = boolval($isDeveloper);
+            $previousAppeals = Appeal::where('wiki', $info->wiki)
+                ->where(function ($query) use ($info) {
+                    $query->where('appealfor', $info->appealfor)
+                        ->orWhere('hiddenip', $info->appealfor);
+                })
+                ->where('id', '!=', $info->id)
+                ->where('status', '!=', Appeal::STATUS_INVALID)
+                ->where('status', '!=', Appeal::STATUS_NOTFOUND)
+                ->with('handlingAdminObject')
+                ->orderByDesc('id')
+                ->get();
 
-                $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
-
-                $checkuserdone = $info->comments()
-                    ->where('user', Auth::id())
-                    ->where('action', 'checkuser')
-                    ->exists();
-
-                foreach($logs as $log) {
-                    if (is_null($log->user) || $log->user === 0 || $log->user === -1 || in_array($log->user, $userlist)) {
-                        continue;
-                    }
-
-                    $userlist[$log->user] = User::findOrFail($log->user)->username;
-                }
-
-                $previousAppeals = Appeal::where('wiki', $info->wiki)
-                    ->where(function ($query) use ($info) {
-                        $query->where('appealfor', $info->appealfor)
-                            ->orWhere('hiddenip', $info->appealfor);
-                    })
-                    ->where('id', '!=', $info->id)
-                    ->where('status', '!=', Appeal::STATUS_INVALID)
-                    ->where('status', '!=', Appeal::STATUS_NOTFOUND)
-                    ->with('handlingAdminObject')
-                    ->orderByDesc('id')
-                    ->get();
-
-                return view('appeals.appeal', [
-                    'id' => $id,
-                    'info' => $info,
-                    'comments' => $logs,
-                    'userlist' => $userlist,
-                    'cudata' => $cudata,
-                    'checkuserdone' => $checkuserdone,
-                    'perms' => $perms,
-                    'replies' => $replies,
-                    'previousAppeals' => $previousAppeals,
-                ]);
-            } else {
-                return view('appeals.deny');
-            }
+            return view('appeals.appeal', [
+                'id' => $id,
+                'info' => $info,
+                'comments' => $logs,
+                'cudata' => $cudata,
+                'checkuserdone' => $checkuserdone,
+                'perms' => $perms,
+                'replies' => $replies,
+                'previousAppeals' => $previousAppeals,
+            ]);
         }
     }
 
@@ -128,8 +98,8 @@ class AppealController extends Controller
 
         $user->checkRead();
 
-        $isTooladmin = false;
-        $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER", "*");
+        $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
+        $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
 
         if ($user->wikis === '*' || $isDeveloper) {
             $wikis = collect(MwApiUrls::getSupportedWikis())
@@ -137,14 +107,8 @@ class AppealController extends Controller
         } else {
             $wikis = collect(explode(',', $user->wikis ?? ''))
                 ->filter(function ($wiki) use ($user) {
-                    return Permission::checkAdmin($user->id, $wiki);
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
                 });
-        }
-
-        foreach ($wikis as $wiki) {
-            if (!$isTooladmin && Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $isTooladmin = true;
-            }
         }
 
         $hiddenStatuses = $isDeveloper
