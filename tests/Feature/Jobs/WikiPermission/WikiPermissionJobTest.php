@@ -45,7 +45,7 @@ class WikiPermissionJobTest extends TestCase
         })
             ->makePartial();
 
-        $groups = ['user', 'admin'];
+        $groups = ['user', 'sysop'];
 
         $reflection = new ReflectionClass(get_class($job));
         $method = $reflection->getMethod('validateToolUserPermission');
@@ -53,11 +53,11 @@ class WikiPermissionJobTest extends TestCase
 
         $newUser = $this->getMediawikiUser($user->name, 30);
         $newUserGroups = $method->invokeArgs($job, [$newUser, $groups]);
-        $this->assertEquals(['admin'], $newUserGroups, 'user with less than 500 edits should not have group "user"');
+        $this->assertEquals(['sysop'], $newUserGroups, 'user with less than 500 edits should not have group "user"');
 
         $oldUser = $this->getMediawikiUser($user->name, 3000);
         $oldUserGroups = $method->invokeArgs($job, [$oldUser, $groups]);
-        $this->assertEquals(['user', 'admin'], $oldUserGroups, 'user with more than 500 edits should have group "user"');
+        $this->assertEquals(['user', 'sysop'], $oldUserGroups, 'user with more than 500 edits should have group "user"');
     }
 
     public function test_it_filters_user_out_without_sysop()
@@ -91,7 +91,7 @@ class WikiPermissionJobTest extends TestCase
         })
             ->makePartial();
 
-        $groups = ['user', 'admin'];
+        $groups = ['user', 'sysop'];
 
         $reflection = new ReflectionClass(get_class($job));
         $method = $reflection->getMethod('validateToolUserPermission');
@@ -99,7 +99,7 @@ class WikiPermissionJobTest extends TestCase
 
         $blockedUser = $this->getMediawikiUser($user->name, 3000);
         $newUserGroups = $method->invokeArgs($job, [$blockedUser, $groups]);
-        $this->assertEquals(['admin'], $newUserGroups, 'blocked user should not have group "user"');
+        $this->assertEquals(['sysop'], $newUserGroups, 'blocked user should not have group "user"');
     }
 
     public function test_it_updates_wikis_on_user()

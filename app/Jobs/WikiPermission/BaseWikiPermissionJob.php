@@ -109,8 +109,7 @@ abstract class BaseWikiPermissionJob
             return [];
         }
 
-        $groups = array_map('self::getGroupName', $user->getGroups());
-        return $this->validateToolUserPermission($user, $groups);
+        return $this->validateToolUserPermission($user, $user->getGroups());
     }
 
     /**
@@ -121,7 +120,7 @@ abstract class BaseWikiPermissionJob
         $permissions = $this->getUserPermissions();
         $permissionsToUpdate = collect($this->getPermissionsToCheck())
             ->mapWithKeys(function ($permissionName) use ($permissions) {
-                return [$permissionName => in_array($permissionName, $permissions) ? 1 : 0];
+                return [$this->getGroupName($permissionName) => in_array($permissionName, $permissions) ? 1 : 0];
             })
             ->toArray();
 

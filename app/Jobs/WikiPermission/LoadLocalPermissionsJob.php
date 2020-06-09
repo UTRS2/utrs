@@ -45,7 +45,7 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
 
     public function shouldHaveUser(MediawikiUser $user, array $groups)
     {
-        return in_array('admin', $groups);
+        return in_array('sysop', $groups);
     }
 
     public function getPermissionsToCheck()
@@ -60,6 +60,6 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
 
     public function checkIsBlocked()
     {
-        return MwApiExtras::getBlockInfo($this->getPermissionWikiId(), $this->user->username) !== null;
+        return MwApiExtras::getBlockInfo($this->getPermissionWikiId(), $this->user->username, -1) !== null;
     }
 }

@@ -50,7 +50,7 @@
                                 <br/>Time Submitted: {{ $info->submitted }}
                                 <br/>Wiki: {{ $info->wiki }}
                                 @if(!is_null($info->handlingadmin))
-                                    <br/>Handling Admin: {{ $userlist[$info->handlingadmin] }}
+                                    <br/>Handling Admin: {{ $info->handlingAdminObject->username }}
                                 @endif
                                 <br/>
 
@@ -360,7 +360,11 @@
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
-                                    <td><i>{{ $userlist[$comment->user] }}</i></td>
+                                    @if($perms['tooladmin'])
+                                        <td><i><a href="{{ route('admin.users.view', $comment->userObject) }}" class="text-light">{{ $comment->userObject->username }}</a></i></td>
+                                    @else
+                                        <td><i>{{ $comment->userObject->username }}</i></td>
+                                    @endif
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
                                 @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
@@ -383,7 +387,11 @@
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
-                                    <td>{{ $userlist[$comment->user] }}</td>
+                                    @if($perms['tooladmin'])
+                                        <td><i><a href="{{ route('admin.users.view', $comment->userObject) }}" class="text-light">{{ $comment->userObject->username }}</a></i></td>
+                                    @else
+                                        <td><i>{{ $comment->userObject->username }}</i></td>
+                                    @endif
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
@@ -402,7 +410,11 @@
                                 @elseif($comment->user === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
-                                    <td>{{ $userlist[$comment['commentUser']] }}</td>
+                                    @if($perms['tooladmin'])
+                                        <td><i><a href="{{ route('admin.users.view', $comment->userObject) }}" class="text-light">{{ $comment->userObject->username }}</a></i></td>
+                                    @else
+                                        <td><i>{{ $comment->userObject->username }}</i></td>
+                                    @endif
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])

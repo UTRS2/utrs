@@ -15,7 +15,7 @@ class MwApiUrls
      * 
      * @param  string $wiki - the wiki called to get the config on
      * @param  string $name - the key for the config
-     * @param  any $default - default to return in key doesn't exist in config
+     * @param  $default - default to return in key doesn't exist in config
      * @return string - the wiki property value
      */
     public static function getWikiProperty(string $wiki, string $name, $default = null)
@@ -47,10 +47,17 @@ class MwApiUrls
     }
 
     /**
+     * @param bool $includeGlobal if true, 'global' will be included, otherwise not
      * @return array an array of individual wikis that have their api url available
      */
-    public static function getSupportedWikis()
+    public static function getSupportedWikis($includeGlobal = false)
     {
+        if ($includeGlobal) {
+            return collect(self::getSupportedWikis(false))
+                ->push('global')
+                ->toArray();
+        }
+
         return array_keys(config('wikis.wikis'));
     }
 
@@ -59,8 +66,7 @@ class MwApiUrls
      */
     public static function getWikiDropdown()
     {
-        return collect(self::getSupportedWikis())
-            ->push('global')
+        return collect(self::getSupportedWikis(true))
             ->mapWithKeys(function ($wiki) {
                 return [$wiki => self::getWikiProperty($wiki, 'name')];
             })

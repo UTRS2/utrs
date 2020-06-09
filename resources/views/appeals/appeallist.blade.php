@@ -5,7 +5,7 @@
             <h5 class="card-header">Admin tools</h5>
             <div class="card-body">
                 <div class="alert alert-danger" role="alert">
-                    Managing templates is the only functional option at this time.
+                    Managing templates <i>and users</i> is the only functional option at this time.
                 </div>
                 <a href="/admin/templates">
                     <button type="button" class="btn btn-primary">Manage Templates</button>

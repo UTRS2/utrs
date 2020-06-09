@@ -18,7 +18,7 @@ class AppealListTest extends DuskTestCase
             $browser->loginAs($this->getUser([], ['verified' => 0]))
                 ->visit('/review')
                 ->assertSee('403')
-                ->assertSee('User is not verified')
+                ->assertSee('Your account has not been verified yet.')
                 ->assertDontSee('Current appeals');
         });
     }
