@@ -41,7 +41,7 @@ Route::get('/appeal/respond/{id}', 'AppealController@respond');
 Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
 Route::post('/appeal/release/{id}', 'AppealController@release')->name('appeal.action.release');
 Route::get('/appeal/open/{id}', 'AppealController@open');
-Route::get('/appeal/findagain/{id}', 'AppealController@findagain');
+Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
 Route::post('/appeal/checkuserreview/{appeal}', 'AppealController@checkuserreview')->name('appeal.action.checkuser');
 Route::get('/appeal/privacy/{id}', 'AppealController@privacy');

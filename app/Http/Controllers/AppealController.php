@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Appeal;
+use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\MwApi\MwApiUrls;
 use App\Oldappeal;
@@ -528,6 +529,33 @@ class AppealController extends Controller
             'ip' => $ip,
             'ua' => $ua . " " . $lang,
             'protected' => Log::LOG_PROTECTION_NONE
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function findagain(Request $request, Appeal $appeal)
+    {
+        abort_unless(Auth::check(), 403, 'No logged in user');
+        /** @var User $user */
+        $user = $request->user();
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
+        $dev = $user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer');
+        abort_unless($dev,403,"You are not an UTRS developer");
+        abort_if($appeal->status !== Appeal::STATUS_NOTFOUND && $appeal->status !== Appeal::STATUS_VERIFY, 400, 'Appeal details were already found.');
+
+        GetBlockDetailsJob::dispatch($appeal);
+        Log::create([
+            'user' => Auth::id(),
+            'referenceobject'=> $appeal->id,
+            'objecttype'=>'appeal',
+            'action'=>'reverify block',
+            'ip' => $ip,
+            'ua' => $ua . " " .$lang
         ]);
 
         return redirect()->back();
