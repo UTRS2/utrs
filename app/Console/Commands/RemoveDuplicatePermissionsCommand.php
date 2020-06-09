@@ -11,11 +11,6 @@ class RemoveDuplicatePermissionsCommand extends Command
                             {--dry : A dry run of the command should be ran}';
     protected $description = 'Clears up legacy duplicate permissions from the database';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function handle()
     {
         $dry = $this->option('dry');
