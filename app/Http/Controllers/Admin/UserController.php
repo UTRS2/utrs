@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\MwApi\MwApiUrls;
 use DB;
 use App\Log;
 use App\Permission;
@@ -76,21 +77,34 @@ class UserController extends Controller
                 $allChanges[] = 'queue wiki permission reload';
             }
 
-            foreach ($user->permissions as $permission) {
+            foreach (MwApiUrls::getSupportedWikis(true) as $wiki) {
+                $wikiDbName = $wiki === 'global' ? '*' : $wiki;
+                /** @var \App\Permission $permission */
+                $permission = $user->permissions->where('wiki', $wikiDbName)->first();
+
                 $updateSet = [];
 
                 /** @var Permission $permission */
                 foreach (Permission::ALL_POSSIBILITIES as $key) {
-                    if ($currentUser->can('updatePermission', [$user, $permission->wiki, $key])) {
-                        $value = (bool) $request->input('permission.' . $permission->wikiFormKey . '.' . $key, false);
+                    $oldValue = $permission && $permission->$key;
 
-                        if ($value != $permission->$key) {
+                    if ($currentUser->can('updatePermission', [$user, $wikiDbName, $key])) {
+                        $value = (bool) $request->input('permission.' . $wiki . '.' . $key, false);
+
+                        if ($value != $oldValue) {
                             $updateSet[$key] = $value;
                         }
                     }
                 }
 
                 if (!empty($updateSet)) {
+                    if (!$permission) {
+                        $permission = new Permission();
+                        $permission->userid = $user->id;
+                        $permission->wiki = $wikiDbName;
+                        $permission->save();
+                    }
+
                     $permission->update($updateSet);
                     $updateDetails = [];
 
@@ -98,7 +112,7 @@ class UserController extends Controller
                         $updateDetails[] = ($value ? '+' : '-') . $key;
                     }
 
-                    $allChanges[] = $permission->wiki . ': ' .implode(', ', $updateDetails);
+                    $allChanges[] = $wiki . ': ' .implode(', ', $updateDetails);
                 }
             }
 

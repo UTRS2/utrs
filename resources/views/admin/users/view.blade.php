@@ -67,19 +67,25 @@
                 </thead>
 
                 <tbody>
-                @foreach($user->permissions as $permission)
+                @foreach(\App\MwApi\MwApiUrls::getSupportedWikis(true) as $wiki)
+                    @php
+                        $wikiDbName = $wiki === 'global' ? '*' : $wiki;
+                        /** @var \App\User $user */ /** @var \App\Permission $permission */
+                        $permission = $user->permissions->where('wiki', $wikiDbName)->first();
+                    @endphp
                     <tr>
                         <td>
-                            {{ $permission->wiki }}
+                            {{ $wikiDbName }}
                         </td>
 
                         @foreach(App\Permission::ALL_POSSIBILITIES as $permNode)
+                            @php $oldValue = $permission && $permission->$permNode; @endphp
                             <td>
-                                @can('updatePermission', [$user, $permission->wiki, $permNode])
-                                    {{ Form::checkbox('permission[' . $permission->wikiFormKey . '][' . $permNode . ']', 1,
-                                        old('permission.' . $permission->wikiFormKey . '.' . $permNode, $permission->$permNode)) }}
+                                @can('updatePermission', [$user, $wikiDbName, $permNode])
+                                    {{ Form::checkbox('permission[' . $wiki . '][' . $permNode . ']', 1,
+                                        old('permission.' . $wiki . '.' . $permNode, $oldValue)) }}
                                 @else
-                                    {{ $permission->$permNode ? 'Yes' : '-' }}
+                                    {{ $oldValue ? 'Yes' : '-' }}
                                 @endcan
                             </td>
                         @endforeach

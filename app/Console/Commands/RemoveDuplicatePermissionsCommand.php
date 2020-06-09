@@ -46,7 +46,7 @@ class RemoveDuplicatePermissionsCommand extends Command
                 Permission::where('userid', $duplicate->userid)->where('wiki', $duplicate->wiki)->delete();
 
                 // and load correct permissions from wiki
-                $duplicate->user->queuePermissionChecks();
+                $duplicate->userObject->queuePermissionChecks();
             }
 
             $progressBar->advance();

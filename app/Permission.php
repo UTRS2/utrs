@@ -27,7 +27,7 @@ class Permission extends Model
         return $this->wiki === '*' ? 'global' : $this->wiki;
     }
 
-    public function user()
+    public function userObject()
     {
         return $this->belongsTo(User::class, 'userid');
     }
