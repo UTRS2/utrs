@@ -13,10 +13,6 @@ class RemovePrivacy extends Migration
      */
     public function up()
     {
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn('privacy');
-        });
-
         Schema::table('appeals', function (Blueprint $table) {
             $table->dropColumn('privacyreview');
             $table->dropColumn('privacylevel');
@@ -33,9 +29,6 @@ class RemovePrivacy extends Migration
         Schema::table('appeals', function (Blueprint $table) {
             $table->integer('privacylevel')->nullable();
             $table->boolean('privacyreview')->nullable();
-        });
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->boolean('privacy')->default(0);
         });
     }
 }
