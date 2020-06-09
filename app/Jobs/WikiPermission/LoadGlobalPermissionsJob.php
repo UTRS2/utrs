@@ -51,6 +51,6 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
 
     public function checkIsBlocked()
     {
-        return MwApiExtras::getGlobalBlockInfo($this->user->username) !== null;
+        return MwApiExtras::getGlobalBlockInfo($this->user->username, -1) !== null;
     }
 }
