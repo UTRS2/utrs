@@ -58,7 +58,8 @@ class PublicAppealController extends Controller
             return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
         }
 
-        // TODO: do not loop thru all existing ip bans, instead search for specific bans for the IP (range)
+        // in the future this should not loop thru all existing ip bans
+        // and instead search for specific CIDR ranges or something similar
         $banip = Ban::where('ip', '=', 1)
             ->active()
             ->get();
