@@ -28,7 +28,7 @@
         "laravel/dusk": "^6.1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^9.2"
     },
     "config": {
         "optimize-autoloader": true,
