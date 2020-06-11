@@ -14,7 +14,7 @@ class RemoveLogIdFromBans extends Migration
     public function up()
     {
         Schema::table('bans', function (Blueprint $table) {
-            $table->removeColumn('logID');
+            $table->dropColumn('logID');
         });
     }
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Log;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -31,7 +32,7 @@ class BanController extends Controller
         $rowcontents = [];
 
         foreach ($allbans as $ban) {
-            $idbutton = '<a href="/admin/bans/' . $ban->id . '" class="btn ' . ($ban->is_protected ? 'btn-danger' : 'btn-primary') . '">' . $ban->id . '</a>';
+            $idbutton = '<a href="' . route('admin.bans.view', $ban) . '" class="btn ' . ($ban->is_protected ? 'btn-danger' : 'btn-primary') . '">' . $ban->id . '</a>';
             $targetName = htmlspecialchars($ban->target);
 
             if ($ban->is_protected) {
@@ -45,7 +46,10 @@ class BanController extends Controller
                     : '<i class="text-muted">(ban target removed)</i>';
             }
 
-            $rowcontents[$ban->id] = [ $idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason) ];
+            $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
+            $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
+
+            $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
         }
 
         $caption = null;
@@ -105,7 +109,7 @@ class BanController extends Controller
             }
         });
 
-        return redirect()->route('admin.bans.view', $ban);
+        return redirect(route('admin.bans.view'), ['ban' => $ban]);
     }
 
     public function show(Ban $ban)

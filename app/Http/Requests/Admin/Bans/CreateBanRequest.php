@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Bans;
 
 use App\Ban;
 use App\Http\Rules\IpOrCidrRule;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -30,8 +31,17 @@ class CreateBanRequest extends FormRequest
             'ip' => 'required|boolean',
             'target' => 'required|max:128',
             'reason' => 'required|max:128',
-            'expiry' => 'required|date',
+            'expiry' => 'required|date_format:Y-m-d H:i:s',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $unixTimestamp = $this->has('expiry') && !empty($this->input('expiry')) ? strtotime($this->input('expiry')) : 0;
+
+        $this->merge([
+            'expiry' => Carbon::createFromTimestamp($unixTimestamp)->format('Y-m-d H:i:s'),
+        ]);
     }
 
     public function withValidator(Validator $validator)

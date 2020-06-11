@@ -36,6 +36,14 @@
                 </p>
             </div>
 
+            <div class="form-group">
+                {{ Form::label('expiry', 'Expiration') }}
+                {{ Form::text('expiry', old('expiry'), ['class' => 'form-control']) }}
+                <p class="small">
+                    Leave empty for a permanent ban.
+                </p>
+            </div>
+
             @can('oversight', \App\Ban::class)
                 <div class="form-group mb-4">
                     Ban target visibility
