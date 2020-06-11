@@ -129,7 +129,7 @@ class UserController extends Controller
                     'reason' => $reason,
                     'ip' => $ip,
                     'ua' => $ua . " " . $lang,
-                    'protected' => 0
+                    'protected' => Log::LOG_PROTECTION_NONE,
                 ]);
             }
         });

@@ -5,20 +5,12 @@
             <h5 class="card-header">Admin tools</h5>
             <div class="card-body">
                 <div class="alert alert-danger" role="alert">
-                    Managing templates <i>and users</i> is the only functional option at this time.
+                    Site notice management is currently not functional.
                 </div>
-                <a href="/admin/templates">
-                    <button type="button" class="btn btn-primary">Manage Templates</button>
-                </a>
-                <a href="/admin/bans">
-                    <button type="button" class="btn btn-primary">Manage Bans</button>
-                </a>
-                <a href="/admin/users">
-                    <button type="button" class="btn btn-primary">Manage Users</button>
-                </a>
-                <a href="/admin/sitenotices">
-                    <button type="button" class="btn btn-primary">Manage Sitenotices</button>
-                </a>
+                <a href="/admin/templates" class="btn btn-primary">Manage Templates</a>
+                <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">Manage Bans</a>
+                <a href="{{ route('admin.users.list') }}" class="btn btn-primary">Manage Users</a>
+                <a href="/admin/sitenotices" class="btn btn-primary">Manage Sitenotices</a>
             </div>
         </div>
     @endif

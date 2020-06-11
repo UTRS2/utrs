@@ -18,7 +18,7 @@ use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use App\Rules\SecretEqualsRule;
+use App\Http\Rules\SecretEqualsRule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;

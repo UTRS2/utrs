@@ -21,46 +21,6 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function listbans(Request $request)
-    {
-        $this->authorize('viewAny', Ban::class);
-        $allbans = Ban::all();
-
-        /** @var User $user */
-        $user = $request->user();
-
-        $canSeeProtectedBans = false;
-
-        $tableheaders = ['ID', 'Target', 'Expires', 'Reason'];
-        $rowcontents = [];
-
-        foreach ($allbans as $ban) {
-            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn '.($ban->is_protected ? 'btn-danger' : 'btn-primary').'">' . $ban->id . '</button></a>';
-            $targetName = htmlspecialchars($ban->target);
-
-            if ($ban->is_protected) {
-                $canSee = $user->can('viewName', $ban);
-
-                if (!$canSeeProtectedBans && $canSee) {
-                    $canSeeProtectedBans = true;
-                }
-
-                $targetName = $canSee ? '<i class="text-danger">' . $targetName . '</i>'
-                    : '<i class="text-muted">(ban target removed)</i>';
-            }
-
-            $rowcontents[$ban->id] = [$idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason)];
-        }
-
-        if ($canSeeProtectedBans) {
-            $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
-        } else {
-            $caption = null;
-        }
-
-        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'caption' => $caption]);
-    }
-
     public function listsitenotices()
     {
         $this->authorize('viewAny', Sitenotice::class);
@@ -89,7 +49,7 @@ class AdminController extends Controller
             $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
         }
 
-        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true]);
+        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
     }
 
     public function verifyAccount()
