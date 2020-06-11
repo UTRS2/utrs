@@ -85,36 +85,45 @@ class BanController extends Controller
             $lang = $request->header('Accept-Language');
 
             Log::create([
-                'user' => $request->user()->id,
+                'user'            => $request->user()->id,
                 'referenceobject' => $ban->id,
-                'objecttype' => Ban::class,
-                'action' => 'created',
-                'reason' => $ban->reason,
-                'ip' => $ip,
-                'ua' => $ua . ' ' . $lang,
-                'protected' => Log::LOG_PROTECTION_NONE,
+                'objecttype'      => Ban::class,
+                'action'          => 'created',
+                'reason'          => $ban->reason,
+                'ip'              => $ip,
+                'ua'              => $ua . ' ' . $lang,
+                'protected'       => Log::LOG_PROTECTION_NONE,
             ]);
 
             if ($ban->is_protected) {
                 Log::create([
-                    'user' => $request->user()->id,
+                    'user'            => $request->user()->id,
                     'referenceobject' => $ban->id,
-                    'objecttype' => Ban::class,
-                    'action' => 'oversighted',
-                    'reason' => '(oversighted when blocking)',
-                    'ip' => $ip,
-                    'ua' => $ua . ' ' . $lang,
-                    'protected' => Log::LOG_PROTECTION_FUNCTIONARY,
+                    'objecttype'      => Ban::class,
+                    'action'          => 'oversighted',
+                    'reason'          => '(oversighted when blocking)',
+                    'ip'              => $ip,
+                    'ua'              => $ua . ' ' . $lang,
+                    'protected'       => Log::LOG_PROTECTION_FUNCTIONARY,
                 ]);
             }
         });
 
-        return redirect(route('admin.bans.view'), ['ban' => $ban]);
+        return redirect(route('admin.bans.view'), [ 'ban' => $ban ]);
     }
 
-    public function show(Ban $ban)
+    public function show(Request $request, Ban $ban)
     {
         $this->authorize('view', $ban);
-        dd($ban);
+
+        $target = $request->user()->can('viewName', $ban) ? $ban->target : '(ban target removed)';
+        $targetHtml = $request->user()->can('viewName', $ban) ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
+            : '<i class="text-muted">(ban target removed)</i>';
+
+        return view('admin.bans.view', [
+            'ban'        => $ban,
+            'target'     => $target,
+            'targetHtml' => $targetHtml,
+        ]);
     }
 }
