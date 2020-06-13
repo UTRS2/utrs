@@ -17,7 +17,7 @@ class Ban extends Model
 
     public function logs()
     {
-        return $this->hasOne('App\Log', 'id','logID');
+        return $this->morphMany(Log::class, 'object', 'objecttype', 'referenceobject');
     }
 
     public function scopeActive(Builder $query)

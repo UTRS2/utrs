@@ -89,7 +89,7 @@ class BanController extends Controller
                 'referenceobject' => $ban->id,
                 'objecttype'      => Ban::class,
                 'action'          => 'created',
-                'reason'          => $ban->reason,
+                'reason'          => $request->input('comment', ''),
                 'ip'              => $ip,
                 'ua'              => $ua . ' ' . $lang,
                 'protected'       => Log::LOG_PROTECTION_NONE,
@@ -101,7 +101,7 @@ class BanController extends Controller
                     'referenceobject' => $ban->id,
                     'objecttype'      => Ban::class,
                     'action'          => 'oversighted',
-                    'reason'          => '(oversighted when blocking)',
+                    'reason'          => $request->input('os_reason', ''),
                     'ip'              => $ip,
                     'ua'              => $ua . ' ' . $lang,
                     'protected'       => Log::LOG_PROTECTION_FUNCTIONARY,
@@ -109,7 +109,7 @@ class BanController extends Controller
             }
         });
 
-        return redirect(route('admin.bans.view'), [ 'ban' => $ban ]);
+        return redirect(route('admin.bans.view', [ 'ban' => $ban ]));
     }
 
     public function show(Request $request, Ban $ban)

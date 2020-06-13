@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-4">
                 {{ Form::label('target', 'Ban target') }}
                 {{ Form::text('target', old('target'), ['class' => 'form-control']) }}
                 <p class="small">
@@ -28,7 +28,7 @@
                 </p>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-4">
                 {{ Form::label('reason', 'Ban reason') }}
                 {{ Form::text('reason', old('reason'), ['class' => 'form-control']) }}
                 <p class="small">
@@ -36,7 +36,7 @@
                 </p>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-4">
                 {{ Form::label('expiry', 'Expiration') }}
                 {{ Form::text('expiry', old('expiry'), ['class' => 'form-control']) }}
                 <p class="small">
@@ -44,7 +44,15 @@
                 </p>
             </div>
 
-            @can('oversight', \App\Ban::class)
+            <div class="form-group mb-4">
+                {{ Form::label('comment', 'Comment') }}
+                {{ Form::text('comment', old('reason'), ['class' => 'form-control']) }}
+                <p class="small">
+                    This is private and can only be seen by users who can see the ban's details.
+                </p>
+            </div>
+
+        @can('oversight', \App\Ban::class)
                 <div class="form-group mb-4">
                     Ban target visibility
                     <div class="custom-control custom-radio">
@@ -54,6 +62,14 @@
                     <div class="custom-control custom-radio">
                         {{ Form::radio('is_protected', 1, old('is_protected') === 1, ['class' => 'custom-control-input', 'id' => 'is_protected-1']) }} {{ Form::label('is_protected-1', 'Ban target is oversighted', ['class' => 'custom-control-label']) }}
                     </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    {{ Form::label('os_reason', 'Oversight reason') }}
+                    {{ Form::text('os_reason', old('os_reason'), ['class' => 'form-control']) }}
+                    <p class="small">
+                        Reason for restricting the ban target visibility to oversighters only. This can only be seen by functionaries.
+                    </p>
                 </div>
             @endif
 

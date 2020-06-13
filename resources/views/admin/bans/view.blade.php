@@ -26,8 +26,19 @@
                     <th>Target</th>
                     <td>{!! $targetHtml !!}</td>
                 </tr>
+                <tr>
+                    <th>Target oversighted</th>
+                    <td>{{ $ban->is_protected ? 'Yes' : 'No' }}</td>
+                </tr>
+                <tr>
+                    <th>Reason</th>
+                    <td>{{ $ban->reason }}</td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    @component('components.logs', ['logs' => $ban->logs])
+    @endcomponent
 @endsection
