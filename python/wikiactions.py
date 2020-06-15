@@ -51,10 +51,10 @@ def calldb(command,style):
         if style == "read":return record
         else:return "Done"
 def verifyusers():
-    results = calldb("select * from wikitasks where task = 'verifyaccount';","read")
+    results = calldb("select * from users where wikis = '';","read")
     for result in results:
-        wtid=result[0]
-        user = result[2]
+        #wtid=result[0]
+        user = result[0]
         userresults = calldb("select id,username from users where id = '"+str(user)+"';","read")[0]
         
         try:username = str(userresults[1])
@@ -70,7 +70,7 @@ def verifyusers():
             raw = callAPI(params)
             try:userexist = raw["query"]["users"][0]["userid"]
             except:
-                calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                #calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
                 continue
@@ -79,7 +79,7 @@ def verifyusers():
 == Your UTRS Account ==
 You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
                         """, "UTRS Account - Does not meet requirements")
-            calldb("delete from wikitasks where id="+str(wtid)+";","write")
+            #calldb("delete from wikitasks where id="+str(wtid)+";","write")
             calldb("delete from users where id="+str(user)+";","write")
             print "ACCOUNT DELETION: " + username
             continue
@@ -94,7 +94,7 @@ You have no wikis in which you meet the requirements for UTRS. Your account has 
 == Your UTRS Account ==
 You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
                         """, "UTRS Account for blocked users")
-                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                    #calldb("delete from wikitasks where id="+str(wtid)+";","write")
                     calldb("delete from users where id="+str(user)+";","write")
                     print "ACCOUNT DELETION: " + username
                     continue
@@ -109,11 +109,11 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
 == Your UTRS Account ==
 You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
                     """, "UTRS Account for blocked users")
-                calldb("delete from wikitasks where id="+str(wtid)+";","write")
+                #calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
                 continue
-        calldb("delete from wikitasks where id="+str(wtid)+";","write")
+        #calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
         params = {'action': 'query',
