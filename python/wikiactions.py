@@ -74,7 +74,8 @@ def verifyusers():
         params = {'action': 'query',
         'format': 'json',
         'list': 'users',
-        'ususers': username
+        'ususers': username,
+        'usprop':'groups'
         }
         raw = callAPI(params)
         try:userexist = raw["query"]["users"][0]["userid"]
@@ -82,6 +83,10 @@ def verifyusers():
             calldb("delete from users where id="+str(user)+";","write")
             print "ACCOUNT DELETION - User doesn't exist: " + username
             continue
+        for group in raw["query"]["users"][0]["groups"]:
+            if group == "sysop":
+                print "KEEP - " + username
+        print "Propose deletion - NO SYSOP: " + username
         continue
 def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
