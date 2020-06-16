@@ -30,7 +30,7 @@ def callptwikiAPI(params):
 
 def calldb(command,style):
     try:
-        print command
+        #print command
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
                                              user=credentials.user,
