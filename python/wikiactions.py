@@ -88,7 +88,7 @@ def verifyusers():
             if group == "sysop":
                 print "KEEP - " + username
                 calldb("update users set wikis='enwiki' where id="+str(user)+";","write")
-                calldb("insert into permissions (userid, admin, user, wiki) VALUES ('"+user+"',1,1,'enwiki');","write")
+                calldb("insert into permissions (userid, admin, user, wiki) VALUES ('"+str(user)+"',1,1,'enwiki');","write")
                 found=True
         if found:continue
         else:
