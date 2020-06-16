@@ -131,13 +131,9 @@ abstract class BaseWikiPermissionJob
 
         $permObject = Permission::firstOrNew($searchValues);
 
-        if (!$permObject->exists) {
-            // if user does not have a permission object for this wiki and they don't need one, let's not make one
-            if (!in_array('user', $permissions)) {
-                return;
-            }
-
-            $permObject->fill($searchValues);
+        // if user does not have a permission object for this wiki and they don't need one, let's not make one
+        if (!$permObject->exists && !in_array('user', $permissions)) {
+            return;
         }
 
         $this->updateDoesExist(in_array('user', $permissions));
