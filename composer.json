@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-json": "*",
         "addwiki/mediawiki-api": "~0.7.0",
         "doctrine/dbal": "^2.10",
