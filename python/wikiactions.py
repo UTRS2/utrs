@@ -89,7 +89,9 @@ def verifyusers():
                 print "KEEP - " + username
                 found=True
         if found:continue
-        print "Propose deletion - NO SYSOP: " + username
+        else:
+            print "ACCOUNT DELETION - NO SYSOP: " + username
+            calldb("delete from users where id="+str(user)+";","write")
         continue
 def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
@@ -214,6 +216,6 @@ def closeNotFound():
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
-#clearPrivateData()
-#appeallist()
-#closeNotFound()
+clearPrivateData()
+appeallist()
+closeNotFound()
