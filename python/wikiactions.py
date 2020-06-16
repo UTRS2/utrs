@@ -30,7 +30,7 @@ def callptwikiAPI(params):
 
 def calldb(command,style):
     try:
-        print command
+        #print command
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
                                              user=credentials.user,
@@ -86,6 +86,7 @@ def verifyusers():
         for group in raw["query"]["users"][0]["groups"]:
             if group == "sysop":
                 print "KEEP - " + username
+                continue
         print "Propose deletion - NO SYSOP: " + username
         continue
 def checkBlock(target,wiki):
@@ -211,6 +212,6 @@ def closeNotFound():
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
-clearPrivateData()
-appeallist()
-closeNotFound()
+#clearPrivateData()
+#appeallist()
+#closeNotFound()
