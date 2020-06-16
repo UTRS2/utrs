@@ -30,7 +30,7 @@ def callptwikiAPI(params):
 
 def calldb(command,style):
     try:
-        #print command
+        print command
         connection = mysql.connector.connect(host=credentials.ip,
                                              database=credentials.database,
                                              user=credentials.user,
@@ -67,7 +67,7 @@ def verifyusers():
                 except:
                     userpage = "User talk:"+str(username)
                 page = masterwiki.pages[userpage]
-                #calldb("delete from users where id="+str(user)+";","write")
+                calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION - BLOCK: " + username
                 continue
 
@@ -79,7 +79,7 @@ def verifyusers():
         raw = callAPI(params)
         try:userexist = raw["query"]["users"][0]["userid"]
         except:
-            #calldb("delete from users where id="+str(user)+";","write")
+            calldb("delete from users where id="+str(user)+";","write")
             print "ACCOUNT DELETION - User doesn't exist: " + username
             continue
         continue
@@ -206,6 +206,6 @@ def closeNotFound():
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
-#clearPrivateData()
-#appeallist()
-#closeNotFound()
+clearPrivateData()
+appeallist()
+closeNotFound()
