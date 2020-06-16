@@ -68,7 +68,7 @@ def verifyusers():
                     userpage = "User talk:"+str(username)
                 page = masterwiki.pages[userpage]
                 #calldb("delete from users where id="+str(user)+";","write")
-                print "ACCOUNT DELETION: " + username
+                print "ACCOUNT DELETION - BLOCK: " + username
                 continue
 
         params = {'action': 'query',
@@ -80,11 +80,8 @@ def verifyusers():
         try:userexist = raw["query"]["users"][0]["userid"]
         except:
             #calldb("delete from users where id="+str(user)+";","write")
-            print "ACCOUNT DELETION: " + username
+            print "ACCOUNT DELETION - User doesn't exist: " + username
             continue
-        page = masterwiki.pages[userpage]
-        #calldb("delete from users where id="+str(user)+";","write")
-        print "ACCOUNT DELETION: " + username
         continue
 def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
