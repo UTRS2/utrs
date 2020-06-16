@@ -83,10 +83,12 @@ def verifyusers():
             calldb("delete from users where id="+str(user)+";","write")
             print "ACCOUNT DELETION - User doesn't exist: " + username
             continue
+        found = False
         for group in raw["query"]["users"][0]["groups"]:
             if group == "sysop":
                 print "KEEP - " + username
-                continue
+                found=True
+        if found:continue
         print "Propose deletion - NO SYSOP: " + username
         continue
 def checkBlock(target,wiki):
