@@ -124,17 +124,23 @@ abstract class BaseWikiPermissionJob
             })
             ->toArray();
 
-        $permObject = Permission::firstOrNew([
+        $searchValues = [
             'wiki' => $this->getPermissionWikiId(),
-            'user' => $this->user->id,
-        ]);
+            'userid' => $this->user->id,
+        ];
 
-        // if user does not have a permission object for this wiki and they don't need one, let's not make one
-        if (!$permObject->exists && !in_array('user', $permissions)) {
-            return;
+        $permObject = Permission::firstOrNew($searchValues);
+
+        if (!$permObject->exists) {
+            // if user does not have a permission object for this wiki and they don't need one, let's not make one
+            if (!in_array('user', $permissions)) {
+                return;
+            }
+
+            $permObject->fill($searchValues);
         }
 
         $this->updateDoesExist(in_array('user', $permissions));
-        $permObject->update($permissionsToUpdate);
+        $permObject->fill($permissionsToUpdate)->saveOrFail();
     }
 }
