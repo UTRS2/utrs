@@ -48,7 +48,7 @@ class PublicAppealModifyController extends Controller
             'user'            => -1,
             'referenceobject' => $appeal->id,
             'objecttype'      => 'appeal',
-            'action'          => 'correct details',
+            'action'          => 'changed block information',
             'ip'              => $ip, 'ua' => $ua . " " . $lang,
         ]);
 

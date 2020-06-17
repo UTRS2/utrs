@@ -40,10 +40,10 @@
             <div class="card-footer">
                 <div class="mb-2">
                     @auth
-                        <a href="/review" class="btn btn-primary">{{ __('home.admin-button') }}</a>
+                        <a href="{{ route('appeal.list') }}" class="btn btn-primary">{{ __('home.admin-button') }}</a>
                     @endauth
                     @guest
-                        <a href="/oauth" class="btn btn-primary">{{ __('home.login-button') }}</a>
+                        <a href="{{ route('login') }}" class="btn btn-primary">{{ __('home.login-button') }}</a>
                     @endguest
                 </div>
             </div>
@@ -52,11 +52,6 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="alert alert-danger" role="alert">
-                Due to database issues all data from April 29 to May 23 has been lost.
-                If you are trying to access an appeal and get an error, you will need
-                to file your appeal again.
-            </div>
             <div class="text-center">
                 <h5 class="card-title">If you already have an appeal</h5>
                 <p class="card-text">{{ Form::label('hash', 'Please enter your appeal key below') }}</p>
