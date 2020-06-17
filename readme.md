@@ -46,7 +46,7 @@ Set up `.env`:
 ```dotenv
 OAUTH_CALLBACK_URL="http://utrs.test/oauth/callback"
 
-OAUTH_BASE_URL="https://deployment.wikimedia.beta.wmflabs.org"
+OAUTH_BASE_URL="https://meta.wikimedia.beta.wmflabs.org"
 OAUTH_CLIENT_ID="some-client-id"
 OAUTH_CLIENT_SECRET="some-client-secret"
 ```
