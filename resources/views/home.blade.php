@@ -14,7 +14,7 @@
                 <p class="card-text">{{ __('home.appeal-block-text') }}</p>
             </div>
             <div class="card-footer">
-                <div class="mb-2">
+                <div>
                     <a href="{{ route('public.appeal.create.account') }}" class="btn btn-primary">{{ __('home.appeal-block-button') }}</a>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                 <p class="card-text">{{ __('home.appeal-ip-text') }}</p>
             </div>
             <div class="card-footer">
-                <div class="mb-2">
+                <div>
                     <a href="{{ route('public.appeal.create.ip') }}" class="btn btn-primary">{{ __('home.appeal-ip-button') }}</a>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <p class="card-text">{{ __('home.admin-text') }}</p>
             </div>
             <div class="card-footer">
-                <div class="mb-2">
+                <div>
                     @auth
                         <a href="{{ route('appeal.list') }}" class="btn btn-primary">{{ __('home.admin-button') }}</a>
                     @endauth

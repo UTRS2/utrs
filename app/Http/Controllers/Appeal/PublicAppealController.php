@@ -37,7 +37,12 @@ class PublicAppealController extends Controller
         $data['appealsecretkey'] = $key;
         $data['status'] = Appeal::STATUS_VERIFY;
 
-        $recentAppealExists = Appeal::where('appealfor', $request->input('appealfor'))
+        $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
+                return $query->where('appealfor', $request->input('appealfor'))
+                    ->orWhereHas('privateData', function (Builder $privateDataQuery) use ($request) {
+                        return $privateDataQuery->where('ipaddress', $request->ip());
+                    });
+            })
             ->where(function (Builder $query) {
                 return $query
                     ->whereNotIn('status', [ Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE ])

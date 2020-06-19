@@ -72,6 +72,11 @@ class Appeal extends Model
         return $this->belongsTo(User::class, 'handlingadmin', 'id');
     }
 
+    public function privateData()
+    {
+        return $this->hasOne(Privatedata::class, 'appealID', 'id');
+    }
+
     public function getFormattedBlockReason($linkExtra = '')
     {
         if (!$this->blockreason || strlen($this->blockreason) === 0) {
