@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Ban;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
+use App\Http\Requests\Admin\Bans\UpdateBanRequest;
 use App\Log;
 use App\User;
 use Carbon\Carbon;
@@ -48,6 +49,10 @@ class BanController extends Controller
 
             $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
             $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
+
+            if (!$ban->is_active) {
+                $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
+            }
 
             $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
         }
@@ -120,10 +125,79 @@ class BanController extends Controller
         $targetHtml = $request->user()->can('viewName', $ban) ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
             : '<i class="text-muted">(ban target removed)</i>';
 
+        $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
+        $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
+        $formOldExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
+
+        if (!$ban->is_active) {
+            $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
+        }
+
         return view('admin.bans.view', [
-            'ban'        => $ban,
-            'target'     => $target,
-            'targetHtml' => $targetHtml,
+            'ban'             => $ban,
+            'target'          => $target,
+            'targetHtml'      => $targetHtml,
+            'formattedExpiry' => $formattedExpiry,
+            'formOldExpiry'   => $formOldExpiry,
         ]);
+    }
+
+    public function update(UpdateBanRequest $request, Ban $ban)
+    {
+        DB::transaction(function () use ($request, $ban) {
+            $ip = $request->ip();
+            $ua = $request->userAgent();
+            $lang = $request->header('Accept-Language');
+
+            $ban->fill($request->validated());
+
+            if ($ban->isDirty('is_protected')) {
+                Log::create([
+                    'user'            => $request->user()->id,
+                    'referenceobject' => $ban->id,
+                    'objecttype'      => Ban::class,
+                    'action'          => ($ban->is_protected ? '' : 'un-') . 'oversighted',
+                    'reason'          => $request->input('os_reason', ''),
+                    'ip'              => $ip,
+                    'ua'              => $ua . ' ' . $lang,
+                    'protected'       => Log::LOG_PROTECTION_FUNCTIONARY,
+                ]);
+            }
+
+            $changes = $ban->getDirty();
+            $ban->update();
+
+            $changeDetails = [];
+
+            if (array_key_exists('reason', $changes)) {
+                $changeDetails[] = 'reason was set to "' . $ban->reason . "'";
+            }
+
+            if (array_key_exists('expiry', $changes)) {
+                $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
+                $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
+
+                $changeDetails[] = 'expiry was set to "' . $formattedExpiry . "'";
+            }
+
+            if (array_key_exists('is_active', $changes)) {
+                $changeDetails[] = 'ban was ' . ($ban->is_active ? 'enabled' : 'disabled');
+            }
+
+            if (!empty($changeDetails)) {
+                Log::create([
+                    'user'            => $request->user()->id,
+                    'referenceobject' => $ban->id,
+                    'objecttype'      => Ban::class,
+                    'action'          => 'updated - ' . implode(', ', $changeDetails),
+                    'reason'          => $request->input('update_reason', ''),
+                    'ip'              => $ip,
+                    'ua'              => $ua . ' ' . $lang,
+                    'protected'       => Log::LOG_PROTECTION_NONE,
+                ]);
+            }
+        });
+
+        return redirect(route('admin.bans.view', [ 'ban' => $ban ]));
     }
 }

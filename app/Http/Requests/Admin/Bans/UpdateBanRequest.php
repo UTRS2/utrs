@@ -3,12 +3,15 @@
 namespace App\Http\Requests\Admin\Bans;
 
 use App\Ban;
-use App\Http\Rules\IpOrCidrRule;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-class CreateBanRequest extends FormRequest
+/**
+ * laravel magic, for ide autocompletion:
+ * @property Ban ban
+ */
+class UpdateBanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +20,7 @@ class CreateBanRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('create', Ban::class);
+        return $this->user()->can('update', $this->ban);
     }
 
     /**
@@ -28,11 +31,19 @@ class CreateBanRequest extends FormRequest
     public function rules()
     {
         return [
-            'ip' => 'required|boolean',
-            'target' => 'required|max:128',
-            'reason' => 'required|max:128',
-            'expiry' => 'required|date_format:Y-m-d H:i:s',
+            'reason'    => 'nullable|max:128',
+            'expiry'    => 'nullable|date_format:Y-m-d H:i:s',
+            'is_active' => 'nullable|boolean',
         ];
+    }
+
+    public function withValidator(Validator $validator)
+    {
+        if ($this->user()->can('oversight', Ban::class)) {
+            $validator->addRules([
+                'is_protected' => 'required|boolean',
+            ]);
+        }
     }
 
     protected function prepareForValidation()
@@ -42,21 +53,6 @@ class CreateBanRequest extends FormRequest
         $this->merge([
             'expiry' => Carbon::createFromTimestamp($unixTimestamp)->format('Y-m-d H:i:s'),
         ]);
-    }
-
-    public function withValidator(Validator $validator)
-    {
-        if ($this->has('ip') && $this->input('ip') == true) {
-            $validator->addRules([
-                'target' => [new IpOrCidrRule],
-            ]);
-        }
-
-        if ($this->user()->can('oversight', Ban::class)) {
-            $validator->addRules([
-                'is_protected' => 'required|boolean',
-            ]);
-        }
     }
 
     private function treatAsDate($string)

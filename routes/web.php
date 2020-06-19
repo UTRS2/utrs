@@ -59,6 +59,7 @@ Route::get('/admin/bans', 'Admin\BanController@index')->name('admin.bans.list');
 Route::get('/admin/bans/create', 'Admin\BanController@new')->name('admin.bans.new');
 Route::post('/admin/bans/create', 'Admin\BanController@create')->name('admin.bans.create');
 Route::get('/admin/bans/{ban}', 'Admin\BanController@show')->name('admin.bans.view');
+Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
 
 Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
 Route::get('/admin/templates', 'AdminController@listtemplates');
