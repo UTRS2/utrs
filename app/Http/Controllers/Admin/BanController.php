@@ -177,7 +177,7 @@ class BanController extends Controller
                 $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
                 $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
 
-                $changeDetails[] = 'expiry was set to "' . $formattedExpiry . "'";
+                $changeDetails[] = 'expiry was set to "' . $formattedExpiry . '"';
             }
 
             if (array_key_exists('is_active', $changes)) {
