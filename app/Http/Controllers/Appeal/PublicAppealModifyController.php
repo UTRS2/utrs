@@ -35,7 +35,7 @@ class PublicAppealModifyController extends Controller
             ->firstOrFail();
 
         $data = $request->validate([
-            'appealfor' => 'required|max:100',
+            'appealfor' => 'required|max:50',
             'wiki'      => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
             'blocktype' => 'required|numeric|max:2|min:0',
             'hiddenip'  => 'nullable|ip',
