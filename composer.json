@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-json": "*",
         "addwiki/mediawiki-api": "~0.7.0",
         "doctrine/dbal": "^2.10",
@@ -28,7 +28,7 @@
         "laravel/dusk": "^6.1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^9.2"
     },
     "config": {
         "optimize-autoloader": true,

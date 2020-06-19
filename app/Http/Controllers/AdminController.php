@@ -95,7 +95,7 @@ class AdminController extends Controller
         $template = Template::create($data);
 
         Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
-        return Redirect::to('/admin/templates');
+        return redirect()->to('/admin/templates');
     }
 
     public function editTemplate(Template $template)
