@@ -24,27 +24,29 @@ In `.env`, set `MEDIAWIKI_USERNAME` to the bot password username and `MEDIAWIKI_
 Also set `WIKI_URL_GLOBAL`, `WIKI_URL_ENWIKI`, and `WIKI_URL_PTWIKI` to be `http://your-mediawiki/w/api.php`. 
 
 #### Create a bot password on [Beta Cluster](https://deployment.wikimedia.beta.wmflabs.org)
-This is useful because Beta Cluster is really similar to beta. Use `Special:BotPasswords` on some wiki to create a bot password (they are global AFAIK).
+This is useful because Beta Cluster is really similar to beta. Use `Special:BotPasswords` on some wiki to create a bot password (they are global).
 
 In `.env`, set `MEDIAWIKI_USERNAME` to the bot password username and `MEDIAWIKI_PASSWORD` to the password.
 Also set
-* `WIKI_URL_GLOBAL=https://deployment.wikimedia.beta.wmflabs.org/w/api.php` Note deployment as that's the preferred option of locking/unlocking stuff
+* `WIKI_URL_GLOBAL=https://meta.wikimedia.beta.wmflabs.org/w/api.php`
 * `WIKI_URL_ENWIKI=https://en.wikipedia.beta.wmflabs.org/w/api.php`
-* `WIKI_URL_PTWIKI=https://pt.wikipedia.beta.wmflabs.org/w/api.php`
+* `WIKI_URL_PTWIKI=https://es.wikipedia.beta.wmflabs.org/w/api.php # no ptwiki on betacluster, let's use eswiki instead`
 
 ### OAuth
 You need a wiki with `Extension:OAuth` installed. It's easier if you use the same wiki used with API calls.
 
 Use the following settings:
 * Protocol version: 1.0a
-* Callback URL: `http://utrs.test/oauth/callback`
+* Callback URL: `http://utrs.test/oauth/callback` change this depending on your setup
 * "Allow consumer to specify a callback in requests and use "callback" URL above as a required prefix." should be yes
 * Types of grants being requested: "User identity verification only"
+
+If you set it as for yourself only you don't need to get it approved.
 
 Set up `.env`:
 
 ```dotenv
-OAUTH_CALLBACK_URL="http://utrs.test/oauth/callback"
+OAUTH_CALLBACK_URL="http://utrs.test/oauth/callback" # change this also depending on your setup
 
 OAUTH_BASE_URL="https://meta.wikimedia.beta.wmflabs.org"
 OAUTH_CLIENT_ID="some-client-id"
