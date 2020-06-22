@@ -23,7 +23,7 @@ Use `Special:BotPasswords` to create a bot password. If you have configured e-ma
 In `.env`, set `MEDIAWIKI_USERNAME` to the bot password username and `MEDIAWIKI_PASSWORD` to the password.
 Also set `WIKI_URL_GLOBAL`, `WIKI_URL_ENWIKI`, and `WIKI_URL_PTWIKI` to be `http://your-mediawiki/w/api.php`. 
 
-#### Create a bot password on [Beta Cluster](https://deployment.wikimedia.beta.wmflabs.org)
+#### Create a bot password on [Beta Cluster](https://beta.wmflabs.org)
 This is useful because Beta Cluster is really similar to beta. Use `Special:BotPasswords` on some wiki to create a bot password (they are global).
 
 In `.env`, set `MEDIAWIKI_USERNAME` to the bot password username and `MEDIAWIKI_PASSWORD` to the password.
