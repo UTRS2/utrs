@@ -126,9 +126,6 @@ class AppealController extends Controller
             if ($isCUAnyWiki) {
                 $query->where('status',Appeal::STATUS_CHECKUSER);
             }
-            else {
-                $query->all();   
-            }
         })
             ->get();
         $appeals[$appealtypes['unassigned']] = Appeal::whereIn('wiki', $wikis)
