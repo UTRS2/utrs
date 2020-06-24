@@ -42,7 +42,6 @@ class Appeal extends Model
     public $guarded = ['id'];
 
     protected $attributes = [
-        'privacylevel' => 0,
         'blockfound' => 0
     ];
 
@@ -52,7 +51,7 @@ class Appeal extends Model
 
     public function comments()
     {
-        return $this->hasMany('App\Log', 'referenceobject','id')
+        return $this->hasMany(Log::class, 'referenceobject','id')
             ->where('objecttype', 'appeal');
     }
 
@@ -71,6 +70,11 @@ class Appeal extends Model
     public function handlingAdminObject()
     {
         return $this->belongsTo(User::class, 'handlingadmin', 'id');
+    }
+
+    public function privateData()
+    {
+        return $this->hasOne(Privatedata::class, 'appealID', 'id');
     }
 
     public function getFormattedBlockReason($linkExtra = '')

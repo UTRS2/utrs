@@ -2,6 +2,8 @@
 
 return [
 
+    'error-msg' => 'The following errors occurred:',
+
     /*
     |--------------------------------------------------------------------------
     | Validation Language Lines
@@ -129,9 +131,6 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
     ],
 
     /*

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Appeal;
-use App\Ban;
+use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\MwApi\MwApiUrls;
 use App\Oldappeal;
@@ -17,12 +17,8 @@ use App\User;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use App\Rules\SecretEqualsRule;
-use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log as LaravelLog;
 
 class AppealController extends Controller
 {
@@ -95,65 +91,6 @@ class AppealController extends Controller
         }
     }
 
-    public function publicappeal(Request $request)
-    {
-        $hash = $request->input('hash');
-        $info = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
-        //Invalid is like a trashcan/not dealing with that admins never see
-        $closestatus = $info->status == Appeal::STATUS_ACCEPT || $info->status == Appeal::STATUS_DECLINE || $info->status == Appeal::STATUS_EXPIRE  || $info->status == Appeal::STATUS_INVALID;
-
-        $id = $info->id;
-        $logs = $info->comments;
-        $userlist = [];
-        if (!is_null($info->handlingadmin)) {
-            $userlist[$info->handlingadmin] = User::findOrFail($info->handlingadmin)['username'];
-        }
-
-        $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
-
-        foreach ($logs as $log) {
-            if (is_null($log->user) || in_array($log->user, $userlist) || $log->user === 0 || $log->user === -1) {
-                continue;
-            }
-
-            $userlist[$log->user] = User::findOrFail($log->user)->username;
-        }
-
-        return view('appeals.publicappeal', ['id'=>$id,'info' => $info, 'comments' => $logs, 'userlist'=>$userlist, 'replies'=>$replies,'hash'=>$hash]);
-    }
-
-    public function publicComment(Request $request)
-    {
-        $key = $request->input('appealsecretkey');
-        $appeal = Appeal::where('appealsecretkey', $key)->firstOrFail();
-
-        abort_if($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_EXPIRE, 400, "Appeal is closed");
-
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $reason = $request->input('comment');
-
-        Log::create([
-            'user' => -1,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
-            'action' => 'responded',
-            'reason' => $reason,
-            'ip' => $ip,
-            'ua' => $ua . " " . $lang,
-            'protected' => Log::LOG_PROTECTION_NONE
-        ]);
-
-        if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
-            $appeal->update([
-                'status' => Appeal::STATUS_OPEN,
-            ]);
-        }
-
-        return redirect()->back();
-    }
-
     public function appeallist()
     {
         abort_unless(Auth::check(), 403, 'No logged in user');
@@ -222,75 +159,6 @@ class AppealController extends Controller
             return view('appeals.loggedin');
         }
         return view('appeals.makeappeal.account');
-    }
-
-    public function appealsubmit(Request $request)
-    {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $input = $request->all();
-        Arr::forget($input, '_token');
-        $input = Arr::add($input, 'status', 'VERIFY');
-        $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
-        $input = Arr::add($input, 'appealsecretkey', $key);
-
-        $request->validate([
-            'appealtext' => 'max:4000|required',
-            'appealfor' => 'required',
-            'wiki' => 'required',
-            'blocktype' => 'required|numeric|max:2|min:0'
-        ]);
-
-        if (Appeal::where('appealfor', '=', $input['appealfor'])->where('status', '!=', 'ACCEPT')->where('status', '!=', 'EXPIRE')->where('status', '!=', 'DECLINE')->count() > 0 || sizeof(Appeal::where('appealsecretkey')->get()) > 0) {
-            return view('appeals.spam');
-        }
-
-        $appealbyname = Appeal::where('appealfor', '=', $input['appealfor'])->orderBy('id', 'desc')->first();
-        if (!is_null($appealbyname)) {
-            $lastdate = $appealbyname['submitted'];
-            $now = date('Y-m-d H:i:s');
-            $interval = strtotime($now) - strtotime($lastdate);
-            if ($interval < 172800) {
-                return view('appeals.spam');
-            }
-        }
-
-        $ban = Ban::where('ip','=',0)
-            ->where('target', $input['appealfor'])
-            ->active()
-            ->first();
-
-        if ($ban) {
-            return view('appeals.ban', ['expire' => $ban->expiry, 'id' => $ban->id]);
-        }
-
-        $baniplist = Ban::where('ip','=',1)
-            ->active()
-            ->get();
-
-        foreach ($baniplist as $banip) {
-            if (self::ip_in_range($ip,$banip->target)) {
-                return view('appeals.ban', ['expire' => $banip->expiry, 'id' => $banip->id]);
-            }
-        }
-
-        $appeal = Appeal::create($input);
-        $cudata = Privatedata::create(array('appealID' => $appeal->id, 'ipaddress' => $ip, 'useragent' => $ua, 'language' => $lang));
-        Log::create(['user' => 0, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . ' ' . $lang]);
-
-        /**
-         * Yes, this is a hard hack and not optimal, but we are still
-         * allowing these appeals to be created till other master tasks 
-         * either prevent it or we go live with those wikis
-        **/
-        if ($appeal->wiki == "ptwiki" || $appeal->wiki == "global") {
-            LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #'.$appeal->id);
-        }
-
-        GetBlockDetailsJob::dispatch($appeal);
-
-        return view('appeals.makeappeal.hash', ['hash' => $key]);
     }
 
     public function ipappeal()
@@ -666,86 +534,30 @@ class AppealController extends Controller
         return redirect()->back();
     }
 
-    public function showVerifyOwnershipForm(Request $request, Appeal $appeal, $token)
+    public function findagain(Request $request, Appeal $appeal)
     {
-        abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
-        return view('appeals.verifyaccount', ['appeal' => $appeal]);
-    }
-
-    public function verifyAccountOwnership(Request $request, Appeal $appeal)
-    {
-        abort_unless((strlen($appeal->verify_token) > 0 && strlen($appeal->appealsecretkey) > 0), 400, "This appeal can't be verified");
-        $request->validate([
-            'verify_token' => ['required', new SecretEqualsRule($appeal->verify_token)],
-            'secret_key' => ['required', new SecretEqualsRule($appeal->appealsecretkey)],
-        ]);
-
-        $appeal->update([
-            'verify_token' => null,
-            'user_verified' => true,
-        ]);
+        abort_unless(Auth::check(), 403, 'No logged in user');
+        /** @var User $user */
+        $user = $request->user();
 
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
+        $dev = $user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer');
+        abort_unless($dev,403,"You are not an UTRS developer");
+        abort_if($appeal->status !== Appeal::STATUS_NOTFOUND && $appeal->status !== Appeal::STATUS_VERIFY, 400, 'Appeal details were already found.');
+
+        GetBlockDetailsJob::dispatch($appeal);
         Log::create([
-            'user' => 0,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
-            'action' => 'account verifed',
+            'user' => Auth::id(),
+            'referenceobject'=> $appeal->id,
+            'objecttype'=>'appeal',
+            'action'=>'reverify block',
             'ip' => $ip,
             'ua' => $ua . " " .$lang
         ]);
 
-        return redirect()->to('/publicappeal?hash=' . $appeal->appealsecretkey);
-    }
-    public function findagain($id, Request $request)
-    {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-
-        $dev = Permission::checkSecurity($user, "DEVELOPER", "*");
-        if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {
-            GetBlockDetailsJob::dispatch($appeal);
-            Log::create([
-                'user' => Auth::id(),
-                'referenceobject'=> $appeal->id,
-                'objecttype'=>'appeal',
-                'action'=>'reverify block',
-                'ip' => $ip,
-                'ua' => $ua . " " .$lang
-            ]);
-
-        } else {
-            abort(403,'Not developer/Not NOTFOUND');
-        }
-        return redirect('appeal/' . $id);
-    }
-
-    /**
-     * Check if a given ip is in a network
-     * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
-     * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
-     * @return boolean true if the ip is in this range / false if not.
-     */
-    public static function ip_in_range( $ip, $range ) {
-        if ( strpos( $range, '/' ) == false ) {
-            $range .= '/32';
-        }
-        // $range is in IP/CIDR format eg 127.0.0.1/24
-        [ $range, $netmask ] = explode( '/', $range, 2 );
-        $range_decimal = ip2long( $range );
-        $ip_decimal = ip2long( $ip );
-        $wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
-        $netmask_decimal = ~ $wildcard_decimal;
-        return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+        return redirect()->back();
     }
 }

@@ -45,7 +45,7 @@ class VerifyBlockJob implements ShouldQueue
             'verify_token' => $token,
         ]);
 
-        $url = url(route('appeal.verifyownership', [$this->appeal, $token]));
+        $url = url(route('public.appeal.verifyownership', [$this->appeal, $token]));
         $title = 'UTRS appeal verification';
         $message = <<<EOF
 Hello,
