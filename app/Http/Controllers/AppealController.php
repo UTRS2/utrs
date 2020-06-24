@@ -101,6 +101,7 @@ class AppealController extends Controller
 
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
+        $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
 
         if ($user->wikis === '*' || $isDeveloper) {
             $wikis = collect(MwApiUrls::getSupportedWikis())
@@ -112,15 +113,47 @@ class AppealController extends Controller
                 });
         }
 
-        $hiddenStatuses = $isDeveloper
-            ? [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID]
-            : [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID];
+        $appealtypes = ['assigned'=>'Assigned to me','unassigned'=>'All unreserved open appeals','reserved'=>'Open reserved appeals'];
+        if($isDeveloper) { $appealtypes['developer']='Developer access appeals'; }
 
-        $appeals = Appeal::whereIn('wiki', $wikis)
-            ->whereNotIn('status', $hiddenStatuses)
+        $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
+        $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
+
+        $appeals[$appealtypes['assigned']] = Appeal::whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
+            $query->whereNotIn('status', $basicStatuses)
+            ->where('handlingadmin',Auth::id());
+        })->orWhere(function ($query) use ($isCUAnyWiki) {
+            if ($isCUAnyWiki) {
+                $query->where('status',Appeal::STATUS_CHECKUSER);
+            }
+            else {
+                $query->all();   
+            }
+        })
             ->get();
+        $appeals[$appealtypes['unassigned']] = Appeal::whereIn('wiki', $wikis)
+            ->whereNotIn('status', $basicStatuses)
+            ->where(function ($query) {
+            $query->where('handlingadmin','!=',Auth::id())
+            ->orWhereNull('handlingadmin');
+        })->get();
+        $appeals[$appealtypes['reserved']] = Appeal::whereIn('wiki', $wikis)
+            ->whereNotIn('status', $basicStatuses)
+            ->where(function ($query) use ($isCUAnyWiki) {
+                if ($isCUAnyWiki) {
+                    $query->where('handlingadmin','!=',Auth::id());
+                }
+                else {
+                    $query->where('handlingadmin','!=',Auth::id())
+                        ->orWhere('status',Appeal::STATUS_CHECKUSER);   
+                }
+            })->get();
+        if($isDeveloper) {
+            $appeals[$appealtypes['developer']] = Appeal::whereIn('status',$developerStatuses)
+            ->get();
+        }
 
-        return view('appeals.appeallist', ['appeals' => $appeals, 'tooladmin' => $isTooladmin]);
+        return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes'=>$appealtypes, 'tooladmin' => $isTooladmin]);
     }
 
     public function search(Request $request)
