@@ -2,8 +2,9 @@
 
 namespace App;
 
-use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
+use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
+use App\Jobs\WikiPermission\MarkAsPermissionsChecked;
 use App\MwApi\MwApiUrls;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,10 +13,15 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $primaryKey = 'id';
     public $timestamps = false;
+    protected $primaryKey = 'id';
     protected $guarded = ['id'];
     protected $appends = ['verified_wikis'];
+    protected $dates = ['last_permission_check_at'];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
     protected static function boot()
     {
@@ -28,13 +34,20 @@ class User extends Authenticatable
     }
 
     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
+     * Queue jobs to load and update permissions of this user on all supported wikis
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function queuePermissionChecks()
+    {
+        LoadGlobalPermissionsJob::withChain(array_merge(
+                collect(MwApiUrls::getSupportedWikis())->map(function ($wiki) {
+                    return new LoadLocalPermissionsJob($this, $wiki);
+                })->toArray(),
+                [
+                    new MarkAsPermissionsChecked($this),
+                ]
+        ))
+            ->dispatch($this);
+    }
 
     public function checkRead()
     {
@@ -99,17 +112,5 @@ class User extends Authenticatable
             ->contains(function (Permission $permission) use ($wantedPerms) {
                 return $permission->hasAnySpecifiedPerms($wantedPerms);
             });
-    }
-
-    /**
-     * Queue jobs to load and update permissions of this user on all supported wikis
-     */
-    public function queuePermissionChecks()
-    {
-        LoadGlobalPermissionsJob::dispatch($this);
-
-        foreach (MwApiUrls::getSupportedWikis() as $wiki) {
-            LoadLocalPermissionsJob::dispatch($this, $wiki);
-        }
     }
 }
