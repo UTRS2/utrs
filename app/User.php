@@ -44,8 +44,8 @@ class User extends Authenticatable
                 })->toArray(),
                 [
                     new MarkAsPermissionsChecked($this),
-                ])
-        )
+                ]
+        ))
             ->dispatch($this);
     }
 
