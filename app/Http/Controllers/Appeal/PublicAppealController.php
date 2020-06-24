@@ -157,7 +157,7 @@ class PublicAppealController extends Controller
     public function showVerifyOwnershipForm(Appeal $appeal, string $token)
     {
         abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
-        return view('appeals.verifyaccount', [ 'appeal' => $appeal ]);
+        return view('public.appeal.verifyownership', [ 'appeal' => $appeal ]);
     }
 
     public function verifyAccountOwnership(Request $request, Appeal $appeal)
