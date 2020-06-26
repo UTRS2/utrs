@@ -15,6 +15,7 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -23,9 +24,18 @@ use Illuminate\Validation\Rule;
 
 class AppealController extends Controller
 {
-    public function appeal($id)
+    public function appeal(Request $request, int $id)
     {
-        Auth::user()->checkRead();
+        if (!Auth::check() || !Auth::user()->verified) {
+            if ($request->has('send_to_oauth')) {
+                // fancy tricks to set intended path as cookie, but without the GET param
+                $redirect = redirect();
+                $redirect->setIntendedUrl(app(UrlGenerator::class)->previous());
+                return $redirect->route('login');
+            }
+
+            return response()->view('appeals.public.needauth', [], 401);
+        }
 
         $info = Appeal::find($id);
         if (is_null($info)) {

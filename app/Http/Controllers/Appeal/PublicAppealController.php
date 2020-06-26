@@ -114,7 +114,11 @@ class PublicAppealController extends Controller
     public function view(Request $request)
     {
         $hash = $request->input('hash');
-        $appeal = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
+        $appeal = Appeal::where('appealsecretkey', '=', $hash)->first();
+
+        if (!$appeal) {
+            return response()->view('appeals.public.wrongkey', [], 404);
+        }
 
         $appeal->loadMissing('comments.userObject');
 
