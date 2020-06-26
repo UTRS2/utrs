@@ -46,10 +46,10 @@
         </div>
     </div>
     @foreach($appealtypes as $type)
-    <div class="card">
-        <h5 class="card-header">{{$type}}</h5>
+    <div class="card mt-4">
+        <h5 class="card-header">{{ $type }}</h5>
         <div class="card-body">
-            <table class="table table-bordered table-dark">
+            <table class="table">
                 <thead>
                 <tr>
                     <th scope="col">ID #</th>
@@ -62,52 +62,45 @@
                 </thead>
                 <tbody>
                     @foreach($appeals[$type] as $appeal)
-                        @if($appeal['status']=="ADMIN")
-                            <tr class="bg-primary">
-                        @elseif($appeal['status']=="TOOLADMIN")
-                            <tr class="bg-info">
-                        @elseif($appeal['status']=="CHECKUSER")
-                            <tr class="bg-warning" style="color: #212529!important;">
-                        @elseif($appeal['status']=="PROXY")
-                            <tr class="bg-warning" style="color: #212529!important;">
+                        @if($appeal->status === "ADMIN")
+                            <tr class="table-primary">
+                        @elseif($appeal->status === "CHECKUSER")
+                            <tr class="table-warning">
                         @else
                             <tr>
                         @endif
-                                <td style="vertical-align: middle;">
-                                    @isset($appeal['handlingadmin'])
+                            <td style="vertical-align: middle;">
+                                @isset($appeal['handlingadmin'])
                                     <a href="/appeal/{{ $appeal['id'] }}" class="btn btn-danger">
-                                    @endisset
-                                    @empty($appeal['handlingadmin'])
+                                @else
                                     <a href="/appeal/{{ $appeal['id'] }}" class="btn btn-primary">
-                                    @endempty
-                                        #{{ $appeal->id }}
-                                    </a>
-                                </td>
-                                <td style="vertical-align: middle;">{{ $appeal['appealfor'] }}</td>
-                                <td style="vertical-align: middle">
-                                    {{ $appeal->status }}<br/>
-                                    @if($appeal->blocktype === 0)
-                                        IP address
-                                    @elseif($appeal->blocktype === 1)
-                                        Account
-                                    @elseif($appeal->blocktype === 2)
-                                        IP underneath<br /> account
-                                    @else
-                                        Unknown type: {{ $appeal->blocktype }}
-                                    @endif
-                                    on {{ $appeal->wiki }}
-                                </td>
-                                <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
-                                <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #00ffea!important;"') !!}</td>
-                                <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
-                            </tr>
+                                @endisset
+                                    #{{ $appeal->id }}
+                                </a>
+                            </td>
+                            <td style="vertical-align: middle;">{{ $appeal['appealfor'] }}</td>
+                            <td style="vertical-align: middle">
+                                {{ $appeal->status }}<br/>
+                                @if($appeal->blocktype === 0)
+                                    IP address
+                                @elseif($appeal->blocktype === 1)
+                                    Account
+                                @elseif($appeal->blocktype === 2)
+                                    IP underneath account
+                                @else
+                                    Unknown type: {{ $appeal->blocktype }}
+                                @endif
+                                on {{ $appeal->wiki }}
+                            </td>
+                            <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
+                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason() !!}</td>
+                            <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
+                        </tr>
                     @endforeach
-                
                 </tbody>
             </table>
         </div>
     </div>
-    <br />
     @endforeach
 
 @endsection
