@@ -222,7 +222,7 @@ def appeallist():
         else:
             fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[2])+"\n|"+str(result[3])
     fulltext +="\n|}"
-    page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
+    page = masterwiki.pages["User:AmandaNP/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
     today = datetime.now()
