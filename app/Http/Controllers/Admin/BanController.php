@@ -112,9 +112,11 @@ class BanController extends Controller
                     'protected'       => Log::LOG_PROTECTION_FUNCTIONARY,
                 ]);
             }
+
+            return $ban;
         });
 
-        return redirect(route('admin.bans.view', [ 'ban' => $ban ]));
+        return redirect()->route('admin.bans.view', [$ban]);
     }
 
     public function show(Request $request, Ban $ban)

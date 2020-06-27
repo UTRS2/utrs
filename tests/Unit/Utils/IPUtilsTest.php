@@ -68,4 +68,12 @@ class IPUtilsTest extends TestCase
         $this->assertFalse(IPUtils::isIpRange('10.66.23.123/eating/potatoes/32'));
         $this->assertFalse(IPUtils::isIpRange('10.66.23.123/32/eating/potatoes'));
     }
+
+    public function test_range_start()
+    {
+        $this->assertEquals('1.2.3.0/24', IPUtils::getIpRangeStart('1.2.3.4/24'));
+        $this->assertEquals('1.2.3.0/24', IPUtils::getIpRangeStart('001.2.3.004/24'));
+        $this->assertEquals('1.2.192.0/20', IPUtils::getIpRangeStart('1.2.200.4/20'));
+        $this->assertEquals('2001:DB8:85A3:1234:0:0:0:0/64', IPUtils::getIpRangeStart('2001:0db8:85a3:1234:0000:8a2e:0370:7334/64'));
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Utils;
 
 use Illuminate\Support\Str;
+use Wikimedia\IPUtils as WikimediaIpUtils;
 use Symfony\Component\HttpFoundation\IpUtils as SymfonyIpUtils;
 
 /**
@@ -36,7 +37,20 @@ final class IPUtils
     }
 
     /**
-     * Checks if given IP is inside a given IP range. Convenience bridge to confusingly named Symfony method.
+     * Get a normalized representation of a CIDR range
+     * @param string $range CIDR range to normalize
+     * @return string
+     */
+    public static function getIpRangeStart(string $range)
+    {
+        // sanitizeRange gives the start of the range, ie 192.168.100.130/24 becomes 192.168.100.0/24
+        // sanitizeIp removes all anomalies like leading zeroes etc and normalizes spelling
+        // both work on ranges, so let's normalize using both
+        return WikimediaIpUtils::sanitizeRange(WikimediaIpUtils::sanitizeIP($range));
+    }
+
+    /**
+     * Checks if given IP is inside a given IP range. Convenience bridge to confusingly named Symfony class.
      * @param string $range ip range to test
      * @param string $ip ip address to test
      * @return bool true if $ip is inside range $range

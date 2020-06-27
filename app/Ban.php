@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Utils\IPUtils;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -32,5 +33,14 @@ class Ban extends Model
                     ->where('expiry', '>=', now())
                     ->orWhere('expiry', '<=', '2000-01-01 00:00:00');
             });
+    }
+
+    public function setTargetAttribute($value)
+    {
+        if (IPUtils::isIpRange($value)) {
+            $value = IPUtils::getIpRangeStart($value);
+        }
+
+        $this->attributes['target'] = $value;
     }
 }
