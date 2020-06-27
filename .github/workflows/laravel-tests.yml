@@ -59,4 +59,4 @@ jobs:
         if: always()
         with:
           name: dusk-screenshots
-          path: tests/Browser/screenshots
+          path: tests/Browser/screenshots/*.png

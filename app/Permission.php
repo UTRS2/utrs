@@ -125,9 +125,6 @@ class Permission extends Model
         if ($level == "TOOLADMIN") {
             return $specific->tooladmin;
         }
-        if ($level == "PRIVACY") {
-            return $specific->privacy;
-        }
         if ($level == "ADMIN") {
             return $specific->admin;
         }
@@ -148,18 +145,13 @@ class Permission extends Model
         return self::hasAnyPermission($id, $wiki, ['oversight']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
     }
 
-    public static function checkPrivacy($id, $wiki)
-    {
-        return self::hasAnyPermission($id, $wiki, ['oversight']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer', 'privacy']);
-    }
-
     public static function checkAdmin($id, $wiki)
     {
-        return self::hasAnyPermission($id, $wiki, ['admin']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer', 'privacy']);
+        return self::hasAnyPermission($id, $wiki, ['admin']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
     }
 
     public static function checkToolAdmin($id, $wiki)
     {
-        return self::hasAnyPermission($id, $wiki, ['tooladmin', 'oversight', 'checkuser']) || self::hasAnyPermission($id, '*', ['tooladmin', 'developer', 'steward', 'staff', 'developer', 'privacy']);
+        return self::hasAnyPermission($id, $wiki, ['tooladmin', 'oversight', 'checkuser']) || self::hasAnyPermission($id, '*', ['tooladmin', 'developer', 'steward', 'staff', 'developer']);
     }
 }

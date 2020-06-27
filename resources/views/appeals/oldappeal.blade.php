@@ -3,7 +3,7 @@
 @section('title', 'Appeal #' . $info->id)
 @section('content')
     <div class="mb-1">
-        <a href="/review" class="btn btn-primary">
+        <a href="{{ route('appeal.list') }}" class="btn btn-primary">
             Back to appeal list
         </a>
     </div>
@@ -90,18 +90,18 @@
                             @if(is_null($comment['commentUser']))
                                 <td><i>System</i></td>
                                 <td><i>{{ $comment['timestamp'] }}</i></td>
-                                <td><i>{{ $comment['oldcomments'] }}</i></td>
+                                <td><i>{{ $comment['comment'] }}</i></td>
                             @else
                                 <td>{{ $userlist[$comment['commentUser']] }}</td>
                                 <td>{{ $comment['timestamp'] }}</td>
                                 @if($comment['protected'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
-                                    <td>{{ $comment['oldcomments'] }}</td>
+                                    <td>{{ $comment['comment'] }}</td>
                                 @endif
                             @endif
                         </tr>
-                        @endforeach
+                    @endforeach
                 </tbody>
             </table>
             <br/>

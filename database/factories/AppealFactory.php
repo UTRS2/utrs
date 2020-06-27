@@ -9,8 +9,6 @@ use Faker\Generator as Faker;
 $factory->define(Appeal::class, function (Faker $faker) {
     return [
         'appealfor' => $faker->firstName,
-        'privacylevel' => 0,
-        'privacyreview' => 0,
         'blocktype' => 1,
         'status' => Appeal::STATUS_OPEN,
         'blockfound' => 1,
