@@ -172,7 +172,7 @@ class BanController extends Controller
             $changeDetails = [];
 
             if (array_key_exists('reason', $changes)) {
-                $changeDetails[] = 'reason was set to "' . $ban->reason . "'";
+                $changeDetails[] = 'reason was set to "' . $ban->reason . '"';
             }
 
             if (array_key_exists('expiry', $changes)) {
