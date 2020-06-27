@@ -13,9 +13,7 @@ import login
 masterwiki =  mwclient.Site('en.wikipedia.org')
 masterwiki.login(login.username,login.password)
 metawiki =  mwclient.Site('meta.wikimedia.org')
-metawiki.login(login.username,login.password)
 ptwiki =  mwclient.Site('pt.wikipedia.org')
-ptwiki.login(login.username,login.password)
 
 regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
 
@@ -144,28 +142,6 @@ def runAPI(wiki, params):
     if wiki == "ptwiki":raw = callptwikiAPI(params)
     if wiki == "global":raw = callmetaAPI(params)
     return raw
-def sendemail(target,subject,text,wiki):
-    params = {'action': 'query',
-            'format': 'json',
-            'meta': 'tokens'
-            }
-    raw = runAPI(wiki, params)
-    try:code = raw["query"]["tokens"]["csrftoken"]
-    except:
-        print raw
-        print "FAILURE: Param not accepted."
-        quit()
-    params = {'action': 'emailuser',
-    'format': 'json',
-    'target': target,
-    'subject': subject,
-    'token': code.encode(),
-    'text': text
-            }
-    try:raw = callAPI(params)
-    except:
-        print "Couldn't send email"
-        print [target,subject,text,wiki]
 def clearPrivateData():
     results = calldb("select * from privatedatas;","read")
     for result in results:
