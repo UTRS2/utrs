@@ -103,7 +103,7 @@ class AppealController extends Controller
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
 
-        if ($user->wikis === '*' || $isDeveloper) {
+        if ($user->wikis === '*' || $isDeveloper || $user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
             $wikis = collect(MwApiUrls::getSupportedWikis())
                 ->push('global');
         } else {
