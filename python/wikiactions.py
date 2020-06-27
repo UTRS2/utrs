@@ -139,40 +139,11 @@ def checkBlock(target,wiki):
             if raw["query"]["globalallusers"][0]["locked"]=="":return True
         except:
             return False
-def blockNotFound(username,wiki,id):
-    print "Block not found email: " + username
-    mash= username+credentials.secret
-    confirmhash = hashlib.md5(mash.encode()).hexdigest()
-    subject="UTRS Appeal #"+str(id)+" - Block not found"
-    text="""
-Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
-
-http://"""+credentials.utrshost+""".wmflabs.org/fixblock/"""+str(confirmhash)+"""
-
-Thanks,
-UTRS Developers"""
-    sendemail(username,subject,text,wiki)
-
 def runAPI(wiki, params):
     if wiki == "enwiki":raw = callAPI(params)
     if wiki == "ptwiki":raw = callptwikiAPI(params)
     if wiki == "global":raw = callmetaAPI(params)
     return raw
-def updateBlockinfoDB(raw,appeal,wiki):
-    if wiki != "global":
-        blockingadmin = raw["query"]["blocks"][0]["by"]
-        reason = raw["query"]["blocks"][0]["reason"]
-        reason = reason.replace("'","\'")
-    else:
-        blockingadmin = raw["query"]["logevents"][0]["user"]
-        reason = raw["query"]["logevents"][0]["comment"]
-        reason = reason.replace("'","\'")
-    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-    calldb("update appeals set blockingadmin = '"+blockingadmin+"' where id="+str(appeal[0])+";","write")
-    calldb("update appeals set blockreason = '"+reason+"' where id="+str(appeal[0])+";","write")
-    results = calldb("select * from appeals where status = 'VERIFY';","read")
-    if results[0][2] != results[0][3]:calldb("update appeals set status = \"PRIVACY\" where id="+str(appeal[0])+";","write")
-    else:calldb("update appeals set status = \"OPEN\" where id="+str(appeal[0])+";","write")
 def sendemail(target,subject,text,wiki):
     params = {'action': 'query',
             'format': 'json',
