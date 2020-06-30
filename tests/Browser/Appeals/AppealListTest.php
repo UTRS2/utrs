@@ -28,7 +28,7 @@ class AppealListTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->getUser())
                 ->visit('/review')
-                ->assertSee('Current appeals')
+                ->assertSee('All unreserved open appeals')
                 ->assertDontSee('403');
         });
     }
