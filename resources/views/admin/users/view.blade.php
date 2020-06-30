@@ -36,12 +36,8 @@
                     <td>{{ $user->username }}</td>
                 </tr>
                 <tr>
-                    <th>Verified</th>
-                    <td>{{ $user->verified ? 'Yes' : 'No' }}</td>
-                </tr>
-                <tr>
-                    <th>Wikis</th>
-                    <td>{{ $user->wikis }}</td>
+                    <th>Last Permission Check</th>
+                    <td>{{ $user->last_permission_check_at }}</td>
                 </tr>
                 </tbody>
             </table>
