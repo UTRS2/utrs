@@ -39,9 +39,22 @@ class Permission extends Model
      */
     public function hasAnySpecifiedPerms(array $perms)
     {
+        // magic array. allows value permissions instead of key
+        // for example 'admin' => ['steward', 'staff'], allows users with
+        // 'staff' or 'steward' permission to do actions that check for 'admin' permission
+
+        $alternatives = [
+            'admin' => ['steward', 'staff'],
+        ];
+
         $perms = collect($perms)
             ->map(function ($string) {
                 return Str::lower($string);
+            })
+            ->flatMap(function ($string) use ($alternatives) {
+                return array_key_exists($string, $alternatives)
+                    ? array_merge([$string], $alternatives[$string])
+                    : [$string];
             });
 
         return $this->present_permissions
