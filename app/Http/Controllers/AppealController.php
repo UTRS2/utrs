@@ -15,6 +15,7 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
