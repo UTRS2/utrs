@@ -49,7 +49,7 @@
     <div class="card mt-4">
         <h5 class="card-header">{{ $type }}</h5>
         <div class="card-body">
-            <table class="table">
+            <table class="table table-bordered table-dark">
                 <thead>
                 <tr>
                     <th scope="col">ID #</th>
