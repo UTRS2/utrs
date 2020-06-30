@@ -170,7 +170,25 @@ class AppealController extends Controller
             })
             ->orderByDesc('id')
             ->first();
+        
+        // try to find an UTRS 1 appeal if no UTRS 2 appeals were found
+        if (!$appeal && Schema::hasTable('oldappeals')) {
+            $appeal = Oldappeal::where(function (Builder $query) use ($search) {
+                return $query->where('hasAccount', true)
+                    ->where('wikiAccountName', $search);
+            })
+                ->orWhere(function (Builder $query) use ($search) {
+                    return $query->where('hasAccount', false)
+                        ->where('ip', $search);
+                })
+                ->when($number, function (Builder $query, $number) {
+                    return $query->orWhere('appealID', $number);
+                })
+                ->orderByDesc('appealID')
+                ->first();
+        }
 
+        // If no appeals were found at all, show error message
         if (!$appeal) {
             return redirect()
                 ->back(302, [], route('appeal.list'))
