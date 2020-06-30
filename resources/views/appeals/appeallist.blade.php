@@ -63,9 +63,9 @@
                 <tbody>
                     @foreach($appeals[$type] as $appeal)
                         @if($appeal->status === "ADMIN")
-                            <tr class="table-primary">
+                            <tr class="bg-primary">
                         @elseif($appeal->status === "CHECKUSER")
-                            <tr class="table-warning">
+                            <tr class="bg-warning" style="color: #212529!important;">
                         @else
                             <tr>
                         @endif
@@ -93,7 +93,7 @@
                                 on {{ $appeal->wiki }}
                             </td>
                             <td style="vertical-align: middle;">{{ $appeal['blockingadmin'] }}</td>
-                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason() !!}</td>
+                            <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #00ffea!important;"') !!}</td>
                             <td style="vertical-align: middle;">{{ $appeal['submitted'] }}</td>
                         </tr>
                     @endforeach
