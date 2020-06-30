@@ -15,7 +15,6 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -114,48 +113,41 @@ class AppealController extends Controller
                 });
         }
 
-        $appealtypes = [
-            'assigned' => 'Assigned to me',
-            'unassigned' => 'All unreserved open appeals',
-            'reserved' => 'Open reserved appeals'
-        ];
-
-        if($isDeveloper) {
-            $appealtypes['developer'] = 'Developer access appeals';
-        }
+        $appealtypes = ['assigned'=>'Assigned to me','unassigned'=>'All unreserved open appeals','reserved'=>'Open reserved appeals'];
+        if($isDeveloper) { $appealtypes['developer']='Developer access appeals'; }
 
         $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
         $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
 
-        $appeals[$appealtypes['assigned']] = Appeal::whereIn('wiki', $wikis)
-            ->where(function (Builder $query) use ($basicStatuses, $user) {
-                $query->whereNotIn('status', $basicStatuses)
-                    ->where('handlingadmin', $user->id);
-            })
-            ->when($isCUAnyWiki, function (Builder $query) {
-                $query->orWhere('status', Appeal::STATUS_CHECKUSER);
-            })
+        $appeals[$appealtypes['assigned']] = Appeal::whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
+            $query->whereNotIn('status', $basicStatuses)
+            ->where('handlingadmin',Auth::id());
+        })->orWhere(function ($query) use ($isCUAnyWiki) {
+            if ($isCUAnyWiki) {
+                $query->where('status',Appeal::STATUS_CHECKUSER);
+            }
+        })
             ->get();
-
         $appeals[$appealtypes['unassigned']] = Appeal::whereIn('wiki', $wikis)
             ->whereNotIn('status', $basicStatuses)
-            ->where('handlingadmin', '!=', $user->id)
-            ->orWhereNull('handlingadmin')
-            ->get();
-
+            ->where(function ($query) {
+            $query->where('handlingadmin','!=',Auth::id())
+            ->orWhereNull('handlingadmin');
+        })->get();
         $appeals[$appealtypes['reserved']] = Appeal::whereIn('wiki', $wikis)
             ->whereNotIn('status', $basicStatuses)
-            ->where(function (Builder $query) use ($user, $isCUAnyWiki) {
-                $query->where('handlingadmin', '!=', $user->id)
-                    ->whereNotNull('handlingadmin')
-                    ->when($isCUAnyWiki, function (Builder $query) {
-                        $query->orWhere('status', Appeal::STATUS_CHECKUSER);
-                    });
-            })
+            ->where(function ($query) use ($isCUAnyWiki) {
+                if ($isCUAnyWiki) {
+                    $query->where('handlingadmin','!=',Auth::id());
+                }
+                else {
+                    $query->where('handlingadmin','!=',Auth::id())
+                        ->orWhere('status',Appeal::STATUS_CHECKUSER);   
+                }
+            })->get();
+        if($isDeveloper) {
+            $appeals[$appealtypes['developer']] = Appeal::whereIn('status',$developerStatuses)
             ->get();
-
-        if ($isDeveloper) {
-            $appeals[$appealtypes['developer']] = Appeal::whereIn('status', $developerStatuses)->get();
         }
 
         return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes'=>$appealtypes, 'tooladmin' => $isTooladmin]);
@@ -179,24 +171,6 @@ class AppealController extends Controller
             ->orderByDesc('id')
             ->first();
 
-        // try to find an UTRS 1 appeal if no UTRS 2 appeals were found
-        if (!$appeal && Schema::hasTable('oldappeals')) {
-            $appeal = Oldappeal::where(function (Builder $query) use ($search) {
-                return $query->where('hasAccount', true)
-                    ->where('wikiAccountName', $search);
-            })
-                ->orWhere(function (Builder $query) use ($search) {
-                    return $query->where('hasAccount', false)
-                        ->where('ip', $search);
-                })
-                ->when($number, function (Builder $query, $number) {
-                    return $query->orWhere('appealID', $number);
-                })
-                ->orderByDesc('appealID')
-                ->first();
-        }
-
-        // If no appeals were found at all, show error message
         if (!$appeal) {
             return redirect()
                 ->back(302, [], route('appeal.list'))
