@@ -13,9 +13,7 @@ import login
 masterwiki =  mwclient.Site('en.wikipedia.org')
 masterwiki.login(login.username,login.password)
 metawiki =  mwclient.Site('meta.wikimedia.org')
-metawiki.login(login.username,login.password)
 ptwiki =  mwclient.Site('pt.wikipedia.org')
-ptwiki.login(login.username,login.password)
 
 regex = "((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))"
 
@@ -139,62 +137,11 @@ def checkBlock(target,wiki):
             if raw["query"]["globalallusers"][0]["locked"]=="":return True
         except:
             return False
-def blockNotFound(username,wiki,id):
-    print "Block not found email: " + username
-    mash= username+credentials.secret
-    confirmhash = hashlib.md5(mash.encode()).hexdigest()
-    subject="UTRS Appeal #"+str(id)+" - Block not found"
-    text="""
-Your block that you filed an appeal for on the UTRS Platform has not been found. Please verify the name or IP address being blocked.
-
-http://"""+credentials.utrshost+""".wmflabs.org/fixblock/"""+str(confirmhash)+"""
-
-Thanks,
-UTRS Developers"""
-    sendemail(username,subject,text,wiki)
-
 def runAPI(wiki, params):
     if wiki == "enwiki":raw = callAPI(params)
     if wiki == "ptwiki":raw = callptwikiAPI(params)
     if wiki == "global":raw = callmetaAPI(params)
     return raw
-def updateBlockinfoDB(raw,appeal,wiki):
-    if wiki != "global":
-        blockingadmin = raw["query"]["blocks"][0]["by"]
-        reason = raw["query"]["blocks"][0]["reason"]
-        reason = reason.replace("'","\'")
-    else:
-        blockingadmin = raw["query"]["logevents"][0]["user"]
-        reason = raw["query"]["logevents"][0]["comment"]
-        reason = reason.replace("'","\'")
-    calldb("update appeals set blockfound = 1 where id="+str(appeal[0])+";","write")
-    calldb("update appeals set blockingadmin = '"+blockingadmin+"' where id="+str(appeal[0])+";","write")
-    calldb("update appeals set blockreason = '"+reason+"' where id="+str(appeal[0])+";","write")
-    results = calldb("select * from appeals where status = 'VERIFY';","read")
-    if results[0][2] != results[0][3]:calldb("update appeals set status = \"PRIVACY\" where id="+str(appeal[0])+";","write")
-    else:calldb("update appeals set status = \"OPEN\" where id="+str(appeal[0])+";","write")
-def sendemail(target,subject,text,wiki):
-    params = {'action': 'query',
-            'format': 'json',
-            'meta': 'tokens'
-            }
-    raw = runAPI(wiki, params)
-    try:code = raw["query"]["tokens"]["csrftoken"]
-    except:
-        print raw
-        print "FAILURE: Param not accepted."
-        quit()
-    params = {'action': 'emailuser',
-    'format': 'json',
-    'target': target,
-    'subject': subject,
-    'token': code.encode(),
-    'text': text
-            }
-    try:raw = callAPI(params)
-    except:
-        print "Couldn't send email"
-        print [target,subject,text,wiki]
 def clearPrivateData():
     results = calldb("select * from privatedatas;","read")
     for result in results:
@@ -222,7 +169,7 @@ def appeallist():
         else:
             fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[2])+"\n|"+str(result[3])
     fulltext +="\n|}"
-    page = masterwiki.pages["User:DeltaQuad/UTRS Appeals"]
+    page = masterwiki.pages["User:AmandaNP/UTRS Appeals"]
     page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
     today = datetime.now()
