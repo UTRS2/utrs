@@ -73,14 +73,14 @@
                                     @isset($appeal->handlingadmin)
                                         @if(Auth::check() && $appeal->handlingadmin == Auth::id())
                                             <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-info">
-                                                @else
-                                                    <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-danger">
-                                                        @endif
-                                                        @else
-                                                            <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-primary">
-                                                                @endisset
-                                                                #{{ $appeal->id }}
-                                                            </a>
+                                        @else
+                                            <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-danger">
+                                        @endif
+                                    @else
+                                        <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-primary">
+                                    @endisset
+                                        #{{ $appeal->id }}
+                                    </a>
                                 </td>
                                 <td style="vertical-align: middle;">{{ $appeal->appealfor }}</td>
                                 <td style="vertical-align: middle">
