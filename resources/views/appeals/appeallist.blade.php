@@ -95,19 +95,19 @@
                                         Unknown type: {{ $appeal->blocktype }}
                                     @endif
                                     on {{ $appeal->wiki }}<br/>
-                                    @if($appeal->handlingAdminObject)
+                                    {{-- @if($appeal->handlingAdminObject)
                                         Reserved by
                                         @can('view', $appeal->handlingAdminObject)
-                                            <a href="{{ route('admin.users.view', $appeal->handlingAdminObject) }}">
+                                            <a href="{{ route('admin.users.view', $appeal->handlingAdminObject) }}" class="text-dark font-weight-bold">
                                                 {{ $appeal->handlingAdminObject->username }}
                                             </a>
                                         @else
                                             {{ $appeal->handlingAdminObject->username }}
                                         @endcan
-                                    @endif
+                                    @endif --}}
                                 </td>
                                 <td style="vertical-align: middle;">{{ $appeal->blockingadmin }}</td>
-                                <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason() !!}</td>
+                                <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('class="text-dark font-weight-bold"') !!}</td>
                                 <td style="vertical-align: middle;">{{ $appeal->submitted }}</td>
                             </tr>
                             @endforeach
