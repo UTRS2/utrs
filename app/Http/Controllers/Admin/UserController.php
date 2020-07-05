@@ -29,7 +29,6 @@ class UserController extends Controller
 
         foreach ($allusers as $user) {
             $idbutton = '<a href="' . route('admin.users.view', $user) . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
-            $verified = $user->verified ? 'Yes' : 'No';
             $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $user->last_permission_check_at];
         }
 
