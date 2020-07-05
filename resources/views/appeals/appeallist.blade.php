@@ -49,7 +49,7 @@
         <div class="card mt-4">
             <h5 class="card-header">{{ $type }}</h5>
             <div class="card-body">
-                <table class="table">
+                <table class="table table-dark">
                     <thead>
                     <tr>
                         <th scope="col">ID #</th>
@@ -63,9 +63,9 @@
                     <tbody>
                     @foreach($appeals[$type] as $appeal)
                         @if($appeal->status === \App\Appeal::STATUS_ADMIN)
-                            <tr class="table-primary">
+                            <tr class="table-dark-primary">
                         @elseif($appeal->status === \App\Appeal::STATUS_CHECKUSER)
-                            <tr class="table-warning">
+                            <tr class="table-dark-warning">
                         @else
                             <tr>
                                 @endif
@@ -98,7 +98,7 @@
                                     {{-- @if($appeal->handlingAdminObject)
                                         Reserved by
                                         @can('view', $appeal->handlingAdminObject)
-                                            <a href="{{ route('admin.users.view', $appeal->handlingAdminObject) }}" class="text-dark font-weight-bold">
+                                            <a href="{{ route('admin.users.view', $appeal->handlingAdminObject) }}">
                                                 {{ $appeal->handlingAdminObject->username }}
                                             </a>
                                         @else
@@ -107,7 +107,7 @@
                                     @endif --}}
                                 </td>
                                 <td style="vertical-align: middle;">{{ $appeal->blockingadmin }}</td>
-                                <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('class="text-dark font-weight-bold"') !!}</td>
+                                <td style="vertical-align: middle;">{!! $appeal->getFormattedBlockReason('style="color: #00ffea!important;"') !!}</td>
                                 <td style="vertical-align: middle;">{{ $appeal->submitted }}</td>
                             </tr>
                             @endforeach

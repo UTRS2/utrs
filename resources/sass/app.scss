@@ -2,3 +2,11 @@ $enable-gradients: true;
 $enable-shadows: true;
 
 @import '~bootstrap/scss/bootstrap';
+
+.table-dark-warning {
+  background: #473600;
+}
+
+.table-dark-primary {
+  background: #004085;
+}
