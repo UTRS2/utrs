@@ -30,15 +30,8 @@ class OauthLoginController extends Controller
         $user = User::firstOrCreate([
             'username' => $socialiteUser->name,
         ], [
-            'password' => '',
             'wikis' => '',
-            'verified' => true,
         ]);
-
-        if (!$user->verified) {
-            $user->verified = true;
-            $user->save();
-        }
 
         if ($user->wasRecentlyCreated) {
             Wikitask::create([

@@ -44,7 +44,6 @@ Route::get('/appeal/open/{id}', 'AppealController@open');
 Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
 Route::post('/appeal/checkuserreview/{appeal}', 'AppealController@checkuserreview')->name('appeal.action.checkuser');
-Route::get('/appeal/privacy/{id}', 'AppealController@privacy');
 Route::post('/appeal/tooladmin/{appeal}', 'AppealController@admin')->name('appeal.action.tooladmin');
 Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
 
@@ -55,8 +54,6 @@ Route::get('/appeal/custom/{appeal}', 'AppealController@respondCustom')->name('a
 Route::post('/appeal/custom/{appeal}', 'AppealController@respondCustomSubmit')->name('appeal.customresponse.submit');
 
 Route::get('/publicappeal', 'Appeal\PublicAppealController@redirectLegacy');
-
-Route::get('/appeal/privacy/{id}/{action}', 'AppealController@privacyhandle');
 
 Route::get('/admin/users', 'Admin\UserController@index')->name('admin.users.list');
 Route::get('/admin/users/{user}', 'Admin\UserController@show')->name('admin.users.view');
@@ -74,7 +71,3 @@ Route::post('admin/templates/{template}', 'AdminController@updateTemplate')->nam
 Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
 Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
 Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
-
-Route::get('/verifyaccount','AdminController@verifyAccount');
-Route::get('/verify/{code}','AdminController@verify');
-Route::get('/pending','HomeController@pending');
