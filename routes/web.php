@@ -35,10 +35,10 @@ Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
 
-Route::post('/appeal/checkuser/{id}', 'AppealController@checkuser');
+Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
-Route::get('/appeal/reserve/{id}', 'AppealController@reserve');
+Route::get('/appeal/reserve/{appeal}', 'AppealController@reserve');
 Route::post('/appeal/release/{id}', 'AppealController@release')->name('appeal.action.release');
 Route::get('/appeal/open/{id}', 'AppealController@open');
 Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');

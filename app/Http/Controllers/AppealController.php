@@ -241,7 +241,7 @@ class AppealController extends Controller
         }
 
         Log::create(['user' => $user, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_FUNCTIONARY]);
-        return redirect('appeal/' . $id);
+        return redirect('appeal/' . $appeal->id);
     }
 
     public function comment($id, Request $request)
@@ -398,7 +398,7 @@ class AppealController extends Controller
         $appeal->save();
         Log::create(['user' => $user, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE]);
 
-        return redirect('appeal/' . $id);
+        return redirect('appeal/' . $appeal->id);
     }
 
     public function release($id, Request $request)
