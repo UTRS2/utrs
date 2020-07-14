@@ -75,6 +75,14 @@
                 </div>
             @endif
 
+            @error('duplicate')
+                <div class="alert alert-warning form-group mb-4">
+                    <div class="custom-control custom-checkbox">
+                        {{ Form::checkbox('duplicate', 1, old('duplicate') === 1, ['class' => 'custom-control-input', 'id' => 'duplicate']) }} {{ Form::label('duplicate', 'Add duplicate ban', ['class' => 'custom-control-label']) }}
+                    </div>
+                </div>
+            @enderror
+
             <button type="submit" class="btn btn-success">Submit</button>
             {{ Form::close() }}
         </div>

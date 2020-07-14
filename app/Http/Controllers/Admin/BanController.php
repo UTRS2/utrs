@@ -11,6 +11,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class BanController extends Controller
 {
@@ -80,7 +81,12 @@ class BanController extends Controller
 
     public function create(CreateBanRequest $request)
     {
-        // TODO: check for duplicates
+        $duplicate = Ban::where($request->only('target', 'ip'))->get();
+        if (!$request->has('duplicate') && $duplicate) {
+            throw ValidationException::withMessages([
+                'duplicate' => 'It appears that this target has already been blocked. Do you want to continue?',
+            ]);
+        }
 
         $ban = DB::transaction(function () use ($request) {
             $ban = Ban::create($request->validated());
