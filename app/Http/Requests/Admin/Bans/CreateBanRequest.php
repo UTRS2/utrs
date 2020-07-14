@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Bans;
 
 use App\Ban;
 use App\Http\Rules\IpOrCidrRule;
+use App\Http\Rules\MaxCidrSizeRule;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
@@ -48,7 +49,10 @@ class CreateBanRequest extends FormRequest
     {
         if ($this->has('ip') && $this->input('ip') == true) {
             $validator->addRules([
-                'target' => [new IpOrCidrRule],
+                'target' => [
+                    new IpOrCidrRule,
+                    new MaxCidrSizeRule(16, 16),
+                ],
             ]);
         }
 

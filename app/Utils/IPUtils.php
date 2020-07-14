@@ -59,4 +59,26 @@ final class IPUtils
     {
         return SymfonyIpUtils::checkIp($ip, $range);
     }
+
+    /**
+     * Gets the CIDR range size (number after the slash) for a given range
+     * There is probably a better name than "cidr range size", but I'm not a network engineer
+     * @param string $range cidr range
+     * @return int
+     */
+    public static function getRangeCidrSize(string $range)
+    {
+        [ , $size ] = WikimediaIpUtils::parseCIDR($range);
+        return $size;
+    }
+
+    /**
+     * Checks if the given ip address or range is using IPv6. Convenience bridge to confusingly named Wikimedia IP util class.
+     * @param string $ipOrRange ip or range to check
+     * @return bool true if $ipOrRange is using ipv6, false otherwise
+     */
+    public static function isIPv6(string $ipOrRange)
+    {
+        return WikimediaIpUtils::isIPv6($ipOrRange);
+    }
 }
