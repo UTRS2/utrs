@@ -35,7 +35,7 @@
             <h5>{{ __('appeals.forms.about-you') }}</h5>
             <div class="form-group mb-4">
                 {{ Form::label('wiki', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki', \App\MwApi\MwApiUrls::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
+                {{ Form::select('wiki', \App\Services\Facades\MediaWikiRepository::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
             </div>
             <div class="form-group mb-4">
                 {{ Form::label('appealfor', __('appeals.forms.block-username')) }}

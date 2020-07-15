@@ -2,7 +2,7 @@
 
 namespace App\Jobs\WikiPermission;
 
-use App\MwApi\MwApiExtras;
+use App\Services\Facades\MediaWikiRepository;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,6 +51,6 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
 
     public function checkIsBlocked()
     {
-        return MwApiExtras::getGlobalBlockInfo($this->user->username, -1) !== null;
+        return MediaWikiRepository::getGlobalApi()->getMediaWikiExtras()->getGlobalBlockInfo($this->user->username) !== null;
     }
 }

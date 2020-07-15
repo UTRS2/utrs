@@ -5,7 +5,7 @@ namespace App;
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Jobs\WikiPermission\MarkAsPermissionsChecked;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -39,7 +39,7 @@ class User extends Authenticatable
     public function queuePermissionChecks()
     {
         LoadGlobalPermissionsJob::withChain(array_merge(
-                collect(MwApiUrls::getSupportedWikis())->map(function ($wiki) {
+                collect(MediaWikiRepository::getSupportedTargets(false))->map(function ($wiki) {
                     return new LoadLocalPermissionsJob($this, $wiki);
                 })->toArray(),
                 [

@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Appeal;
+use App\Services\Facades\MediaWikiRepository;
 use RuntimeException;
-use App\MwApi\MwApiExtras;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,7 +35,7 @@ class VerifyBlockJob implements ShouldQueue
      */
     public function handle()
     {
-        if (!MwApiExtras::canEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername())) {
+        if (!MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->canEmail($this->appeal->getWikiEmailUsername())) {
             return;
         }
 
@@ -62,7 +62,7 @@ the UTRS team
 EOF;
 
 
-        $result = MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(), $title, $message);
+        $result = MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->sendEmail($this->appeal->getWikiEmailUsername(), $title, $message);
 
         if (!$result) {
             throw new RuntimeException('Failed sending an e-mail');

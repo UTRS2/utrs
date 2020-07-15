@@ -7,10 +7,10 @@ use App\Ban;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
-use App\MwApi\MwApiUrls;
 use App\Privatedata;
 use App\Rules\SecretEqualsRule;
 use App\Sendresponse;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +29,7 @@ class PublicAppealController extends Controller
         $data = $request->validate([
             'appealtext' => 'required|max:4000',
             'appealfor'  => 'required|max:50',
-            'wiki'       => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
+            'wiki'       => [ 'required', Rule::in(MediaWikiRepository::getSupportedTargets(true)) ],
             'blocktype'  => 'required|numeric|max:2|min:0',
         ]);
 

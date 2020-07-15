@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Wikitask;
+use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -25,27 +26,33 @@ class OauthLoginController extends Controller
 
     public function callback()
     {
-        $socialiteUser = Socialite::driver('mediawiki')->user();
+        // run this inside a transaction.
+        // helps mainly for development stuff, when loading permissions fails
+        $user = DB::transaction(function () {
+            $socialiteUser = Socialite::driver('mediawiki')->user();
 
-        $user = User::firstOrCreate([
-            'username' => $socialiteUser->name,
-        ], [
-            'password' => '',
-            'wikis' => '',
-            'verified' => true,
-        ]);
-
-        if (!$user->verified) {
-            $user->verified = true;
-            $user->save();
-        }
-
-        if ($user->wasRecentlyCreated) {
-            Wikitask::create([
-                'task' => 'verifyaccount',
-                'actionid' => $user->id,
+            $user = User::firstOrCreate([
+                'username' => $socialiteUser->name,
+            ], [
+                'password' => '',
+                'wikis' => '',
+                'verified' => true,
             ]);
-        }
+
+            if (!$user->verified) {
+                $user->verified = true;
+                $user->save();
+            }
+
+            if ($user->wasRecentlyCreated) {
+                Wikitask::create([
+                    'task' => 'verifyaccount',
+                    'actionid' => $user->id,
+                ]);
+            }
+
+            return $user;
+        });
 
         Auth::login($user, true);
         return redirect()->intended('/');

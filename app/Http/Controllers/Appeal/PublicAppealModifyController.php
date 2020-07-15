@@ -6,7 +6,7 @@ use App\Appeal;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -36,7 +36,7 @@ class PublicAppealModifyController extends Controller
 
         $data = $request->validate([
             'appealfor' => 'required|max:50',
-            'wiki'      => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
+            'wiki'      => [ 'required', Rule::in(MediaWikiRepository::getSupportedTargets()) ],
             'blocktype' => 'required|numeric|max:2|min:0',
             'hiddenip'  => 'nullable|ip',
         ]);

@@ -6,12 +6,12 @@ use App;
 use App\Appeal;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
-use App\MwApi\MwApiUrls;
 use App\Oldappeal;
 use App\Olduser;
 use App\Permission;
 use App\Privatedata;
 use App\Sendresponse;
+use App\Services\Facades\MediaWikiRepository;
 use App\Template;
 use App\User;
 use Auth;
@@ -105,8 +105,7 @@ class AppealController extends Controller
         $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
 
         if ($user->wikis === '*' || $isDeveloper || $user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
-            $wikis = collect(MwApiUrls::getSupportedWikis())
-                ->push('global');
+            $wikis = MediaWikiRepository::getSupportedTargets();
         } else {
             $wikis = collect(explode(',', $user->wikis ?? ''))
                 ->filter(function ($wiki) use ($user) {

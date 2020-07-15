@@ -2,8 +2,8 @@
 
 namespace App;
 
+use App\Services\Facades\MediaWikiRepository;
 use RuntimeException;
-use App\MwApi\MwApiUrls;
 use Illuminate\Database\Eloquent\Model;
 
 class Appeal extends Model
@@ -83,7 +83,7 @@ class Appeal extends Model
             return '';
         }
 
-        $linkPrefix = MwApiUrls::getWikiProperty($this->wiki, 'url_base') . 'wiki/';
+        $linkPrefix = MediaWikiRepository::getTargetProperty($this->wiki, 'url_base') . 'wiki/';
         $reason = htmlspecialchars($this->blockreason);
 
         preg_match_all('/\[\[([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:\-\/]+))?\]\]/', $reason, $linkMatches, PREG_SET_ORDER);

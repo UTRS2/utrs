@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\MwApi\MwApiUrls;
+use App\Services\MediaWiki\Api\MediaWikiRepository;
 use DB;
 use App\Log;
 use App\Permission;
-use Illuminate\Support\Arr;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
@@ -77,7 +76,7 @@ class UserController extends Controller
                 $allChanges[] = 'queue wiki permission reload';
             }
 
-            foreach (MwApiUrls::getSupportedWikis(true) as $wiki) {
+            foreach (MediaWikiRepository::getSupportedTargets() as $wiki) {
                 $wikiDbName = $wiki === 'global' ? '*' : $wiki;
                 /** @var \App\Permission $permission */
                 $permission = $user->permissions->where('wiki', $wikiDbName)->first();
