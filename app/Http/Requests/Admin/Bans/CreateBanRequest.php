@@ -9,16 +9,14 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-class CreateBanRequest extends FormRequest
+class CreateBanRequest extends BaseBanModifyRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
+     * {@inheritDoc}
      */
-    public function authorize()
+    protected function getPermissionCheckTarget()
     {
-        return $this->user()->can('create', Ban::class);
+        return Ban::class;
     }
 
     /**
@@ -36,17 +34,13 @@ class CreateBanRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        $unixTimestamp = $this->has('expiry') && $this->treatAsDate($this->input('expiry')) ? strtotime($this->input('expiry')) : 0;
-
-        $this->merge([
-            'expiry' => Carbon::createFromTimestamp($unixTimestamp)->format('Y-m-d H:i:s'),
-        ]);
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function withValidator(Validator $validator)
     {
+        parent::withValidator($validator);
+
         if ($this->has('ip') && $this->input('ip') == true) {
             $validator->addRules([
                 'target' => [
@@ -55,16 +49,5 @@ class CreateBanRequest extends FormRequest
                 ],
             ]);
         }
-
-        if ($this->user()->can('oversight', Ban::class)) {
-            $validator->addRules([
-                'is_protected' => 'required|boolean',
-            ]);
-        }
-    }
-
-    private function treatAsDate($string)
-    {
-        return !empty($string) && $string !== 'indefinite';
     }
 }

@@ -11,16 +11,14 @@ use Illuminate\Validation\Validator;
  * laravel magic, for ide autocompletion:
  * @property Ban ban
  */
-class UpdateBanRequest extends FormRequest
+class UpdateBanRequest extends BaseBanModifyRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
+     * {@inheritDoc}
      */
-    public function authorize()
+    protected function getPermissionCheckTarget()
     {
-        return $this->user()->can('update', $this->ban);
+        return $this->ban;
     }
 
     /**
@@ -35,28 +33,5 @@ class UpdateBanRequest extends FormRequest
             'expiry'    => 'nullable|date_format:Y-m-d H:i:s',
             'is_active' => 'nullable|boolean',
         ];
-    }
-
-    public function withValidator(Validator $validator)
-    {
-        if ($this->user()->can('oversight', $this->ban)) {
-            $validator->addRules([
-                'is_protected' => 'required|boolean',
-            ]);
-        }
-    }
-
-    protected function prepareForValidation()
-    {
-        $unixTimestamp = $this->has('expiry') && $this->treatAsDate($this->input('expiry')) ? strtotime($this->input('expiry')) : 0;
-
-        $this->merge([
-            'expiry' => Carbon::createFromTimestamp($unixTimestamp)->format('Y-m-d H:i:s'),
-        ]);
-    }
-
-    private function treatAsDate($string)
-    {
-        return !empty($string) && $string !== 'indefinite';
     }
 }
