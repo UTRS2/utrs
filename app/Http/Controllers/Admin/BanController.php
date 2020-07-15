@@ -28,7 +28,7 @@ class BanController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $canSeeProtectedBans = false;
+        $protectedBansVisible = false;
 
         $tableheaders = [ 'ID', 'Target', 'Expires', 'Reason' ];
         $rowcontents = [];
@@ -40,8 +40,8 @@ class BanController extends Controller
             if ($ban->is_protected) {
                 $canSee = $user->can('viewName', $ban);
 
-                if (!$canSeeProtectedBans && $canSee) {
-                    $canSeeProtectedBans = true;
+                if (!$protectedBansVisible && $canSee) {
+                    $protectedBansVisible = true;
                 }
 
                 $targetName = $canSee ? '<i class="text-danger">' . $targetName . '</i>'
@@ -59,7 +59,7 @@ class BanController extends Controller
         }
 
         $caption = null;
-        if ($canSeeProtectedBans) {
+        if ($protectedBansVisible) {
             $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
         }
 
@@ -69,7 +69,7 @@ class BanController extends Controller
             'rowcontents'  => $rowcontents,
             'caption'      => $caption,
             'createlink'   => $user->can('create', Ban::class) ? route('admin.bans.new') : null,
-            'createtext'   => 'Create ban',
+            'createtext'   => 'Add ban',
         ]);
     }
 
@@ -81,8 +81,7 @@ class BanController extends Controller
 
     public function create(CreateBanRequest $request)
     {
-        $duplicate = Ban::where($request->only('target', 'ip'))->get();
-        if (!$request->has('duplicate') && $duplicate) {
+        if (!$request->has('duplicate') && Ban::where($request->only('target', 'ip'))->exists()) {
             throw ValidationException::withMessages([
                 'duplicate' => 'It appears that this target has already been blocked. Do you want to continue?',
             ]);
@@ -122,7 +121,7 @@ class BanController extends Controller
             return $ban;
         });
 
-        return redirect()->route('admin.bans.view', [$ban]);
+        return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
     }
 
     public function show(Request $request, Ban $ban)
@@ -206,6 +205,6 @@ class BanController extends Controller
             }
         });
 
-        return redirect(route('admin.bans.view', [ 'ban' => $ban ]));
+        return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
     }
 }

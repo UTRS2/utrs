@@ -23,7 +23,7 @@ class Log extends Model
     }
 
     /**
-     * This is a hacky method to try to guess what wiki is this log entry assosiated with
+     * This is a hacky method to try to guess what wiki is this log entry associated with
      * @return string|null
      */
     public function tryFigureAssociatedWiki()

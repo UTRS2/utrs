@@ -39,7 +39,7 @@ class UpdateBanRequest extends FormRequest
 
     public function withValidator(Validator $validator)
     {
-        if ($this->user()->can('oversight', Ban::class)) {
+        if ($this->user()->can('oversight', $this->ban)) {
             $validator->addRules([
                 'is_protected' => 'required|boolean',
             ]);

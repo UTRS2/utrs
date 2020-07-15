@@ -134,6 +134,6 @@ class UserController extends Controller
             }
         });
 
-        return redirect()->back();
+        return redirect()->route('admin.users.view', [ 'user' => $user ]);
     }
 }
