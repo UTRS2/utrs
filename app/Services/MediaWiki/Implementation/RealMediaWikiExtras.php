@@ -46,6 +46,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
     public function sendEmail(string $username, string $title, string $content): bool
     {
+        $this->api->login();
         $response = $this->getApi()->postRequest(new SimpleRequest('emailuser', [
             'token' => $this->getApi()->getToken(),
             'target' => $username,

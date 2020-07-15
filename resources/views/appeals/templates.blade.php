@@ -27,7 +27,7 @@
                 </p>
 
                 {{ $username }}<br/>
-                {{ \App\MwApi\MwApiUrls::getWikiProperty($appeal->wiki, 'responding_user_title') }}
+                {{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($appeal->wiki, 'responding_user_title') }}
 
                 <hr/>
 
