@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Utils\IPUtils;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -11,6 +12,7 @@ class Ban extends Model
 	protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
+    protected $appends = ['formatted_expiry'];
 
     protected $casts = [
         'is_protected' => 'boolean',
@@ -42,5 +44,11 @@ class Ban extends Model
         }
 
         $this->attributes['target'] = $value;
+    }
+
+    public function getFormattedExpiryAttribute()
+    {
+        $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $this->expiry);
+        return $expiry->year >= 2000 ? $this->expiry : 'indefinite';
     }
 }

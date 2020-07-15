@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Appeal;
 use App\Appeal;
 use App\Ban;
 use App\Http\Controllers\Controller;
+use App\Http\Rules\SecretEqualsRule;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\MwApi\MwApiUrls;
 use App\Privatedata;
-use App\Rules\SecretEqualsRule;
 use App\Sendresponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -60,7 +60,9 @@ class PublicAppealController extends Controller
             ->first();
 
         if ($ban) {
-            return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
+            return response()
+                ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
+                ->setStatusCode(403);
         }
 
         // in the future this should not loop thru all existing ip bans
@@ -71,8 +73,14 @@ class PublicAppealController extends Controller
 
         foreach ($banip as $ban) {
             if (IpUtils::checkIp($ip, $ban->target)) {
-                return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
+                return response()
+                    ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
+                    ->setStatusCode(403);
             }
+        }
+
+        if ($request->has('test_do_not_actually_save_anything')) {
+            return response('Test: not actually saving anything');
         }
 
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
