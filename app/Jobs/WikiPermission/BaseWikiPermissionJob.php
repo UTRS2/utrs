@@ -92,6 +92,9 @@ abstract class BaseWikiPermissionJob
             $wikis = array_values(array_filter($wikis, function($value) use ($wikiId) { return $value !== $wikiId; }));
         }
 
+        // remove air, if necessary
+        $wikis = array_values(array_filter($wikis, function($value) use ($wikiId) { return $value !== ''; }));
+
         $this->user->wikis = implode(',', $wikis);
     }
 

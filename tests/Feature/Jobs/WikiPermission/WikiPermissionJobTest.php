@@ -2,116 +2,105 @@
 
 namespace Tests\Feature\Jobs\WikiPermission;
 
-use Mockery;
+use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
+use App\Services\MediaWiki\Api\MediaWikiRepository;
 use App\User;
-use ReflectionClass;
-use App\MwApi\MwApiUrls;
-use Mediawiki\DataModel\User as MediawikiUser;
+use Tests\CreatesApplication;
+use Tests\Fakes\MediaWiki\FakeMediaWikiRepository;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 
 class WikiPermissionJobTest extends TestCase
 {
+    use CreatesApplication;
     use RefreshDatabase;
 
-    private function getUser($name = 'Admin')
+    /** @var FakeMediaWikiRepository */
+    private $repository;
+
+    /** @var int */
+    private $ordinal = 1;
+
+    protected function setUp(): void
     {
+        parent::setUp();
+
         User::unsetEventDispatcher();
-        return factory(User::class)->create([
-            'username' => $name,
-        ]);
+        $this->swapRepository();
     }
 
-    private function getMediawikiUser($name = 'Admin', $editCount = 3000, $groups = ['user', 'sysop'])
+    private function swapRepository()
     {
-        return Mockery::mock(MediawikiUser::class, function ($mock) use ($name, $editCount, $groups) {
-            $mock->shouldReceive('getEditcount')
-                ->andReturn($editCount);
-            $mock->shouldReceive('getName')
-                ->andReturn($name);
-            $mock->shouldReceive('getGroups')
-                ->andReturn($groups);
-        });
+        $this->repository = new FakeMediaWikiRepository();
+        $this->app->instance(MediaWikiRepository::class, $this->repository);
+
+        $this->ordinal = 1;
     }
 
-    public function test_it_filters_out_users_with_less_than_500_edits()
+    private function getUser($data = []): User
     {
-        $user = $this->getUser();
+        $testData = [
+            'name' => 'Test user ' . $this->ordinal,
+            'userid' => $this->ordinal,
+            'groups' => ['user', 'sysop'],
+            'implicitgroups' => ['autoconfirmed'],
+            'blocked' => false,
+            'editcount' => 1000,
+            'registration' => '2020-01-01 01:01:01',
+            'rights' => [],
+            'gender' => 'unknown',
+        ];
 
-        $job = Mockery::mock(LoadLocalPermissionsJob::class, [$user, MwApiUrls::getSupportedWikis()[0]], function ($mock) {
-            $mock->shouldReceive('checkIsBlocked')
-                ->andReturn(false);
-        })
-            ->makePartial();
+        foreach ($data as $key => $value) {
+            $testData[$key] = $value;
+        }
 
-        $groups = ['user', 'sysop'];
-
-        $reflection = new ReflectionClass(get_class($job));
-        $method = $reflection->getMethod('validateToolUserPermission');
-        $method->setAccessible(true);
-
-        $newUser = $this->getMediawikiUser($user->name, 30);
-        $newUserGroups = $method->invokeArgs($job, [$newUser, $groups]);
-        $this->assertEquals(['sysop'], $newUserGroups, 'user with less than 500 edits should not have group "user"');
-
-        $oldUser = $this->getMediawikiUser($user->name, 3000);
-        $oldUserGroups = $method->invokeArgs($job, [$oldUser, $groups]);
-        $this->assertEquals(['user', 'sysop'], $oldUserGroups, 'user with more than 500 edits should have group "user"');
+        $this->ordinal += 1;
+        $this->repository->addFakeUser('enwiki', $testData);
+        return factory(User::class)->create(['username' => $testData['name']]);
     }
 
-    public function test_it_filters_user_out_without_sysop()
+    private function checkIsFiltered($data, $expected)
     {
-        $user = $this->getUser();
+        $user = $this->getUser($data);
 
-        $job = Mockery::mock(LoadLocalPermissionsJob::class, [$user, MwApiUrls::getSupportedWikis()[0]], function ($mock) {
-            $mock->shouldReceive('checkIsBlocked')
-                ->andReturn(false);
-        })
-            ->makePartial();
+        $job = new LoadLocalPermissionsJob($user, 'enwiki');
+        $job->handle();
 
-        $groups = ['user'];
+        if ($expected) {
+            $this->assertEquals('', $user->wikis);
+        } else {
+            $this->assertEquals('enwiki', $user->wikis);
+        }
+    }
 
-        $reflection = new ReflectionClass(get_class($job));
-        $method = $reflection->getMethod('validateToolUserPermission');
-        $method->setAccessible(true);
+    public function test_it_filters_out_users_with_not_enough_edits()
+    {
+        $this->checkIsFiltered(['editcount' => 3000], false);
+        $this->checkIsFiltered(['editcount' => 3], true);
+    }
 
-        $nonAdminUser = $this->getMediawikiUser($user->name, 12345);
-        $newUserGroups = $method->invokeArgs($job, [$nonAdminUser, $groups]);
-        $this->assertEquals([], $newUserGroups, 'user that is not administrator should not have group "user"');
+    public function test_it_filters_out_users_who_are_not_sysops()
+    {
+        $this->checkIsFiltered(['groups' => ['user', 'sysop']], false);
+        $this->checkIsFiltered(['groups' => ['user']], true);
     }
 
     public function test_it_filters_out_blocked_users()
     {
-        $user = $this->getUser();
-
-        $job = Mockery::mock(LoadLocalPermissionsJob::class, [$user, MwApiUrls::getSupportedWikis()[0]], function ($mock) {
-            $mock->shouldReceive('checkIsBlocked')
-                ->andReturn(true);
-        })
-            ->makePartial();
-
-        $groups = ['user', 'sysop'];
-
-        $reflection = new ReflectionClass(get_class($job));
-        $method = $reflection->getMethod('validateToolUserPermission');
-        $method->setAccessible(true);
-
-        $blockedUser = $this->getMediawikiUser($user->name, 3000);
-        $newUserGroups = $method->invokeArgs($job, [$blockedUser, $groups]);
-        $this->assertEquals(['sysop'], $newUserGroups, 'blocked user should not have group "user"');
+        $this->checkIsFiltered(['blocked' => false], false);
+        $this->checkIsFiltered(['blocked' => true], true);
     }
 
     public function test_it_updates_wikis_on_user()
     {
-        $otherWikiId = MwApiUrls::getSupportedWikis()[1];
+        $otherWikiId = $this->repository->getSupportedTargets(false)[1];
 
         $user = $this->getUser();
-        $user->wikis = MwApiUrls::getSupportedWikis()[1];
+        $user->wikis = $otherWikiId;
         $user->save();
 
-        $wiki = MwApiUrls::getSupportedWikis()[0];
-
+        $wiki = $this->repository->getSupportedTargets(false)[0];
         $job = new LoadLocalPermissionsJob($user, $wiki);
 
         $job->updateDoesExist(true);

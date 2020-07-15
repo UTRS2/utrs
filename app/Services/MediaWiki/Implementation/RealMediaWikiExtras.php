@@ -89,7 +89,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
         return RealBlock::fromArray($blockData);
     }
 
-    public function getGlobalBlockInfo($target, $appealId): ?Block
+    public function getGlobalBlockInfo(string $target, int $appealId = -1): ?Block
     {
         if (!$target) {
             Log::critical("The target has not been set when calling getGlobalBlockInfo() for appealID #" . $appealId.  " - Terminating");

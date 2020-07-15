@@ -2,7 +2,6 @@
 
 namespace App\Services\Facades;
 
-use App\Services\MediaWiki\Api\MediaWikiRepository as ActualMediaWikiRepository;
 use Illuminate\Support\Facades\Facade;
 
 class MediaWikiRepository extends Facade
@@ -14,6 +13,6 @@ class MediaWikiRepository extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return ActualMediaWikiRepository::class;
+        return 'mediawiki';
     }
 }

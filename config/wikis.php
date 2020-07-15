@@ -17,6 +17,8 @@ return [
     ],
 
     'wikis' => [
+        // IF YOU ARE REMOVING WIKIS: ensure FakeMediaWikiRepository has two existing test wikis!
+
         'enwiki' => [
             'name' => 'English Wikipedia',
             'api_url' => env('WIKI_URL_ENWIKI', 'https://en.wikipedia.org/w/api.php'),

@@ -44,5 +44,5 @@ interface MediaWikiExtras
      * @param  int|null    $appealId ID of the appeal being queried (for logging)
      * @return Block|null the block information that comes up, null if user is not (b)locked
      */
-    public function getGlobalBlockInfo($target, $appealId): ?Block;
+    public function getGlobalBlockInfo(string $target, int $appealId = -1): ?Block;
 }

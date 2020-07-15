@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
             MediaWikiRepository::class,
             RealMediaWikiRepository::class,
         );
+
+        $this->app->alias(MediaWikiRepository::class, 'mediawiki');
     }
 
     /**
