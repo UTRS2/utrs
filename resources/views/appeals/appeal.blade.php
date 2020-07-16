@@ -49,7 +49,7 @@
                                 <br/>Block Reason: {!! $info->getFormattedBlockReason() !!}
                                 <br/>Time Submitted: {{ $info->submitted }}
                                 <br/>Wiki: {{ $info->wiki }}
-                                @if(!is_null($info->handlingadmin))
+                                @if($info->handlingAdminObject)
                                     <br/>Handling Admin: {{ $info->handlingAdminObject->username }}
                                 @endif
                                 <br/>

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Acc\Api\AccIntegration;
+use App\Services\Acc\Implementation\RealAccIntegration;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +18,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            AccIntegration::class,
+            RealAccIntegration::class,
+        );
+
+        $this->app->alias(AccIntegration::class, 'acc');
     }
 
     /**

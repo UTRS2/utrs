@@ -227,6 +227,10 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
 
+        // UTRS customs
+
+        'AccIntegration' => App\Services\Facades\AccIntegration::class,
+
     ],
 
     /**

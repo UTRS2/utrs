@@ -6,6 +6,7 @@ use App\Ban;
 use App\Log;
 use App\Appeal;
 use App\MwApi\MwApiExtras;
+use App\Services\Facades\AccIntegration;
 use App\Utils\IPUtils;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
@@ -35,7 +36,7 @@ class GetBlockDetailsJob implements ShouldQueue
      * @param string $actualBlockTarget Block target queried from MediaWiki API
      * @return bool true if block target should be corrected in the database, false otherwise
      */
-    private function shouldCorrectBlockTarget(string $givenBlockTarget, string $actualBlockTarget)
+    private function shouldCorrectAppealName(string $givenBlockTarget, string $actualBlockTarget)
     {
         // if it's already correct, no need to do anything
         if (strtolower($givenBlockTarget) === strtolower($actualBlockTarget)) {
@@ -60,8 +61,11 @@ class GetBlockDetailsJob implements ShouldQueue
     {
         $status = Appeal::STATUS_OPEN;
 
+        // store actual block target
+        $this->appeal->block_target = $blockData['user'];
+
         if (isset($blockData['user']) && !empty($blockData['user'])
-            && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $blockData['user'])) {
+            && $this->shouldCorrectAppealName($this->appeal->appealfor, $blockData['user'])) {
             $this->appeal->appealfor = $blockData['user'];
 
             $ban = Ban::where('ip', '=', 0)
@@ -85,6 +89,22 @@ class GetBlockDetailsJob implements ShouldQueue
             }
         }
 
+        if ($status === Appeal::STATUS_OPEN
+            && AccIntegration::getTransferManager()->shouldRequireTransfer($this->appeal)) {
+            $status = Appeal::STATUS_REFER_ACC;
+
+            Log::create([
+                'user' => 0,
+                'referenceobject' => $this->appeal->id,
+                'objecttype' => 'appeal',
+                'action' => 'referred to ACC',
+                'reason' => 'appeal automatically referred to ACC',
+                'ip' => '127.0.0.1',
+                'ua' => 'Laravel/UTRS',
+                'protected' => Log::LOG_PROTECTION_NONE,
+            ]);
+        }
+
         $this->appeal->update([
             'blockfound' => 1,
             'blockingadmin' => $blockData['by'],
@@ -95,7 +115,7 @@ class GetBlockDetailsJob implements ShouldQueue
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
         if (!$this->appeal->user_verified && !$this->appeal->verify_token
             && isset($blockData['user']) && $this->appeal->blocktype !== 0
-            && $this->appeal->status !== Appeal::STATUS_INVALID) {
+            && $this->appeal->status === Appeal::STATUS_OPEN) {
             VerifyBlockJob::dispatch($this->appeal);
         }
     }

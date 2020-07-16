@@ -70,4 +70,16 @@ return [
         'your-key-is'         => 'Your Appeal key is:',
         'view-appeal-details' => 'View appeal details',
     ],
+
+    'acc' => [
+        'banner' => [
+            'text'      => 'Please request a Wikipedia account by :link.',
+            'link-text' => 'clicking here',
+            'button'    => 'Request an account',
+        ],
+
+        'form' => [
+            'header' => 'Request an account',
+        ],
+    ],
 ];

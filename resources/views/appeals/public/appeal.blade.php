@@ -5,10 +5,13 @@
 @section('content')
     @if(in_array($appeal->status, [Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE]))
         <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
-    @endif
-    @if($appeal->status === Appeal::STATUS_NOTFOUND)
+    @elseif($appeal->status === Appeal::STATUS_NOTFOUND)
         <div class="alert alert-danger" role="alert">
             {!! str_replace(':link', '<a href="' . route('public.appeal.modify', $appeal->appealsecretkey) .'" class="alert-link">' . htmlspecialchars(__('appeals.not-found-link-text')) . '</a>', htmlspecialchars(__('appeals.not-found-text'))) !!}
+        </div>
+    @elseif($appeal->status === Appeal::STATUS_REFER_ACC)
+        <div class="alert alert-info" role="alert">
+            {!! str_replace(':link', '<a href="' . route('public.appeal.acc', $appeal->appealsecretkey) .'" class="alert-link">' . htmlspecialchars(__('appeals.acc.banner.link-text')) . '</a>', htmlspecialchars(__('appeals.acc.banner.text'))) !!}
         </div>
     @endif
     <div class="card mb-4 mt-4">

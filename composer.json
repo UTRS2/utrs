@@ -19,7 +19,8 @@
         "laravel/tinker": "^2.4",
         "laravelcollective/html": "^6.1",
         "spatie/laravel-backup": "^6.10",
-        "taavi/laravel-socialite-mediawiki": "^1.0"
+        "taavi/laravel-socialite-mediawiki": "^1.0",
+        "wikimedia/ip-utils": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",

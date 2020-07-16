@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Appeal;
+use App\Http\Rules\CheckAccTransferStatusRule;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\MwApi\MwApiUrls;
@@ -12,6 +13,7 @@ use App\Olduser;
 use App\Permission;
 use App\Privatedata;
 use App\Sendresponse;
+use App\Services\Facades\AccIntegration;
 use App\Template;
 use App\User;
 use Auth;
@@ -277,7 +279,11 @@ class AppealController extends Controller
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
 
         $status = $request->validate([
-            'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'status' => [
+                'nullable',
+                Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS),
+                new CheckAccTransferStatusRule($appeal),
+            ],
         ])['status'];
 
         if ($status && $status !== $appeal->status) {
@@ -319,7 +325,11 @@ class AppealController extends Controller
         abort_unless($appeal->handlingadmin === $user, 403, 'You are not the handling administrator.');
 
         $status = $request->validate([
-            'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'status' => [
+                'nullable',
+                Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS),
+                new CheckAccTransferStatusRule($appeal),
+            ],
         ])['status'];
 
         $ua = $request->server('HTTP_USER_AGENT');

@@ -28,6 +28,9 @@ Route::prefix('/public')->middleware('guest')->group(function () {
 
     Route::get('/appeal/verify/{appeal}/{token}', 'Appeal\PublicAppealController@showVerifyOwnershipForm')->name('public.appeal.verifyownership');
     Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
+
+    Route::get('/appeal/acc/{key}', 'Appeal\PublicAccReferralController@showReferForm')->name('public.appeal.acc');
+    Route::post('/appeal/acc', 'Appeal\PublicAccReferralController@processForm')->name('public.appeal.acc.submit');
 });
 
 Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
