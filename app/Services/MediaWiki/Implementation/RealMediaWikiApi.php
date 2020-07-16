@@ -37,7 +37,7 @@ class RealMediaWikiApi implements MediaWikiApi
         return new RealMediaWikiExtras($this);
     }
 
-    public function login(bool $skipOnTesting = false)
+    public function login()
     {
         if ($this->loggedIn) {
             return;
@@ -46,10 +46,6 @@ class RealMediaWikiApi implements MediaWikiApi
         if (config('wikis.login.username') && config('wikis.login.password')) {
             $this->api->login(new ApiUser(config('wikis.login.username'), config('wikis.login.password')));
             $this->loggedIn = true;
-            return;
-        }
-
-        if ($skipOnTesting && app()->environment('testing')) {
             return;
         }
 

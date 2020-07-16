@@ -32,7 +32,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
     public function canEmail(string $username): bool
     {
-        $this->api->login(false);
+        if (app()->environment('testing')) {
+            return false;
+        }
+
         $response = $this->getApi()->getRequest(new SimpleRequest(
             'query',
             [
