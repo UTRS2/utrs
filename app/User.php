@@ -20,7 +20,7 @@ class User extends Authenticatable
     protected $dates = ['last_permission_check_at'];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'remember_token',
     ];
 
     protected static function boot()
@@ -47,12 +47,6 @@ class User extends Authenticatable
                 ]
         ))
             ->dispatch($this);
-    }
-
-    public function checkRead()
-    {
-        abort_unless($this->verified, 403, 'Your account has not been verified yet.');
-        return true;
     }
 
     public function getVerifiedWikisAttribute()
