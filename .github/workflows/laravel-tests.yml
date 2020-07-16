@@ -7,16 +7,6 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-20.04
-    services:
-      mysql:
-        image: mariadb:10.5
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: false
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: laravel
-        ports:
-          - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v1
       - name: Copy env file
