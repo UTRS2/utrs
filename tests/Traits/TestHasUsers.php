@@ -20,6 +20,10 @@ trait TestHasUsers
             $permissions = $this->userDefaultPermissions;
         }
 
+        if (!array_key_exists('last_permission_check_at', $extraData)) {
+            $extraData['last_permission_check_at'] = now();
+        }
+
         User::unsetEventDispatcher(); // prevent loading user permissions, we'll do that manually
 
         $user = factory(User::class)->create($extraData);

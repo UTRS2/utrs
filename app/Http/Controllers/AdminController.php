@@ -52,24 +52,6 @@ class AdminController extends Controller
         return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
     }
 
-    public function verifyAccount()
-    {
-        if (!Auth::check() || Auth::user()->verified) {
-            return redirect('/');
-        } else {
-            Wikitask::create(['task' => 'verifyaccount', 'actionid' => Auth::id()]);
-            return view('admin.verifyme');
-        }
-    }
-
-    public function verify($code)
-    {
-        $user = User::where('u_v_token', '=', $code)->first();
-        $user->verified = 1;
-        $user->save();
-        return redirect()->to('/home');
-    }
-
     public function showNewTemplate()
     {
         $this->authorize('create', Template::class);
