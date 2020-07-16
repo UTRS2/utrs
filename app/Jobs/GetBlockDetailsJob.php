@@ -99,9 +99,10 @@ class GetBlockDetailsJob implements ShouldQueue
             VerifyBlockJob::dispatch($this->appeal);
         }
     }
-    
+
     /**
      * This processes the block appeal
+     * @param MediaWikiRepository $mediaWikiRepository
      * @return void
      */
     public function handle(MediaWikiRepository $mediaWikiRepository)

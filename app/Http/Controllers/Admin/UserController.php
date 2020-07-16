@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\MediaWiki\Api\MediaWikiRepository;
+use App\Services\Facades\MediaWikiRepository;
 use DB;
 use App\Log;
 use App\Permission;
@@ -77,7 +77,7 @@ class UserController extends Controller
 
             foreach (MediaWikiRepository::getSupportedTargets() as $wiki) {
                 $wikiDbName = $wiki === 'global' ? '*' : $wiki;
-                /** @var \App\Permission $permission */
+                /** @var Permission $permission */
                 $permission = $user->permissions->where('wiki', $wikiDbName)->first();
 
                 $updateSet = [];

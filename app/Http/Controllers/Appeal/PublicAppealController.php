@@ -104,7 +104,7 @@ class PublicAppealController extends Controller
          * allowing these appeals to be created till other master tasks
          * either prevent it or we go live with those wikis
          **/
-        if ($appeal->wiki == "ptwiki" || $appeal->wiki == "global") {
+        if ($appeal->wiki !== 'enwiki') {
             LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #' . $appeal->id);
         }
 
