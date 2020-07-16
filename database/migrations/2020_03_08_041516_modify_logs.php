@@ -16,12 +16,12 @@ class ModifyLogs extends Migration
         Schema::table('logs', function(Blueprint $table) {
             $table->string('reason')->nullable()->change();
             $table->dropColumn('xff');
-            $table->dropColumn('objecttype');
             $table->boolean('protected')->default(0);
             $table->timestamp('timestamp')->default(DB::raw('CURRENT_TIMESTAMP'));
             
         });
         Schema::table('logs', function(Blueprint $table) {
+            $table->dropColumn('objecttype');
             $table->string('objecttype')->after('referenceobject');
         });
     }
@@ -37,12 +37,13 @@ class ModifyLogs extends Migration
             $table->string('xff');
             $table->string('reason')->change();
             $table->dropColumn('objecttype');
-            $table->dropColumn('protected');
-            $table->dropColumn('timestamp');
-            
         });
         Schema::table('logs', function(Blueprint $table) {
+            $table->dropColumn('protected');
             $table->bigInteger('objecttype')->nullable;
+        });
+        Schema::table('logs', function(Blueprint $table) {
+            $table->dropColumn('timestamp');
         });
     }
 }
