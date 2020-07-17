@@ -7,6 +7,7 @@ use App\Log;
 use App\Appeal;
 use App\MwApi\MwApiExtras;
 use App\Utils\IPUtils;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -63,6 +64,26 @@ class GetBlockDetailsJob implements ShouldQueue
         if (isset($blockData['user']) && !empty($blockData['user'])
             && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $blockData['user'])) {
             $this->appeal->appealfor = $blockData['user'];
+
+            $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
+                ->where('id', '!=', $this->appeal->id) // data should not be saved yet, but just in case
+                ->openOrRecent()
+                ->first();
+
+            if ($duplicateAppeal) {
+                $status = Appeal::STATUS_INVALID;
+
+                Log::create([
+                    'user' => 0,
+                    'referenceobject' => $this->appeal->id,
+                    'objecttype' => 'appeal',
+                    'action' => 'closed - duplicate',
+                    'reason' => 'this appeal duplicates appeal #' . $duplicateAppeal->id,
+                    'ip' => '127.0.0.1',
+                    'ua' => 'Laravel/UTRS',
+                    'protected' => Log::LOG_PROTECTION_NONE,
+                ]);
+            }
 
             $ban = Ban::where('ip', '=', 0)
                 ->where('target', $this->appeal->appealfor)
