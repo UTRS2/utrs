@@ -24,7 +24,12 @@ use Illuminate\Validation\Rule;
 
 class AppealController extends Controller
 {
-    public function appeal(Request $request, int $id)
+    public function __construct()
+    {
+        $this->middleware('auth')->except('appeal');
+    }
+
+    public function appeal(Request $request, $id)
     {
         if (!Auth::check() || !Auth::user()->verified) {
             if ($request->has('send_to_oauth')) {
@@ -107,8 +112,6 @@ class AppealController extends Controller
         abort_unless(Auth::check(), 403, 'No logged in user');
         /** @var User $user */
         $user = Auth::user();
-
-        $user->checkRead();
 
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
@@ -228,29 +231,29 @@ class AppealController extends Controller
         return view('appeals.makeappeal.ip');
     }
 
-    public function checkuser($id, Request $request)
+    public function checkuser(Appeal $appeal, Request $request)
     {
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        User::findOrFail(Auth::id())->checkRead();
-        $appeal = Appeal::findOrFail($id);
+
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
+
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
+
         $reason = $request->input('reason');
         $checkuser = Permission::checkCheckuser($user, $appeal->wiki);
         if (!$checkuser) {
             abort(403, 'You are not a checkuser.');
         }
 
-        Log::create(['user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_FUNCTIONARY]);
-        return redirect('appeal/' . $id);
+        Log::create(['user' => $user, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_FUNCTIONARY]);
+        return redirect('appeal/' . $appeal->id);
     }
 
     public function comment($id, Request $request)
@@ -258,7 +261,7 @@ class AppealController extends Controller
         if (!Auth::check()) {
             abort(403, 'No logged in user');
         }
-        Auth::user()->checkRead();
+
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
@@ -276,11 +279,6 @@ class AppealController extends Controller
 
     public function respond(Request $request, Appeal $appeal, Template $template)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        Auth::user()->checkRead();
-
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin, 403, 'You are not an administrator on the wiki this appeal is for');
@@ -327,9 +325,6 @@ class AppealController extends Controller
 
     public function respondCustomSubmit(Request $request, Appeal $appeal)
     {
-        abort_unless(Auth::check(), 403, 'No logged in user');
-        Auth::user()->checkRead();
-
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin, 403, 'You are not an administrator on the wiki this appeal is for');
@@ -381,11 +376,6 @@ class AppealController extends Controller
 
     public function viewtemplates(Appeal $appeal)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-
-        Auth::user()->checkRead();
         $user = Auth::user();
         $admin = Permission::checkAdmin($user->id, $appeal->wiki);
         abort_unless($admin,403, 'You are not an administrator.');
@@ -396,9 +386,6 @@ class AppealController extends Controller
 
     public function respondCustom(Appeal $appeal)
     {
-        abort_unless(Auth::check(), 403, 'No logged in user');
-        User::findOrFail(Auth::id())->checkRead();
-
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin,403, 'You are not an administrator.');
@@ -409,33 +396,25 @@ class AppealController extends Controller
         return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
     }
 
-    public function reserve($id, Request $request)
+    public function reserve(Appeal $appeal, Request $request)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
         $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
+
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin,403, 'You are not an administrator.');
         abort_if($appeal->handlingadmin, 403, 'This appeal has already been reserved.');
         $appeal->handlingadmin = Auth::id();
         $appeal->save();
-        Log::create(['user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE]);
+        Log::create(['user' => $user, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE]);
 
-        return redirect('appeal/' . $id);
+        return redirect('appeal/' . $appeal->id);
     }
 
     public function release($id, Request $request)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -458,10 +437,6 @@ class AppealController extends Controller
 
     public function open($id, Request $request)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        Auth::user()->checkRead();
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
 
@@ -485,10 +460,6 @@ class AppealController extends Controller
 
     public function invalidate($id, Request $request)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
         $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
@@ -507,11 +478,6 @@ class AppealController extends Controller
 
     public function close($id, $type, Request $request)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-        User::findOrFail(Auth::id())->checkRead();
-        Auth::user()->checkRead();
         $appeal = Appeal::findOrFail($id);
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
@@ -531,9 +497,6 @@ class AppealController extends Controller
 
     public function checkuserreview(Request $request, Appeal $appeal)
     {
-        abort_unless(Auth::check(), 403, 'No logged in user');
-        User::findOrFail(Auth::id())->checkRead();
-
         $ua = $request->header('User-Agent');
         $lang = $request->header('Accept-Language');
         $ip = $request->ip();
@@ -566,9 +529,6 @@ class AppealController extends Controller
 
     public function admin(Request $request, Appeal $appeal)
     {
-        abort_unless(Auth::check(), 403, 'No logged in user');
-        Auth::user()->checkRead();
-
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for");
@@ -595,7 +555,6 @@ class AppealController extends Controller
 
     public function findagain(Request $request, Appeal $appeal)
     {
-        abort_unless(Auth::check(), 403, 'No logged in user');
         /** @var User $user */
         $user = $request->user();
 

@@ -24,13 +24,12 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
         $allusers = User::all();
 
-        $tableheaders = ['ID', 'Username', 'Verified', 'Wikis'];
+        $tableheaders = ['ID', 'Username', 'Last Permissions Check'];
         $rowcontents = [];
 
         foreach ($allusers as $user) {
             $idbutton = '<a href="' . route('admin.users.view', $user) . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
-            $verified = $user->verified ? 'Yes' : 'No';
-            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $verified, $user->wikis];
+            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $user->last_permission_check_at];
         }
 
         return view('admin.tables', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);

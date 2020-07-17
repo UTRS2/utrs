@@ -148,7 +148,7 @@ def clearPrivateData():
         id = result[1]
         appeal = calldb("select id,status from appeals where id = "+str(id)+";","read")
         if appeal[0][1] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
-        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and (action RLIKE 'closed' or action LIKE '%decline' or action LIKE '%accept' or action LIKE '%expired' or action LIKE '%invalid') and objecttype = 'appeal';","read")
+        logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and (action RLIKE 'closed' or action LIKE '%decline' or action LIKE '%accept' or action LIKE '%expire%' or action LIKE '%invalid') and objecttype = 'appeal';","read")
         if datesince(logs[0], 7):
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
 def appeallist():

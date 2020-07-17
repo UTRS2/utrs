@@ -11,6 +11,20 @@
 
 The /public subdirectory is the webroot. You can either use `php artisan serve` to run a standalone webserver, or point your webserver of choice at /public
 
+## Building frontend assets
+
+The frontend is built using Bootstrap 4. It uses `purgecss` to remove unused classes to reduce bundle size. This can create complications for development thru.
+
+First, install NPM dependencies using `npm install`. Then, you can use Laravel Mix (webpack wrapper) to build assets:
+
+* Use `npm run watch` to start Webpack mix in development watch mode. That mode does not use PurgeCSS and it re-builds
+  all assets when it detects a change. This is most useful when working with JavaScript or when modifying the SCSS files.
+* Use `npm run dev` to do one build in the development mode. This mode does not use PurgeCSS. This is most useful when
+  you are working on the frontend, as you have access to all classes Bootstrap has to offer.
+* Use `npm run prod` to do a production build. This build uses PurgeCSS and URL versioning. Due to legacy reasons a
+  production build should be commited to the repository for pull requests. This may change soon, see issue
+  [#240](https://github.com/UTRS2/utrs/issues/240).
+
 ## Setting up MediaWiki integration (for testing)
 
 ### API calls
