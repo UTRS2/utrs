@@ -31,7 +31,7 @@ class AppealController extends Controller
 
     public function appeal(Request $request, $id)
     {
-        if (!Auth::check() || !Auth::user()->verified) {
+        if (!Auth::check()) {
             if ($request->has('send_to_oauth')) {
                 // fancy tricks to set intended path as cookie, but without the GET param
                 $redirect = redirect();
