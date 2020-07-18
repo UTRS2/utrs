@@ -79,8 +79,8 @@ class GetBlockDetailsJob implements ShouldQueue
                     'objecttype' => 'appeal',
                     'action' => 'closed - duplicate',
                     'reason' => 'this appeal duplicates appeal #' . $duplicateAppeal->id,
-                    'ip' => '127.0.0.1',
-                    'ua' => 'Laravel/UTRS',
+                    'ip' => 'DB entry',
+                    'ua' => 'DB/1',
                     'protected' => Log::LOG_PROTECTION_NONE,
                 ]);
             }
@@ -100,7 +100,7 @@ class GetBlockDetailsJob implements ShouldQueue
                     'action' => 'closed - invalidate',
                     'reason' => 'account banned from UTRS',
                     'ip' => 'DB entry',
-                    'ua' => 'DB/Laravel',
+                    'ua' => 'DB/1',
                     'protected' => 0
                 ]);
             }
