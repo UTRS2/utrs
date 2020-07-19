@@ -36,6 +36,7 @@ class PublicAppealController extends Controller
         $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
         $data['appealsecretkey'] = $key;
         $data['status'] = Appeal::STATUS_VERIFY;
+        $data['appealfor'] = trim($data['appealfor']);
 
         $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
                 return $query->where('appealfor', $request->input('appealfor'))
@@ -43,11 +44,7 @@ class PublicAppealController extends Controller
                         return $privateDataQuery->where('ipaddress', $request->ip());
                     });
             })
-            ->where(function (Builder $query) {
-                return $query
-                    ->whereNotIn('status', [ Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE ])
-                    ->orWhere('submitted', '>=', now()->modify('-2 days'));
-            })
+            ->openOrRecent()
             ->exists();
 
         if ($recentAppealExists) {
