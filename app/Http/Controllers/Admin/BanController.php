@@ -55,6 +55,10 @@ class BanController extends Controller
                 $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
             }
 
+            if ($expiry->isPast()) {
+                $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
+            }
+
             $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
         }
 
@@ -138,6 +142,10 @@ class BanController extends Controller
 
         if (!$ban->is_active) {
             $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
+        }
+
+        if ($expiry->isPast()) {
+            $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
         }
 
         return view('admin.bans.view', [
