@@ -58,7 +58,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-9">
-                    <b>{{ __('appeals.content-question-why') }}?</b>
+                    <b>{{ __('appeals.content-question-why') }}</b>
                     <p>{{ $appeal->appealtext }}</p>
                 </div>
                 <div class="col-md-3">
