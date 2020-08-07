@@ -8,6 +8,7 @@ use App\Appeal;
 use App\Services\MediaWiki\Api\Data\Block;
 use App\Services\MediaWiki\Api\MediaWikiRepository;
 use App\Utils\IPUtils;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -64,6 +65,26 @@ class GetBlockDetailsJob implements ShouldQueue
         if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget())) {
             $this->appeal->appealfor = $block->getBlockTarget();
 
+            $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
+                ->where('id', '!=', $this->appeal->id) // data should not be saved yet, but just in case
+                ->openOrRecent()
+                ->first();
+
+            if ($duplicateAppeal) {
+                $status = Appeal::STATUS_INVALID;
+
+                Log::create([
+                    'user' => 0,
+                    'referenceobject' => $this->appeal->id,
+                    'objecttype' => 'appeal',
+                    'action' => 'closed - duplicate',
+                    'reason' => 'this appeal duplicates appeal #' . $duplicateAppeal->id,
+                    'ip' => 'DB entry',
+                    'ua' => 'DB/1',
+                    'protected' => Log::LOG_PROTECTION_NONE,
+                ]);
+            }
+
             $ban = Ban::where('ip', '=', 0)
                 ->where('target', $this->appeal->appealfor)
                 ->active()
@@ -79,7 +100,7 @@ class GetBlockDetailsJob implements ShouldQueue
                     'action' => 'closed - invalidate',
                     'reason' => 'account banned from UTRS',
                     'ip' => 'DB entry',
-                    'ua' => 'DB/Laravel',
+                    'ua' => 'DB/1',
                     'protected' => 0
                 ]);
             }

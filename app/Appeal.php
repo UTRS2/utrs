@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\Facades\MediaWikiRepository;
+use Illuminate\Database\Eloquent\Builder;
 use RuntimeException;
 use Illuminate\Database\Eloquent\Model;
 
@@ -49,11 +50,18 @@ class Appeal extends Model
         'user_verified' => 'boolean',
     ];
 
-    public function comments()
+    // scopes
+
+    public function scopeOpenOrRecent(Builder $query)
     {
-        return $this->hasMany(Log::class, 'referenceobject','id')
-            ->where('objecttype', 'appeal');
+        return $query->where(function (Builder $query) {
+                return $query
+                    ->whereNotIn('status', [ Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID ])
+                    ->orWhere('submitted', '>=', now()->modify('-2 days'));
+            });
     }
+
+    // appends
 
     public function getWikiEmailUsername()
     {
@@ -66,6 +74,21 @@ class Appeal extends Model
         return $this->appealfor;
     }
 
+    // custom setters
+
+    public function setAppealforAttribute(string $value)
+    {
+        $this->attributes['appealfor'] = trim($value);
+    }
+
+    // relations
+
+    public function comments()
+    {
+        return $this->hasMany(Log::class, 'referenceobject','id')
+            ->where('objecttype', 'appeal');
+    }
+
     // ideally this would be named handlingAdmin and the field would be named handling_admin_id per laravel norms
     public function handlingAdminObject()
     {
@@ -76,6 +99,8 @@ class Appeal extends Model
     {
         return $this->hasOne(Privatedata::class, 'appealID', 'id');
     }
+
+    // other functions
 
     public function getFormattedBlockReason($linkExtra = '')
     {
