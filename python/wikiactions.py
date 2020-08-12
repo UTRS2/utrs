@@ -58,8 +58,8 @@ def verifyusers():
         try:username = str(userresults[1])
         except:username = userresults[1]
         userpage = "User talk:"+username
-        userresult = calldb("select * from users where id = '"+str(user)+"';","read")[0]
-        if userresult[6] == None:
+        userresult = calldb("select wikis from users where id = '"+str(user)+"';","read")[0]
+        if userresult[0] == None:
             params = {'action': 'query',
             'format': 'json',
             'list': 'users',
@@ -81,8 +81,8 @@ You have no wikis in which you meet the requirements for UTRS. Your account has 
             calldb("delete from users where id="+str(user)+";","write")
             print "ACCOUNT DELETION: " + username
             continue
-        if "," in userresult[6]:
-            for wiki in userresult[6].split(","):
+        if "," in userresult[0]:
+            for wiki in userresult[0].split(","):
                 if checkBlock(username,wiki):
                     try:userpage = "User talk:"+username
                     except:
@@ -98,7 +98,7 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                     continue
 
         else:
-            if checkBlock(username,userresult[6]):
+            if checkBlock(username,userresult[0]):
                 try:userpage = "User talk:"+username
                 except:
                     userpage = "User talk:"+str(username)
