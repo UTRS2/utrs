@@ -77,7 +77,7 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_custom_reply()
     {
-        $appeal = Template::factory()->create();
+        $appeal = Appeal::factory()->create();
 
         $this->browse(function (Browser $browser) use ($appeal) {
             $browser->loginAs($this->getUser())
