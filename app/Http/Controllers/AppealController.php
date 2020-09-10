@@ -99,7 +99,7 @@ class AppealController extends Controller
             return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist' => $userlist]);
         }
 
-        return (new ModelNotFoundException)->setModel(Appeal::class, $id);
+        throw (new ModelNotFoundException)->setModel(Appeal::class, $id);
     }
 
     public function appeallist()
