@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App;
 use App\Appeal;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;

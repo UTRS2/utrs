@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd340b98af21e1bbcd4643fff114f502",
+    "content-hash": "9a721b46af4ca820e8d1681f6d7d21ab",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -4576,20 +4576,20 @@
         },
         {
             "name": "taavi/laravel-socialite-mediawiki",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/supertassu/laravel-socialite-mediawiki.git",
-                "reference": "a3bb2dba29efc202bd47ca863a9f413a47e4983f"
+                "reference": "db2a0c069076d3fc606a78c801b47eb21f4c556a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/supertassu/laravel-socialite-mediawiki/zipball/a3bb2dba29efc202bd47ca863a9f413a47e4983f",
-                "reference": "a3bb2dba29efc202bd47ca863a9f413a47e4983f",
+                "url": "https://api.github.com/repos/supertassu/laravel-socialite-mediawiki/zipball/db2a0c069076d3fc606a78c801b47eb21f4c556a",
+                "reference": "db2a0c069076d3fc606a78c801b47eb21f4c556a",
                 "shasum": ""
             },
             "require": {
-                "laravel/socialite": "^4.4|^5.0",
+                "laravel/socialite": "^5.0",
                 "php": "^7.0"
             },
             "type": "library",
@@ -4616,7 +4616,7 @@
                 }
             ],
             "description": "A MediaWiki authentication provider for Laravel Socialite",
-            "time": "2020-09-10T15:16:07+00:00"
+            "time": "2020-09-10T16:32:05+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
