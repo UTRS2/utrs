@@ -13,21 +13,21 @@
         "addwiki/mediawiki-api": "~0.7.0",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
-        "laravel/framework": "^6.0",
+        "laravel/framework": "^8.0",
         "laravel/slack-notification-channel": "^2.0",
-        "laravel/socialite": "^4.3",
+        "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.4",
         "laravelcollective/html": "^6.1",
         "spatie/laravel-backup": "^6.10",
-        "taavi/laravel-socialite-mediawiki": "^1.0"
+        "taavi/laravel-socialite-mediawiki": "^1.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",
-        "facade/ignition": "^1.16.3",
+        "facade/ignition": "^2.3",
         "fzaninotto/faker": "^1.4",
-        "laravel/dusk": "^6.1",
+        "laravel/dusk": "^6.6",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^3.0.1",
+        "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9.2"
     },
     "config": {
@@ -42,7 +42,9 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
         },
         "classmap": [
             "database/seeds",
