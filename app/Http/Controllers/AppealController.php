@@ -15,6 +15,7 @@ use App\Sendresponse;
 use App\Template;
 use App\User;
 use Auth;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -31,25 +32,9 @@ class AppealController extends Controller
     public function appeal($id)
     {
         $info = Appeal::find($id);
-        if (is_null($info)) {
-            $info = Oldappeal::findOrFail($id);
-            $this->authorize('view', $info);
 
-            $comments = $info->comments;
-            $userlist = [];
-
-            foreach ($comments as $comment) {
-                if (!is_null($comment->commentUser) && !in_array($comment->commentUser, $userlist)) {
-                    $userlist[$comment->commentUser] = Olduser::findOrFail($comment->commentUser)->username;
-                }
-            }
-
-            if ($info['status'] === "UNVERIFIED") {
-                return view('appeals.unverifiedappeal');
-            }
-
-            return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist' => $userlist]);
-        } else {
+        // UTRS 2 appeal exists
+        if ($info) {
             $this->authorize('view', $info);
             $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
 
@@ -93,6 +78,29 @@ class AppealController extends Controller
                 'previousAppeals' => $previousAppeals,
             ]);
         }
+
+        // if UTRS 1 table exists, let's check there as well
+        if (Schema::hasTable('oldappeals')) {
+            $info = Oldappeal::findOrFail($id);
+            $this->authorize('view', $info);
+
+            $comments = $info->comments;
+            $userlist = [];
+
+            foreach ($comments as $comment) {
+                if (!is_null($comment->commentUser) && !in_array($comment->commentUser, $userlist)) {
+                    $userlist[$comment->commentUser] = Olduser::findOrFail($comment->commentUser)->username;
+                }
+            }
+
+            if ($info['status'] === "UNVERIFIED") {
+                return view('appeals.unverifiedappeal');
+            }
+
+            return view('appeals.oldappeal', ['info' => $info, 'comments' => $comments, 'userlist' => $userlist]);
+        }
+
+        return (new ModelNotFoundException)->setModel(Appeal::class, $id);
     }
 
     public function appeallist()
