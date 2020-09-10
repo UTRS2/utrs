@@ -13,6 +13,8 @@
         "addwiki/mediawiki-api": "~0.7.0",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "6",
         "laravel/framework": "^8.0",
         "laravel/slack-notification-channel": "^2.0",
         "laravel/socialite": "^5.0",
@@ -45,12 +47,8 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ]
-    },
+        }
+   },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
