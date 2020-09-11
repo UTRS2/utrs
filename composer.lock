@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b74a0157ee8a72820f1ed23bb225a22",
+    "content-hash": "4e75fb69636cc1ca32b4101eb371c938",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -1143,16 +1143,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v8.0.3",
+            "version": "v8.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "a4c365f9a964f1d9346a662b426476dc1bffc660"
+                "reference": "2cf573991b1438393affdc94fd6129dcc42fd9fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/a4c365f9a964f1d9346a662b426476dc1bffc660",
-                "reference": "a4c365f9a964f1d9346a662b426476dc1bffc660",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/2cf573991b1438393affdc94fd6129dcc42fd9fc",
+                "reference": "2cf573991b1438393affdc94fd6129dcc42fd9fc",
                 "shasum": ""
             },
             "require": {
@@ -1302,7 +1302,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2020-09-09T22:26:00+00:00"
+            "time": "2020-09-10T21:38:58+00:00"
         },
         {
             "name": "laravel/slack-notification-channel",
@@ -6680,16 +6680,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.3.8",
+            "version": "9.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "93d78d8e2a06393a0d0c1ead6fe9984f1af1f88c"
+                "reference": "60c90ba713075e83bd039db4760226df7ad9a5cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/93d78d8e2a06393a0d0c1ead6fe9984f1af1f88c",
-                "reference": "93d78d8e2a06393a0d0c1ead6fe9984f1af1f88c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/60c90ba713075e83bd039db4760226df7ad9a5cb",
+                "reference": "60c90ba713075e83bd039db4760226df7ad9a5cb",
                 "shasum": ""
             },
             "require": {
@@ -6703,7 +6703,7 @@
                 "myclabs/deep-copy": "^1.10.1",
                 "phar-io/manifest": "^2.0.1",
                 "phar-io/version": "^3.0.2",
-                "php": "^7.3 || ^8.0",
+                "php": ">=7.3",
                 "phpspec/prophecy": "^1.11.1",
                 "phpunit/php-code-coverage": "^9.1.5",
                 "phpunit/php-file-iterator": "^3.0.4",
@@ -6765,7 +6765,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2020-08-27T06:30:58+00:00"
+            "time": "2020-09-11T12:42:34+00:00"
         },
         {
             "name": "scrivo/highlight.php",
