@@ -151,26 +151,6 @@ def clearPrivateData():
         logs = calldb("select timestamp from logs where referenceobject = "+str(id)+" and (action RLIKE 'closed' or action LIKE '%decline' or action LIKE '%accept' or action LIKE '%expire%' or action LIKE '%invalid') and objecttype = 'appeal';","read")
         if datesince(logs[0], 7):
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
-def appeallist():
-    fulltext=""
-    top = """
-    {| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle" |-
-    !Appeal Number
-    !Appellant
-    !Appeal Filed
-    !Status
-    """
-    fulltext+=top
-    results = calldb("select id,appealfor,submitted,status from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRE' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
-    for result in results:
-        username = result[1].encode('utf-8').strip()
-        if username.startswith('#'):
-            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[https://en.wikipedia.org/wiki/Special:BlockList?wpTarget="+username.replace('#','%23')+" Block ID "+username+"]\n|"+str(result[2])+"\n|"+str(result[3])
-        else:
-            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[2])+"\n|"+str(result[3])
-    fulltext +="\n|}"
-    page = masterwiki.pages["User:AmandaNP/UTRS Appeals"]
-    page.save(fulltext, "Updating UTRS caselist")
 def datesince(orig,length):
     today = datetime.now()
     diff = today - timedelta(days=length)
@@ -185,5 +165,4 @@ def closeNotFound():
             calldb("insert into logs (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
 clearPrivateData()
-appeallist()
 closeNotFound()
