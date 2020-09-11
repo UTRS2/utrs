@@ -17,7 +17,7 @@ class Ban extends Model
 
     public function logs()
     {
-        return $this->hasOne('App\Log', 'id','logID');
+        return $this->hasOne(Log::class, 'id','logID');
     }
 
     public function scopeActive(Builder $query)
