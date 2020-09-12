@@ -74,4 +74,17 @@ class AppealPolicy
         return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['admin']) ? true
             : $this->deny('Only administrators can take actions on appeals.');
     }
+
+    /**
+     * Determine whether the user can update take developer actions on this appeal.
+     *
+     * @param User $user
+     * @param Appeal $appeal
+     * @return mixed
+     */
+    public function performDeveloperActions(User $user, Appeal $appeal)
+    {
+        // Handle via Gate::before()
+        return $this->deny('Only developers can take developer actions on appeals.');
+    }
 }

@@ -158,7 +158,7 @@
                                         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
                                             @if($perms['functionary'])
                                                 <div>
-                                                    <form action="{{ route('appeal.action.reopen', $info) }}" method="POST">
+                                                    <form action="{{ route('appeal.action.reopen', $info) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         <button class="btn btn-success">
                                                             Re-open
@@ -176,14 +176,14 @@
                                             <div>
                                                 <div class="mb-2">
                                                     @if($info->handlingadmin == null)
-                                                        <form action="{{ route('appeal.action.reserve', $info) }}" method="POST">
+                                                        <form action="{{ route('appeal.action.reserve', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-success">
                                                                 Reserve
                                                             </button>
                                                         </form>
                                                     @elseif($info->handlingadmin == Auth::id() || $perms['tooladmin'] || $perms['developer'])
-                                                        <form action="{{ route('appeal.action.release', $info) }}" method="POST">
+                                                        <form action="{{ route('appeal.action.release', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-success">
                                                                 @if($info->handlingadmin != Auth::id()) Force @endif
@@ -196,9 +196,12 @@
                                                         </button>
                                                     @endif {{-- disabled button --}}
                                                     @if($perms['developer'])
-                                                        <a href="/appeal/invalidate/{{ $id }}" class="btn btn-danger">
-                                                            Invalidate
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.invalidate', $info) }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            <button class="btn btn-danger">
+                                                                Invalidate
+                                                            </button>
+                                                        </form>
                                                     @endif
                                                 </div>
 
@@ -243,9 +246,12 @@
                                                 @endif
                                                 @if($perms['developer'] && ($info->status=="NOTFOUND" || $info->status=="VERIFY"))
                                                     <div class="mb-2">
-                                                        <a href="/appeal/findagain/{{ $id }}" class="btn btn-info">
-                                                            Re-verify block
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.findagain', $info) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-info">
+                                                                Re-verify block
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 @endif
                                             @endif

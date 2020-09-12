@@ -43,11 +43,11 @@ Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')
 Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
 
 Route::post('/appeal/open/{appeal}', 'Appeal\AppealActionController@reOpen')->name('appeal.action.reopen');
-Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');
+Route::post('/appeal/findagain/{appeal}', 'Appeal\AppealActionController@reverifyBlockDetails')->name('appeal.action.findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
 Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.checkuser');
 Route::post('/appeal/tooladmin/{appeal}', 'Appeal\AppealActionController@sendToTooladminReview')->name('appeal.action.tooladmin');
-Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
+Route::post('/appeal/invalidate/{appeal}', 'Appeal\AppealActionController@invalidate')->name('appeal.action.invalidate');
 
 Route::get('/appeal/template/{appeal}', 'AppealController@viewtemplates')->name('appeal.template');
 Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')->name('appeal.template.submit');

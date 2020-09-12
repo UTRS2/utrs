@@ -57,4 +57,11 @@ trait TestHasUsers
         $permissions['enwiki'][] = 'tooladmin';
         return $this->getUser($permissions, $extraData);
     }
+
+    public function getDeveloperUser($extraData = [])
+    {
+        $permissions = $this->userDefaultPermissions;
+        $permissions['*'] = ['developer'];
+        return $this->getUser($permissions, $extraData);
+    }
 }

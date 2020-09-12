@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Appeal;
 
 use App\Appeal;
 use App\Http\Controllers\Controller;
+use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\User;
 use Closure;
@@ -15,24 +16,6 @@ class AppealActionController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    public function reserve(Request $request, Appeal $appeal)
-    {
-        return $this->doAction(
-            $request,
-            $appeal,
-            'reserve',
-            function (Appeal $appeal, Request $request) {
-                $appeal->handlingadmin = $request->user()->id;
-                $appeal->save();
-            },
-            function (Appeal $appeal) {
-                return $appeal->handlingadmin
-                    ? 'This appeal has already been reserved.'
-                    : true;
-            }
-        );
     }
 
     /**
@@ -51,8 +34,8 @@ class AppealActionController extends Controller
         Appeal $appeal,
         string $logEntry,
         Closure $doAction = null,
-        $validate = null,
-        $logProtection = Log::LOG_PROTECTION_NONE,
+        ?Closure $validate = null,
+        int $logProtection = Log::LOG_PROTECTION_NONE,
         string $requiredPermission = 'update'
     )
     {
@@ -90,6 +73,24 @@ class AppealActionController extends Controller
         });
 
         return redirect()->route('appeal.view', [ $appeal ]);
+    }
+
+    public function reserve(Request $request, Appeal $appeal)
+    {
+        return $this->doAction(
+            $request,
+            $appeal,
+            'reserve',
+            function (Appeal $appeal, Request $request) {
+                $appeal->handlingadmin = $request->user()->id;
+                $appeal->save();
+            },
+            function (Appeal $appeal) {
+                return $appeal->handlingadmin
+                    ? 'This appeal has already been reserved.'
+                    : true;
+            }
+        );
     }
 
     public function release(Request $request, Appeal $appeal)
@@ -188,6 +189,41 @@ class AppealActionController extends Controller
                     ? true
                     : 'This appeal is currently not in a status where you can re-open it.';
             }
+        );
+    }
+
+    public function invalidate(Request $request, Appeal $appeal)
+    {
+        return $this->doAction(
+            $request,
+            $appeal,
+            'closed as invalid',
+            function (Appeal $appeal) {
+                $appeal->status = Appeal::STATUS_INVALID;
+                $appeal->save();
+            },
+            null,
+            Log::LOG_PROTECTION_ADMIN,
+            'performDeveloperActions',
+        );
+    }
+
+    public function reverifyBlockDetails(Request $request, Appeal $appeal)
+    {
+        return $this->doAction(
+            $request,
+            $appeal,
+            're-verify block details',
+            function (Appeal $appeal) {
+                GetBlockDetailsJob::dispatch($appeal);
+            },
+            function (Appeal $appeal) {
+                return in_array($appeal->status, [ Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND ])
+                    ? true
+                    : 'Block details for this appeal have already been found.';
+            },
+            Log::LOG_PROTECTION_NONE,
+            'performDeveloperActions',
         );
     }
 }

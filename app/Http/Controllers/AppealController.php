@@ -219,31 +219,6 @@ class AppealController extends Controller
         return view('appeals.makeappeal.ip');
     }
 
-    public function checkuser(Appeal $appeal, Request $request)
-    {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
-
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-
-        $reason = $request->input('reason');
-        $checkuser = Permission::checkCheckuser($user, $appeal->wiki);
-        if (!$checkuser) {
-            abort(403, 'You are not a checkuser.');
-        }
-
-        Log::create(['user' => $user, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_FUNCTIONARY]);
-        return redirect('appeal/' . $appeal->id);
-    }
-
     public function comment($id, Request $request)
     {
         if (!Auth::check()) {
@@ -384,24 +359,6 @@ class AppealController extends Controller
         return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
     }
 
-    public function invalidate($id, Request $request)
-    {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $dev = Permission::checkSecurity($user, "DEVELOPER", "*");
-        if ($dev && $appeal->status !== Appeal::STATUS_INVALID) {
-            $appeal->status = Appeal::STATUS_INVALID;
-            $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'closed - invalidate', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_ADMIN));
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
-        }
-    }
-
     public function close($id, $type, Request $request)
     {
         $appeal = Appeal::findOrFail($id);
@@ -419,31 +376,5 @@ class AppealController extends Controller
         } else {
             abort(403);
         }
-    }
-
-    public function findagain(Request $request, Appeal $appeal)
-    {
-        /** @var User $user */
-        $user = $request->user();
-
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-
-        $dev = $user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer');
-        abort_unless($dev,403,"You are not an UTRS developer");
-        abort_if($appeal->status !== Appeal::STATUS_NOTFOUND && $appeal->status !== Appeal::STATUS_VERIFY, 400, 'Appeal details were already found.');
-
-        GetBlockDetailsJob::dispatch($appeal);
-        Log::create([
-            'user' => Auth::id(),
-            'referenceobject'=> $appeal->id,
-            'objecttype'=>'appeal',
-            'action'=>'reverify block',
-            'ip' => $ip,
-            'ua' => $ua . " " .$lang
-        ]);
-
-        return redirect()->back();
     }
 }
