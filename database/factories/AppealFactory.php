@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Appeal;
+use App\Models\Appeal;
 use App\MwApi\MwApiUrls;
 use Faker\Generator as Faker;
 

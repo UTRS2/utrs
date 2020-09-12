@@ -2,15 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Appeal;
-use RuntimeException;
+use App\Models\Appeal;
 use App\MwApi\MwApiExtras;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
+use RuntimeException;
 
 class VerifyBlockJob implements ShouldQueue
 {

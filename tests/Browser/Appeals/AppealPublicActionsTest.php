@@ -2,7 +2,7 @@
 
 namespace Tests\Browser\Appeals;
 
-use App\Appeal;
+use App\Models\Appeal;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;

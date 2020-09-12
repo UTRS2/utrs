@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Appeal;
 
-use App\Appeal;
-use App\Ban;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
-use App\Log;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
+use App\Models\Privatedata;
+use App\Models\Sendresponse;
 use App\MwApi\MwApiUrls;
-use App\Privatedata;
 use App\Rules\SecretEqualsRule;
-use App\Sendresponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -82,13 +82,13 @@ class PublicAppealController extends Controller
                 'language'  => $lang,
             ]);
 
-            Log::create([
-                'user'            => -1,
-                'referenceobject' => $appeal->id,
-                'objecttype'      => 'appeal',
-                'action'          => 'create',
-                'ip'              => $ip,
-                'ua'              => $ua . ' ' . $lang,
+            LogEntry::create([
+                'user_id'    => -1,
+                'model_id'   => $appeal->id,
+                'model_type' => Appeal::class,
+                'action'     => 'create',
+                'ip'         => $ip,
+                'ua'         => $ua . ' ' . $lang,
             ]);
 
             GetBlockDetailsJob::dispatch($appeal);
@@ -131,15 +131,15 @@ class PublicAppealController extends Controller
         $lang = $request->header('Accept-Language');
         $reason = $request->input('comment');
 
-        Log::create([
-            'user'            => -1,
-            'referenceobject' => $appeal->id,
-            'objecttype'      => 'appeal',
-            'action'          => 'responded',
-            'reason'          => $reason,
-            'ip'              => $ip,
-            'ua'              => $ua . ' ' . $lang,
-            'protected'       => Log::LOG_PROTECTION_NONE,
+        LogEntry::create([
+            'user_id'    => -1,
+            'model_id'   => $appeal->id,
+            'model_type' => Appeal::class,
+            'action'     => 'responded',
+            'reason'     => $reason,
+            'ip'         => $ip,
+            'ua'         => $ua . ' ' . $lang,
+            'protected'  => LogEntry::LOG_PROTECTION_NONE,
         ]);
 
         if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
@@ -175,13 +175,13 @@ class PublicAppealController extends Controller
         $ip = $request->ip();
         $lang = $request->header('Accept-Language');
 
-        Log::create([
-            'user'            => 0,
-            'referenceobject' => $appeal->id,
-            'objecttype'      => 'appeal',
-            'action'          => 'account verifed',
-            'ip'              => $ip,
-            'ua'              => $ua . ' ' . $lang,
+        LogEntry::create([
+            'user_id'    => 0,
+            'model_id'   => $appeal->id,
+            'model_type' => Appeal::class,
+            'action'     => 'account verifed',
+            'ip'         => $ip,
+            'ua'         => $ua . ' ' . $lang,
         ]);
 
         return redirect()

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Appeal;
-use App\Ban;
-use App\Log;
-use App\Permission;
-use App\Sitenotice;
-use App\Template;
-use App\User;
-use App\Wikitask;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
+use App\Models\Sitenotice;
+use App\Models\Template;
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -116,7 +114,7 @@ class AdminController extends Controller
 
         $template = Template::create($data);
 
-        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
     }
 
@@ -141,7 +139,7 @@ class AdminController extends Controller
         ]);
 
         $template->update($data);
-        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
     }
 }

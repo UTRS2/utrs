@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models\Old;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +13,7 @@ class Oldappeal extends Model
 
     public function comments()
     {
-        return $this->hasMany('App\Oldcomment', 'appealID','appealID');
+        return $this->hasMany(Oldcomment::class, 'appealID','appealID');
     }
 
     /** hack: add read-only 'id' attribute even thru it's appealID in database. ref #236 */

@@ -1,9 +1,6 @@
 <?php
 
-use App\Log;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 class MigrateOldBlockedUserComments extends Migration
 {
@@ -14,7 +11,8 @@ class MigrateOldBlockedUserComments extends Migration
      */
     public function up()
     {
-        Log::where('user', 0)
+        DB::table('logs')
+            ->where('user', 0)
             ->whereNotNull('reason')
             ->where('action', 'comment')
             ->update([
@@ -30,7 +28,8 @@ class MigrateOldBlockedUserComments extends Migration
      */
     public function down()
     {
-        Log::where('user', -1)
+        DB::table('logs')
+            ->where('user', -1)
             ->whereNotNull('reason')
             ->where('action', 'responded')
             ->update([

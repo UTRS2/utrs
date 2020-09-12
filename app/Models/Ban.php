@@ -1,9 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class Ban extends Model
 {
@@ -17,7 +17,7 @@ class Ban extends Model
 
     public function logs()
     {
-        return $this->hasOne('App\Log', 'id','logID');
+        return $this->hasOne('App\Models\LogEntry', 'id','logID');
     }
 
     public function scopeActive(Builder $query)
