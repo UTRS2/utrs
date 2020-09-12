@@ -384,29 +384,6 @@ class AppealController extends Controller
         return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
     }
 
-    public function open($id, Request $request)
-    {
-        $appeal = Appeal::findOrFail($id);
-        $user = Auth::id();
-
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-
-        if ($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_EXPIRE || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_CHECKUSER || $appeal->status == Appeal::STATUS_ADMIN) {
-            $appeal->status = Appeal::STATUS_OPEN;
-            $appeal->save();
-            Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 're-open', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE));
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
-        }
-}
-
     public function invalidate($id, Request $request)
     {
         $ua = $request->server('HTTP_USER_AGENT');
@@ -442,64 +419,6 @@ class AppealController extends Controller
         } else {
             abort(403);
         }
-    }
-
-    public function checkuserreview(Request $request, Appeal $appeal)
-    {
-        $ua = $request->header('User-Agent');
-        $lang = $request->header('Accept-Language');
-        $ip = $request->ip();
-        $user = Auth::id();
-
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-
-        $reason = $request->validate([
-            'cu_reason' => 'required|string|min:3|max:190',
-        ])['cu_reason'];
-
-        abort_unless($admin && $appeal->status == Appeal::STATUS_OPEN, 403, 'Forbidden');
-
-        $appeal->status = Appeal::STATUS_CHECKUSER;
-        $appeal->save();
-
-        Log::create([
-            'user' => $user,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
-            'action' => 'sent for checkuser review',
-            'reason' => $reason,
-            'ip' => $ip,
-            'ua' => $ua . ' ' . $lang,
-            'protected' => Log::LOG_PROTECTION_ADMIN,
-        ]);
-
-        return redirect()->back();
-    }
-
-    public function admin(Request $request, Appeal $appeal)
-    {
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for");
-        abort_if($appeal->status === Appeal::STATUS_ADMIN, 400, 'This appeal is already waiting for tool administrator review.');
-
-        $ua = $request->userAgent();
-        $ip = $request->ip();
-        $lang = $request->header('Accept-Language');
-
-        $appeal->status = Appeal::STATUS_ADMIN;
-        $appeal->save();
-        Log::create([
-            'user' => $user,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
-            'action' => 'sent for admin review',
-            'ip' => $ip,
-            'ua' => $ua . " " . $lang,
-            'protected' => Log::LOG_PROTECTION_NONE
-        ]);
-
-        return redirect()->back();
     }
 
     public function findagain(Request $request, Appeal $appeal)

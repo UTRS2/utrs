@@ -25,6 +25,28 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
             ->exists());
     }
 
+    public function test_user_cant_reserve_already_reserved_appeal()
+    {
+        $user = $this->getUser();
+        $reservedToUser = $this->getUser();
+        $this->assertNotEquals($user->id, $reservedToUser->id);
+
+        $appeal = factory(Appeal::class)->create([ 'handlingadmin' => $reservedToUser->id, ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('appeal.action.reserve', $appeal));
+        $response->assertStatus(403);
+        $response->assertSee("This appeal has already been reserved.");
+
+        $appeal->refresh();
+        $this->assertEquals($reservedToUser->id, $appeal->handlingadmin);
+        $this->assertFalse($appeal->comments()
+            ->where('action', 'reserve')
+            ->where('user', $user->id)
+            ->exists());
+    }
+
     public function test_user_cant_reserve_appeal_that_they_cant_see()
     {
         $user = $this->getUser();

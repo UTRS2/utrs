@@ -158,8 +158,12 @@
                                         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
                                             @if($perms['functionary'])
                                                 <div>
-                                                    <a href="/appeal/open/{{ $id }}" class="btn btn-success">
-                                                        Re-open</a>
+                                                    <form action="{{ route('appeal.action.reopen', $info) }}" method="POST">
+                                                        @csrf
+                                                        <button class="btn btn-success">
+                                                            Re-open
+                                                        </button>
+                                                    </form>
                                                     <a href="/appeal/oversight/{{ $id }}" class="btn btn-danger">
                                                         Oversight appeal</a>
                                                 </div>
@@ -229,9 +233,12 @@
                                                 @endif
                                                 @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_AWAITING_REPLY && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                                     <div class="mb-2">
-                                                        <a href="/appeal/open/{{ $id }}" class="btn btn-info">
-                                                            Return to tool users
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.reopen', $info) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-info">
+                                                                Return to tool users
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 @endif
                                                 @if($perms['developer'] && ($info->status=="NOTFOUND" || $info->status=="VERIFY"))
