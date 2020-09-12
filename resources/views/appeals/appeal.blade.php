@@ -164,8 +164,6 @@
                                                             Re-open
                                                         </button>
                                                     </form>
-                                                    <a href="/appeal/oversight/{{ $id }}" class="btn btn-danger">
-                                                        Oversight appeal</a>
                                                 </div>
                                             @else
                                                 <div class="alert alert-danger" role="alert">
@@ -206,19 +204,28 @@
                                                 </div>
 
                                                 <div class="mb-2">
-                                                    <a href="/appeal/close/{{ $id }}/accept" class="btn btn-danger">
-                                                        Accept appeal
-                                                    </a>
+                                                    <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_ACCEPT]) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-danger">
+                                                            Accept appeal
+                                                        </button>
+                                                    </form>
 
-                                                    <a href="/appeal/close/{{ $id }}/decline" class="btn btn-danger">
-                                                        Decline appeal
-                                                    </a>
+                                                    <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_DECLINE]) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-danger">
+                                                            Decline appeal
+                                                        </button>
+                                                    </form>
                                                 </div>
 
                                                 <div class="mb-2">
-                                                    <a href="/appeal/close/{{ $id }}/expire" class="btn btn-danger">
-                                                        Mark appear as expired
-                                                    </a>
+                                                    <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_EXPIRE]) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-danger">
+                                                            Mark appeal as expired
+                                                        </button>
+                                                    </form>
                                                 </div>
 
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)

@@ -93,6 +93,25 @@ class AppealActionController extends Controller
         );
     }
 
+    public function close(Request $request, Appeal $appeal, string $status)
+    {
+        if (!in_array($status, [ Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE ])) {
+            return abort(400, 'Invalid status.');
+        }
+
+        $this->doAction(
+            $request,
+            $appeal,
+            'closed - ' . strtolower($status),
+            function (Appeal $appeal) use ($status) {
+                $appeal->status = $status;
+                $appeal->save();
+            }
+        );
+
+        return redirect()->route('appeal.list');
+    }
+
     public function release(Request $request, Appeal $appeal)
     {
         return $this->doAction(

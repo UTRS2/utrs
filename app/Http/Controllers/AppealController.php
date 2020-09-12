@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App;
 use App\Appeal;
-use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\MwApi\MwApiUrls;
 use App\Oldappeal;
@@ -357,24 +355,5 @@ class AppealController extends Controller
         $userlist[Auth::id()] = Auth::user()->username;
 
         return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
-    }
-
-    public function close($id, $type, Request $request)
-    {
-        $appeal = Appeal::findOrFail($id);
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        if ($admin) {
-            $appeal->status = strtoupper($type);
-            $appeal->save();
-            $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'closed - ' . $type, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE));
-            return redirect('/review');
-        } else {
-            abort(403);
-        }
     }
 }

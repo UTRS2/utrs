@@ -44,7 +44,7 @@ Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')
 
 Route::post('/appeal/open/{appeal}', 'Appeal\AppealActionController@reOpen')->name('appeal.action.reopen');
 Route::post('/appeal/findagain/{appeal}', 'Appeal\AppealActionController@reverifyBlockDetails')->name('appeal.action.findagain');
-Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
+Route::post('/appeal/close/{appeal}/{type}', 'Appeal\AppealActionController@close')->name('appeal.action.close');
 Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.checkuser');
 Route::post('/appeal/tooladmin/{appeal}', 'Appeal\AppealActionController@sendToTooladminReview')->name('appeal.action.tooladmin');
 Route::post('/appeal/invalidate/{appeal}', 'Appeal\AppealActionController@invalidate')->name('appeal.action.invalidate');
