@@ -30,7 +30,7 @@ Route::prefix('/public')->middleware('guest')->group(function () {
     Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
 });
 
-Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth');
+Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth')->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
@@ -38,8 +38,10 @@ Route::get('/locate', 'AppealController@search')->name('appeal.search');
 Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
-Route::get('/appeal/reserve/{appeal}', 'AppealController@reserve');
-Route::post('/appeal/release/{id}', 'AppealController@release')->name('appeal.action.release');
+
+Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')->name('appeal.action.reserve');
+Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
+
 Route::get('/appeal/open/{id}', 'AppealController@open');
 Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');
 Route::get('/appeal/close/{id}/{type}', 'AppealController@close');

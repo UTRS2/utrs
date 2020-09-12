@@ -172,9 +172,12 @@
                                             <div>
                                                 <div class="mb-2">
                                                     @if($info->handlingadmin == null)
-                                                        <a href="/appeal/reserve/{{ $id }}" class="btn btn-success">
-                                                            Reserve
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.reserve', $info) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-success">
+                                                                Reserve
+                                                            </button>
+                                                        </form>
                                                     @elseif($info->handlingadmin == Auth::id() || $perms['tooladmin'] || $perms['developer'])
                                                         <form action="{{ route('appeal.action.release', $info) }}" method="POST">
                                                             @csrf

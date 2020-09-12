@@ -384,45 +384,6 @@ class AppealController extends Controller
         return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
     }
 
-    public function reserve(Appeal $appeal, Request $request)
-    {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_unless($admin,403, 'You are not an administrator.');
-        abort_if($appeal->handlingadmin, 403, 'This appeal has already been reserved.');
-        $appeal->handlingadmin = Auth::id();
-        $appeal->save();
-        Log::create(['user' => $user, 'referenceobject' => $appeal->id, 'objecttype' => 'appeal', 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE]);
-
-        return redirect('appeal/' . $appeal->id);
-    }
-
-    public function release($id, Request $request)
-    {
-        $ua = $request->server('HTTP_USER_AGENT');
-        $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        if ($admin) {
-            if (isset($appeal->handlingadmin)) {
-                $appeal->handlingadmin = null;
-                $appeal->save();
-                $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'release', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_NONE));
-            } else {
-                abort(403);
-            }
-            return redirect('appeal/' . $id);
-        } else {
-            abort(403);
-        }
-    }
-
     public function open($id, Request $request)
     {
         $appeal = Appeal::findOrFail($id);
