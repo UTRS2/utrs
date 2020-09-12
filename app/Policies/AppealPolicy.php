@@ -33,7 +33,7 @@ class AppealPolicy
     public function view(User $user, Appeal $appeal)
     {
         if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['admin'])) {
-            return false;
+            return $this->deny('Only ' . $appeal->wiki . ' administrators are able to see this appeal.');
         }
 
         if ($appeal->status === Appeal::STATUS_INVALID) {

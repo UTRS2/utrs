@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Appeal;
 use App\Appeal;
 use App\Http\Controllers\Controller;
 use App\Log;
+use App\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class AppealActionController extends Controller
 {
@@ -30,7 +29,7 @@ class AppealActionController extends Controller
             },
             function (Appeal $appeal) {
                 return $appeal->handlingadmin
-                    ? 'This appeal has already been reserved'
+                    ? 'This appeal has already been reserved.'
                     : true;
             }
         );
@@ -46,10 +45,20 @@ class AppealActionController extends Controller
                 $appeal->handlingadmin = null;
                 $appeal->save();
             },
-            function (Appeal $appeal) {
-                return $appeal->handlingadmin
-                    ? true
-                    : 'No-one has reserved this appeal.';
+            function (Appeal $appeal, Request $request) {
+                if ($appeal->handlingadmin) {
+                    /** @var User $user */
+                    $user = $request->user();
+                    if ($appeal->handlingadmin === $user->id) {
+                        return true;
+                    }
+
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['tooladmin'])
+                        ? true
+                        : "Only tool administrators can force release appeals.";
+                }
+
+                return 'No-one has reserved this appeal.';
             }
         );
     }
@@ -73,8 +82,7 @@ class AppealActionController extends Controller
         $validate = null,
         $logProtection = Log::LOG_PROTECTION_NONE,
         string $requiredPermission = 'update'
-    )
-    {
+    ) {
         // first off, make sure that we can do the action
         $this->authorize($requiredPermission, $appeal);
 
