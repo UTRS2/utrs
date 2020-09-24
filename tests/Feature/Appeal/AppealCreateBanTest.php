@@ -76,4 +76,20 @@ class AppealCreateBanTest extends TestCase
         $response->assertStatus(403)
             ->assertSee('Foo bar baz text');
     }
+
+    public function test_cant_create_appeal_for_range_which_is_in_larger_ban()
+    {
+        factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '10.0.0.0/23', 'reason' => 'Foo bar baz text']);
+
+        $response = $this->post('/public/appeal/store', [
+            'test_do_not_actually_save_anything' => true,
+            'appealtext' => 'Example appeal test',
+            'appealfor' => '10.0.0.0/24',
+            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'blocktype' => 0,
+        ]);
+
+        $response->assertStatus(403)
+            ->assertSee('Foo bar baz text');
+    }
 }
