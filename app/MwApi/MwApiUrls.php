@@ -67,6 +67,9 @@ class MwApiUrls
     public static function getWikiDropdown()
     {
         return collect(self::getSupportedWikis(true))
+            ->filter(function ($wiki) {
+                return !self::getWikiProperty($wiki, 'hidden_from_appeal_wiki_list', false);
+            })
             ->mapWithKeys(function ($wiki) {
                 return [$wiki => self::getWikiProperty($wiki, 'name')];
             })
