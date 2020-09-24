@@ -29,7 +29,7 @@ return [
             'api_url' => env('WIKI_URL_PTWIKI', 'https://pt.wikipedia.org/w/api.php'),
             'url_base' => 'https://pt.wikipedia.org/',
             'responding_user_title' => 'Portuguese Wikipedia Administrator',
-            'hidden_from_appeal_wiki_list' => false,
+            'hidden_from_appeal_wiki_list' => true,
         ],
     ],
 ];
