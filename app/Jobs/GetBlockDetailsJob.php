@@ -85,12 +85,11 @@ class GetBlockDetailsJob implements ShouldQueue
                 ]);
             }
 
-            $ban = Ban::where('ip', '=', 0)
-                ->where('target', $this->appeal->appealfor)
+            $ban = Ban::where('target', $this->appeal->appealfor)
                 ->active()
                 ->first();
 
-            if (!$ban) {
+            if (!$ban && IPUtils::isIpRange($this->appeal->appealfor)) {
                 $appealIp = IPUtils::normalizeRange($this->appeal->appealfor);
                 if (IPUtils::isIpRange($appealIp)) {
                     $appealIp = IPUtils::cutCidrRangePart(IPUtils::normalizeRange($appealIp));
