@@ -40,7 +40,7 @@ class Ban extends Model
     public function setTargetAttribute($value)
     {
         if (IPUtils::isIpRange($value)) {
-            $value = IPUtils::getIpRangeStart($value);
+            $value = IPUtils::normalizeRange($value);
         }
 
         $this->attributes['target'] = $value;

@@ -38,15 +38,22 @@ final class IPUtils
 
     /**
      * Get a normalized representation of a CIDR range
+     * For example, 192.168.020.130/24 becomes 192.168.20.0/24
      * @param string $range CIDR range to normalize
      * @return string
      */
-    public static function getIpRangeStart(string $range)
+    public static function normalizeRange(string $range)
     {
         // sanitizeRange gives the start of the range, ie 192.168.100.130/24 becomes 192.168.100.0/24
         // sanitizeIp removes all anomalies like leading zeroes etc and normalizes spelling
         // both work on ranges, so let's normalize using both
         return WikimediaIpUtils::sanitizeRange(WikimediaIpUtils::sanitizeIP($range));
+    }
+
+    public static function cutCidrRangePart(string $range)
+    {
+        [ $ip, ] = explode('/', $range);
+        return $ip;
     }
 
     /**

@@ -90,6 +90,21 @@ class GetBlockDetailsJob implements ShouldQueue
                 ->active()
                 ->first();
 
+            if (!$ban) {
+                $appealIp = IPUtils::normalizeRange($this->appeal->appealfor);
+                if (IPUtils::isIpRange($appealIp)) {
+                    $appealIp = IPUtils::cutCidrRangePart(IPUtils::normalizeRange($appealIp));
+                }
+
+                $ban = Ban::where('ip', 1)
+                    ->active()
+                    ->get()
+                    ->filter(function (Ban $ban) use ($appealIp) {
+                        return IPUtils::isIpInsideRange($ban->target, $appealIp);
+                    })
+                    ->first();
+            }
+
             if ($ban) {
                 $status = Appeal::STATUS_INVALID;
 
@@ -98,7 +113,7 @@ class GetBlockDetailsJob implements ShouldQueue
                     'referenceobject' => $this->appeal->id,
                     'objecttype' => 'appeal',
                     'action' => 'closed - invalidate',
-                    'reason' => 'account banned from UTRS',
+                    'reason' => 'banned from UTRS',
                     'ip' => 'DB entry',
                     'ua' => 'DB/1',
                     'protected' => 0

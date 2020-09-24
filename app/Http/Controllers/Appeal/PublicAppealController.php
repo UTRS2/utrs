@@ -11,12 +11,12 @@ use App\Log;
 use App\MwApi\MwApiUrls;
 use App\Privatedata;
 use App\Sendresponse;
+use App\Utils\IPUtils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log as LaravelLog;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 class PublicAppealController extends Controller
 {
@@ -62,6 +62,14 @@ class PublicAppealController extends Controller
                 ->setStatusCode(403);
         }
 
+        $appealIp = (IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))
+            ? $data['appealfor']
+            : null;
+
+        if ($appealIp && IPUtils::isIpRange($appealIp)) {
+            $appealIp = IPUtils::cutCidrRangePart(IPUtils::normalizeRange($appealIp));
+        }
+
         // in the future this should not loop thru all existing ip bans
         // and instead search for specific CIDR ranges or something similar
         $banip = Ban::where('ip', '=', 1)
@@ -69,7 +77,13 @@ class PublicAppealController extends Controller
             ->get();
 
         foreach ($banip as $ban) {
-            if (IpUtils::checkIp($ip, $ban->target)) {
+            if (IPUtils::isIpInsideRange($ban->target, $ip)) {
+                return response()
+                    ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
+                    ->setStatusCode(403);
+            }
+
+            if ($appealIp && IPUtils::isIpInsideRange($ban->target, $appealIp)) {
                 return response()
                     ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
                     ->setStatusCode(403);
