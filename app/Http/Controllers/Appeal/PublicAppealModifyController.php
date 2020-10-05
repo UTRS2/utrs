@@ -63,6 +63,19 @@ class PublicAppealModifyController extends Controller
                 return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
             }
         }
+        
+        $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
+                return $query->where('appealfor', $request->input('appealfor'))
+                    ->orWhereHas('privateData', function (Builder $privateDataQuery) use ($request) {
+                        return $privateDataQuery->where('ipaddress', $request->ip());
+                    });
+            })
+            ->openOrRecent()
+            ->exists();
+
+        if ($recentAppealExists) {
+            return view('appeals.spam');
+        }
 
         $appeal->status = Appeal::STATUS_VERIFY;
         $appeal->update($data);
