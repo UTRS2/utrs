@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Appeal;
 
 use App\Appeal;
+use App\Ban;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
