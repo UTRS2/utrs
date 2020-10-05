@@ -40,6 +40,28 @@ class PublicAppealModifyController extends Controller
             'blocktype' => 'required|numeric|max:2|min:0',
             'hiddenip'  => 'nullable|ip',
         ]);
+        
+        //Steal from PublicAppealController
+        $ban = Ban::where('ip', '=', 0)
+            ->where('target', $data['appealfor'])
+            ->active()
+            ->first();
+
+        if ($ban) {
+            return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
+        }
+
+        // in the future this should not loop thru all existing ip bans
+        // and instead search for specific CIDR ranges or something similar
+        $banip = Ban::where('ip', '=', 1)
+            ->active()
+            ->get();
+
+        foreach ($banip as $ban) {
+            if (IpUtils::checkIp($ip, $ban->target)) {
+                return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
+            }
+        }
 
         $appeal->status = Appeal::STATUS_VERIFY;
         $appeal->update($data);
