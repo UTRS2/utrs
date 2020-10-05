@@ -51,8 +51,12 @@ class PublicAppealController extends Controller
             return view('appeals.spam');
         }
 
-        $ban = Ban::where('ip', '=', 0)
-            ->where('target', $data['appealfor'])
+        $banTargets = Ban::getTargetsToCheck([
+            $ip,
+            $data['appealfor'],
+        ]);
+
+        $ban = Ban::whereIn('target', $banTargets)
             ->active()
             ->first();
 
@@ -60,34 +64,6 @@ class PublicAppealController extends Controller
             return response()
                 ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
                 ->setStatusCode(403);
-        }
-
-        $appealIp = (IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))
-            ? $data['appealfor']
-            : null;
-
-        if ($appealIp && IPUtils::isIpRange($appealIp)) {
-            $appealIp = IPUtils::cutCidrRangePart(IPUtils::normalizeRange($appealIp));
-        }
-
-        // in the future this should not loop thru all existing ip bans
-        // and instead search for specific CIDR ranges or something similar
-        $banip = Ban::where('ip', '=', 1)
-            ->active()
-            ->get();
-
-        foreach ($banip as $ban) {
-            if (IPUtils::isIpInsideRange($ban->target, $ip)) {
-                return response()
-                    ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
-                    ->setStatusCode(403);
-            }
-
-            if ($appealIp && IPUtils::isIpInsideRange($ban->target, $appealIp)) {
-                return response()
-                    ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
-                    ->setStatusCode(403);
-            }
         }
 
         if ($request->has('test_do_not_actually_save_anything')) {

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\MwApi\MwApiUrls;
+use App\Utils\IPUtils;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,27 +43,20 @@ class PublicAppealModifyController extends Controller
             'blocktype' => 'required|numeric|max:2|min:0',
             'hiddenip'  => 'nullable|ip',
         ]);
-        
-        //Steal from PublicAppealController
-        $ban = Ban::where('ip', '=', 0)
-            ->where('target', $data['appealfor'])
+
+        $banTargets = Ban::getTargetsToCheck([
+            $ip,
+            $data['appealfor'],
+        ]);
+
+        $ban = Ban::whereIn('target', $banTargets)
             ->active()
             ->first();
 
         if ($ban) {
-            return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
-        }
-
-        // in the future this should not loop thru all existing ip bans
-        // and instead search for specific CIDR ranges or something similar
-        $banip = Ban::where('ip', '=', 1)
-            ->active()
-            ->get();
-
-        foreach ($banip as $ban) {
-            if (IpUtils::checkIp($ip, $ban->target)) {
-                return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
-            }
+            return response()
+                ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
+                ->setStatusCode(403);
         }
         
         $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {

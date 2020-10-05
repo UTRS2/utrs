@@ -51,4 +51,30 @@ class Ban extends Model
         $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $this->expiry);
         return $expiry->year >= 2000 ? $this->expiry : 'indefinite';
     }
+
+    /**
+     * @param string ...$targets
+     * @return array
+     */
+    public static function getTargetsToCheck(...$targets)
+    {
+        return collect(func_get_args())
+            ->flatten()
+            ->filter(function ($it) {
+                // truthy values only, removes nulls, empty strings, etc
+                return !!$it;
+            })
+            ->flatMap(function (string $it) {
+                if (IPUtils::isIpRange($it)) {
+                    $it = IPUtils::cutCidrRangePart($it);
+                }
+
+                if (IPUtils::isIp($it)) {
+                    return array_merge([$it], IPUtils::getAllParentRanges($it));
+                }
+
+                return [$it];
+            })
+            ->toArray();
+    }
 }

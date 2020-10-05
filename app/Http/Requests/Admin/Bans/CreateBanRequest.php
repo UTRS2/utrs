@@ -27,27 +27,13 @@ class CreateBanRequest extends BaseBanModifyRequest
     public function rules()
     {
         return [
-            'ip' => 'required|boolean',
-            'target' => 'required|max:128',
+            'target' => [
+                'required',
+                'max:128',
+                new MaxCidrSizeRule(16, 16),
+            ],
             'reason' => 'required|max:128',
             'expiry' => 'required|date_format:Y-m-d H:i:s',
         ];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function withValidator(Validator $validator)
-    {
-        parent::withValidator($validator);
-
-        if ($this->has('ip') && $this->input('ip') == true) {
-            $validator->addRules([
-                'target' => [
-                    new IpOrCidrRule,
-                    new MaxCidrSizeRule(16, 16),
-                ],
-            ]);
-        }
     }
 }

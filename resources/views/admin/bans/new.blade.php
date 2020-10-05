@@ -10,17 +10,6 @@
             {{ Form::token() }}
 
             <div class="form-group mb-4">
-                Ban type
-                <div class="custom-control custom-radio">
-                    {{ Form::radio('ip', 0, old('ip') === 0, ['class' => 'custom-control-input', 'id' => 'ip-0']) }} {{ Form::label('ip-0', 'Username or IPv6 Address', ['class' => 'custom-control-label']) }}
-                </div>
-
-                <div class="custom-control custom-radio">
-                    {{ Form::radio('ip', 1, old('ip') === 1, ['class' => 'custom-control-input', 'id' => 'ip-1']) }} {{ Form::label('ip-1', 'IPv4 Address', ['class' => 'custom-control-label']) }}
-                </div>
-            </div>
-
-            <div class="form-group mb-4">
                 {{ Form::label('target', 'Ban target') }}
                 {{ Form::text('target', old('target'), ['class' => 'form-control']) }}
                 <p class="small">

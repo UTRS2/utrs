@@ -11,6 +11,12 @@ use Symfony\Component\HttpFoundation\IpUtils as SymfonyIpUtils;
  */
 final class IPUtils
 {
+    /** @var int Magic value. */
+    const MAX_RANGE_SIZE_V4 = 32;
+
+    /** @var int Magic value. */
+    const MAX_RANGE_SIZE_V6 = 128;
+
     /**
      * Checks if a given string is an IP address
      * @param string $string string to test
@@ -68,14 +74,23 @@ final class IPUtils
     }
 
     /**
-     * Gets the CIDR range size (number after the slash) for a given range
+     * Gets the CIDR range size (number after the slash) for a given range.
+     * If a single IP address is passed in, this will return the maximum
+     * size for the address version (32 for v4, 128 for v6).
+     *
      * There is probably a better name than "cidr range size", but I'm not a network engineer
-     * @param string $range cidr range
+     * @param string $ipOrRange ip address cidr range
      * @return int
      */
-    public static function getRangeCidrSize(string $range)
+    public static function getRangeCidrSize(string $ipOrRange)
     {
-        [ , $size ] = WikimediaIpUtils::parseCIDR($range);
+        if (!self::isIpRange($ipOrRange)) {
+            return self::isIPv6($ipOrRange)
+                ? self::MAX_RANGE_SIZE_V6
+                : self::MAX_RANGE_SIZE_V4;
+        }
+
+        [ , $size ] = WikimediaIpUtils::parseCIDR($ipOrRange);
         return $size;
     }
 
@@ -87,5 +102,19 @@ final class IPUtils
     public static function isIPv6(string $ipOrRange)
     {
         return WikimediaIpUtils::isIPv6($ipOrRange);
+    }
+
+    /**
+     * @param string $ipOrRange
+     * @return array
+     */
+    public static function getAllParentRanges(string $ipOrRange)
+    {
+        $prefix = self::cutCidrRangePart($ipOrRange) . '/';
+        return collect(range(1, self::getRangeCidrSize($ipOrRange)))
+            ->map(function (int $size) use ($prefix) {
+                return self::normalizeRange($prefix . $size);
+            })
+            ->toArray();
     }
 }

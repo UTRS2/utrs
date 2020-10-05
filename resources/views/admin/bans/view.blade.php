@@ -34,10 +34,6 @@
                     <th>Expires at</th>
                     <td>{!! $formattedExpiry !!}</td>
                 </tr>
-                <tr>
-                    <th>Ban Operation Mode</th>
-                    <td>{{ $ban->ip ? 'IPv4 address' : 'Username or IPv6 address' }}</td>
-                </tr>
                 </tbody>
             </table>
         </div>
