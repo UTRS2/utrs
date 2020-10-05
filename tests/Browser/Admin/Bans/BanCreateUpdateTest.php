@@ -28,7 +28,6 @@ class BanCreateUpdateTest extends DuskTestCase
             $browser->loginAs($this->getTooladminUser())
                 ->visit(route('admin.bans.create'))
                 ->assertDontSee('403')
-                ->click('[for=ip-0]')
                 ->type('target', 'UTRS banned user')
                 ->type('reason', 'UTRS public ban reason')
                 ->type('comment', 'UTRS private ban comment')
