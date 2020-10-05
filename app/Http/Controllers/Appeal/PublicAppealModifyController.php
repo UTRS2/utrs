@@ -10,6 +10,7 @@ use App\Log;
 use App\MwApi\MwApiUrls;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\Builder;
 
 class PublicAppealModifyController extends Controller
 {
