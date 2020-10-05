@@ -55,7 +55,7 @@ class BanController extends Controller
                 $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
             }
 
-            if ($expiry->isPast() && !$expiry == Carbon::createFromFormat('Y-m-d H:i:s', "1990-01-01 00:00:00")) {
+            if ($expiry->isPast() && $expiry->year >= 2000) {
                 $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
             }
 
@@ -144,7 +144,7 @@ class BanController extends Controller
             $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
         }
 
-        if ($expiry->isPast() && !$expiry == Carbon::createFromFormat('Y-m-d H:i:s', "1990-01-01 00:00:00")) {
+        if ($expiry->isPast() && $expiry->year >= 2000) {
             $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
         }
 
