@@ -13,7 +13,7 @@ class AppealCreateBanTest extends TestCase
 
     public function test_can_create_appeal_when_not_banned()
     {
-        factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
+        Thread::factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
 
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
@@ -29,7 +29,7 @@ class AppealCreateBanTest extends TestCase
 
     public function test_cant_create_appeal_when_account_is_banned()
     {
-        factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
+        Thread::factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
 
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
@@ -45,8 +45,8 @@ class AppealCreateBanTest extends TestCase
 
     public function test_cant_create_appeal_when_current_ip_is_banned()
     {
-        factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
-        factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '127.0.0.1', 'reason' => 'Foo bar text']);
+        Thread::factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
+        Thread::factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '127.0.0.1', 'reason' => 'Foo bar text']);
 
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
@@ -62,8 +62,8 @@ class AppealCreateBanTest extends TestCase
 
     public function test_cant_create_appeal_when_current_ip_range_is_banned()
     {
-        factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
-        factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '126.0.0.0/7', 'reason' => 'Foo bar baz text']);
+        Thread::factory(Ban::class)->create(['is_active' => true, 'target' => 'Banned user 1', 'reason' => 'Lorem ipsum text']);
+        Thread::factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '126.0.0.0/7', 'reason' => 'Foo bar baz text']);
 
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
@@ -79,7 +79,7 @@ class AppealCreateBanTest extends TestCase
 
     public function test_cant_create_appeal_for_range_which_is_in_larger_ban()
     {
-        factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '10.0.0.0/23', 'reason' => 'Foo bar baz text']);
+        Thread::factory(Ban::class, 'ip')->create(['is_active' => true, 'target' => '10.0.0.0/23', 'reason' => 'Foo bar baz text']);
 
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
