@@ -65,7 +65,7 @@
 
                 <div>
                     <button type="submit" class="btn btn-primary">{{ __('generic.submit') }}</button>
-                    <a href="#" class="btn btn-danger">Forgot Appeal Key</a>
+                    <a href="#" class="btn btn-danger disabled">Forgot Appeal Key</a>
                 </div>
                 {{ Form::close() }}
             </div>
