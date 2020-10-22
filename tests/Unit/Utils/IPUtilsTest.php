@@ -68,4 +68,37 @@ class IPUtilsTest extends TestCase
         $this->assertFalse(IPUtils::isIpRange('10.66.23.123/eating/potatoes/32'));
         $this->assertFalse(IPUtils::isIpRange('10.66.23.123/32/eating/potatoes'));
     }
+
+    public function test_range_normalize()
+    {
+        $this->assertEquals('1.2.3.0/24', IPUtils::normalizeRange('1.2.3.4/24'));
+        $this->assertEquals('1.2.3.0/24', IPUtils::normalizeRange('001.2.3.004/24'));
+        $this->assertEquals('1.2.192.0/20', IPUtils::normalizeRange('1.2.200.4/20'));
+        $this->assertEquals('2001:DB8:85A3:1234:0:0:0:0/64', IPUtils::normalizeRange('2001:0db8:85a3:1234:0000:8a2e:0370:7334/64'));
+    }
+
+    public function test_cut_range_part()
+    {
+        $this->assertEquals('1.2.3.4', IPUtils::cutCidrRangePart('1.2.3.4/24'));
+        $this->assertEquals('1.2.3.5', IPUtils::cutCidrRangePart('1.2.3.5'));
+    }
+
+    public function test_get_all_parent_ranges_ipv4()
+    {
+        $this->assertEquals(24, sizeof(IPUtils::getAllParentRanges('1.2.3.4/24')));
+
+        $result = IPUtils::getAllParentRanges('1.2.3.4');
+        $this->assertEquals(IPUtils::MAX_RANGE_SIZE_V4, sizeof($result));
+        $this->assertContains('1.2.3.4/32', $result);
+        $this->assertContains('1.2.3.0/24', $result);
+    }
+
+    public function test_get_all_parent_ranges_ipv6()
+    {
+        $result = IPUtils::getAllParentRanges('2001:0db8:85a3:1234:0000:8a2e:0370:7334/64');
+        $this->assertEquals(64, sizeof($result));
+        $this->assertContains('2001:DB8:85A3:1234:0:0:0:0/64', $result);
+        $this->assertContains('2001:DB8:85A3:1200:0:0:0:0/56', $result);
+        $this->assertContains('2001:DB8:0:0:0:0:0:0/32', $result);
+    }
 }

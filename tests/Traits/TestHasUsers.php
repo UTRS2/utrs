@@ -50,4 +50,20 @@ trait TestHasUsers
         $user->save();
         return $user;
     }
+
+    protected function getTooladminUser($extraData = [])
+    {
+        $permissions = $this->userDefaultPermissions;
+        $permissions['enwiki'][] = 'tooladmin';
+        return $this->getUser($permissions, $extraData);
+    }
+
+    protected function getFunctionaryTooladminUser($extraData = [])
+    {
+        $permissions = $this->userDefaultPermissions;
+        $permissions['enwiki'][] = 'tooladmin';
+        $permissions['enwiki'][] = 'checkuser';
+        $permissions['enwiki'][] = 'oversight';
+        return $this->getUser($permissions, $extraData);
+    }
 }

@@ -6,6 +6,7 @@ use App\Utils\IPUtils;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Mediawiki\Api\SimpleRequest;
+use RuntimeException;
 
 /**
  * Extra functions that addwiki/mediawiki-api does not provide itself
@@ -40,7 +41,7 @@ class MwApiExtras
      * @param  string $username - Username to be searched
      * @param  string $title - Subject line for the email
      * @param  string $content - content of the email
-     * @return boolean - if email was sent
+     * @throws RuntimeException - if sending the e-mail failed
      */
     public static function sendEmail($wiki, $username, $title, $content)
     {
@@ -53,7 +54,10 @@ class MwApiExtras
             'text' => $content,
         ]));
 
-        return $response['emailuser']['result'] === 'Success';
+        if ($response['emailuser']['result'] !== 'Success') {
+            throw new RuntimeException('Failed to send an e-mail: result was ' . $response['emailuser']['result']
+                . ': ' . json_encode($response['emailuser']));
+        }
     }
 
     /**
