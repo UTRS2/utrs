@@ -56,7 +56,7 @@ class BanController extends Controller
             }
 
             if ($expiry->isPast() && $expiry->year >= 2000) {
-                $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
+                $formattedExpiry .= ' <i class="text-danger">(expired)</i>';
             }
 
             $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
