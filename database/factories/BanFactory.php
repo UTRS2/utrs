@@ -33,11 +33,17 @@ class BanFactory extends Factory
         ];
     }
 
+    /**
+     * Set this as an IP ban.
+     *
+     * @return Factory
+     */
     public function setIP()
     {
         return $this->state(function (array $attributes) {
             return [
                 'ip' => 1,
+                'target' => $this->faker->ipv4 . ($this->faker->boolean ? '/' . $this->faker->numberBetween(16, 30) : ''),
             ];
         });
     }
