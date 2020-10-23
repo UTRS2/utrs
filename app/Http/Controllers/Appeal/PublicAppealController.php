@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Appeal;
 use App\Appeal;
 use App\Ban;
 use App\Http\Controllers\Controller;
+use App\Http\Rules\SecretEqualsRule;
 use App\Jobs\GetBlockDetailsJob;
 use App\Log;
 use App\Privatedata;
-use App\Rules\SecretEqualsRule;
 use App\Sendresponse;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log as LaravelLog;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 class PublicAppealController extends Controller
 {
@@ -51,25 +50,23 @@ class PublicAppealController extends Controller
             return view('appeals.spam');
         }
 
-        $ban = Ban::where('ip', '=', 0)
-            ->where('target', $data['appealfor'])
+        $banTargets = Ban::getTargetsToCheck([
+            $ip,
+            $data['appealfor'],
+        ]);
+
+        $ban = Ban::whereIn('target', $banTargets)
             ->active()
             ->first();
 
         if ($ban) {
-            return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
+            return response()
+                ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
+                ->setStatusCode(403);
         }
 
-        // in the future this should not loop thru all existing ip bans
-        // and instead search for specific CIDR ranges or something similar
-        $banip = Ban::where('ip', '=', 1)
-            ->active()
-            ->get();
-
-        foreach ($banip as $ban) {
-            if (IpUtils::checkIp($ip, $ban->target)) {
-                return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
-            }
+        if ($request->has('test_do_not_actually_save_anything')) {
+            return response('Test: not actually saving anything');
         }
 
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {

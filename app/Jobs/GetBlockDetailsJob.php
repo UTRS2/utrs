@@ -85,8 +85,8 @@ class GetBlockDetailsJob implements ShouldQueue
                 ]);
             }
 
-            $ban = Ban::where('ip', '=', 0)
-                ->where('target', $this->appeal->appealfor)
+            $banTargets = Ban::getTargetsToCheck($this->appeal->appealfor);
+            $ban = Ban::whereIn('target', $banTargets)
                 ->active()
                 ->first();
 
@@ -98,7 +98,7 @@ class GetBlockDetailsJob implements ShouldQueue
                     'referenceobject' => $this->appeal->id,
                     'objecttype' => 'appeal',
                     'action' => 'closed - invalidate',
-                    'reason' => 'account banned from UTRS',
+                    'reason' => 'banned from UTRS',
                     'ip' => 'DB entry',
                     'ua' => 'DB/1',
                     'protected' => 0

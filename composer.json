@@ -19,15 +19,16 @@
         "laravel/tinker": "^2.4",
         "laravelcollective/html": "^6.1",
         "spatie/laravel-backup": "^6.10",
-        "taavi/laravel-socialite-mediawiki": "^1.0"
+        "taavi/laravel-socialite-mediawiki": "^1.0",
+        "wikimedia/ip-utils": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",
-        "facade/ignition": "^1.4",
+        "facade/ignition": "^1.16.3",
         "fzaninotto/faker": "^1.4",
         "laravel/dusk": "^6.1",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^3.0",
+        "nunomaduro/collision": "^3.0.1",
         "phpunit/phpunit": "^9.2"
     },
     "config": {
