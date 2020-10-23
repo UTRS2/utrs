@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Ban;
+use App\Log;
+use App\Policies\LogPolicy;
 use App\User;
 use App\Appeal;
 use App\Template;
@@ -28,6 +30,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Appeal::class => AppealPolicy::class,
         Ban::class => BanPolicy::class,
+        Log::class => LogPolicy::class,
         Oldappeal::class => OldAppealPolicy::class,
         Sitenotice::class => SiteNoticePolicy::class,
         Template::class => TemplatePolicy::class,
