@@ -124,49 +124,7 @@
         </div>
     @endcan
 
-    <div class="card">
-        <h5 class="card-header">Logs</h5>
-        <div class="card-body">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Acting user</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Details</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($user->logs as $log)
-                    <tr class="{{ $log->action === 'comment' ? 'bg-success' : '' }}">
-                        @if($log->user == 0)
-                            <td><i>System</i></td>
-                        @else
-                            @can('view', $log->userObject)
-                                <td><i><a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a></i></td>
-                            @else
-                                <td><i>{{ $log->userObject->username }}</i></td>
-                            @endcan
-                        @endif
-                        <td><i>{{ $log->timestamp }}</i></td>
-                        @if($log->protected && !$perms['functionary'])
-                            <td><i>Access to comment is restricted.</i></td>
-                        @else
-                            @if($log->comment!==null)
-                                <td><i>{{ $log->comment }}</i></td>
-                            @else
-                                @if(!is_null($log->reason))
-                                    <td><i>Action: {{ $log->action }},
-                                            Reason: {{ $log->reason }}</i></td>
-                                @else
-                                    <td><i>Action: {{ $log->action }}</i></td>
-                                @endif
-                            @endif
-                        @endif
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
+    @component('components.logs', ['logs' => $user->logs])
+    @endcomponent
     {{ Form::close() }}
 @endsection

@@ -58,7 +58,16 @@ trait TestHasUsers
         return $this->getUser($permissions, $extraData);
     }
 
-    public function getDeveloperUser($extraData = [])
+    protected function getFunctionaryTooladminUser($extraData = [])
+    {
+        $permissions = $this->userDefaultPermissions;
+        $permissions['enwiki'][] = 'tooladmin';
+        $permissions['enwiki'][] = 'checkuser';
+        $permissions['enwiki'][] = 'oversight';
+        return $this->getUser($permissions, $extraData);
+    }
+
+    protected function getDeveloperUser($extraData = [])
     {
         $permissions = $this->userDefaultPermissions;
         $permissions['*'] = ['developer'];
