@@ -76,7 +76,7 @@ class AppealPolicy
     }
 
     /**
-     * Determine whether the user can update take developer actions on this appeal.
+     * Determine whether the user can take developer actions on this appeal.
      *
      * @param User $user
      * @param Appeal $appeal

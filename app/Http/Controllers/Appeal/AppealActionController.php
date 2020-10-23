@@ -20,20 +20,20 @@ class AppealActionController extends Controller
 
     /**
      * Process a appeal status change request
-     * @param Request $request
-     * @param Appeal $appeal
-     * @param string $logEntry
-     * @param Closure $doAction
-     * @param Closure|null $validate
-     * @param int $logProtection
-     * @param string $requiredPermission
-     * @return object
+     * @param Request $request Request object to process
+     * @param Appeal $appeal Appeal object to process
+     * @param string $logEntry Log action name, for example 'reserve' or 'sent for CheckUser review'
+     * @param Closure $doAction Closure to take action on the appeal object
+     * @param Closure|null $validate Check if this action can be taken. Return a string to fail, or true to pass.
+     * @param int $logProtection Log protection level. Use a const from Log::LOG_PROTECTION_*
+     * @param string $requiredPermission Permission to take this object
+     * @return object Response object
      */
     private function doAction(
         Request $request,
         Appeal $appeal,
         string $logEntry,
-        Closure $doAction = null,
+        Closure $doAction,
         ?Closure $validate = null,
         int $logProtection = Log::LOG_PROTECTION_NONE,
         string $requiredPermission = 'update'
