@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -50,7 +50,7 @@ class Log extends Model
             return null;
         }
 
-        return in_array($object->wiki, MwApiUrls::getSupportedWikis(true))
+        return in_array($object->wiki, MediaWikiRepository::getSupportedTargets())
             ? $object->wiki
             : null;
     }
