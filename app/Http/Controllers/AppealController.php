@@ -87,13 +87,11 @@ class AppealController extends Controller
             $userlist = [];
 
             foreach ($comments as $comment) {
-                if (!is_null($comment->commentUser) && !in_array($comment->commentUser, $userlist) && !$comment->commentUser == 0) {
+                if (!is_null($comment->commentUser) && !in_array($comment->commentUser, $userlist) && $comment->commentUser !== 0) {
                     $userlist[$comment->commentUser] = Olduser::findOrFail($comment->commentUser)->username;
-                }
-                if ($comment->commentUser == 0) {
+                } elseif ($comment->commentUser === 0) {
                     $userlist[$comment->commentUser] = "System";
                 }
-
             }
 
 
