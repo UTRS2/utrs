@@ -15,7 +15,7 @@ class BanViewTest extends DuskTestCase
 
     public function test_non_oversighter_cant_view_oversighted_bans()
     {
-        factory(Ban::class)->create(['target' => 'Protected ban', 'is_protected' => true,]);
+        Ban::factory()->create(['target' => 'Protected ban', 'is_protected' => true,]);
 
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->getTooladminUser())
@@ -27,7 +27,7 @@ class BanViewTest extends DuskTestCase
 
     public function test_oversighter_can_view_oversighted_bans()
     {
-        factory(Ban::class)->create(['target' => 'Protected ban', 'is_protected' => true,]);
+        Ban::factory()->create(['target' => 'Protected ban', 'is_protected' => true,]);
 
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->getFunctionaryTooladminUser())
