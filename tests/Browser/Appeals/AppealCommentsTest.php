@@ -16,7 +16,7 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_replying_to_marked_as_awaiting_reply()
     {
-        $appeal = factory(Appeal::class)->create([
+        $appeal = Appeal::factory()->create([
             'status' => Appeal::STATUS_AWAITING_REPLY,
         ]);
 
@@ -37,16 +37,16 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_using_template()
     {
-        $appeal = factory(Appeal::class)->create();
+        $appeal = Appeal::factory()->create();
 
-        factory(Template::class, 2)->create([ 'active' => true, ]);
+        Template::factory()->count(2)->create([ 'active' => true, ]);
 
-        $targetTemplate = factory(Template::class)->create([ 'active' => true, ]);
+        $targetTemplate = Template::factory()->create([ 'active' => true, ]);
         $targetTemplateTextStart = explode("\n", $targetTemplate->template)[0];
 
-        factory(Template::class, 2)->create([ 'active' => true, ]);
+        Template::factory()->count(2)->create([ 'active' => true, ]);
 
-        $nonActiveTemplate = factory(Template::class)->create([ 'active' => false, ]);
+        $nonActiveTemplate = Template::factory()->create([ 'active' => false, ]);
 
         $this->browse(function (Browser $browser) use ($appeal, $targetTemplate, $targetTemplateTextStart, $nonActiveTemplate) {
             $browser->loginAs($this->getUser())
@@ -77,7 +77,7 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_custom_reply()
     {
-        $appeal = factory(Appeal::class)->create();
+        $appeal = Appeal::factory()->create();
 
         $this->browse(function (Browser $browser) use ($appeal) {
             $browser->loginAs($this->getUser())

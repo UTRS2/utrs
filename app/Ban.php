@@ -6,9 +6,12 @@ use App\Utils\IPUtils;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ban extends Model
 {
+    use HasFactory;
+    
 	protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];

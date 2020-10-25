@@ -56,7 +56,7 @@ jobs:
       - name: Build assets
         run: npm run production
       - name: Run PHPUnit
-        run: vendor/bin/phpunit
+        run: php artisan test
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Start chromedriver

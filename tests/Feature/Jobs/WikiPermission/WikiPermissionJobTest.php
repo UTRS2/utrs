@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Jobs\WikiPermission;
 
+use Database\Factories\UserFactory;
 use Mockery;
 use App\User;
 use ReflectionClass;
@@ -18,7 +19,7 @@ class WikiPermissionJobTest extends TestCase
     private function getUser($name = 'Admin')
     {
         User::unsetEventDispatcher();
-        return factory(User::class)->create([
+        return User::factory()->create([
             'username' => $name,
         ]);
     }

@@ -26,16 +26,16 @@ class BanListTest extends DuskTestCase
 
     public function test_tooladmin_can_view_ban_list()
     {
-        factory(Ban::class, 3)->create();
-        factory(Ban::class, 'ip', 3)->create();
+        Ban::factory()->count(3)->create();
+        Ban::factory()->count(3)->setIP()->create();
 
-        factory(Ban::class)->create(['target' => 'Visible ban', 'is_protected' => false, 'is_active' => true,]);
-        factory(Ban::class)->create(['target' => 'Protected ban', 'is_protected' => true,]);
+        Ban::factory()->create(['target' => 'Visible ban', 'is_protected' => false, 'is_active' => true,]);
+        Ban::factory()->create(['target' => 'Protected ban', 'is_protected' => true,]);
 
-        factory(Ban::class)->create(['is_active' => false,]);
+        Ban::factory()->create(['is_active' => false,]);
 
-        factory(Ban::class)->create(['expiry' => Carbon::createFromTimestamp(0)->format('Y-m-d H:i:s')]);
-        factory(Ban::class)->create(['expiry' => Carbon::create(2030, 01, 01, 10, 00, 00)->format('Y-m-d H:i:s')]);
+        Ban::factory()->create(['expiry' => Carbon::createFromTimestamp(0)->format('Y-m-d H:i:s')]);
+        Ban::factory()->create(['expiry' => Carbon::create(2030, 01, 01, 10, 00, 00)->format('Y-m-d H:i:s')]);
 
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->getTooladminUser())
@@ -53,7 +53,7 @@ class BanListTest extends DuskTestCase
 
     public function test_oversighter_can_view_oversighted_bans()
     {
-        factory(Ban::class)->create(['target' => 'Protected ban', 'is_protected' => true,]);
+        Ban::factory()->create(['target' => 'Protected ban', 'is_protected' => true,]);
 
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->getFunctionaryTooladminUser())
