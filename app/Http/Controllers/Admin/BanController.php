@@ -99,9 +99,9 @@ class BanController extends Controller
             $lang = $request->header('Accept-Language');
 
             LogEntry::create([
-                'user'            => $request->user()->id,
-                'referenceobject' => $ban->id,
-                'objecttype'      => Ban::class,
+                'user_id'         => $request->user()->id,
+                'object_id'       => $ban->id,
+                'object_type'     => Ban::class,
                 'action'          => 'created',
                 'reason'          => $request->input('comment', ''),
                 'ip'              => $ip,
@@ -111,9 +111,9 @@ class BanController extends Controller
 
             if ($ban->is_protected) {
                 LogEntry::create([
-                    'user'            => $request->user()->id,
-                    'referenceobject' => $ban->id,
-                    'objecttype'      => Ban::class,
+                    'user_id'         => $request->user()->id,
+                    'object_id'       => $ban->id,
+                    'object_type'     => Ban::class,
                     'action'          => 'oversighted',
                     'reason'          => $request->input('os_reason', ''),
                     'ip'              => $ip,
@@ -168,9 +168,9 @@ class BanController extends Controller
 
             if ($ban->isDirty('is_protected')) {
                 LogEntry::create([
-                    'user'            => $request->user()->id,
-                    'referenceobject' => $ban->id,
-                    'objecttype'      => Ban::class,
+                    'user_id'         => $request->user()->id,
+                    'object_id'       => $ban->id,
+                    'object_type'     => Ban::class,
                     'action'          => ($ban->is_protected ? '' : 'un-') . 'oversighted',
                     'reason'          => $request->input('os_reason', ''),
                     'ip'              => $ip,
@@ -201,9 +201,9 @@ class BanController extends Controller
 
             if (!empty($changeDetails)) {
                 LogEntry::create([
-                    'user'            => $request->user()->id,
-                    'referenceobject' => $ban->id,
-                    'objecttype'      => Ban::class,
+                    'user_id'         => $request->user()->id,
+                    'object_id'       => $ban->id,
+                    'object_type'     => Ban::class,
                     'action'          => 'updated - ' . implode(', ', $changeDetails),
                     'reason'          => $request->input('update_reason', ''),
                     'ip'              => $ip,
