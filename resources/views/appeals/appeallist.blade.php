@@ -10,7 +10,7 @@
                 <a href="/admin/templates" class="btn btn-primary">Manage Templates</a>
                 <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">Manage Bans</a>
                 <a href="{{ route('admin.users.list') }}" class="btn btn-primary">Manage Users</a>
-                <a href="/admin/sitenotices" class="btn btn-primary">Manage Sitenotices</a>
+                <a href="/admin/sitenotices" class="btn btn-primary disabled">Manage Sitenotices</a>
             </div>
         </div>
     @endif
