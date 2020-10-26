@@ -9,6 +9,7 @@ use App\MwApi\MwApiUrls;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Bus;
 
 class User extends Authenticatable
 {
@@ -40,15 +41,22 @@ class User extends Authenticatable
      */
     public function queuePermissionChecks()
     {
-        LoadGlobalPermissionsJob::withChain(array_merge(
-                collect(MwApiUrls::getSupportedWikis())->map(function ($wiki) {
-                    return new LoadLocalPermissionsJob($this, $wiki);
-                })->toArray(),
-                [
-                    new MarkAsPermissionsChecked($this),
-                ]
+        $localJobs = collect(MwApiUrls::getSupportedWikis())
+            ->map(function ($wiki) {
+                return new LoadLocalPermissionsJob($this, $wiki);
+            })
+            ->toArray();
+
+        Bus::batch(array_merge(
+            [new LoadGlobalPermissionsJob($this)],
+            $localJobs,
         ))
-            ->dispatch($this);
+            ->then(function () {
+                $this->user->update([
+                    'last_permission_check_at' => now(),
+                ]);
+            })
+            ->dispatch();
     }
 
     public function getVerifiedWikisAttribute()

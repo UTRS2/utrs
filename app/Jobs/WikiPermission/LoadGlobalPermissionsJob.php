@@ -4,6 +4,7 @@ namespace App\Jobs\WikiPermission;
 
 use App\MwApi\MwApiExtras;
 use App\User;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +14,7 @@ use Mediawiki\DataModel\User as MediawikiUser;
 
 class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
