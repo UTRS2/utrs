@@ -4,11 +4,14 @@ namespace App;
 
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use RuntimeException;
 use Illuminate\Database\Eloquent\Model;
 
 class Appeal extends Model
 {
+    use HasFactory;
+
     const REPLY_STATUS_CHANGE_OPTIONS = [
         self::STATUS_OPEN           => self::STATUS_OPEN,
         self::STATUS_AWAITING_REPLY => self::STATUS_AWAITING_REPLY,

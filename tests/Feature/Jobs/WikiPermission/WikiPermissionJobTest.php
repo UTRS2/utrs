@@ -57,7 +57,7 @@ class WikiPermissionJobTest extends TestCase
 
         $this->ordinal += 1;
         $this->repository->addFakeUser('enwiki', $testData);
-        return factory(User::class)->create(['username' => $testData['name']]);
+        return User::factory()->create(['username' => $testData['name']]);
     }
 
     private function checkIsFiltered($data, $expected)
