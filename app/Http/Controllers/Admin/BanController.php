@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Ban;
+use App\Models\LogEntry;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
-use App\Log;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
