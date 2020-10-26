@@ -4,16 +4,18 @@ namespace App\Providers;
 
 use App\Models\Appeal;
 use App\Models\Ban;
+use App\Models\LogEntry;
 use App\Models\Old\Oldappeal;
 use App\Models\Sitenotice;
 use App\Models\Template;
 use App\Models\User;
+use App\Policies\AppealPolicy;
+use App\Policies\LogEntryPolicy;
+use App\Policies\OldAppealPolicy;
 use App\Policies\Admin\BanPolicy;
 use App\Policies\Admin\SiteNoticePolicy;
 use App\Policies\Admin\TemplatePolicy;
 use App\Policies\Admin\UserPolicy;
-use App\Policies\AppealPolicy;
-use App\Policies\OldAppealPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,6 +29,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Appeal::class => AppealPolicy::class,
         Ban::class => BanPolicy::class,
+        LogEntry::class => LogEntryPolicy::class,
         Oldappeal::class => OldAppealPolicy::class,
         Sitenotice::class => SiteNoticePolicy::class,
         Template::class => TemplatePolicy::class,

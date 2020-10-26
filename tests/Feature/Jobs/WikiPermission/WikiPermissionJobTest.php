@@ -4,10 +4,10 @@ namespace Tests\Feature\Jobs\WikiPermission;
 
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Models\User;
+use Mockery;
 use App\MwApi\MwApiUrls;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mediawiki\DataModel\User as MediawikiUser;
-use Mockery;
 use ReflectionClass;
 use Tests\TestCase;
 
@@ -18,7 +18,7 @@ class WikiPermissionJobTest extends TestCase
     private function getUser($name = 'Admin')
     {
         User::unsetEventDispatcher();
-        return factory(User::class)->create([
+        return User::factory()->create([
             'username' => $name,
         ]);
     }

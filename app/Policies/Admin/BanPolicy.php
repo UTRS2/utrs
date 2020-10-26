@@ -46,7 +46,7 @@ class BanPolicy
             return true;
         }
 
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['oversight', 'steward', 'staff', 'developer']);
+        return $this->oversight($user, $ban);
     }
 
     /**
@@ -82,5 +82,17 @@ class BanPolicy
     public function delete(User $user, Ban $ban)
     {
         return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+    }
+
+    /**
+     * Determine whether the user can hide the ban target from public view.
+     *
+     * @param User $user
+     * @param Ban $ban
+     * @return mixed
+     */
+    public function oversight(User $user, ?Ban $ban = null)
+    {
+        return $user->hasAnySpecifiedPermsOnAnyWiki(['oversight', 'steward', 'staff', 'developer']);
     }
 }

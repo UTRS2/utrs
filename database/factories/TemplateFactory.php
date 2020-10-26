@@ -1,14 +1,30 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Models\Template;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Template::class, function (Faker $faker) {
-    return [
-        'name' => implode(' ', $faker->words(3)),
-        'template' => implode("\n\n", $faker->sentences(2)),
-        'active' => $faker->boolean(80),
-    ];
-});
+class TemplateFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Template::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => implode(' ', $this->faker->words(3)),
+            'template' => implode("\n\n", $this->faker->sentences(2)),
+            'active' => $this->faker->boolean(80),
+        ];
+    }
+}

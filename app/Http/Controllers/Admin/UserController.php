@@ -100,10 +100,9 @@ class UserController extends Controller
                         $permission = new Permission();
                         $permission->userid = $user->id;
                         $permission->wiki = $wikiDbName;
-                        $permission->save();
                     }
 
-                    $permission->update($updateSet);
+                    $permission->fill($updateSet)->saveOrFail();
                     $updateDetails = [];
 
                     foreach ($updateSet as $key => $value) {
@@ -127,11 +126,11 @@ class UserController extends Controller
                     'reason' => $reason,
                     'ip' => $ip,
                     'ua' => $ua . " " . $lang,
-                    'protected' => 0
+                    'protected' => Log::LOG_PROTECTION_NONE,
                 ]);
             }
         });
 
-        return redirect()->back();
+        return redirect()->route('admin.users.view', [ 'user' => $user ]);
     }
 }

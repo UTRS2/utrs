@@ -6,12 +6,14 @@ use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Jobs\WikiPermission\MarkAsPermissionsChecked;
 use App\MwApi\MwApiUrls;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use HasFactory;
 
     public $timestamps = false;
     protected $primaryKey = 'id';
