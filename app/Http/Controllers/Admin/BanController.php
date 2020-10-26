@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Ban;
+use App\Models\Ban;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
