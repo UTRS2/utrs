@@ -9,7 +9,7 @@ class AppealCloseTest extends BaseAppealActionTest
     public function test_user_can_accept_appeal()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_OPEN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_OPEN, ]);
 
         $response = $this
             ->actingAs($user)
@@ -27,7 +27,7 @@ class AppealCloseTest extends BaseAppealActionTest
     public function test_user_can_decline_appeal()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_OPEN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_OPEN, ]);
 
         $response = $this
             ->actingAs($user)
@@ -46,7 +46,7 @@ class AppealCloseTest extends BaseAppealActionTest
     public function test_user_cant_use_whatever_statuses_when_closing()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_OPEN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_OPEN, ]);
 
         $response = $this
             ->actingAs($user)

@@ -11,7 +11,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
     public function test_user_cant_invalidate_appeal()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create();
+        $appeal = Appeal::factory()->create();
 
         $response = $this
             ->actingAs($user)
@@ -30,7 +30,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
     public function test_developer_can_invalidate_appeal()
     {
         $user = $this->getDeveloperUser();
-        $appeal = factory(Appeal::class)->create();
+        $appeal = Appeal::factory()->create();
 
         $response = $this
             ->actingAs($user)
@@ -50,7 +50,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         Queue::fake();
 
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create();
+        $appeal = Appeal::factory()->create();
 
         $response = $this
             ->actingAs($user)
@@ -71,7 +71,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         Queue::fake();
 
         $user = $this->getDeveloperUser();
-        $appeal = factory(Appeal::class)->create();
+        $appeal = Appeal::factory()->create();
 
         $response = $this
             ->actingAs($user)
@@ -92,7 +92,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         Queue::fake();
 
         $user = $this->getDeveloperUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_NOTFOUND, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_NOTFOUND, ]);
 
         $response = $this
             ->actingAs($user)

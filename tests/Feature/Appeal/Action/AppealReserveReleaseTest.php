@@ -10,7 +10,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
     public function test_user_can_reserve_appeal()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'handlingadmin' => null, ]);
+        $appeal = Appeal::factory()->create([ 'handlingadmin' => null, ]);
 
         $response = $this
             ->actingAs($user)
@@ -31,7 +31,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $reservedToUser = $this->getUser();
         $this->assertNotEquals($user->id, $reservedToUser->id);
 
-        $appeal = factory(Appeal::class)->create([ 'handlingadmin' => $reservedToUser->id, ]);
+        $appeal = Appeal::factory()->create([ 'handlingadmin' => $reservedToUser->id, ]);
 
         $response = $this
             ->actingAs($user)
@@ -52,7 +52,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $user = $this->getUser();
         $wiki = MwApiUrls::getSupportedWikis()[1];
 
-        $appeal = factory(Appeal::class)->create([ 'wiki' => $wiki, 'handlingadmin' => null, ]);
+        $appeal = Appeal::factory()->create([ 'wiki' => $wiki, 'handlingadmin' => null, ]);
 
         $response = $this
             ->actingAs($user)
@@ -71,7 +71,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
     public function test_user_can_release_own_appeal()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'handlingadmin' => $user->id, ]);
+        $appeal = Appeal::factory()->create([ 'handlingadmin' => $user->id, ]);
 
         $response = $this
             ->actingAs($user)
@@ -92,7 +92,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $reservedToUser = $this->getUser();
         $this->assertNotEquals($user->id, $reservedToUser->id);
 
-        $appeal = factory(Appeal::class)->create([ 'handlingadmin' => $reservedToUser->id, ]);
+        $appeal = Appeal::factory()->create([ 'handlingadmin' => $reservedToUser->id, ]);
 
         $response = $this
             ->actingAs($user)
@@ -114,7 +114,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $reservedToUser = $this->getUser();
         $this->assertNotEquals($user->id, $reservedToUser->id);
 
-        $appeal = factory(Appeal::class)->create([ 'handlingadmin' => $reservedToUser->id, ]);
+        $appeal = Appeal::factory()->create([ 'handlingadmin' => $reservedToUser->id, ]);
 
         $response = $this
             ->actingAs($user)
@@ -137,7 +137,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
 
         $wiki = MwApiUrls::getSupportedWikis()[1];
 
-        $appeal = factory(Appeal::class)->create([
+        $appeal = Appeal::factory()->create([
             'wiki'          => $wiki,
             'handlingadmin' => $reservedToUser->id,
         ]);

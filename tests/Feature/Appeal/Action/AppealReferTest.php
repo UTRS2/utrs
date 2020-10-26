@@ -9,7 +9,7 @@ class AppealReferTest extends BaseAppealActionTest
     public function test_user_can_refer_an_appeal_to_tool_administrators()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_OPEN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_OPEN, ]);
 
         $response = $this
             ->actingAs($user)
@@ -27,7 +27,7 @@ class AppealReferTest extends BaseAppealActionTest
     public function test_user_can_refer_an_appeal_to_checkusers()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_OPEN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_OPEN, ]);
 
         $response = $this
             ->actingAs($user)
@@ -48,7 +48,7 @@ class AppealReferTest extends BaseAppealActionTest
     public function test_user_cant_refer_an_appeal_to_checkusers_without_a_reason()
     {
         $user = $this->getUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_OPEN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_OPEN, ]);
 
         $response = $this
             ->actingAs($user)
@@ -66,7 +66,7 @@ class AppealReferTest extends BaseAppealActionTest
     public function test_tool_admin_can_send_an_appeal_back_to_tool_users()
     {
         $user = $this->getTooladminUser();
-        $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_ADMIN, ]);
+        $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_ADMIN, ]);
 
         $response = $this
             ->actingAs($user)
