@@ -24,7 +24,7 @@ class Ban extends Model
 
     public function logs()
     {
-        return $this->morphMany(LogEntry::class, 'object');
+        return $this->morphMany(LogEntry::class, 'model');
     }
 
     public function scopeActive(Builder $query)
