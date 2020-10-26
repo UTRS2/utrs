@@ -126,7 +126,7 @@ class UserController extends Controller
                     'reason' => $reason,
                     'ip' => $ip,
                     'ua' => $ua . " " . $lang,
-                    'protected' => Log::LOG_PROTECTION_NONE,
+                    'protected' => LogEntry::LOG_PROTECTION_NONE,
                 ]);
             }
         });
