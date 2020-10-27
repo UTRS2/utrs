@@ -14,6 +14,7 @@ class ChangeOldLogEntryModelTypes extends Migration
         'template' => 'App\Models\Template',
         'App\Ban'  => 'App\Models\Ban',
         'App\User' => 'App\Models\User',
+        'ban'      => 'App\Models\Ban',
     ];
 
     /**
