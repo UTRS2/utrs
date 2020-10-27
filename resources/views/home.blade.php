@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-warning" role="alert">
         <b>{{ __('home.noemail-header') }}</b><br/>
         {{ __('home.noemail-text') }}
     </div>

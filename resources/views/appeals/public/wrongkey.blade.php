@@ -2,13 +2,15 @@
 
 @section('title', htmlspecialchars(__('appeals.wrong-key.title')))
 @section('content')
-    <h1>
-        {{ __('appeals.wrong-key.title') }}
-    </h1>
+    <div class="alert alert-warning" role="alert">
+        <h1>
+            {{ __('appeals.wrong-key.title') }}
+        </h1>
 
-    <p>
-        {{ __('appeals.wrong-key.text') }}
-    </p>
+        <p>
+            {{ __('appeals.wrong-key.text') }}
+        </p>
+    </div>
 
     <div class="card-deck">
         <div class="card">
