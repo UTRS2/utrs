@@ -2,7 +2,7 @@
 
 namespace Tests\Browser\Admin\Bans;
 
-use App\Ban;
+use App\Models\Ban;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;

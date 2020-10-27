@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models;
 
-use App\Ban;
+use App\Models\Ban;
 use App\Utils\IPUtils;
 use Tests\TestCase;
 

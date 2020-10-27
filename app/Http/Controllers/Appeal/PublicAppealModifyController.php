@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Appeal;
 
-use App\Appeal;
-use App\Ban;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
-use App\Log;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
 use App\MwApi\MwApiUrls;
-use App\Utils\IPUtils;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,10 +74,10 @@ class PublicAppealModifyController extends Controller
         $appeal->status = Appeal::STATUS_VERIFY;
         $appeal->update($data);
 
-        Log::create([
-            'user'            => -1,
-            'referenceobject' => $appeal->id,
-            'objecttype'      => 'appeal',
+        LogEntry::create([
+            'user_id'         => -1,
+            'model_id'        => $appeal->id,
+            'model_type'      => Appeal::class,
             'action'          => 'changed block information',
             'ip'              => $ip, 'ua' => $ua . " " . $lang,
         ]);

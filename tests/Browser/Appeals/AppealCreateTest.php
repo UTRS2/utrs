@@ -2,11 +2,10 @@
 
 namespace Tests\Browser\Appeals;
 
-use App\Appeal;
-use Tests\Traits\TestHasUsers;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
+use Tests\Traits\TestHasUsers;
 
 class AppealCreateTest extends DuskTestCase
 {

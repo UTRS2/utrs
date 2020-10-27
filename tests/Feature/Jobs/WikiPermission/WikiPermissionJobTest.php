@@ -2,15 +2,14 @@
 
 namespace Tests\Feature\Jobs\WikiPermission;
 
-use Database\Factories\UserFactory;
-use Mockery;
-use App\User;
-use ReflectionClass;
-use App\MwApi\MwApiUrls;
-use Mediawiki\DataModel\User as MediawikiUser;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
+use App\Models\User;
+use Mockery;
+use App\MwApi\MwApiUrls;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mediawiki\DataModel\User as MediawikiUser;
+use ReflectionClass;
+use Tests\TestCase;
 
 class WikiPermissionJobTest extends TestCase
 {

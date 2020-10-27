@@ -1,10 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models\Old;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Sitenotice extends Model
+class Oldcomment extends Model
 {
     //
 }

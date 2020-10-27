@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use App\Utils\IPUtils;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ban extends Model
@@ -24,7 +24,7 @@ class Ban extends Model
 
     public function logs()
     {
-        return $this->morphMany(Log::class, 'object', 'objecttype', 'referenceobject');
+        return $this->morphMany(LogEntry::class, 'model');
     }
 
     public function scopeActive(Builder $query)

@@ -1,6 +1,5 @@
 <?php
 
-use App\Log;
 use Illuminate\Database\Migrations\Migration;
 
 class UpdateLogProtectionValues extends Migration
@@ -12,7 +11,8 @@ class UpdateLogProtectionValues extends Migration
      */
     public function up()
     {
-        Log::where('protected', 1)
+        DB::table('logs')
+            ->where('protected', 1)
             ->update([
                 'protected' => 2,
             ]);
@@ -25,7 +25,8 @@ class UpdateLogProtectionValues extends Migration
      */
     public function down()
     {
-        Log::where('protected', 2)
+        DB::table('logs')
+            ->where('protected', 2)
             ->update([
                 'protected' => 1,
             ]);

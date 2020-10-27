@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Log;
-use App\User;
+use App\Models\LogEntry;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class LogPolicy
+class LogEntryPolicy
 {
     use HandlesAuthorization;
 
@@ -14,12 +14,12 @@ class LogPolicy
      * Determine whether the user can view the log entry.
      *
      * @param User|null $user
-     * @param Log $log
+     * @param LogEntry $log
      * @return mixed
      */
-    public function view(?User $user, Log $log)
+    public function view(?User $user, LogEntry $log)
     {
-        if ($log->protected == Log::LOG_PROTECTION_NONE) {
+        if ($log->protected == LogEntry::LOG_PROTECTION_NONE) {
             return true;
         }
 
@@ -28,7 +28,7 @@ class LogPolicy
         }
 
         $wiki = $log->tryFigureAssociatedWiki();
-        $validPermissions = $log->protected == Log::LOG_PROTECTION_FUNCTIONARY
+        $validPermissions = $log->protected == LogEntry::LOG_PROTECTION_FUNCTIONARY
             ? ['checkuser', 'oversight', 'steward', 'staff', 'developer']
             : ['admin', 'steward', 'staff', 'developer'];
 
