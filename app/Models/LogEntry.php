@@ -39,18 +39,16 @@ class LogEntry extends Model
      */
     public function tryFigureAssociatedWiki()
     {
-        $object = $this->model;
-
-        if (!$object) {
+        if (!$this->model) {
             return null;
         }
 
-        if (!$object->wiki) {
+        if (!$this->model->wiki) {
             return null;
         }
 
-        return in_array($object->wiki, MwApiUrls::getSupportedWikis(true))
-            ? $object->wiki
+        return in_array($this->model->wiki, MwApiUrls::getSupportedWikis(true))
+            ? $this->model->wiki
             : null;
     }
 }
