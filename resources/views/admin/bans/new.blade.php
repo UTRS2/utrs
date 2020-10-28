@@ -42,7 +42,7 @@
                 </p>
             </div>
 
-            @can('oversight', \App\Ban::class)
+            @can('oversight', \App\Models\Ban::class)
                 <div class="form-group mb-4">
                     Ban target visibility
                     <div class="custom-control custom-radio">

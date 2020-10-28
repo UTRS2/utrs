@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -88,8 +88,7 @@ class Appeal extends Model
 
     public function comments()
     {
-        return $this->hasMany(Log::class, 'referenceobject','id')
-            ->where('objecttype', 'appeal');
+        return $this->morphMany(LogEntry::class, 'model');
     }
 
     // ideally this would be named handlingAdmin and the field would be named handling_admin_id per laravel norms

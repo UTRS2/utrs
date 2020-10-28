@@ -2,12 +2,12 @@
 
 namespace Tests\Browser\Appeals;
 
-use App\Appeal;
-use App\Template;
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
-use Tests\Traits\TestHasUsers;
+use App\Models\Appeal;
+use App\Models\Template;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
+use Tests\Traits\TestHasUsers;
 
 class AppealCommentsTest extends DuskTestCase
 {

@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Appeal;
-use App\Log;
+use App\Jobs\GetBlockDetailsJob;
+use App\Models\Appeal;
+use App\Models\LogEntry;
+use App\Models\Old\Oldappeal;
+use App\Models\Old\Olduser;
+use App\Models\Permission;
+use App\Models\Privatedata;
+use App\Models\Sendresponse;
+use App\Models\Template;
+use App\Models\User;
 use App\MwApi\MwApiUrls;
-use App\Oldappeal;
-use App\Olduser;
-use App\Permission;
-use App\Privatedata;
-use App\Sendresponse;
-use App\Template;
-use App\User;
 use Auth;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 
 class AppealController extends Controller
@@ -49,7 +50,7 @@ class AppealController extends Controller
 
             $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
             $checkuserdone = $info->comments()
-                ->where('user', Auth::id())
+                ->where('user_id', Auth::id())
                 ->where('action', 'checkuser')
                 ->exists();
 
@@ -228,6 +229,31 @@ class AppealController extends Controller
         return view('appeals.makeappeal.ip');
     }
 
+    public function checkuser(Appeal $appeal, Request $request)
+    {
+        if (!Auth::check()) {
+            abort(403, 'No logged in user');
+        }
+
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $user = Auth::id();
+
+        $reason = $request->input('reason');
+        $checkuser = Permission::checkCheckuser($user, $appeal->wiki);
+        if (!$checkuser) {
+            abort(403, 'You are not a checkuser.');
+        }
+
+        LogEntry::create(['user_id' => $user, 'model_id' => $appeal->id, 'model_type' => Appeal::class, 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_FUNCTIONARY]);
+        return redirect('appeal/' . $appeal->id);
+    }
+  
     public function comment($id, Request $request)
     {
         if (!Auth::check()) {
@@ -245,7 +271,7 @@ class AppealController extends Controller
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $checkuser = Permission::checkAdmin($user, $appeal->wiki);
-        $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'comment', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => Log::LOG_PROTECTION_ADMIN));
+        $log = LogEntry::create(array('user_id' => $user, 'model_id' => $id, 'model_type' => Appeal::class, 'action' => 'comment', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_ADMIN));
         return redirect('appeal/' . $id);
     }
 
@@ -269,27 +295,27 @@ class AppealController extends Controller
                 'status' => $status,
             ]);
 
-            Log::create([
-                'user' => $user,
-                'referenceobject' => $appeal->id,
-                'objecttype' => 'appeal',
+            LogEntry::create([
+                'user_id' => $user,
+                'model_id' => $appeal->id,
+                'model_type' => Appeal::class,
                 'action' => 'set status as ' . $status,
                 'ip' => $ip,
                 'ua' => $ua . ' ' . $lang,
-                'protected' => Log::LOG_PROTECTION_NONE,
+                'protected' => LogEntry::LOG_PROTECTION_NONE,
             ]);
         }
 
         Sendresponse::create(['appealID' => $appeal->id, 'template' => $template->id]);
-        Log::create([
-            'user' => $user,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
+        LogEntry::create([
+            'user_id' => $user,
+            'model_id' => $appeal->id,
+            'model_type' => Appeal::class,
             'action' => 'responded',
             'reason' => $template->template,
             'ip' => $ip,
             'ua' => $ua . " " . $lang,
-            'protected' => Log::LOG_PROTECTION_NONE,
+            'protected' => LogEntry::LOG_PROTECTION_NONE,
         ]);
 
         return redirect('appeal/' . $appeal->id);
@@ -315,14 +341,14 @@ class AppealController extends Controller
                 'status' => $status,
             ]);
 
-            Log::create([
-                'user' => $user,
-                'referenceobject' => $appeal->id,
-                'objecttype' => 'appeal',
+            LogEntry::create([
+                'user_id' => $user,
+                'model_id' => $appeal->id,
+                'model_type' => Appeal::class,
                 'action' => 'set status as ' . $status,
                 'ip' => $ip,
                 'ua' => $ua . ' ' . $lang,
-                'protected' => Log::LOG_PROTECTION_NONE,
+                'protected' => LogEntry::LOG_PROTECTION_NONE,
             ]);
         }
 
@@ -332,15 +358,15 @@ class AppealController extends Controller
             'custom' => $request->input('custom'),
         ]);
 
-        Log::create([
-            'user' => $user,
-            'referenceobject' => $appeal->id,
-            'objecttype' => 'appeal',
+        LogEntry::create([
+            'user_id' => $user,
+            'model_id' => $appeal->id,
+            'model_type' => Appeal::class,
             'action' => 'responded',
             'reason' => $request->input('custom'),
             'ip' => $ip,
             'ua' => $ua . " " . $lang,
-            'protected' => Log::LOG_PROTECTION_NONE,
+            'protected' => LogEntry::LOG_PROTECTION_NONE,
         ]);
 
         return redirect('appeal/' . $appeal->id);
@@ -366,5 +392,188 @@ class AppealController extends Controller
         $userlist[Auth::id()] = Auth::user()->username;
 
         return view('appeals.custom', ['appeal' => $appeal, 'userlist' => $userlist]);
+    }
+
+    public function reserve(Appeal $appeal, Request $request)
+    {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $user = Auth::id();
+
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_unless($admin,403, 'You are not an administrator.');
+        abort_if($appeal->handlingadmin, 403, 'This appeal has already been reserved.');
+        $appeal->handlingadmin = Auth::id();
+        $appeal->save();
+        LogEntry::create(['user_id' => $user, 'model_id' => $appeal->id, 'model_type' => Appeal::class, 'action' => 'reserve', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_NONE]);
+
+        return redirect('appeal/' . $appeal->id);
+    }
+
+    public function release($id, Request $request)
+    {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $user = Auth::id();
+        $appeal = Appeal::findOrFail($id);
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        if ($admin) {
+            if (isset($appeal->handlingadmin)) {
+                $appeal->handlingadmin = null;
+                $appeal->save();
+                $log = LogEntry::create(array('user_id' => $user, 'model_id' => $id, 'model_type' => Appeal::class, 'action' => 'release', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_NONE));
+            } else {
+                abort(403);
+            }
+            return redirect('appeal/' . $id);
+        } else {
+            abort(403);
+        }
+    }
+
+    public function open($id, Request $request)
+    {
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $user = Auth::id();
+
+        if ($appeal->status == Appeal::STATUS_ACCEPT || $appeal->status == Appeal::STATUS_EXPIRE || $appeal->status == Appeal::STATUS_DECLINE || $appeal->status == Appeal::STATUS_CHECKUSER || $appeal->status == Appeal::STATUS_ADMIN) {
+            $appeal->status = Appeal::STATUS_OPEN;
+            $appeal->save();
+            LogEntry::create(array('user_id' => $user, 'model_id' => $id, 'model_type' => Appeal::class, 'action' => 're-open', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_NONE));
+            return redirect('appeal/' . $id);
+        } else {
+            abort(403);
+        }
+}
+
+    public function invalidate($id, Request $request)
+    {
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $user = Auth::id();
+        $appeal = Appeal::findOrFail($id);
+        $dev = Permission::checkSecurity($user, "DEVELOPER", "*");
+        if ($dev && $appeal->status !== Appeal::STATUS_INVALID) {
+            $appeal->status = Appeal::STATUS_INVALID;
+            $appeal->save();
+            $log = LogEntry::create(array('user_id' => $user, 'model_id' => $id, 'model_type' => Appeal::class, 'action' => 'closed - invalidate', 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_ADMIN));
+            return redirect('appeal/' . $id);
+        } else {
+            abort(403);
+        }
+    }
+
+    public function close($id, $type, Request $request)
+    {
+        $appeal = Appeal::findOrFail($id);
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        if ($admin) {
+            $appeal->status = strtoupper($type);
+            $appeal->save();
+            $log = LogEntry::create(array('user_id' => $user, 'model_id' => $id, 'model_type' => Appeal::class, 'action' => 'closed - ' . $type, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_NONE));
+            return redirect('/review');
+        } else {
+            abort(403);
+        }
+    }
+
+    public function checkuserreview(Request $request, Appeal $appeal)
+    {
+        $ua = $request->header('User-Agent');
+        $lang = $request->header('Accept-Language');
+        $ip = $request->ip();
+        $user = Auth::id();
+
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+
+        $reason = $request->validate([
+            'cu_reason' => 'required|string|min:3|max:190',
+        ])['cu_reason'];
+
+        abort_unless($admin && $appeal->status == Appeal::STATUS_OPEN, 403, 'Forbidden');
+
+        $appeal->status = Appeal::STATUS_CHECKUSER;
+        $appeal->save();
+
+        LogEntry::create([
+            'user_id' => $user,
+            'model_id' => $appeal->id,
+            'model_type' => Appeal::class,
+            'action' => 'sent for checkuser review',
+            'reason' => $reason,
+            'ip' => $ip,
+            'ua' => $ua . ' ' . $lang,
+            'protected' => LogEntry::LOG_PROTECTION_ADMIN,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function admin(Request $request, Appeal $appeal)
+    {
+        $user = Auth::id();
+        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        abort_unless($admin,403,"You are not an administrator on the wiki this appeal is for");
+        abort_if($appeal->status === Appeal::STATUS_ADMIN, 400, 'This appeal is already waiting for tool administrator review.');
+
+        $ua = $request->userAgent();
+        $ip = $request->ip();
+        $lang = $request->header('Accept-Language');
+
+        $appeal->status = Appeal::STATUS_ADMIN;
+        $appeal->save();
+        LogEntry::create([
+            'user_id' => $user,
+            'model_id' => $appeal->id,
+            'model_type' => Appeal::class,
+            'action' => 'sent for admin review',
+            'ip' => $ip,
+            'ua' => $ua . " " . $lang,
+            'protected' => LogEntry::LOG_PROTECTION_NONE
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function findagain(Request $request, Appeal $appeal)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $ua = $request->server('HTTP_USER_AGENT');
+        $ip = $request->ip();
+        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+
+        $dev = $user->hasAnySpecifiedLocalOrGlobalPerms('*', 'developer');
+        abort_unless($dev,403,"You are not an UTRS developer");
+        abort_if($appeal->status !== Appeal::STATUS_NOTFOUND && $appeal->status !== Appeal::STATUS_VERIFY, 400, 'Appeal details were already found.');
+
+        GetBlockDetailsJob::dispatch($appeal);
+        LogEntry::create([
+            'user_id' => Auth::id(),
+            'model_id'=> $appeal->id,
+            'model_type'=> Appeal::class,
+            'action'=>'reverify block',
+            'ip' => $ip,
+            'ua' => $ua . " " .$lang
+        ]);
+
+        return redirect()->back();
     }
 }

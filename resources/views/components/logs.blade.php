@@ -44,7 +44,7 @@
                                     @endif
                                 @endif
 
-                                @if($log->protected === \App\Log::LOG_PROTECTION_FUNCTIONARY)
+                                @if($log->protected === \App\Models\LogEntry::LOG_PROTECTION_FUNCTIONARY)
                                     <br/>
                                     <div class="small">Visibility of this log entry is restricted to functionaries only.</div>
                                 @endif
