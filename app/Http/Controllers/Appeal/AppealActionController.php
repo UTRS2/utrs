@@ -25,7 +25,7 @@ class AppealActionController extends Controller
      * @param string $logEntry Log action name, for example 'reserve' or 'sent for CheckUser review'
      * @param Closure $doAction Closure to take action on the appeal object
      * @param Closure|null $validate Check if this action can be taken. Return a string to fail, or true to pass.
-     * @param int $logProtection Log protection level. Use a const from Log::LOG_PROTECTION_*
+     * @param int $logProtection Log protection level. Use a const from LogEntry::LOG_PROTECTION_*
      * @param string $requiredPermission Permission to take this object
      * @return object Response object
      */
@@ -35,7 +35,7 @@ class AppealActionController extends Controller
         string $logEntry,
         Closure $doAction,
         ?Closure $validate = null,
-        int $logProtection = Log::LOG_PROTECTION_NONE,
+        int $logProtection = LogEntry::LOG_PROTECTION_NONE,
         string $requiredPermission = 'update'
     )
     {
@@ -222,7 +222,7 @@ class AppealActionController extends Controller
                 $appeal->save();
             },
             null,
-            Log::LOG_PROTECTION_ADMIN,
+            LogEntry::LOG_PROTECTION_ADMIN,
             'performDeveloperActions',
         );
     }
@@ -241,7 +241,7 @@ class AppealActionController extends Controller
                     ? true
                     : 'Block details for this appeal have already been found.';
             },
-            Log::LOG_PROTECTION_NONE,
+            LogEntry::LOG_PROTECTION_NONE,
             'performDeveloperActions',
         );
     }
