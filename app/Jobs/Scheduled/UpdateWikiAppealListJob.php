@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Scheduled;
 
-use App\Appeal;
+use App\Models\Appeal;
 use App\MwApi\MwApiGetter;
 use App\MwApi\MwApiUrls;
 use Illuminate\Bus\Queueable;
