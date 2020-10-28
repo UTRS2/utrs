@@ -26,7 +26,7 @@
             <div class="card-body">
                 <div class="form-group">
                     {{ Form::label('status', 'Change appeal status to:') }}
-                    {{ Form::select('status', \App\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('status', $appeal->status), ['class' => 'form-control']) }}
+                    {{ Form::select('status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('status', $appeal->status), ['class' => 'form-control']) }}
                 </div>
             </div>
         </div>

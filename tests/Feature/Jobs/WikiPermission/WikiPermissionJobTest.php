@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Jobs\WikiPermission;
 
+use App\Models\User;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Services\MediaWiki\Api\MediaWikiRepository;
-use App\User;
 use Tests\CreatesApplication;
 use Tests\Fakes\MediaWiki\FakeMediaWikiRepository;
 use Tests\TestCase;

@@ -2,9 +2,8 @@
 
 namespace Tests\Traits;
 
-use App\User;
-use App\Permission;
-use Illuminate\Support\Arr;
+use App\Models\Permission;
+use App\Models\User;
 
 trait TestHasUsers
 {

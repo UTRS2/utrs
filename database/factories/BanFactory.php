@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Ban;
+use App\Models\Ban;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

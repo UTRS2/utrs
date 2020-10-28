@@ -2,9 +2,9 @@
 
 namespace App\Jobs\WikiPermission;
 
+use App\Models\Permission;
+use App\Models\User;
 use App\Services\Facades\MediaWikiRepository;
-use App\User;
-use App\Permission;
 use Mediawiki\DataModel\User as MediawikiUser;
 
 /**

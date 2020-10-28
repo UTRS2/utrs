@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@php use App\Appeal; use App\Log; @endphp
+@php use App\Models\Appeal; use App\Models\LogEntry; @endphp
 
 @section('title', 'Appeal #' . $id)
 @section('content')
@@ -355,19 +355,19 @@
                     <tr class="{{ $comment->action === 'comment' ? 'bg-success' : ($comment->action === 'responded' ? 'bg-primary' : '') }}">
                         @if(is_null($comment['commentUser']))
                             @if($comment->action !== "comment" && $comment->action !== "responded")
-                                @if($comment->user == 0)
+                                @if($comment->user_id == 0)
                                     <td><i>System</i></td>
-                                @elseif($comment->user === -1)
+                                @elseif($comment->user_id === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     @if($perms['tooladmin'])
-                                        <td><i><a href="{{ route('admin.users.view', $comment->userObject) }}" class="text-light">{{ $comment->userObject->username }}</a></i></td>
+                                        <td><i><a href="{{ route('admin.users.view', $comment->user) }}" class="text-light">{{ $comment->user->username }}</a></i></td>
                                     @else
-                                        <td><i>{{ $comment->userObject->username }}</i></td>
+                                        <td><i>{{ $comment->user->username }}</i></td>
                                     @endif
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
-                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
+                                @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment !== null)
@@ -382,19 +382,19 @@
                                     @endif
                                 @endif
                             @else
-                                @if($comment->user == 0)
+                                @if($comment->user_id == 0)
                                     <td><i>System</i></td>
-                                @elseif($comment->user === -1)
+                                @elseif($comment->user_id === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     @if($perms['tooladmin'])
-                                        <td><i><a href="{{ route('admin.users.view', $comment->userObject) }}" class="text-light">{{ $comment->userObject->username }}</a></i></td>
+                                        <td><i><a href="{{ route('admin.users.view', $comment->user) }}" class="text-light">{{ $comment->user->username }}</a></i></td>
                                     @else
-                                        <td><i>{{ $comment->userObject->username }}</i></td>
+                                        <td><i>{{ $comment->user->username }}</i></td>
                                     @endif
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
+                                @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td>Access to comment is restricted.</td>
                                     @else
                                         @if($comment->comment !== null)
@@ -405,19 +405,19 @@
                                     @endif
                                 @endif
                             @else
-                                @if($comment->user == 0)
+                                @if($comment->user_id == 0)
                                     <td><i>System</i></td>
-                                @elseif($comment->user === -1)
+                                @elseif($comment->user_id === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
                                     @if($perms['tooladmin'])
-                                        <td><i><a href="{{ route('admin.users.view', $comment->userObject) }}" class="text-light">{{ $comment->userObject->username }}</a></i></td>
+                                        <td><i><a href="{{ route('admin.users.view', $comment->user) }}" class="text-light">{{ $comment->user->username }}</a></i></td>
                                     @else
-                                        <td><i>{{ $comment->userObject->username }}</i></td>
+                                        <td><i>{{ $comment->user->username }}</i></td>
                                     @endif
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected === Log::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
+                                @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>Access to comment is restricted.</i></td>
                                 @else
                                     @if($comment->comment !== null)

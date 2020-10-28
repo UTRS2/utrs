@@ -2,16 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Appeal;
+use App\Models\Appeal;
 use App\Services\Facades\MediaWikiRepository;
 use Exception;
-use RuntimeException;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
+use RuntimeException;
 
 class VerifyBlockJob implements ShouldQueue
 {

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Appeal;
 
-use App\Ban;
+use App\Models\Ban;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;

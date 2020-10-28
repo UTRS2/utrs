@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Appeal;
+use App\Models\Appeal;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

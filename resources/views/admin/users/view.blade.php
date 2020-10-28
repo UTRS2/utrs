@@ -2,7 +2,7 @@
 
 @section('title', $user->username)
 @section('content')
-    @can('viewAny', \App\User::class)
+    @can('viewAny', \App\Models\User::class)
         <div class="mb-2">
             <a href="{{ route('admin.users.list') }}" class="btn btn-primary">
                 Back to user list
@@ -66,7 +66,7 @@
                 @foreach(\App\Services\Facades\MediaWikiRepository::getSupportedTargets(true) as $wiki)
                     @php
                         $wikiDbName = $wiki === 'global' ? '*' : $wiki;
-                        /** @var \App\User $user */ /** @var \App\Permission $permission */
+                        /** @var \App\Models\User $user */ /** @var \App\Models\Permission $permission */
                         $permission = $user->permissions->where('wiki', $wikiDbName)->first();
                     @endphp
                     <tr>
@@ -74,7 +74,7 @@
                             {{ $wikiDbName }}
                         </td>
 
-                        @foreach(App\Permission::ALL_POSSIBILITIES as $permNode)
+                        @foreach(\App\Models\Permission::ALL_POSSIBILITIES as $permNode)
                             @php $oldValue = $permission && $permission->$permNode; @endphp
                             <td>
                                 @can('updatePermission', [$user, $wikiDbName, $permNode])

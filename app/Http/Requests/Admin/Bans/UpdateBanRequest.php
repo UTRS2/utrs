@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Bans;
 
-use App\Ban;
+use App\Models\Ban;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
