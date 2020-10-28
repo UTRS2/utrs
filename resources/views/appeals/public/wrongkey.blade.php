@@ -3,9 +3,9 @@
 @section('title', htmlspecialchars(__('appeals.wrong-key.title')))
 @section('content')
     <div class="alert alert-warning" role="alert">
-        <h1>
+        <h2>
             {{ __('appeals.wrong-key.title') }}
-        </h1>
+        </h2>
 
         <p>
             {{ __('appeals.wrong-key.text') }}

@@ -3,9 +3,9 @@
 @section('title', htmlspecialchars(__('auth.auth-needed-screen.title')))
 @section('content')
     <div class="alert alert-info" role="alert">
-        <h1>
+        <h2>
             {{ __('auth.auth-needed-screen.title') }}
-        </h1>
+        </h2>
 
         <p>
             {{ __('auth.auth-needed-screen.text') }}
