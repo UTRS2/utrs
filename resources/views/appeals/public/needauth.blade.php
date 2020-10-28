@@ -2,13 +2,15 @@
 
 @section('title', htmlspecialchars(__('auth.auth-needed-screen.title')))
 @section('content')
-    <h1>
-        {{ __('auth.auth-needed-screen.title') }}
-    </h1>
+    <div class="alert alert-info" role="alert">
+        <h1>
+            {{ __('auth.auth-needed-screen.title') }}
+        </h1>
 
-    <p>
-        {{ __('auth.auth-needed-screen.text') }}
-    </p>
+        <p>
+            {{ __('auth.auth-needed-screen.text') }}
+        </p>
+    </div>
 
     <div class="card-deck">
         <div class="card">
