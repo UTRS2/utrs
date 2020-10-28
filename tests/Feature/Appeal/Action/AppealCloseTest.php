@@ -20,7 +20,7 @@ class AppealCloseTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_ACCEPT, $appeal->status);
         $this->assertTrue($appeal->comments()
             ->where('action', 'closed - accept')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -38,7 +38,7 @@ class AppealCloseTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_DECLINE, $appeal->status);
         $this->assertTrue($appeal->comments()
             ->where('action', 'closed - decline')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -57,7 +57,7 @@ class AppealCloseTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
         $this->assertFalse($appeal->comments()
             ->where('action', 'closed - accept')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 

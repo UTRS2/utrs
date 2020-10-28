@@ -20,7 +20,7 @@ class AppealReferTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_ADMIN, $appeal->status);
         $this->assertTrue($appeal->comments()
             ->where('action', 'sent for tool administrator review')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -41,7 +41,7 @@ class AppealReferTest extends BaseAppealActionTest
         $this->assertTrue($appeal->comments()
             ->where('action', 'sent for CheckUser review')
             ->where('reason', 'Example CheckUser reason')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -59,7 +59,7 @@ class AppealReferTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
         $this->assertFalse($appeal->comments()
             ->where('action', 'sent for CheckUser review')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -77,7 +77,7 @@ class AppealReferTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
         $this->assertTrue($appeal->comments()
             ->where('action', 're-open')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 }

@@ -23,7 +23,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
         $this->assertFalse($appeal->comments()
             ->where('action', 'closed as invalid')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -41,7 +41,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         $this->assertEquals(Appeal::STATUS_INVALID, $appeal->status);
         $this->assertTrue($appeal->comments()
             ->where('action', 'closed as invalid')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -62,7 +62,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         Queue::assertNothingPushed();
         $this->assertFalse($appeal->comments()
             ->where('action', 're-verify block details')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -83,7 +83,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         Queue::assertNothingPushed();
         $this->assertFalse($appeal->comments()
             ->where('action', 're-verify block details')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -103,7 +103,7 @@ class AppealDeveloperActionsTest extends BaseAppealActionTest
         Queue::assertPushed(GetBlockDetailsJob::class);
         $this->assertTrue($appeal->comments()
             ->where('action', 're-verify block details')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 

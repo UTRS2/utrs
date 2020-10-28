@@ -21,7 +21,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertEquals($user->id, $appeal->handlingadmin);
         $this->assertTrue($appeal->comments()
             ->where('action', 'reserve')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -43,7 +43,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertEquals($reservedToUser->id, $appeal->handlingadmin);
         $this->assertFalse($appeal->comments()
             ->where('action', 'reserve')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -64,7 +64,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertNull($appeal->handlingadmin);
         $this->assertFalse($appeal->comments()
             ->where('action', 'reserve')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -82,7 +82,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertNull($appeal->handlingadmin);
         $this->assertTrue($appeal->comments()
             ->where('action', 'release')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -104,7 +104,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertEquals($reservedToUser->id, $appeal->handlingadmin);
         $this->assertFalse($appeal->comments()
             ->where('action', 'release')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -125,7 +125,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertNull($appeal->handlingadmin);
         $this->assertTrue($appeal->comments()
             ->where('action', 'release')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 
@@ -153,7 +153,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $this->assertEquals($reservedToUser->id, $appeal->handlingadmin);
         $this->assertFalse($appeal->comments()
             ->where('action', 'reserve')
-            ->where('user', $user->id)
+            ->where('user_id', $user->id)
             ->exists());
     }
 }
