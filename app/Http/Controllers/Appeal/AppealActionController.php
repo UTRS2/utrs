@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Appeal;
 
-use App\Appeal;
 use App\Http\Controllers\Controller;
 use App\Jobs\GetBlockDetailsJob;
-use App\Log;
-use App\User;
+use App\Models\Appeal;
+use App\Models\LogEntry;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -60,15 +60,15 @@ class AppealActionController extends Controller
                 $reason = null;
             }
 
-            Log::create([
-                'user'            => $request->user()->id,
-                'referenceobject' => $appeal->id,
-                'objecttype'      => 'appeal',
-                'reason'          => $reason,
-                'action'          => $logEntry,
-                'ip'              => $ip,
-                'ua'              => $ua . " " . $lang,
-                'protected'       => $logProtection,
+            LogEntry::create([
+                'user_id'    => $request->user()->id,
+                'model_id'   => $appeal->id,
+                'model_type' => Appeal::class,
+                'reason'     => $reason,
+                'action'     => $logEntry,
+                'ip'         => $ip,
+                'ua'         => $ua . " " . $lang,
+                'protected'  => $logProtection,
             ]);
         });
 
@@ -106,7 +106,7 @@ class AppealActionController extends Controller
             function (Appeal $appeal) use ($status) {
                 $appeal->status = $status;
                 $appeal->save();
-            }
+            },
         );
 
         return redirect()->route('appeal.list');
