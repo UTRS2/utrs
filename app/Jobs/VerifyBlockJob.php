@@ -2,15 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Appeal;
+use App\Models\Appeal;
+use Exception;
 use RuntimeException;
 use App\MwApi\MwApiExtras;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class VerifyBlockJob implements ShouldQueue
 {
@@ -35,17 +36,15 @@ class VerifyBlockJob implements ShouldQueue
      */
     public function handle()
     {
+        // check if the user can be e-mailed according to MediaWiki API
         if (!MwApiExtras::canEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername())) {
             return;
         }
 
+        // create token
         $token = Str::random(32);
 
-        $this->appeal->update([
-            'verify_token' => $token,
-        ]);
-
-        $url = url(route('appeal.verifyownership', [$this->appeal, $token]));
+        $url = url(route('public.appeal.verifyownership', [$this->appeal, $token]));
         $title = 'UTRS appeal verification';
         $message = <<<EOF
 Hello,
@@ -62,10 +61,16 @@ the UTRS team
 EOF;
 
 
-        $result = MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(), $title, $message);
-
-        if (!$result) {
-            throw new RuntimeException('Failed sending an e-mail');
+        try {
+            MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(), $title, $message);
+        } catch (Exception $exception) {
+            // wrap exception to add appeal number to log
+            throw new RuntimeException('Failed to send verification email for appeal #' . $this->appeal->id, 0, $exception);
         }
+
+        // after the e-mail has been sent, persist the token in the database
+        $this->appeal->update([
+            'verify_token' => $token,
+        ]);
     }
 }

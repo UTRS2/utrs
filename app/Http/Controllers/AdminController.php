@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Appeal;
-use App\Ban;
-use App\Log;
-use App\Permission;
-use App\Sitenotice;
-use App\Template;
-use App\User;
-use App\Wikitask;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
+use App\Models\Sitenotice;
+use App\Models\Template;
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
-use Redirect;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
@@ -22,91 +19,10 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function listusers()
-    {
-        $allusers = User::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-        abort_unless($permission, 403, 'Forbidden');
-
-        $tableheaders = ['ID', 'Username', 'Verified', 'Wikis'];
-        $rowcontents = [];
-        foreach ($allusers as $user) {
-            $idbutton = '<a href="/admin/users/' . $user->id . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
-            $verified = $user->verified ? 'Yes' : 'No';
-            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $verified, $user->wikis];
-        }
-
-        return view('admin.tables', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
-    }
-
-    public function listbans()
-    {
-        $allbans = Ban::all();
-        $currentuser = User::findOrFail(Auth::id());
-
-        $canSeeProtectedBans = false;
-        $permission = false;
-
-        $wikilist = explode(",", $currentuser->wikis);
-
-        foreach ($wikilist as $wiki) {
-            if (!$permission && Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-
-            if (!$canSeeProtectedBans && Permission::checkPrivacy(Auth::id(), $wiki)) {
-                $canSeeProtectedBans = true;
-            }
-        }
-
-        if (!$permission) {
-            abort(403);
-        }
-
-        $tableheaders = ['ID', 'Target', 'Expires', 'Reason'];
-        $rowcontents = [];
-
-        foreach ($allbans as $ban) {
-            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn '.($ban->is_protected ? 'btn-danger' : 'btn-primary').'">' . $ban->id . '</button></a>';
-            $targetName = htmlspecialchars($ban->target);
-
-            if ($ban->is_protected) {
-                $targetName = $canSeeProtectedBans ? '<i class="text-danger">' . $targetName . '</i>'
-                    : '<i class="text-muted">(ban target removed)</i>';
-            }
-
-            $rowcontents[$ban->id] = [$idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason)];
-        }
-
-        if ($canSeeProtectedBans) {
-            $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
-        } else {
-            $caption = null;
-        }
-
-        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'caption' => $caption]);
-    }
-
     public function listsitenotices()
     {
+        $this->authorize('viewAny', Sitenotice::class);
         $allsitenotice = Sitenotice::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-
-        abort_unless($permission, 403, 'Forbidden');
 
         $tableheaders = ['ID', 'Message'];
         $rowcontents = [];
@@ -119,60 +35,30 @@ class AdminController extends Controller
 
     public function listtemplates()
     {
+        $this->authorize('viewAny', Template::class);
         $alltemplates = Template::all();
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-
-        abort_unless($permission, 403, 'Forbidden');
 
         $tableheaders = ['ID', 'Name', 'Contents', 'Active'];
         $rowcontents = [];
+
         foreach ($alltemplates as $template) {
             $idbutton = '<a href="/admin/templates/' . $template->id . '"><button type="button" class="btn btn-primary">' . $template->id . '</button></a>';
             $active = $template->active ? 'Yes' : 'No';
             $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
         }
-        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true]);
+
+        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
     }
 
-    public function verifyAccount()
+    public function showNewTemplate()
     {
-        if (!Auth::check() || Auth::user()->verified) {
-            return redirect('/');
-        } else {
-            Wikitask::create(['task' => 'verifyaccount', 'actionid' => Auth::id()]);
-            return view('admin.verifyme');
-        }
-    }
-
-    public function verify($code)
-    {
-        $user = User::where('u_v_token', '=', $code)->first();
-        $user->verified = 1;
-        $user->save();
-        return redirect()->to('/home');
+        $this->authorize('create', Template::class);
+        return view('admin.newtemplate');
     }
 
     public function makeTemplate(Request $request)
     {
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-
-        abort_unless($permission, 403, 'Forbidden');
+        $this->authorize('create', Template::class);
 
         $ua = $request->userAgent();
         $ip = $request->ip();
@@ -188,23 +74,19 @@ class AdminController extends Controller
 
         $template = Template::create($data);
 
-        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
+    }
+
+    public function editTemplate(Template $template)
+    {
+        $this->authorize('update', $template);
+        return view('admin.edittemplate', ["template" => $template]);
     }
 
     public function updateTemplate(Request $request, Template $template)
     {
-        $currentuser = User::findOrFail(Auth::id());
-        $permission = false;
-
-        $wikilist = explode(",", $currentuser->wikis);
-        foreach ($wikilist as $wiki) {
-            if (Permission::checkToolAdmin(Auth::id(), $wiki)) {
-                $permission = true;
-            }
-        }
-
-        abort_unless($permission, 403, 'Forbidden');
+        $this->authorize('update', $template);
 
         $ua = $request->userAgent();
         $ip = $request->ip();
@@ -217,17 +99,7 @@ class AdminController extends Controller
         ]);
 
         $template->update($data);
-        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
-    }
-
-    public function showNewTemplate()
-    {
-        return view('admin.newtemplate');
-    }
-
-    public function editTemplate(Template $template)
-    {
-        return view('admin.edittemplate', ["template" => $template]);
     }
 }

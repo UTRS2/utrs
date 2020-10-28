@@ -2,14 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Appeal;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
 use App\MwApi\MwApiExtras;
-use Illuminate\Support\Str;
+use App\Utils\IPUtils;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class GetBlockDetailsJob implements ShouldQueue
 {
@@ -27,13 +30,80 @@ class GetBlockDetailsJob implements ShouldQueue
     }
 
     /**
+     * Utility method to check if block target given by user needs correcting
+     * @param string $givenBlockTarget Block target given by the blocked user in the form
+     * @param string $actualBlockTarget Block target queried from MediaWiki API
+     * @return bool true if block target should be corrected in the database, false otherwise
+     */
+    private function shouldCorrectBlockTarget(string $givenBlockTarget, string $actualBlockTarget)
+    {
+        // if it's already correct, no need to do anything
+        if (strtolower($givenBlockTarget) === strtolower($actualBlockTarget)) {
+            return false;
+        }
+
+        // if it's a range and given ip is inside it, no need to do anything
+        if (IPUtils::isIpRange($actualBlockTarget) && IPUtils::isIp($givenBlockTarget)
+            && IPUtils::isIpInsideRange($actualBlockTarget, $givenBlockTarget)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Handle the data returned from the API calls
-     * @param  [type] $blockData [description]
+     * @param array $blockData block details from mediawiki api
      * @return void
      */
     public function handleBlockData($blockData)
     {
-        $status = 'OPEN';
+        $status = Appeal::STATUS_OPEN;
+
+        if (isset($blockData['user']) && !empty($blockData['user'])
+            && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $blockData['user'])) {
+            $this->appeal->appealfor = $blockData['user'];
+
+            $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
+                ->where('id', '!=', $this->appeal->id) // data should not be saved yet, but just in case
+                ->openOrRecent()
+                ->first();
+
+            if ($duplicateAppeal) {
+                $status = Appeal::STATUS_INVALID;
+
+                LogEntry::create([
+                    'user_id' => 0,
+                    'model_id' => $this->appeal->id,
+                    'model_type' => 'appeal',
+                    'action' => 'closed - duplicate',
+                    'reason' => 'this appeal duplicates appeal #' . $duplicateAppeal->id,
+                    'ip' => 'DB entry',
+                    'ua' => 'DB/1',
+                    'protected' => LogEntry::LOG_PROTECTION_NONE,
+                ]);
+            }
+
+            $banTargets = Ban::getTargetsToCheck($this->appeal->appealfor);
+            $ban = Ban::whereIn('target', $banTargets)
+                ->active()
+                ->first();
+
+            if ($ban) {
+                $status = Appeal::STATUS_INVALID;
+
+                LogEntry::create([
+                    'user_id' => 0,
+                    'model_id' => $this->appeal->id,
+                    'model_type' => 'appeal',
+                    'action' => 'closed - invalidate',
+                    'reason' => 'banned from UTRS',
+                    'ip' => 'DB entry',
+                    'ua' => 'DB/1',
+                    'protected' => 0
+                ]);
+            }
+        }
 
         $this->appeal->update([
             'blockfound' => 1,
@@ -43,7 +113,9 @@ class GetBlockDetailsJob implements ShouldQueue
         ]);
 
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
-        if (!$this->appeal->user_verified && !$this->appeal->verify_token && isset($blockData['user']) && $this->appeal->blocktype !== 0) {
+        if (!$this->appeal->user_verified && !$this->appeal->verify_token
+            && isset($blockData['user']) && $this->appeal->blocktype !== 0
+            && $this->appeal->status !== Appeal::STATUS_INVALID) {
             VerifyBlockJob::dispatch($this->appeal);
         }
     }
@@ -55,20 +127,20 @@ class GetBlockDetailsJob implements ShouldQueue
     public function handle()
     {
         if ($this->appeal->wiki === 'global') {
-            $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor);
+            $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor, $this->appeal->id);
 
             if (!$blockData && !empty($this->appeal->hiddenip)) {
-                $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip);
+                $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip, $this->appeal->id);
             }
         } else {
             if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), 'bkids');
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
             } else {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor);
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor, $this->appeal->id);
             }
 
             if (!$blockData && !empty($this->appeal->hiddenip)) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip);
+                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip, $this->appeal->id);
             }
         }
 
@@ -78,7 +150,7 @@ class GetBlockDetailsJob implements ShouldQueue
         }
 
         $this->appeal->update([
-            'status' => 'NOTFOUND',
+            'status' => Appeal::STATUS_NOTFOUND,
         ]);
     }
 }

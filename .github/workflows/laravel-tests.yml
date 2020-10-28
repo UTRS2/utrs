@@ -6,10 +6,10 @@ on:
   pull_request: {}
 jobs:
   laravel-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     services:
       mysql:
-        image: mysql:8
+        image: mariadb:10.5
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: password
@@ -19,10 +19,28 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v1
-      - name: Create directories
-        run: mkdir -pv storage/framework/{sessions,views,cache}
       - name: Copy env file
         run: cp .env.ci .env
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-composer-dependencies
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+      - name: Cache NPM dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-dependencies
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Install Composer dependencies
         run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
       - name: Install NPM dependencies
@@ -31,8 +49,6 @@ jobs:
         run: php artisan key:generate
       - name: Clear config cache
         run: php${{ matrix.php }} artisan config:clear
-      - name: Verify MySQL connection from host
-        run: mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -ppassword -e "SHOW DATABASES"
       - name: Run migrations
         run: php${{ matrix.php }} artisan migrate -v --force --seed
         env:
@@ -40,14 +56,11 @@ jobs:
       - name: Build assets
         run: npm run production
       - name: Run PHPUnit
-        run: vendor/bin/phpunit
+        run: php artisan test
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Upgrade Chrome Driver
-        run: php artisan dusk:chrome-driver 81
-        # if this breaks, look up from https://github.com/actions/virtual-environments/blob/ubuntu18/20200512.2/images/linux/Ubuntu1804-README.md or updated version
-      - name: Start Chrome Driver
-        run: ./vendor/laravel/dusk/bin/chromedriver-linux &
+      - name: Start chromedriver
+        run: chromedriver &
       - name: Start Laravel Server
         run: php artisan serve &
         env:
@@ -58,7 +71,7 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - uses: actions/upload-artifact@v2
         name: Save Dusk screenshots
-        if: always()
+        if: failure()
         with:
           name: dusk-screenshots
-          path: tests/Browser/screenshots
+          path: tests/Browser/screenshots/*.png

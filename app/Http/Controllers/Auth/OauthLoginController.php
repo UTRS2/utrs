@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
-use App\Wikitask;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Wikitask;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -19,26 +19,19 @@ class OauthLoginController extends Controller
 
     public function login()
     {
-        return Socialite::driver('wiki')
+        return Socialite::driver('mediawiki')
             ->redirect();
     }
 
     public function callback()
     {
-        $socialiteUser = Socialite::driver('wiki')->user();
+        $socialiteUser = Socialite::driver('mediawiki')->user();
 
         $user = User::firstOrCreate([
             'username' => $socialiteUser->name,
         ], [
-            'password' => '',
             'wikis' => '',
-            'verified' => true,
         ]);
-
-        if (!$user->verified) {
-            $user->verified = true;
-            $user->save();
-        }
 
         if ($user->wasRecentlyCreated) {
             Wikitask::create([

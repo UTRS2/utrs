@@ -31,7 +31,7 @@ return [
     ],
 
     'stripe' => [
-        'model' => App\User::class,
+        'model' => \App\Models\User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
         'webhook' => [
@@ -40,11 +40,11 @@ return [
         ],
     ],
 
-    'wiki' => [
+    'mediawiki' => [
         'identifier' => env('OAUTH_CLIENT_ID'),
         'secret' => env('OAUTH_CLIENT_SECRET'),
-
         'callback_uri' => env('OAUTH_CALLBACK_URL'),
+        'base_url' => env('OAUTH_BASE_URL'),
     ],
 
 ];
