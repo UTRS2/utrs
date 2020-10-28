@@ -1,17 +1,19 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Jobs\WikiPermission\MarkAsPermissionsChecked;
 use App\MwApi\MwApiUrls;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use HasFactory;
 
     public $timestamps = false;
     protected $primaryKey = 'id';
@@ -61,7 +63,7 @@ class User extends Authenticatable
 
     public function logs()
     {
-        return $this->morphMany(Log::class, 'object', 'objecttype', 'referenceobject');
+        return $this->morphMany(LogEntry::class, 'object', 'objecttype', 'referenceobject');
     }
 
     /**

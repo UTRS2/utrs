@@ -2,7 +2,7 @@
 
 namespace Tests\Browser\Appeals;
 
-use App\Appeal;
+use App\Models\Appeal;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
@@ -14,7 +14,7 @@ class AppealPublicActionsTest extends DuskTestCase
     public function test_user_can_see_own_appeal()
     {
         $this->browse(function (Browser $browser) {
-            $appeal = factory(Appeal::class)->create();
+            $appeal = Appeal::factory()->create();
             $appealTextStart = explode("\n", $appeal->appealtext)[0];
 
             $browser->visit('/public/appeal/view?hash=' . $appeal->appealsecretkey)
@@ -29,7 +29,7 @@ class AppealPublicActionsTest extends DuskTestCase
     public function test_user_can_correct_own_appeal()
     {
         $this->browse(function (Browser $browser) {
-            $appeal = factory(Appeal::class)->create([ 'status' => Appeal::STATUS_NOTFOUND, ]);
+            $appeal = Appeal::factory()->create([ 'status' => Appeal::STATUS_NOTFOUND, ]);
 
             $browser->visit('/public/appeal/view?hash=' . $appeal->appealsecretkey)
                 ->assertSee('Appeal for "' . $appeal->appealfor . '"')

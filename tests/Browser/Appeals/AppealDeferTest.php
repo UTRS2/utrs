@@ -2,8 +2,7 @@
 
 namespace Tests\Browser\Appeals;
 
-use App\Appeal;
-use App\Log;
+use App\Models\Appeal;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
@@ -17,7 +16,7 @@ class AppealDeferTest extends DuskTestCase
     public function test_can_defer_to_tooladmin()
     {
         $this->browse(function (Browser $browser) {
-            $appeal = factory(Appeal::class)->create();
+            $appeal = Appeal::factory()->create();
 
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)

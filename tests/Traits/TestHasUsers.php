@@ -2,9 +2,8 @@
 
 namespace Tests\Traits;
 
-use App\User;
-use App\Permission;
-use Illuminate\Support\Arr;
+use App\Models\Permission;
+use App\Models\User;
 
 trait TestHasUsers
 {
@@ -26,7 +25,7 @@ trait TestHasUsers
 
         User::unsetEventDispatcher(); // prevent loading user permissions, we'll do that manually
 
-        $user = factory(User::class)->create($extraData);
+        $user = User::factory()->create($extraData);
         $wikis = [];
 
         foreach ($permissions as $wiki => $values) {

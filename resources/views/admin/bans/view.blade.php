@@ -2,7 +2,7 @@
 
 @section('title', 'Ban for ' . $target)
 @section('content')
-    @can('viewAny', \App\Ban::class)
+    @can('viewAny', \App\Models\Ban::class)
         <div class="mb-2">
             <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">
                 Back to ban list

@@ -2,8 +2,8 @@
 
 namespace App\Policies\Admin;
 
-use App\Ban;
-use App\User;
+use App\Models\Ban;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class BanPolicy
