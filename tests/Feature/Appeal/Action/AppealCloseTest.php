@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Appeal\Action;
 
-use App\Appeal;
+use App\Models\Appeal;
 
 class AppealCloseTest extends BaseAppealActionTest
 {

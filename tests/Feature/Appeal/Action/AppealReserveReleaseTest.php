@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Appeal\Action;
 
-use App\Appeal;
+use App\Models\Appeal;
 use App\MwApi\MwApiUrls;
 
 class AppealReserveReleaseTest extends BaseAppealActionTest
