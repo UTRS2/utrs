@@ -17,12 +17,12 @@
                             <td><i>System</i></td>
                         @elseif($log->user === -1)
                             <td><i>Appealing user</i></td>
-                        @elseif($log->userObject)
+                        @elseif($log->user)
                             <td>
-                                @can('view', $log->userObject)
-                                    <a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a>
+                                @can('view', $log->user)
+                                    <a href="{{ route('admin.users.view', $log->user) }}">{{ $log->user->username }}</a>
                                 @else
-                                    {{ $log->userObject->username }}
+                                    {{ $log->user->username }}
                                 @endcan
                             </td>
                         @else
