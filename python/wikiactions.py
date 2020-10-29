@@ -148,7 +148,7 @@ def clearPrivateData():
         id = result[1]
         appeal = calldb("select id,status from appeals where id = "+str(id)+";","read")
         if appeal[0][1] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
-        logs = calldb("select timestamp from log_entries where referenceobject = "+str(id)+" and (action RLIKE 'closed' or action LIKE '%decline' or action LIKE '%accept' or action LIKE '%expire%' or action LIKE '%invalid') and objecttype = 'appeal';","read")
+        logs = calldb("select timestamp from log_entries where model_id = "+str(id)+" and (action RLIKE 'closed' or action LIKE '%decline' or action LIKE '%accept' or action LIKE '%expire%' or action LIKE '%invalid') and objecttype = 'appeal';","read")
         if datesince(logs[0], 7):
             calldb("delete from privatedatas where appealID = "+str(id)+";","write")
 def appeallist():
@@ -179,10 +179,10 @@ def closeNotFound():
     results = calldb("select id from appeals where status = 'NOTFOUND';","read")
     for result in results:
         id = result[0]
-        logs = calldb("select timestamp from log_entries where referenceobject = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
+        logs = calldb("select timestamp from log_entries where model_id = "+str(id)+" and action = 'create' and objecttype = 'appeal';","read")
         if datesince(logs[0], 2):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
-            calldb("insert into log_entries (user, referenceobject,objecttype, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','appeal','closed - expired','DB entry','DB/Python',0);","write")
+            calldb("insert into log_entries (user, model_id,model_type, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','App\Models\Appeal','closed - expired','DB entry','DB/Python',0);","write")
 verifyusers()
 clearPrivateData()
 appeallist()
