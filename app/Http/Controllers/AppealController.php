@@ -116,10 +116,9 @@ class AppealController extends Controller
         $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
 
         if ($user->wikis === '*' || $isDeveloper || $user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
-            $wikis = collect(MwApiUrls::getSupportedWikis())
-                ->push('global');
+            $wikis = collect(MwApiUrls::getSupportedWikis(true));
         } else {
-            $wikis = collect(explode(',', $user->wikis ?? ''))
+            $wikis = collect(MwApiUrls::getSupportedWikis(true))
                 ->filter(function ($wiki) use ($user) {
                     return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
                 });
