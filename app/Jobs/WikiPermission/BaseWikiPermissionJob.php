@@ -75,27 +75,6 @@ abstract class BaseWikiPermissionJob
     }
 
     /**
-     * Update value of "users.wikis" column by either adding or removing this wiki from the string
-     * @param bool $exists true if this user exists on the wiki this job is querying
-     */
-    public function updateDoesExist(bool $exists)
-    {
-        $wikis = explode(',', $this->user->wikis ?? '');
-        $wikiId = $this->getUserAllowedWikiId();
-
-        if ($exists) {
-            if (!in_array($wikiId, $wikis)) {
-                array_push($wikis, $wikiId);
-            }
-        } else {
-            // according to stackoverflow this is the best way to remove an element from an array
-            $wikis = array_values(array_filter($wikis, function($value) use ($wikiId) { return $value !== $wikiId; }));
-        }
-
-        $this->user->wikis = implode(',', $wikis);
-    }
-
-    /**
      * Get list of permissions this user definitely has
      * @return array Array of column names of permissions this user has
      */
@@ -136,7 +115,6 @@ abstract class BaseWikiPermissionJob
             return;
         }
 
-        $this->updateDoesExist(in_array('user', $permissions));
         $permObject->fill($permissionsToUpdate)->saveOrFail();
     }
 }
