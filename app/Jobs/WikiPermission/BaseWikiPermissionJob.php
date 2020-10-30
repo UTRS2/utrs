@@ -49,16 +49,6 @@ abstract class BaseWikiPermissionJob
     }
 
     /**
-     * @return string wiki name on users.wikis column
-     */
-    protected function getUserAllowedWikiId()
-    {
-        // if not otherwise specified, they will be same
-        // global is basically the only exception
-        return $this->getPermissionWikiId();
-    }
-
-    /**
      * Validate if the tool user should be authorized to have the user permission
      * @param  MediawikiUser $user   An instance of MediawikiUser related to the onwiki users
      * @param  array         $groups The groups to filter through
