@@ -70,4 +70,9 @@ return [
         'your-key-is'         => 'Information text shown along the appeal key.',
         'view-appeal-details' => 'Button text shown along the appeal key.',
     ],
+
+    'wrong-key' => [
+        'title' => 'Title shown on screen informing the appeal key the user entered is wrong.',
+        'text' => 'Information text shown on screen informing the appeal key the user entered is wrong.',
+    ],
 ];

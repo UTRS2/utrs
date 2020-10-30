@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-warning" role="alert">
         <b>{{ __('home.noemail-header') }}</b><br/>
         {{ __('home.noemail-text') }}
     </div>
@@ -54,18 +54,15 @@
         <div class="card-body">
             <div class="text-center">
                 <h5 class="card-title">If you already have an appeal</h5>
-                <p class="card-text">{{ Form::label('hash', 'Please enter your appeal key below') }}</p>
+                <p class="card-text">{{ Form::label('hash', __('auth.auth-needed-screen.key-text')) }}</p>
                 {{ Form::open(['url' => route('public.appeal.view'), 'method' => 'GET']) }}
                 <div class="input-group w-100 mb-3">
-                    <div class="input-group-prepend w-100">
-                        <span class="input-group-text">#</span>
-                        {{ Form::text('hash', null, ['class'=>'form-control w-100','placeholder'=>'Appeal Key']) }}
-                    </div>
+                    {{ Form::text('hash', null, ['class' => 'form-control w-100','placeholder' => __('auth.auth-needed-screen.key-placeholder')]) }}
                 </div>
 
                 <div>
-                    <button type="submit" class="btn btn-primary">{{ __('generic.submit') }}</button>
-                    <a href="#" class="btn btn-danger disabled">Forgot Appeal Key</a>
+                    <button type="submit" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
+                    {{-- <a href="#" class="btn btn-danger">Forgot Appeal Key</a> --}}
                 </div>
                 {{ Form::close() }}
             </div>

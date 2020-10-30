@@ -14,6 +14,7 @@ use App\Models\Template;
 use App\Models\User;
 use App\MwApi\MwApiUrls;
 use Auth;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -28,8 +29,19 @@ class AppealController extends Controller
         $this->middleware('auth')->except('appeal');
     }
 
-    public function appeal($id)
+    public function appeal(Request $request, $id)
     {
+        if (!Auth::check()) {
+            if ($request->has('send_to_oauth')) {
+                // fancy tricks to set intended path as cookie, but without the GET param
+                $redirect = redirect();
+                $redirect->setIntendedUrl(app(UrlGenerator::class)->previous());
+                return $redirect->route('login');
+            }
+
+            return response()->view('appeals.public.needauth', [], 401);
+        }
+
         $info = Appeal::find($id);
 
         // UTRS 2 appeal exists
@@ -115,11 +127,11 @@ class AppealController extends Controller
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
         $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
 
-        if ($user->wikis === '*' || $isDeveloper || $user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
-            $wikis = collect(MwApiUrls::getSupportedWikis())
-                ->push('global');
-        } else {
-            $wikis = collect(explode(',', $user->wikis ?? ''))
+        $wikis = collect(MwApiUrls::getSupportedWikis(true));
+
+        // For users who aren't developers, stewards or staff, show appeals only for own wikis
+        if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
+            $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
                     return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
                 });
