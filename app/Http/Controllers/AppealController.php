@@ -14,6 +14,7 @@ use App\Models\Template;
 use App\Models\User;
 use App\MwApi\MwApiUrls;
 use Auth;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -28,8 +29,19 @@ class AppealController extends Controller
         $this->middleware('auth')->except('appeal');
     }
 
-    public function appeal($id)
+    public function appeal(Request $request, $id)
     {
+        if (!Auth::check()) {
+            if ($request->has('send_to_oauth')) {
+                // fancy tricks to set intended path as cookie, but without the GET param
+                $redirect = redirect();
+                $redirect->setIntendedUrl(app(UrlGenerator::class)->previous());
+                return $redirect->route('login');
+            }
+
+            return response()->view('appeals.public.needauth', [], 401);
+        }
+
         $info = Appeal::find($id);
 
         // UTRS 2 appeal exists
