@@ -70,4 +70,9 @@ return [
         'your-key-is'         => 'Your Appeal key is:',
         'view-appeal-details' => 'View appeal details',
     ],
+
+    'wrong-key' => [
+        'title' => 'Your appeal key appears to be wrong.',
+        'text' => 'No appeals could be located using that appeal key. Please check again.',
+    ],
 ];

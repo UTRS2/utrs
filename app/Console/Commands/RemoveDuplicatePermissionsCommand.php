@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Permission;
+use App\Models\Permission;
 use Illuminate\Console\Command;
 
 class RemoveDuplicatePermissionsCommand extends Command

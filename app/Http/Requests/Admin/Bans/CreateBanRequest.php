@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Bans;
 
-use App\Ban;
+use App\Models\Ban;
 use App\Http\Rules\IpOrCidrRule;
 use App\Http\Rules\MaxCidrSizeRule;
 use Carbon\Carbon;

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Oldappeal;
-use App\User;
+use App\Models\Old\Oldappeal;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class OldAppealPolicy

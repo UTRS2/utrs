@@ -17,12 +17,12 @@
                             <td><i>System</i></td>
                         @elseif($log->user === -1)
                             <td><i>Appealing user</i></td>
-                        @elseif($log->userObject)
+                        @elseif($log->user)
                             <td>
-                                @can('view', $log->userObject)
-                                    <a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a>
+                                @can('view', $log->user)
+                                    <a href="{{ route('admin.users.view', $log->user) }}">{{ $log->user->username }}</a>
                                 @else
-                                    {{ $log->userObject->username }}
+                                    {{ $log->user->username }}
                                 @endcan
                             </td>
                         @else
@@ -44,7 +44,7 @@
                                     @endif
                                 @endif
 
-                                @if($log->protected === \App\Log::LOG_PROTECTION_FUNCTIONARY)
+                                @if($log->protected === \App\Models\LogEntry::LOG_PROTECTION_FUNCTIONARY)
                                     <br/>
                                     <div class="small">Visibility of this log entry is restricted to functionaries only.</div>
                                 @endif

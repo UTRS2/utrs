@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Models\LogEntry;
+use App\Models\Permission;
+use App\Models\User;
 use App\MwApi\MwApiUrls;
 use DB;
-use App\Log;
-use App\Permission;
-use Illuminate\Support\Arr;
-use App\Http\Controllers\Controller;
-use App\User;
 use Illuminate\Http\Request;
 
 /**
@@ -44,7 +43,7 @@ class UserController extends Controller
         $this->authorize('view', $user);
 
         // preload user objects for log entries; this reduces amount of DB queries
-        $user->loadMissing('logs.userObject');
+        $user->loadMissing('logs.user');
 
         return view('admin.users.view', ['user' => $user]);
     }
@@ -78,7 +77,7 @@ class UserController extends Controller
 
             foreach (MwApiUrls::getSupportedWikis(true) as $wiki) {
                 $wikiDbName = $wiki === 'global' ? '*' : $wiki;
-                /** @var \App\Permission $permission */
+                /** @var \App\Models\Permission $permission */
                 $permission = $user->permissions->where('wiki', $wikiDbName)->first();
 
                 $updateSet = [];
@@ -119,15 +118,15 @@ class UserController extends Controller
                 $ip = $request->ip();
                 $lang = $request->header('Accept-Language');
 
-                Log::create([
-                    'user' => $currentUser->id,
-                    'referenceobject' => $user->id,
-                    'objecttype' => User::class,
+                LogEntry::create([
+                    'user_id' => $currentUser->id,
+                    'model_id' => $user->id,
+                    'model_type' => User::class,
                     'action' => 'modified user - ' . implode(',', $allChanges),
                     'reason' => $reason,
                     'ip' => $ip,
                     'ua' => $ua . " " . $lang,
-                    'protected' => Log::LOG_PROTECTION_NONE,
+                    'protected' => LogEntry::LOG_PROTECTION_NONE,
                 ]);
             }
         });

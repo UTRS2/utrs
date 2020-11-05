@@ -2,8 +2,8 @@
 
 namespace App\Jobs\WikiPermission;
 
+use App\Models\User;
 use App\MwApi\MwApiExtras;
-use App\User;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

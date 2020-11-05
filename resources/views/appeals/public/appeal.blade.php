@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@php use App\Appeal; use App\Log; @endphp
+@php use App\Models\Appeal; use App\Models\LogEntry; @endphp
 
 @section('title', 'Your Appeal')
 @section('content')
@@ -114,15 +114,15 @@
                         <tr>
                             @endif
                             @if($comment->action!=="comment" && $comment->action!=="responded")
-                                @if($comment->user==0)
+                                @if($comment->user_id==0)
                                     <td><i>{{ __('generic.logs-system') }}</i></td>
-                                @elseif($comment->user === -1)
+                                @elseif($comment->user_id === -1)
                                     <td><i>{{ $appeal->appealfor }}</i></td>
                                 @else
-                                    <td><i>{{ $comment->userObject->username }}</i></td>
+                                    <td><i>{{ $comment->user->username }}</i></td>
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
-                                @if($comment->protected !== Log::LOG_PROTECTION_NONE)
+                                @if($comment->protected !== LogEntry::LOG_PROTECTION_NONE)
                                     <td><i>{{ __('generic.logs-private') }}</i></td>
                                 @else
                                     @if($comment->comment!==null)
@@ -137,15 +137,15 @@
                                     @endif
                                 @endif
                             @else
-                                @if($comment->user==0)
+                                @if($comment->user_id==0)
                                     <td><i>{{ __('generic.logs-system') }}</i></td>
-                                @elseif($comment->user === -1)
+                                @elseif($comment->user_id === -1)
                                     <td><i>{{ $appeal->appealfor }}</i></td>
                                 @else
-                                    <td><i>{{ $comment->userObject->username }}</i></td>
+                                    <td><i>{{ $comment->user->username }}</i></td>
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected !== Log::LOG_PROTECTION_NONE || $comment->action=="comment")
+                                @if($comment->protected !== LogEntry::LOG_PROTECTION_NONE || $comment->action=="comment")
                                     <td><i>{{ __('generic.logs-private') }}</i></td>
                                 @else
                                     @if($comment->comment!==null)

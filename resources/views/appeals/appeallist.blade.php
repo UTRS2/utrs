@@ -14,7 +14,12 @@
             </div>
         </div>
     @endif
-    <br/>
+
+    @if($noWikis)
+        <div class="alert alert-warning mt-2" role="alert">
+            <b>Notice:</b> You do not have the necessary permissions to view appeals on any queues.
+        </div>
+    @endif
 
     <div class="card mt-2 mb-4">
         <h5 class="card-header">Search appeals</h5>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
@@ -71,7 +71,7 @@ class User extends Authenticatable
 
     public function logs()
     {
-        return $this->morphMany(Log::class, 'object', 'objecttype', 'referenceobject');
+        return $this->morphMany(LogEntry::class, 'model');
     }
 
     /**
