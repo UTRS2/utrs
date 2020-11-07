@@ -179,6 +179,9 @@ class AppealController extends Controller
 
     public function search(Request $request)
     {
+        /** @var User $user */
+        $user = $request->user();
+
         $search = $request->validate(['search' => 'required|min:1'])['search'];
 
         $number = is_numeric($search) ? intval($search) : null;
@@ -188,15 +191,27 @@ class AppealController extends Controller
             $number = intval(substr($search, 1), 10);
         }
 
+        $wikis = collect(MwApiUrls::getSupportedWikis(true));
+
+        // For users who aren't developers, stewards or staff, show appeals only for own wikis
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff', 'developer'])) {
+            $wikis = $wikis
+                ->filter(function ($wiki) use ($user) {
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
+                });
+        }
+
         $appeal = Appeal::where('appealfor', $search)
             ->when($number, function (Builder $query, $number) {
                 return $query->orWhere('id', $number);
             })
+            ->whereIn('wiki', $wikis)
             ->orderByDesc('id')
             ->first();
-        
+
+        // for enwiki admins,
         // try to find an UTRS 1 appeal if no UTRS 2 appeals were found
-        if (!$appeal && Schema::hasTable('oldappeals')) {
+        if (!$appeal && $wikis->contains('enwiki') && Schema::hasTable('oldappeals')) {
             $appeal = Oldappeal::where(function (Builder $query) use ($search) {
                 return $query->where('hasAccount', true)
                     ->where('wikiAccountName', $search);
@@ -218,6 +233,14 @@ class AppealController extends Controller
                 ->back(302, [], route('appeal.list'))
                 ->withErrors([
                     'search' => 'No results found.'
+                ]);
+        }
+
+        if (!$user->can('view', $appeal)) {
+            return redirect()
+                ->back(302, [], route('appeal.list'))
+                ->withErrors([
+                    'search' => 'You are not allowed to view that appeal.'
                 ]);
         }
 
