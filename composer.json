@@ -15,14 +15,14 @@
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.5.5",
-        "laravel/framework": "^8.13",
+        "laravel/framework": "^8.14",
         "laravel/slack-notification-channel": "^2.3",
         "laravel/socialite": "^5.1",
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.1",
         "spatie/laravel-backup": "^6.10",
         "taavi/laravel-socialite-mediawiki": "^1.2",
-        "wikimedia/ip-utils": "^2.0"
+        "wikimedia/ip-utils": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",
