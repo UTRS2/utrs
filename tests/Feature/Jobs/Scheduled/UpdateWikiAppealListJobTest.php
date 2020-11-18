@@ -3,15 +3,15 @@
 namespace Tests\Feature\Jobs\Scheduled;
 
 use App\Models\Appeal;
+use App\Services\Facades\MediaWikiRepository;
 use App\Jobs\Scheduled\UpdateWikiAppealListJob;
-use App\MwApi\MwApiUrls;
 use Tests\TestCase;
 
 class UpdateWikiAppealListJobTest extends TestCase
 {
     public function getJob()
     {
-        return new UpdateWikiAppealListJob(MwApiUrls::getSupportedWikis()[0]);
+        return new UpdateWikiAppealListJob(MediaWikiRepository::getSupportedTargets()[0]);
     }
 
     public function test_returns_correct_value_when_empty()
