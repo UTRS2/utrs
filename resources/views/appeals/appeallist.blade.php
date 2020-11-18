@@ -60,9 +60,9 @@
                     </thead>
                     <tbody>
                     @foreach($appeals[$type] as $appeal)
-                        @if($appeal->status === \App\Appeal::STATUS_ADMIN)
+                        @if($appeal->status === \App\Models\Appeal::STATUS_ADMIN)
                             <tr class="table-dark-primary">
-                        @elseif($appeal->status === \App\Appeal::STATUS_CHECKUSER)
+                        @elseif($appeal->status === \App\Models\Appeal::STATUS_CHECKUSER)
                             <tr class="table-dark-warning">
                         @else
                             <tr>
