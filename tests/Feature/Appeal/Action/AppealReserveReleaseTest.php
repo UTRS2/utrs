@@ -3,7 +3,7 @@
 namespace Tests\Feature\Appeal\Action;
 
 use App\Models\Appeal;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 
 class AppealReserveReleaseTest extends BaseAppealActionTest
 {
@@ -50,7 +50,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
     public function test_user_cant_reserve_appeal_that_they_cant_see()
     {
         $user = $this->getUser();
-        $wiki = MwApiUrls::getSupportedWikis()[1];
+        $wiki = MediaWikiRepository::getSupportedTargets()[1];
 
         $appeal = Appeal::factory()->create([ 'wiki' => $wiki, 'handlingadmin' => null, ]);
 
@@ -135,7 +135,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
         $reservedToUser = $this->getUser([ 'ptwiki' => [ 'user', 'admin', ], ]);
         $this->assertNotEquals($user->id, $reservedToUser->id);
 
-        $wiki = MwApiUrls::getSupportedWikis()[1];
+        $wiki = MediaWikiRepository::getSupportedTargets()[1];
 
         $appeal = Appeal::factory()->create([
             'wiki'          => $wiki,
