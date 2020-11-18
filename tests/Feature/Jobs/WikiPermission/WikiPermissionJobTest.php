@@ -101,23 +101,4 @@ class WikiPermissionJobTest extends TestCase
         $newUserGroups = $method->invokeArgs($job, [$blockedUser, $groups]);
         $this->assertEquals(['sysop'], $newUserGroups, 'blocked user should not have group "user"');
     }
-
-    public function test_it_updates_wikis_on_user()
-    {
-        $otherWikiId = MwApiUrls::getSupportedWikis()[1];
-
-        $user = $this->getUser();
-        $user->wikis = MwApiUrls::getSupportedWikis()[1];
-        $user->save();
-
-        $wiki = MwApiUrls::getSupportedWikis()[0];
-
-        $job = new LoadLocalPermissionsJob($user, $wiki);
-
-        $job->updateDoesExist(true);
-        $this->assertEquals($otherWikiId . ',' . $job->getPermissionWikiId(), $user->wikis);
-
-        $job->updateDoesExist(false);
-        $this->assertEquals($otherWikiId, $user->wikis);
-    }
 }
