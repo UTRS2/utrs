@@ -12,7 +12,7 @@ use App\Models\Privatedata;
 use App\Models\Sendresponse;
 use App\Models\Template;
 use App\Models\User;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -127,7 +127,7 @@ class AppealController extends Controller
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
         $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
 
-        $wikis = collect(MwApiUrls::getSupportedWikis(true));
+        $wikis = collect(MediaWikiRepository::getSupportedTargets());
 
         // For users who aren't developers, stewards or staff, show appeals only for own wikis
         if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {

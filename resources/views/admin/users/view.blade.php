@@ -63,7 +63,7 @@
                 </thead>
 
                 <tbody>
-                @foreach(\App\MwApi\MwApiUrls::getSupportedWikis(true) as $wiki)
+                @foreach(\App\Services\Facades\MediaWikiRepository::getSupportedTargets(true) as $wiki)
                     @php
                         $wikiDbName = $wiki === 'global' ? '*' : $wiki;
                         /** @var \App\Models\User $user */ /** @var \App\Models\Permission $permission */
