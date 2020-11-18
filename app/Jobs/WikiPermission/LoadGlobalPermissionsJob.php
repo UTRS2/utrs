@@ -30,11 +30,6 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
         return '*';
     }
 
-    protected function getUserAllowedWikiId()
-    {
-        return 'global';
-    }
-
     public function shouldHaveUser(MediawikiUser $user, array $groups)
     {
         return in_array('steward', $groups) || in_array('staff', $groups);
