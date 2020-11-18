@@ -84,7 +84,10 @@ class RealMediaWikiApi implements MediaWikiApi
                     $this->loggedIn = true;
                     return;
                 }
-            } catch (Throwable $ignored) {}
+            } catch (Throwable $ignored) {
+                // we're checking if our session is invalid, it may just well throw an exception if it isn't
+                // but we don't need to handle it - we'll clear all cookies next in any case
+            }
 
             // looks like our session has expired, let's just kill it
             /** @var CookieJar $jar */
