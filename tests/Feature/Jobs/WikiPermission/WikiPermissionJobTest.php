@@ -91,22 +91,4 @@ class WikiPermissionJobTest extends TestCase
         $this->checkIsFiltered(['blocked' => false], false);
         $this->checkIsFiltered(['blocked' => true], true);
     }
-
-    public function test_it_updates_wikis_on_user()
-    {
-        $otherWikiId = $this->repository->getSupportedTargets(false)[1];
-
-        $user = $this->getUser();
-        $user->wikis = $otherWikiId;
-        $user->save();
-
-        $wiki = $this->repository->getSupportedTargets(false)[0];
-        $job = new LoadLocalPermissionsJob($user, $wiki);
-
-        $job->updateDoesExist(true);
-        $this->assertEquals($otherWikiId . ',' . $job->getPermissionWikiId(), $user->wikis);
-
-        $job->updateDoesExist(false);
-        $this->assertEquals($otherWikiId, $user->wikis);
-    }
 }
