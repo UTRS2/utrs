@@ -28,7 +28,7 @@ class AppealDeferTest extends DuskTestCase
 
             $appeal->refresh();
             $this->assertEquals(Appeal::STATUS_ADMIN, $appeal->status);
-            $this->assertNotNull($appeal->comments()->where('action', 'sent for admin review')->first());
+            $this->assertNotNull($appeal->comments()->where('action', 'sent for tool administrator review')->first());
         });
     }
 }
