@@ -2,18 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Ban;
-use App\Log;
-use App\Appeal;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
 use App\MwApi\MwApiExtras;
 use App\Utils\IPUtils;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class GetBlockDetailsJob implements ShouldQueue
 {
@@ -73,32 +72,32 @@ class GetBlockDetailsJob implements ShouldQueue
             if ($duplicateAppeal) {
                 $status = Appeal::STATUS_INVALID;
 
-                Log::create([
-                    'user' => 0,
-                    'referenceobject' => $this->appeal->id,
-                    'objecttype' => 'appeal',
+                LogEntry::create([
+                    'user_id' => 0,
+                    'model_id' => $this->appeal->id,
+                    'model_type' => 'appeal',
                     'action' => 'closed - duplicate',
                     'reason' => 'this appeal duplicates appeal #' . $duplicateAppeal->id,
                     'ip' => 'DB entry',
                     'ua' => 'DB/1',
-                    'protected' => Log::LOG_PROTECTION_NONE,
+                    'protected' => LogEntry::LOG_PROTECTION_NONE,
                 ]);
             }
 
-            $ban = Ban::where('ip', '=', 0)
-                ->where('target', $this->appeal->appealfor)
+            $banTargets = Ban::getTargetsToCheck($this->appeal->appealfor);
+            $ban = Ban::whereIn('target', $banTargets)
                 ->active()
                 ->first();
 
             if ($ban) {
                 $status = Appeal::STATUS_INVALID;
 
-                Log::create([
-                    'user' => 0,
-                    'referenceobject' => $this->appeal->id,
-                    'objecttype' => 'appeal',
+                LogEntry::create([
+                    'user_id' => 0,
+                    'model_id' => $this->appeal->id,
+                    'model_type' => 'appeal',
                     'action' => 'closed - invalidate',
-                    'reason' => 'account banned from UTRS',
+                    'reason' => 'banned from UTRS',
                     'ip' => 'DB entry',
                     'ua' => 'DB/1',
                     'protected' => 0

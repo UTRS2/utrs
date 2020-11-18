@@ -23,7 +23,7 @@
 
 			<div class="form-group">
                 {{ Form::label("default_status-", 'Default status after replying:') }}
-                {{ Form::select('default_status', \App\Appeal::REPLY_STATUS_CHANGE_OPTIONS, null, ['class' => 'form-control', 'id' => "default_status-"]) }}
+                {{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, null, ['class' => 'form-control', 'id' => "default_status-"]) }}
             </div>
 
 			<button type="submit" class="btn btn-success">Submit</button>

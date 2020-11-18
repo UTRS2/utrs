@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers\Appeal;
 
-use App\Appeal;
-use App\Ban;
 use App\Http\Controllers\Controller;
+use App\Http\Rules\SecretEqualsRule;
 use App\Jobs\GetBlockDetailsJob;
-use App\Log;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
+use App\Models\Privatedata;
+use App\Models\Sendresponse;
 use App\MwApi\MwApiUrls;
-use App\Privatedata;
-use App\Rules\SecretEqualsRule;
-use App\Sendresponse;
+use App\Utils\IPUtils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log as LaravelLog;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 class PublicAppealController extends Controller
 {
@@ -51,25 +51,23 @@ class PublicAppealController extends Controller
             return view('appeals.spam');
         }
 
-        $ban = Ban::where('ip', '=', 0)
-            ->where('target', $data['appealfor'])
+        $banTargets = Ban::getTargetsToCheck([
+            $ip,
+            $data['appealfor'],
+        ]);
+
+        $ban = Ban::whereIn('target', $banTargets)
             ->active()
             ->first();
 
         if ($ban) {
-            return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
+            return response()
+                ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
+                ->setStatusCode(403);
         }
 
-        // in the future this should not loop thru all existing ip bans
-        // and instead search for specific CIDR ranges or something similar
-        $banip = Ban::where('ip', '=', 1)
-            ->active()
-            ->get();
-
-        foreach ($banip as $ban) {
-            if (IpUtils::checkIp($ip, $ban->target)) {
-                return view('appeals.ban', [ 'expire' => $ban->expiry, 'id' => $ban->id ]);
-            }
+        if ($request->has('test_do_not_actually_save_anything')) {
+            return response('Test: not actually saving anything');
         }
 
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
@@ -82,13 +80,13 @@ class PublicAppealController extends Controller
                 'language'  => $lang,
             ]);
 
-            Log::create([
-                'user'            => -1,
-                'referenceobject' => $appeal->id,
-                'objecttype'      => 'appeal',
-                'action'          => 'create',
-                'ip'              => $ip,
-                'ua'              => $ua . ' ' . $lang,
+            LogEntry::create([
+                'user_id'    => -1,
+                'model_id'   => $appeal->id,
+                'model_type' => Appeal::class,
+                'action'     => 'create',
+                'ip'         => $ip,
+                'ua'         => $ua . ' ' . $lang,
             ]);
 
             GetBlockDetailsJob::dispatch($appeal);
@@ -111,7 +109,11 @@ class PublicAppealController extends Controller
     public function view(Request $request)
     {
         $hash = $request->input('hash');
-        $appeal = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
+        $appeal = Appeal::where('appealsecretkey', '=', $hash)->first();
+
+        if (!$appeal) {
+            return response()->view('appeals.public.wrongkey', [], 404);
+        }
 
         $appeal->loadMissing('comments.userObject');
 
@@ -131,15 +133,15 @@ class PublicAppealController extends Controller
         $lang = $request->header('Accept-Language');
         $reason = $request->input('comment');
 
-        Log::create([
-            'user'            => -1,
-            'referenceobject' => $appeal->id,
-            'objecttype'      => 'appeal',
-            'action'          => 'responded',
-            'reason'          => $reason,
-            'ip'              => $ip,
-            'ua'              => $ua . ' ' . $lang,
-            'protected'       => Log::LOG_PROTECTION_NONE,
+        LogEntry::create([
+            'user_id'    => -1,
+            'model_id'   => $appeal->id,
+            'model_type' => Appeal::class,
+            'action'     => 'responded',
+            'reason'     => $reason,
+            'ip'         => $ip,
+            'ua'         => $ua . ' ' . $lang,
+            'protected'  => LogEntry::LOG_PROTECTION_NONE,
         ]);
 
         if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
@@ -175,13 +177,13 @@ class PublicAppealController extends Controller
         $ip = $request->ip();
         $lang = $request->header('Accept-Language');
 
-        Log::create([
-            'user'            => 0,
-            'referenceobject' => $appeal->id,
-            'objecttype'      => 'appeal',
-            'action'          => 'account verifed',
-            'ip'              => $ip,
-            'ua'              => $ua . ' ' . $lang,
+        LogEntry::create([
+            'user_id'    => 0,
+            'model_id'   => $appeal->id,
+            'model_type' => Appeal::class,
+            'action'     => 'account verifed',
+            'ip'         => $ip,
+            'ua'         => $ua . ' ' . $lang,
         ]);
 
         return redirect()

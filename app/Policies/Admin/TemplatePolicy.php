@@ -2,8 +2,8 @@
 
 namespace App\Policies\Admin;
 
-use App\Template;
-use App\User;
+use App\Models\Template;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TemplatePolicy

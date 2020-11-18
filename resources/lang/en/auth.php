@@ -1,19 +1,13 @@
 <?php
 
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
-    |
-    */
-
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-
+    'auth-needed-screen' => [
+        'title' => 'Authentication requred',
+        'text' => 'Please authenticate in order to access your appeal.',
+        'key-text' => 'Please enter your appeal key in the text box',
+        'key-placeholder' => 'Appeal key here',
+        'submit-text' => 'View my appeal',
+        'login-text' => 'Administrators can use their Wikimedia account to log in to review this appeal.',
+        'oauth-button' => 'Login with your Wikimedia account',
+    ],
 ];

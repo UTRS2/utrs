@@ -2,7 +2,7 @@
 
 @section('title', $user->username)
 @section('content')
-    @can('viewAny', \App\User::class)
+    @can('viewAny', \App\Models\User::class)
         <div class="mb-2">
             <a href="{{ route('admin.users.list') }}" class="btn btn-primary">
                 Back to user list
@@ -66,7 +66,7 @@
                 @foreach(\App\MwApi\MwApiUrls::getSupportedWikis(true) as $wiki)
                     @php
                         $wikiDbName = $wiki === 'global' ? '*' : $wiki;
-                        /** @var \App\User $user */ /** @var \App\Permission $permission */
+                        /** @var \App\Models\User $user */ /** @var \App\Models\Permission $permission */
                         $permission = $user->permissions->where('wiki', $wikiDbName)->first();
                     @endphp
                     <tr>
@@ -74,7 +74,7 @@
                             {{ $wikiDbName }}
                         </td>
 
-                        @foreach(App\Permission::ALL_POSSIBILITIES as $permNode)
+                        @foreach(\App\Models\Permission::ALL_POSSIBILITIES as $permNode)
                             @php $oldValue = $permission && $permission->$permNode; @endphp
                             <td>
                                 @can('updatePermission', [$user, $wikiDbName, $permNode])
@@ -124,49 +124,7 @@
         </div>
     @endcan
 
-    <div class="card">
-        <h5 class="card-header">Logs</h5>
-        <div class="card-body">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Acting user</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Details</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($user->logs as $log)
-                    <tr class="{{ $log->action === 'comment' ? 'bg-success' : '' }}">
-                        @if($log->user == 0)
-                            <td><i>System</i></td>
-                        @else
-                            @can('view', $log->userObject)
-                                <td><i><a href="{{ route('admin.users.view', $log->userObject) }}">{{ $log->userObject->username }}</a></i></td>
-                            @else
-                                <td><i>{{ $log->userObject->username }}</i></td>
-                            @endcan
-                        @endif
-                        <td><i>{{ $log->timestamp }}</i></td>
-                        @if($log->protected && !$perms['functionary'])
-                            <td><i>Access to comment is restricted.</i></td>
-                        @else
-                            @if($log->comment!==null)
-                                <td><i>{{ $log->comment }}</i></td>
-                            @else
-                                @if(!is_null($log->reason))
-                                    <td><i>Action: {{ $log->action }},
-                                            Reason: {{ $log->reason }}</i></td>
-                                @else
-                                    <td><i>Action: {{ $log->action }}</i></td>
-                                @endif
-                            @endif
-                        @endif
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
+    @component('components.logs', ['logs' => $user->logs])
+    @endcomponent
     {{ Form::close() }}
 @endsection

@@ -31,8 +31,7 @@ Route::prefix('/public')->middleware('guest')->group(function () {
 });
 
 Route::get('/appeal/{id}', 'AppealController@appeal')
-    ->name('appeal.view')
-    ->middleware('auth');
+    ->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
@@ -61,7 +60,12 @@ Route::get('/admin/users', 'Admin\UserController@index')->name('admin.users.list
 Route::get('/admin/users/{user}', 'Admin\UserController@show')->name('admin.users.view');
 Route::post('/admin/users/{user}', 'Admin\UserController@update')->name('admin.users.update');
 
-Route::get('/admin/bans', 'AdminController@listbans');
+Route::get('/admin/bans', 'Admin\BanController@index')->name('admin.bans.list');
+Route::get('/admin/bans/create', 'Admin\BanController@new')->name('admin.bans.new');
+Route::post('/admin/bans/create', 'Admin\BanController@create')->name('admin.bans.create');
+Route::get('/admin/bans/{ban}', 'Admin\BanController@show')->name('admin.bans.view');
+Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
+
 Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
 Route::get('/admin/templates', 'AdminController@listtemplates');
 

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Appeal;
-use App\Ban;
-use App\Log;
-use App\Permission;
-use App\Sitenotice;
-use App\Template;
-use App\User;
-use App\Wikitask;
+use App\Models\Appeal;
+use App\Models\Ban;
+use App\Models\LogEntry;
+use App\Models\Sitenotice;
+use App\Models\Template;
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -19,46 +17,6 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    public function listbans(Request $request)
-    {
-        $this->authorize('viewAny', Ban::class);
-        $allbans = Ban::all();
-
-        /** @var User $user */
-        $user = $request->user();
-
-        $canSeeProtectedBans = false;
-
-        $tableheaders = ['ID', 'Target', 'Expires', 'Reason'];
-        $rowcontents = [];
-
-        foreach ($allbans as $ban) {
-            $idbutton = '<a href="/admin/bans/' . $ban->id . '"><button type="button" class="btn '.($ban->is_protected ? 'btn-danger' : 'btn-primary').'">' . $ban->id . '</button></a>';
-            $targetName = htmlspecialchars($ban->target);
-
-            if ($ban->is_protected) {
-                $canSee = $user->can('viewName', $ban);
-
-                if (!$canSeeProtectedBans && $canSee) {
-                    $canSeeProtectedBans = true;
-                }
-
-                $targetName = $canSee ? '<i class="text-danger">' . $targetName . '</i>'
-                    : '<i class="text-muted">(ban target removed)</i>';
-            }
-
-            $rowcontents[$ban->id] = [$idbutton, $targetName, $ban->expiry, htmlspecialchars($ban->reason)];
-        }
-
-        if ($canSeeProtectedBans) {
-            $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
-        } else {
-            $caption = null;
-        }
-
-        return view('admin.tables', ['title' => 'All Bans', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'caption' => $caption]);
     }
 
     public function listsitenotices()
@@ -89,7 +47,7 @@ class AdminController extends Controller
             $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
         }
 
-        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true]);
+        return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
     }
 
     public function showNewTemplate()
@@ -116,7 +74,7 @@ class AdminController extends Controller
 
         $template = Template::create($data);
 
-        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
     }
 
@@ -141,7 +99,7 @@ class AdminController extends Controller
         ]);
 
         $template->update($data);
-        Log::create(array('user' => Auth::id(), 'referenceobject' => $template->id, 'objecttype' => 'template', 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
     }
 }

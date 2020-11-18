@@ -2,8 +2,8 @@
 
 namespace App\Policies\Admin;
 
-use App\Sitenotice;
-use App\User;
+use App\Models\Sitenotice;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SiteNoticePolicy

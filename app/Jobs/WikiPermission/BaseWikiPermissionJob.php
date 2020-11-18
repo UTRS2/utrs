@@ -2,8 +2,8 @@
 
 namespace App\Jobs\WikiPermission;
 
-use App\User;
-use App\Permission;
+use App\Models\Permission;
+use App\Models\User;
 use App\MwApi\MwApiGetter;
 use Mediawiki\DataModel\User as MediawikiUser;
 
