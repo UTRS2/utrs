@@ -34,35 +34,21 @@ class LogEntry extends Model
     }
 
     /**
-     * This is a hacky method to try to guess what wiki is this log entry associated with
+     * This is a somewhat hacky method to try to guess what wiki is this log entry associated with
      * @return string|null
      */
     public function tryFigureAssociatedWiki()
     {
-        // This is super hacky code, but until https://github.com/UTRS2/utrs/issues/139 is fixed this is the best I can do
-        $class = null;
-        if (Str::startsWith($this->objecttype, 'App')) {
-            $class = $this->objecttype;
-        } else if ($this->objecttype === 'appeal') {
-            $class = Appeal::class;
-        }
-
-        if (!$class) {
+        if (!$this->model) {
             return null;
         }
 
-        $object = $class::where('id', $this->referenceobject)->first();
-
-        if (!$object) {
+        if (!$this->model->wiki) {
             return null;
         }
 
-        if (!$object->wiki) {
-            return null;
-        }
-
-        return in_array($object->wiki, MediaWikiRepository::getSupportedTargets())
-            ? $object->wiki
+        return in_array($this->model->wiki, MediaWikiRepository::getSupportedTargets())
+            ? $this->model->wiki
             : null;
     }
 }
