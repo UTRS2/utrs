@@ -3,7 +3,7 @@
 namespace App\Jobs\WikiPermission;
 
 use App\Models\User;
-use App\MwApi\MwApiExtras;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,11 +31,6 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
         return '*';
     }
 
-    protected function getUserAllowedWikiId()
-    {
-        return 'global';
-    }
-
     public function shouldHaveUser(MediawikiUser $user, array $groups)
     {
         return in_array('steward', $groups) || in_array('staff', $groups);
@@ -52,6 +47,6 @@ class LoadGlobalPermissionsJob extends BaseWikiPermissionJob implements ShouldQu
 
     public function checkIsBlocked()
     {
-        return MwApiExtras::getGlobalBlockInfo($this->user->username, -1) !== null;
+        return MediaWikiRepository::getGlobalApi()->getMediaWikiExtras()->getGlobalBlockInfo($this->user->username) !== null;
     }
 }

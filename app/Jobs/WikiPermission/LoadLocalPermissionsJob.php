@@ -3,7 +3,7 @@
 namespace App\Jobs\WikiPermission;
 
 use App\Models\User;
-use App\MwApi\MwApiExtras;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -61,6 +61,6 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
 
     public function checkIsBlocked()
     {
-        return MwApiExtras::getBlockInfo($this->getPermissionWikiId(), $this->user->username, -1) !== null;
+        return MediaWikiRepository::getApiForTarget($this->getPermissionWikiId())->getMediaWikiExtras()->getBlockInfo($this->user->username) !== null;
     }
 }

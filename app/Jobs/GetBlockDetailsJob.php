@@ -5,7 +5,8 @@ namespace App\Jobs;
 use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
-use App\MwApi\MwApiExtras;
+use App\Services\MediaWiki\Api\Data\Block;
+use App\Services\MediaWiki\Api\MediaWikiRepository;
 use App\Utils\IPUtils;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -53,16 +54,15 @@ class GetBlockDetailsJob implements ShouldQueue
 
     /**
      * Handle the data returned from the API calls
-     * @param array $blockData block details from mediawiki api
+     * @param Block $block block details from mediawiki api
      * @return void
      */
-    public function handleBlockData($blockData)
+    public function handleBlockData(Block $block)
     {
         $status = Appeal::STATUS_OPEN;
 
-        if (isset($blockData['user']) && !empty($blockData['user'])
-            && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $blockData['user'])) {
-            $this->appeal->appealfor = $blockData['user'];
+        if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget())) {
+            $this->appeal->appealfor = $block->getBlockTarget();
 
             $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
                 ->where('id', '!=', $this->appeal->id) // data should not be saved yet, but just in case
@@ -107,45 +107,50 @@ class GetBlockDetailsJob implements ShouldQueue
 
         $this->appeal->update([
             'blockfound' => 1,
-            'blockingadmin' => $blockData['by'],
-            'blockreason' => $blockData['reason'],
+            'blockingadmin' => $block->getBlockingUser(),
+            'blockreason' => $block->getBlockReason(),
             'status' => $status,
         ]);
 
         // if not verified and no verify token is set (=not emailed before) on a blocked user, attempt to send an e-mail
         if (!$this->appeal->user_verified && !$this->appeal->verify_token
-            && isset($blockData['user']) && $this->appeal->blocktype !== 0
+            && $block && $this->appeal->blocktype !== 0
             && $this->appeal->status !== Appeal::STATUS_INVALID) {
             VerifyBlockJob::dispatch($this->appeal);
         }
     }
-    
+
     /**
      * This processes the block appeal
+     * @param MediaWikiRepository $mediaWikiRepository
      * @return void
      */
-    public function handle()
+    public function handle(MediaWikiRepository $mediaWikiRepository)
     {
         if ($this->appeal->wiki === 'global') {
-            $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->appealfor, $this->appeal->id);
+            $mediaWikiExtras = $mediaWikiRepository->getGlobalApi()->getMediaWikiExtras();
 
-            if (!$blockData && !empty($this->appeal->hiddenip)) {
-                $blockData = MwApiExtras::getGlobalBlockInfo($this->appeal->hiddenip, $this->appeal->id);
+            $block = $mediaWikiExtras->getGlobalBlockInfo($this->appeal->appealfor, $this->appeal->id);
+
+            if (!$block && !empty($this->appeal->hiddenip)) {
+                $block = $mediaWikiExtras->getGlobalBlockInfo($this->appeal->hiddenip, $this->appeal->id);
             }
         } else {
+            $mediaWikiExtras = $mediaWikiRepository->getApiForTarget($this->appeal->wiki)->getMediaWikiExtras();
+
             if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
+                $block = $mediaWikiExtras->getBlockInfo(substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
             } else {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->appealfor, $this->appeal->id);
+                $block = $mediaWikiExtras->getBlockInfo($this->appeal->appealfor, $this->appeal->id);
             }
 
-            if (!$blockData && !empty($this->appeal->hiddenip)) {
-                $blockData = MwApiExtras::getBlockInfo($this->appeal->wiki, $this->appeal->hiddenip, $this->appeal->id);
+            if (!$block && !empty($this->appeal->hiddenip)) {
+                $block = $mediaWikiExtras->getBlockInfo($this->appeal->hiddenip, $this->appeal->id);
             }
         }
 
-        if ($blockData) {
-            $this->handleBlockData($blockData);
+        if ($block) {
+            $this->handleBlockData($block);
             return;
         }
 

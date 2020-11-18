@@ -17,7 +17,7 @@
                     {{ Form::textarea('custom', null, ['class' => 'form-control', 'rows' => 10, 'style' => 'height: 10rem;']) }}
                 </div>
                 {{ $userlist[Auth::id()] }}<br/>
-                {{ \App\MwApi\MwApiUrls::getWikiProperty($appeal->wiki, 'responding_user_title') }}
+                {{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($appeal->wiki, 'responding_user_title') }}
             </div>
         </div>
 

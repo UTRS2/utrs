@@ -3,15 +3,15 @@
 namespace App\Jobs;
 
 use App\Models\Appeal;
+use App\Services\Facades\MediaWikiRepository;
 use Exception;
-use RuntimeException;
-use App\MwApi\MwApiExtras;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class VerifyBlockJob implements ShouldQueue
 {
@@ -37,7 +37,7 @@ class VerifyBlockJob implements ShouldQueue
     public function handle()
     {
         // check if the user can be e-mailed according to MediaWiki API
-        if (!MwApiExtras::canEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername())) {
+        if (!MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->canEmail($this->appeal->getWikiEmailUsername())) {
             return;
         }
 
@@ -62,7 +62,11 @@ EOF;
 
 
         try {
-            MwApiExtras::sendEmail($this->appeal->wiki, $this->appeal->getWikiEmailUsername(), $title, $message);
+            $result = MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->sendEmail($this->appeal->getWikiEmailUsername(), $title, $message);
+
+            if (!$result) {
+                throw new RuntimeException('Failed sending an e-mail');
+            }
         } catch (Exception $exception) {
             // wrap exception to add appeal number to log
             throw new RuntimeException('Failed to send verification email for appeal #' . $this->appeal->id, 0, $exception);

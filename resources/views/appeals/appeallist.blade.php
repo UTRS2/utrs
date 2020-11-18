@@ -19,29 +19,30 @@
         <div class="alert alert-warning mt-2" role="alert">
             <b>Notice:</b> You do not have the necessary permissions to view appeals on any queues.
         </div>
-    @endif
+    @else
+        <div class="card mt-2 mb-4">
+            <h5 class="card-header">Search appeals</h5>
+            <div class="card-body">
+                {{ Form::open(['url' => route('appeal.search'), 'method' => 'GET']) }}
+                {{ Form::label('search', 'Search for Appeal ID or appealant') }}
+                <div class="input-group">
+                    {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
+                    <div class="input-group-append">
+                        {{ Form::submit('Search', ['class' => 'btn btn-primary']) }}
+                    </div>
 
-    <div class="card mt-2 mb-4">
-        <h5 class="card-header">Search appeals</h5>
-        <div class="card-body">
-            {{ Form::open(['url' => route('appeal.search'), 'method' => 'GET']) }}
-            {{ Form::label('search', 'Search for Appeal ID or appealant') }}
-            <div class="input-group">
-                {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
-                <div class="input-group-append">
-                    {{ Form::submit('Search', ['class' => 'btn btn-primary']) }}
-                </div>
-
-                @if($errors->has('search'))
-                    <span class="invalid-feedback" role="alert">
+                    @if($errors->has('search'))
+                        <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('search') }}</strong>
                     </span>
-                @endif
-            </div>
+                    @endif
+                </div>
 
-            {{ Form::close() }}
+                {{ Form::close() }}
+            </div>
         </div>
-    </div>
+    @endif
+
     @foreach($appealtypes as $type)
     <div class="card mt-4">
         <h5 class="card-header">{{ $type }}</h5>

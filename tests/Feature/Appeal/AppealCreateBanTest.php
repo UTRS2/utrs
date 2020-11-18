@@ -3,7 +3,7 @@
 namespace Tests\Feature\Appeal;
 
 use App\Models\Ban;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -19,7 +19,7 @@ class AppealCreateBanTest extends TestCase
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
             'appealfor' => 'Not banned user',
-            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'wiki' => MediaWikiRepository::getSupportedTargets()[0],
             'blocktype' => 1,
         ]);
 
@@ -35,7 +35,7 @@ class AppealCreateBanTest extends TestCase
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
             'appealfor' => 'Banned user 1',
-            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'wiki' => MediaWikiRepository::getSupportedTargets()[0],
             'blocktype' => 1,
         ]);
 
@@ -52,7 +52,7 @@ class AppealCreateBanTest extends TestCase
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
             'appealfor' => 'Not banned user',
-            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'wiki' => MediaWikiRepository::getSupportedTargets()[0],
             'blocktype' => 1,
         ]);
 
@@ -69,7 +69,7 @@ class AppealCreateBanTest extends TestCase
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
             'appealfor' => 'Not banned user',
-            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'wiki' => MediaWikiRepository::getSupportedTargets()[0],
             'blocktype' => 1,
         ]);
 
@@ -85,7 +85,7 @@ class AppealCreateBanTest extends TestCase
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
             'appealfor' => '10.0.0.0/24',
-            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'wiki' => MediaWikiRepository::getSupportedTargets()[0],
             'blocktype' => 0,
         ]);
 
