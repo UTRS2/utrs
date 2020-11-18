@@ -43,7 +43,7 @@ class UserController extends Controller
         $this->authorize('view', $user);
 
         // preload user objects for log entries; this reduces amount of DB queries
-        $user->loadMissing('logs.userObject');
+        $user->loadMissing('logs.user');
 
         return view('admin.users.view', ['user' => $user]);
     }
