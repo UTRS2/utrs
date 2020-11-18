@@ -45,7 +45,8 @@ class RealMediaWikiRepository implements MediaWikiRepository
     public function getApiForTarget(string $target): MediawikiApi
     {
         if (!in_array($target, $this->loadedApis)) {
-            $this->loadedApis[$target] = new RealMediaWikiApi(self::getTargetProperty($target, 'api_url'));
+            $this->loadedApis[$target] = new RealMediaWikiApi($target,
+                self::getTargetProperty($target, 'api_url'));
         }
 
         return $this->loadedApis[$target];
