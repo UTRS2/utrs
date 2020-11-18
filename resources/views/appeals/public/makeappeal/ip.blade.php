@@ -34,7 +34,7 @@
             <h5>About you</h5>
             <div class="form-group mb-4">
                 {{ Form::label('wiki', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki', \App\MwApi\MwApiUrls::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
+                {{ Form::select('wiki', \App\Services\Facades\MediaWikiRepository::getWikiDropdown(), old('wiki', 'enwiki'), ['class' => 'custom-select']) }}
             </div>
             {{ Form::hidden('blocktype', 0) }}
 

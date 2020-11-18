@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Wikitask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Laravel\Socialite\Facades\Socialite;
 
 class OauthLoginController extends Controller
@@ -25,20 +26,26 @@ class OauthLoginController extends Controller
 
     public function callback()
     {
-        $socialiteUser = Socialite::driver('mediawiki')->user();
+        // run this inside a transaction.
+        // helps mainly for development stuff, when loading permissions fails
+        $user = DB::transaction(function () {
+            $socialiteUser = Socialite::driver('mediawiki')->user();
 
-        $user = User::firstOrCreate([
-            'username' => $socialiteUser->name,
-        ], [
-            'wikis' => '',
-        ]);
-
-        if ($user->wasRecentlyCreated) {
-            Wikitask::create([
-                'task' => 'verifyaccount',
-                'actionid' => $user->id,
+            $user = User::firstOrCreate([
+                'username' => $socialiteUser->name,
+            ], [
+                'wikis' => '',
             ]);
-        }
+
+            if ($user->wasRecentlyCreated) {
+                Wikitask::create([
+                    'task' => 'verifyaccount',
+                    'actionid' => $user->id,
+                ]);
+            }
+
+            return $user;
+        });
 
         Auth::login($user, true);
         return redirect()->intended('/');
