@@ -63,7 +63,7 @@ class User extends Authenticatable
 
     public function logs()
     {
-        return $this->morphMany(LogEntry::class, 'object', 'objecttype', 'referenceobject');
+        return $this->morphMany(LogEntry::class, 'model');
     }
 
     /**
