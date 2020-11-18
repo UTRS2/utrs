@@ -39,27 +39,14 @@ class WikiPermissionJobTest extends TestCase
 
     private function getUser($data = []): User
     {
-        $testData = [
-            'name' => 'Test user ' . $this->ordinal,
-            'userid' => $this->ordinal,
-            'groups' => ['user', 'sysop'],
-            'implicitgroups' => ['autoconfirmed'],
-            'blocked' => false,
-            'editcount' => 1000,
-            'registration' => '2020-01-01 01:01:01',
-            'rights' => [],
-            'gender' => 'unknown',
-        ];
-
-        foreach ($data as $key => $value) {
-            $testData[$key] = $value;
-        }
-
-        $this->ordinal += 1;
-        $this->repository->addFakeUser('enwiki', $testData);
-        return User::factory()->create(['username' => $testData['name']]);
+        $user = $this->repository->addFakeUser('enwiki', $data);
+        return User::factory()->create(['username' => $user['name']]);
     }
 
+    /**
+     * @param $data array user data to override
+     * @param $expected bool true if this user should be filtered out, false otherwise
+     */
     private function checkIsFiltered($data, $expected)
     {
         $user = $this->getUser($data);
@@ -67,11 +54,8 @@ class WikiPermissionJobTest extends TestCase
         $job = new LoadLocalPermissionsJob($user, 'enwiki');
         $job->handle();
 
-        if ($expected) {
-            $this->assertEquals('', $user->wikis);
-        } else {
-            $this->assertEquals('enwiki', $user->wikis);
-        }
+        $isUser = $user->hasAnySpecifiedLocalOrGlobalPerms('enwiki', 'user');
+        $this->assertEquals(!$expected, $isUser);
     }
 
     public function test_it_filters_out_users_with_not_enough_edits()
