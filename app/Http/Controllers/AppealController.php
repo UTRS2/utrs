@@ -13,7 +13,6 @@ use App\Models\Sendresponse;
 use App\Models\Template;
 use App\Models\User;
 use App\Services\Facades\MediaWikiRepository;
-use Auth;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
