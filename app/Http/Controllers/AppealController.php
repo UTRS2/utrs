@@ -191,7 +191,7 @@ class AppealController extends Controller
             $number = intval(substr($search, 1), 10);
         }
 
-        $wikis = collect(MwApiUrls::getSupportedWikis(true));
+        $wikis = collect(MediaWikiRepository::getSupportedTargets(true));
 
         // For users who aren't developers, stewards or staff, show appeals only for own wikis
         if (!$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff', 'developer'])) {
