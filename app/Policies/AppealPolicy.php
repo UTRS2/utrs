@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Appeal;
 use App\Models\User;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Gate;
 
@@ -32,8 +33,11 @@ class AppealPolicy
      */
     public function view(User $user, Appeal $appeal)
     {
-        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['admin'])) {
-            return $this->deny('Only ' . $appeal->wiki . ' administrators are able to see this appeal.');
+        $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($appeal->wiki)
+            ->getRequiredGroupsForAction('appeal_view');
+
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, $neededPermissions)) {
+            return $this->deny('You can not see appeals in wiki "' . $appeal->wiki . '".');
         }
 
         if ($appeal->status === Appeal::STATUS_INVALID) {
@@ -48,7 +52,7 @@ class AppealPolicy
     /**
      * Determine whether the user can create appeals.
      *
-     * @param User $user
+     * @param ?User $user
      * @return mixed
      */
     public function create(?User $user)
@@ -71,8 +75,14 @@ class AppealPolicy
     {
         Gate::authorize('view', $appeal);
 
-        return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, ['admin']) ? true
-            : $this->deny('Only administrators can take actions on appeals.');
+        $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($appeal->wiki)
+            ->getRequiredGroupsForAction('appeal_handle');
+
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, [$neededPermissions])) {
+            return $this->deny('You can not take actions on this appeal.');
+        }
+
+        return true;
     }
 
     /**

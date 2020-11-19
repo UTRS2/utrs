@@ -133,7 +133,9 @@ class AppealController extends Controller
         if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
             $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
-                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
+                    $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($wiki)
+                        ->getRequiredGroupsForAction('appeal_view');
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, $neededPermissions);
                 });
         }
 
