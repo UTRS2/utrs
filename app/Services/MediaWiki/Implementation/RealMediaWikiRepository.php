@@ -13,7 +13,7 @@ class RealMediaWikiRepository implements MediaWikiRepository
     private $loadedApis = [];
 
     /** @var array [wiki id => {@link RealWikiPermissionHandler}] */
-    private $loadedPermissionHandlers;
+    private $loadedPermissionHandlers = [];
 
     /**
      * {@inheritDoc}
