@@ -51,7 +51,7 @@ class User extends Authenticatable
             $localJobs,
         ))
             ->then(function () {
-                $this->user->update([
+                $this->update([
                     'last_permission_check_at' => now(),
                 ]);
             })
