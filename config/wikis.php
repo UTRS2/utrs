@@ -11,7 +11,7 @@ return [
 
     'base_permissions' => [
         'appeal_view' => ['admin'],
-        'appeal_handle' => [], // also viewing rights are required
+        'appeal_handle' => ['user'], // allow everyone, also viewing rights are required
     ],
 
     'globalwiki' => [

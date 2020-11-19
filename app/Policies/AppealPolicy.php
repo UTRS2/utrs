@@ -78,7 +78,7 @@ class AppealPolicy
         $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($appeal->wiki)
             ->getRequiredGroupsForAction('appeal_handle');
 
-        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, [$neededPermissions])) {
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, $neededPermissions)) {
             return $this->deny('You can not take actions on this appeal.');
         }
 
