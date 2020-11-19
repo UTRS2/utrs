@@ -63,6 +63,9 @@ class RealMediaWikiRepository implements MediaWikiRepository
     public function getWikiDropdown(): array
     {
         return collect($this->getSupportedTargets())
+            ->filter(function ($wiki) {
+                return !$this->getTargetProperty($wiki, 'hidden_from_appeal_wiki_list', false);
+            })
             ->mapWithKeys(function ($wiki) {
                 return [$wiki => $this->getTargetProperty($wiki, 'name')];
             })
