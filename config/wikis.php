@@ -11,7 +11,7 @@ return [
 
     'base_permissions' => [
         'appeal_view' => ['admin'],
-        'appeal_handle' => ['user'], // allow everyone, also viewing rights are required
+        'appeal_handle' => ['admin'],
     ],
 
     'globalwiki' => [
@@ -23,6 +23,7 @@ return [
 
         'permission_overrides' => [
             'appeal_view' => ['steward'],
+            'appeal_handle' => ['steward'],
         ],
     ],
 

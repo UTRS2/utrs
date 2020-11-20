@@ -37,7 +37,7 @@ class AppealPolicy
             ->getRequiredGroupsForAction('appeal_view');
 
         if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, $neededPermissions)) {
-            return $this->deny('You can not see appeals in wiki "' . $appeal->wiki . '".');
+            return $this->deny('Viewing ' . $appeal->wiki . ' appeals is restricted to users in the following groups: ' . implode(', ', $neededPermissions));
         }
 
         if ($appeal->status === Appeal::STATUS_INVALID) {
