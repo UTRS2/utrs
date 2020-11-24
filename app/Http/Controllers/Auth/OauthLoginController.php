@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\LogEntry;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Wikitask;
@@ -24,18 +25,50 @@ class OauthLoginController extends Controller
             ->redirect();
     }
 
-    public function callback()
+    public function callback(Request $request)
     {
         // run this inside a transaction.
         // helps mainly for development stuff, when loading permissions fails
-        $user = DB::transaction(function () {
+        $user = DB::transaction(function () use ($request) {
             $socialiteUser = Socialite::driver('mediawiki')->user();
 
-            $user = User::firstOrCreate([
-                'username' => $socialiteUser->name,
-            ], [
-                'wikis' => '',
+            $user = User::firstWhere([
+                'username' => $socialiteUser->getName(),
             ]);
+
+            if (!$user) {
+                $user = User::firstOrCreate([
+                    'mediawiki_id' => $socialiteUser->getId(),
+                ], [
+                    'username' => $socialiteUser->getName(),
+                ]);
+            }
+
+            if ($user->mediawiki_id !== $socialiteUser->getId()) {
+                $user->mediawiki_id = $socialiteUser->getId();
+                $user->save();
+            }
+
+            if ($user->username !== $socialiteUser->getName()) {
+                $oldUsername = $user->username;
+                $user->username = $socialiteUser->getName();
+                $user->save();
+
+                $ua = $request->header('User-Agent');
+                $ip = $request->ip();
+                $lang = $request->header('Accept-Language');
+
+                LogEntry::create([
+                    'user_id' => $user->id,
+                    'model_id' => $user->id,
+                    'model_type' => User::class,
+                    'action' => 'modified user - changed user name from ' . $oldUsername . ' to ' . $socialiteUser->getName(),
+                    'reason' => 'automatically detected changed user name when logging in',
+                    'ip' => $ip,
+                    'ua' => $ua . ' ' . $lang,
+                    'protected' => LogEntry::LOG_PROTECTION_NONE,
+                ]);
+            }
 
             if ($user->wasRecentlyCreated) {
                 Wikitask::create([
