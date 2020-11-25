@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Log;
 use App\Models\LogEntry;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -31,6 +32,12 @@ class OauthLoginController extends Controller
         // helps mainly for development stuff, when loading permissions fails
         $user = DB::transaction(function () use ($request) {
             $socialiteUser = Socialite::driver('mediawiki')->user();
+
+            // sanity check
+            if (!$socialiteUser->getId() || !$socialiteUser->getName()) {
+                Log::error('OAuth failed: MediaWiki api returned an invalid user object ' . json_encode($socialiteUser));
+                abort(500);
+            }
 
             $user = User::firstWhere([
                 'username' => $socialiteUser->getName(),
