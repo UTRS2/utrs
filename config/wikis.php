@@ -12,6 +12,7 @@ return [
     'base_permissions' => [
         'appeal_view' => ['admin'],
         'appeal_handle' => ['admin'],
+        'appeal_checkuser' => ['checkuser'],
     ],
 
     'globalwiki' => [
@@ -24,6 +25,7 @@ return [
         'permission_overrides' => [
             'appeal_view' => ['steward'],
             'appeal_handle' => ['steward'],
+            'appeal_checkuser' => ['steward'],
         ],
     ],
 

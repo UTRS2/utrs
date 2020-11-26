@@ -131,7 +131,7 @@
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
                                     </div>
-                                    {{ Form::open(['url' => '/appeal/checkuser/' . $id]) }}
+                                    {{ Form::open(['url' => route('appeal.action.checkuser', $info)]) }}
                                         {{ Form::token() }}
 
                                         <div class="form-group">

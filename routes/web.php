@@ -35,7 +35,7 @@ Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth')->name(
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
 
-Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser');
+Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
 

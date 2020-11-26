@@ -97,4 +97,14 @@ class AppealPolicy
         // Handle via Gate::before()
         return $this->deny('Only developers can take developer actions on appeals.');
     }
+
+    public function viewCheckUserInformation(User $user, Appeal $appeal)
+    {
+        Gate::authorize('view', $appeal);
+
+        $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($appeal->wiki)
+            ->getRequiredGroupsForAction('appeal_checkuser');
+
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, $neededPermissions);
+    }
 }
