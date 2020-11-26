@@ -3,6 +3,7 @@
 namespace Tests\Feature\Appeal\Action;
 
 use App\Models\Appeal;
+use App\Models\Privatedata;
 
 class ActionAppealCheckUserTest extends BaseAppealActionTest
 {
@@ -55,6 +56,10 @@ class ActionAppealCheckUserTest extends BaseAppealActionTest
         $user = $this->getFunctionaryTooladminUser();
         $appeal = Appeal::factory()->create();
 
+        Privatedata::factory()->create([
+            'appealID' => $appeal->id,
+        ]);
+
         $response = $this
             ->actingAs($user)
             ->get(route('appeal.view', $appeal));
@@ -71,6 +76,10 @@ class ActionAppealCheckUserTest extends BaseAppealActionTest
     {
         $user = $this->getFunctionaryTooladminUser();
         $appeal = Appeal::factory()->create();
+        Privatedata::factory()->create([
+            'appealID' => $appeal->id,
+            'useragent' => 'Example string to look out for!!!',
+        ]);
 
         $this->actingAs($user)
             ->post(route('appeal.action.viewcheckuser', $appeal), ['reason' => 'Test example']);
@@ -79,7 +88,7 @@ class ActionAppealCheckUserTest extends BaseAppealActionTest
             ->actingAs($user)
             ->get(route('appeal.view', $appeal));
 
-        $response->assertSee('The CU data for this appeal has expired');
+        $response->assertSee('Example string to look out for!!!');
     }
 
 }
