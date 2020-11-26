@@ -6,7 +6,7 @@ use App\Models\Appeal;
 use App\Models\Privatedata;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class PrivateDataFactory extends Factory
+class PrivatedataFactory extends Factory
 {
     protected $model = Privatedata::class;
 
