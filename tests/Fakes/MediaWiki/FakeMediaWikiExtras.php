@@ -38,4 +38,19 @@ class FakeMediaWikiExtras implements MediaWikiExtras
     {
         return $this->api->getWikiName() === 'global' ? $this->getBlockInfo($target, $appealId) : null;
     }
+
+    public function getGlobalGroupMembership(string $userName): array
+    {
+        $user = $this->api->getRepository()->getFakeUser($this->api->getWikiName(), $userName);
+        $globalrights = [];
+
+        if (in_array('steward', $user['rights'])) {
+            $globalrights[] = 'steward';
+        }
+
+        if (in_array('staff', $user['rights'])) {
+            $globalrights[] = 'staff';
+        }
+        return $globalrights;
+    }
 }
