@@ -45,4 +45,12 @@ interface MediaWikiExtras
      * @return Block|null the block information that comes up, null if user is not (b)locked
      */
     public function getGlobalBlockInfo(string $target, int $appealId = -1): ?Block;
+
+    /**
+     * Retrieve user groups of a specified username
+     *
+     * @param string $userName user name
+     * @return array global groups this user has
+     */
+    public function getGlobalGroupMembership(string $userName): array;
 }
