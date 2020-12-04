@@ -36,6 +36,10 @@
                     <td>{{ $user->username }}</td>
                 </tr>
                 <tr>
+                    <th>CentralAuth ID</th>
+                    <td>{{ $user->mediawiki_id ?? '(not known)' }}</td>
+                </tr>
+                <tr>
                     <th>Last Permission Check</th>
                     <td>{{ $user->last_permission_check_at }}</td>
                 </tr>

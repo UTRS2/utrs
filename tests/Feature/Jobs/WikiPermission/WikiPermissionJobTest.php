@@ -58,12 +58,6 @@ class WikiPermissionJobTest extends TestCase
         $this->assertEquals(!$expected, $isUser);
     }
 
-    public function test_it_filters_out_users_with_not_enough_edits()
-    {
-        $this->checkIsFiltered(['editcount' => 3000], false);
-        $this->checkIsFiltered(['editcount' => 3], true);
-    }
-
     public function test_it_filters_out_users_who_are_not_sysops()
     {
         $this->checkIsFiltered(['groups' => ['user', 'sysop']], false);
