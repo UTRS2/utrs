@@ -149,4 +149,23 @@ class RealMediaWikiExtras implements MediaWikiExtras
             $entry->getTimestamp(),
         );
     }
+
+    public function getGlobalGroupMembership(string $userName): array
+    {
+        $response = $this->getApi()->getRequest(new SimpleRequest(
+            'query',
+            [
+                'list' => 'globalallusers',
+                'agufrom' => $userName,
+                'aguto' => $userName,
+                'aguprop' => 'groups',
+            ]
+        ));
+
+        if (empty($response['query']['globalallusers']) || !isset($response['query']['globalallusers'][0]['groups'])) {
+            return [];
+        }
+
+        return $response['query']['globalallusers'][0]['groups'];
+    }
 }
