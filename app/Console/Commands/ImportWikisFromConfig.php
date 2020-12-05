@@ -23,16 +23,6 @@ class ImportWikisFromConfig extends Command
     protected $description = 'Synchronize all changes in config/wikis.php to database';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
