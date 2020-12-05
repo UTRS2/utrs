@@ -10,9 +10,9 @@ return [
     ],
 
     'base_permissions' => [
-        'appeal_view' => ['admin'],
-        'appeal_handle' => ['admin'],
-        'appeal_checkuser' => ['checkuser'],
+        'appeal_view' => ['admin', 'staff', 'steward'],
+        'appeal_handle' => ['admin', 'staff', 'steward'],
+        'appeal_checkuser' => ['checkuser', 'staff', 'steward'],
     ],
 
     'globalwiki' => [
@@ -23,9 +23,9 @@ return [
         'hidden_from_appeal_wiki_list' => true,
 
         'permission_overrides' => [
-            'appeal_view' => ['steward'],
-            'appeal_handle' => ['steward'],
-            'appeal_checkuser' => ['steward'],
+            'appeal_view' => ['steward', 'staff'],
+            'appeal_handle' => ['steward', 'staff'],
+            'appeal_checkuser' => ['steward', 'staff'],
         ],
     ],
 
