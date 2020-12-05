@@ -22,9 +22,16 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"> <!-- left nav -->
             @auth
-                <li class="nav-item">
-                    <a href="{{ route('appeal.list') }}" class="nav-link">Appeal list</a>
-                </li>
+                @can('viewAny', \App\Models\Appeal::class)
+                    <li class="nav-item">
+                        <a href="{{ route('appeal.list') }}" class="nav-link">Appeal list</a>
+                    </li>
+                @endcan
+                @can('viewAny', \App\Models\Wiki::class)
+                    <li class="nav-item">
+                        <a href="{{ route('wiki.list') }}" class="nav-link">Supported wikis</a>
+                    </li>
+                @endcan
             @endauth
         </ul>
         <ul class="navbar-nav"> <!-- right nav -->
