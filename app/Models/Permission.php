@@ -62,109 +62,22 @@ class Permission extends Model
             ->isNotEmpty();
     }
 
-    public static function whoami($id, $wiki)
-    {
-        abort_if(is_null($id), 'No logged in user');
-
-        if ($wiki === "*") {
-            return Permission::where('userid', '=', $id)
-                ->where('wiki', '=', '*')
-                ->first();
-        }
-
-        return Permission::where('userid', '=', $id)
-            ->where('wiki', $wiki)
-            ->orWhere('wiki', '*')
-            ->first();
-    }
-
+    /** @deprecated use {@link Permission::hasAnySpecifiedPerms()} instead, or use policies */
     public static function hasAnyPermission($userId, $wiki, $permissionArray)
     {
         abort_if(is_null($userId), 403, 'No logged in user');
-        $permission = Permission::where('userid', $userId)
-            ->where('wiki', $wiki)
-            ->first();
-
-        if (!$permission) {
-            return false;
-        }
-
-        foreach ($permissionArray as $permissionName) {
-            if ($permission->{Str::lower($permissionName)}) {
-                return true;
-            }
-        }
-
-        return false;
+        return User::findOrFail($userId)->hasAnySpecifiedLocalOrGlobalPerms($wiki, $permissionArray);
     }
 
-    public static function checkSecurity($id, $level, $wiki)
-    {
-        abort_if(is_null($id), 403, 'No logged in user');
-
-        if ($wiki === '*' || $wiki === 'global') {
-            $specific = Permission::where('userid', '=', $id)
-                ->where('wiki', '=', '*')
-                ->first();
-        } else {
-            if (self::checkSecurity($id, $level, '*')) {
-                return true;
-            }
-
-            $specific = Permission::where('userid', '=', $id)
-                ->where('wiki', $wiki)
-                ->first();
-        }
-
-        if (!$specific) {
-            return false;
-        }
-
-        if ($level == "OVERSIGHT") {
-            return $specific->oversight;
-        }
-        if ($level == "CHECKUSER") {
-            return $specific->checkuser;
-        }
-        if ($level == "STEWARD") {
-            return $specific->steward;
-        }
-        if ($level == "STAFF") {
-            return $specific->staff;
-        }
-        if ($level == "DEVELOPER") {
-            return $specific->developer;
-        }
-        if ($level == "TOOLADMIN") {
-            return $specific->tooladmin;
-        }
-        if ($level == "ADMIN") {
-            return $specific->admin;
-        }
-        if ($level == "USER") {
-            return $specific->user;
-        }
-
-        return false;
-    }
-
+    /** @deprecated use {@link User::hasAnySpecifiedLocalOrGlobalPerms()} instead, or use policies */
     public static function checkCheckuser($id, $wiki)
     {
         return self::hasAnyPermission($id, $wiki, ['checkuser']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
     }
 
-    public static function checkOversight($id, $wiki)
-    {
-        return self::hasAnyPermission($id, $wiki, ['oversight']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
-    }
-
+    /** @deprecated use {@link User::hasAnySpecifiedLocalOrGlobalPerms()} instead, or use policies */
     public static function checkAdmin($id, $wiki)
     {
         return self::hasAnyPermission($id, $wiki, ['admin']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
-    }
-
-    public static function checkToolAdmin($id, $wiki)
-    {
-        return self::hasAnyPermission($id, $wiki, ['tooladmin', 'oversight', 'checkuser']) || self::hasAnyPermission($id, '*', ['tooladmin', 'developer', 'steward', 'staff', 'developer']);
     }
 }

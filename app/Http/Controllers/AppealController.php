@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\GetBlockDetailsJob;
 use App\Models\Appeal;
 use App\Models\LogEntry;
 use App\Models\Old\Oldappeal;
@@ -43,11 +42,13 @@ class AppealController extends Controller
         }
 
         $info = Appeal::find($id);
+        /** @var User $user */
+        $user = Auth::user();
 
         // UTRS 2 appeal exists
         if ($info) {
             $this->authorize('view', $info);
-            $isDeveloper = Permission::checkSecurity(Auth::id(), "DEVELOPER","*");
+            $isDeveloper = $user->hasAnySpecifiedLocalOrGlobalPerms([], 'developer');
 
             $logs = $info->comments;
 
@@ -55,9 +56,9 @@ class AppealController extends Controller
 
             $perms = [];
             $perms['checkuser'] = Permission::checkCheckuser(Auth::id(), $info->wiki);
-            $perms['functionary'] = $perms['checkuser'] || Permission::checkOversight(Auth::id(), $info->wiki);
-            $perms['admin'] = Permission::checkAdmin(Auth::id(), $info->wiki);
-            $perms['tooladmin'] = Permission::checkToolAdmin(Auth::id(), $info->wiki);
+            $perms['functionary'] = $perms['checkuser'] || $user->hasAnySpecifiedLocalOrGlobalPerms([], 'oversight');
+            $perms['admin'] = $user->hasAnySpecifiedLocalOrGlobalPerms([], 'admin');
+            $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms([], 'tooladmin');
             $perms['developer'] = $isDeveloper;
 
             $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
@@ -286,36 +287,28 @@ class AppealController extends Controller
         }
 
         LogEntry::create(['user_id' => $user, 'model_id' => $appeal->id, 'model_type' => Appeal::class, 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_FUNCTIONARY]);
-        return redirect('appeal/' . $appeal->id);
+        return redirect()->route('appeal.view', $appeal);
     }
   
-    public function comment($id, Request $request)
+    public function comment(Request $request, Appeal $appeal)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
+        $this->authorize('update', $appeal);
 
-        $appeal = Appeal::findOrFail($id);
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $reason = $request->input('comment');
-        $user = Auth::id();
-        $appeal = Appeal::findOrFail($id);
-        $checkuser = Permission::checkAdmin($user, $appeal->wiki);
-        $log = LogEntry::create(array('user_id' => $user, 'model_id' => $id, 'model_type' => Appeal::class, 'action' => 'comment', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_ADMIN));
-        return redirect('appeal/' . $id);
+
+        LogEntry::create(array('user_id' => $request->user()->id, 'model_id' => $appeal->id, 'model_type' => Appeal::class, 'action' => 'comment', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_ADMIN));
+        return redirect()->route('appeal.view', $appeal);
     }
 
     public function respond(Request $request, Appeal $appeal, Template $template)
     {
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_unless($admin, 403, 'You are not an administrator on the wiki this appeal is for');
-        abort_unless($appeal->handlingadmin === $user, 403, 'You are not the handling administrator.');
+        $this->authorize('update', $appeal);
+        $user = $request->user();
+
+        abort_unless($appeal->handlingadmin === $user->id, 403, 'You are not the handling administrator.');
 
         $ua = $request->server('HTTP_USER_AGENT');
         $ip = $request->ip();
@@ -331,7 +324,7 @@ class AppealController extends Controller
             ]);
 
             LogEntry::create([
-                'user_id' => $user,
+                'user_id' => $user->id,
                 'model_id' => $appeal->id,
                 'model_type' => Appeal::class,
                 'action' => 'set status as ' . $status,
@@ -343,7 +336,7 @@ class AppealController extends Controller
 
         Sendresponse::create(['appealID' => $appeal->id, 'template' => $template->id]);
         LogEntry::create([
-            'user_id' => $user,
+            'user_id' => $user->id,
             'model_id' => $appeal->id,
             'model_type' => Appeal::class,
             'action' => 'responded',
@@ -353,23 +346,23 @@ class AppealController extends Controller
             'protected' => LogEntry::LOG_PROTECTION_NONE,
         ]);
 
-        return redirect('appeal/' . $appeal->id);
+        return redirect()->route('appeal.view', $appeal);
     }
 
     public function respondCustomSubmit(Request $request, Appeal $appeal)
     {
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_unless($admin, 403, 'You are not an administrator on the wiki this appeal is for');
-        abort_unless($appeal->handlingadmin === $user, 403, 'You are not the handling administrator.');
+        $this->authorize('update', $appeal);
+        $user = $request->user();
+
+        abort_unless($appeal->handlingadmin === $user->id, 403, 'You are not the handling administrator.');
 
         $status = $request->validate([
             'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
         ])['status'];
 
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
 
         if ($status && $status !== $appeal->status) {
             $appeal->update([
@@ -377,7 +370,7 @@ class AppealController extends Controller
             ]);
 
             LogEntry::create([
-                'user_id' => $user,
+                'user_id' => $user->id,
                 'model_id' => $appeal->id,
                 'model_type' => Appeal::class,
                 'action' => 'set status as ' . $status,
@@ -394,7 +387,7 @@ class AppealController extends Controller
         ]);
 
         LogEntry::create([
-            'user_id' => $user,
+            'user_id' => $user->id,
             'model_id' => $appeal->id,
             'model_type' => Appeal::class,
             'action' => 'responded',
@@ -404,24 +397,20 @@ class AppealController extends Controller
             'protected' => LogEntry::LOG_PROTECTION_NONE,
         ]);
 
-        return redirect('appeal/' . $appeal->id);
+        return redirect()->route('appeal.view', $appeal);
     }
 
-    public function viewtemplates(Appeal $appeal)
+    public function viewtemplates(Request $request, Appeal $appeal)
     {
-        $user = Auth::user();
-        $admin = Permission::checkAdmin($user->id, $appeal->wiki);
-        abort_unless($admin,403, 'You are not an administrator.');
+        $this->authorize('update', $appeal);
 
         $templates = Template::where('active', '=', 1)->get();
-        return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'username' => $user->username]);
+        return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'username' => $request->user()->username]);
     }
 
     public function respondCustom(Appeal $appeal)
     {
-        $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
-        abort_unless($admin,403, 'You are not an administrator.');
+        $this->authorize('update', $appeal);
 
         $userlist = [];
         $userlist[Auth::id()] = Auth::user()->username;
@@ -431,18 +420,18 @@ class AppealController extends Controller
 
     public function checkuserreview(Request $request, Appeal $appeal)
     {
-        $ua = $request->header('User-Agent');
-        $lang = $request->header('Accept-Language');
-        $ip = $request->ip();
-        $user = Auth::id();
+        $this->authorize('update', $appeal);
 
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
+        $ua = $request->userAgent();
+        $ip = $request->ip();
+        $lang = $request->header('Accept-Language');
+        $user = $request->user();
+
+        abort_if($appeal->status !== Appeal::STATUS_OPEN, 403, 'Appeal is in invalid state');
 
         $reason = $request->validate([
             'cu_reason' => 'required|string|min:3|max:190',
         ])['cu_reason'];
-
-        abort_unless($admin && $appeal->status == Appeal::STATUS_OPEN, 403, 'Forbidden');
 
         $appeal->status = Appeal::STATUS_CHECKUSER;
         $appeal->save();
