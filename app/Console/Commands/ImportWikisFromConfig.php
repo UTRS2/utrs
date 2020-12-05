@@ -20,7 +20,7 @@ class ImportWikisFromConfig extends Command
      *
      * @var string
      */
-    protected $description = 'Syncronize all changes in config/wikis.php to database';
+    protected $description = 'Synchronize all changes in config/wikis.php to database';
 
     /**
      * Create a new command instance.
