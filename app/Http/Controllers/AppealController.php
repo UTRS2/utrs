@@ -56,9 +56,9 @@ class AppealController extends Controller
 
             $perms = [];
             $perms['checkuser'] = Permission::checkCheckuser(Auth::id(), $info->wiki);
-            $perms['functionary'] = $perms['checkuser'] || $user->hasAnySpecifiedLocalOrGlobalPerms([], 'oversight');
-            $perms['admin'] = $user->hasAnySpecifiedLocalOrGlobalPerms([], 'admin');
-            $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms([], 'tooladmin');
+            $perms['functionary'] = $perms['checkuser'] || $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'oversight');
+            $perms['admin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'admin');
+            $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'tooladmin');
             $perms['developer'] = $isDeveloper;
 
             $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
