@@ -16,6 +16,7 @@ class AddWikiIdToTemplates extends Migration
         Schema::table('templates', function (Blueprint $table) {
             $table->unsignedBigInteger('wiki_id')
                 ->nullable(true);
+
             $table->foreign('wiki_id')
                 ->references('id')
                 ->on('wikis')
