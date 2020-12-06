@@ -72,11 +72,6 @@ def verifyusers():
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
                 continue
-            page = masterwiki.pages[userpage]
-            page.save(page.text() + """
-== Your UTRS Account ==
-You have no wikis in which you meet the requirements for UTRS. Your account has been removed and you will be required to reregister once you meet the requirements. If you are blocked on any wiki that UTRS uses, please resolve that before registering agian also. ~~~~
-                        """, "UTRS Account - Does not meet requirements")
             calldb("delete from wikitasks where id="+str(wtid)+";","write")
             calldb("delete from users where id="+str(user)+";","write")
             print "ACCOUNT DELETION: " + username
@@ -87,11 +82,6 @@ You have no wikis in which you meet the requirements for UTRS. Your account has 
                     try:userpage = "User talk:"+username
                     except:
                         userpage = "User talk:"+str(username)
-                    page = masterwiki.pages[userpage]
-                    page.save(page.text() + """
-== Your UTRS Account ==
-You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
-                        """, "UTRS Account for blocked users")
                     calldb("delete from wikitasks where id="+str(wtid)+";","write")
                     calldb("delete from users where id="+str(user)+";","write")
                     print "ACCOUNT DELETION: " + username
@@ -102,11 +92,6 @@ You are currently blocked on one of the sites UTRS does appeals for and therefor
                 try:userpage = "User talk:"+username
                 except:
                     userpage = "User talk:"+str(username)
-                page = masterwiki.pages[userpage]
-                page.save(page.text() + """
-== Your UTRS Account ==
-You are currently blocked on one of the sites UTRS does appeals for and therefore you can't access appeals. Your account has been removed. ~~~~
-                    """, "UTRS Account for blocked users")
                 calldb("delete from wikitasks where id="+str(wtid)+";","write")
                 calldb("delete from users where id="+str(user)+";","write")
                 print "ACCOUNT DELETION: " + username
