@@ -48,55 +48,6 @@ def calldb(command,style):
             connection.close()
         if style == "read":return record
         else:return "Done"
-def verifyusers():
-    results = calldb("select * from wikitasks where task = 'verifyaccount';","read")
-    for result in results:
-        wtid=result[0]
-        user = result[2]
-        userresults = calldb("select id,username from users where id = '"+str(user)+"';","read")[0]
-        
-        try:username = str(userresults[1])
-        except:username = userresults[1]
-        userpage = "User talk:"+username
-        userresult = calldb("select wikis from users where id = '"+str(user)+"';","read")[0]
-        if userresult[0] == None:
-            params = {'action': 'query',
-            'format': 'json',
-            'list': 'users',
-            'ususers': username
-            }
-            raw = callAPI(params)
-            try:userexist = raw["query"]["users"][0]["userid"]
-            except:
-                calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                calldb("delete from users where id="+str(user)+";","write")
-                print "ACCOUNT DELETION: " + username
-                continue
-            calldb("delete from wikitasks where id="+str(wtid)+";","write")
-            calldb("delete from users where id="+str(user)+";","write")
-            print "ACCOUNT DELETION: " + username
-            continue
-        if "," in userresult[0]:
-            for wiki in userresult[0].split(","):
-                if checkBlock(username,wiki):
-                    try:userpage = "User talk:"+username
-                    except:
-                        userpage = "User talk:"+str(username)
-                    calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                    calldb("delete from users where id="+str(user)+";","write")
-                    print "ACCOUNT DELETION: " + username
-                    continue
-
-        else:
-            if checkBlock(username,userresult[0]):
-                try:userpage = "User talk:"+username
-                except:
-                    userpage = "User talk:"+str(username)
-                calldb("delete from wikitasks where id="+str(wtid)+";","write")
-                calldb("delete from users where id="+str(user)+";","write")
-                print "ACCOUNT DELETION: " + username
-                continue
-        calldb("delete from wikitasks where id="+str(wtid)+";","write")
 def checkBlock(target,wiki):
     if wiki == "enwiki" or wiki == "ptwiki":
         params = {'action': 'query',
@@ -168,7 +119,6 @@ def closeNotFound():
         if datesince(logs[0], 2):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into log_entries (user_id, model_id,model_type, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','App\\\\Models\\\\Appeal','closed - expired','DB entry','DB/Python',0);","write")
-verifyusers()
 clearPrivateData()
 appeallist()
 closeNotFound()
