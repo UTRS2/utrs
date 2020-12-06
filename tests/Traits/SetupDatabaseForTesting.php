@@ -3,7 +3,6 @@
 namespace Tests\Traits;
 
 use App\Models\Wiki;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 /**
