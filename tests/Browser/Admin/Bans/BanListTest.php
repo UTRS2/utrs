@@ -4,14 +4,14 @@ namespace Tests\Browser\Admin\Bans;
 
 use App\Models\Ban;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Tests\Traits\TestHasUsers;
+use Tests\Traits\SetupDatabaseForTesting;
 
 class BanListTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 
     public function test_non_tooladmin_cant_view_ban_list()

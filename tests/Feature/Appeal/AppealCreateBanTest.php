@@ -3,13 +3,13 @@
 namespace Tests\Feature\Appeal;
 
 use App\Models\Ban;
+use Tests\Traits\SetupDatabaseForTesting;
 use App\Services\Facades\MediaWikiRepository;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
 class AppealCreateBanTest extends TestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
 
     public function test_can_create_appeal_when_not_banned()
     {

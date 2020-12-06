@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Appeal\Action;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\SetupDatabaseForTesting;
 use Tests\TestCase;
 use Tests\Traits\TestHasUsers;
 
 abstract class BaseAppealActionTest extends TestCase
 {
-    use RefreshDatabase;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 }

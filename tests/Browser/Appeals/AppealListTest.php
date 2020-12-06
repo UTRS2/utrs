@@ -3,13 +3,13 @@
 namespace Tests\Browser\Appeals;
 
 use Tests\Traits\TestHasUsers;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
+use Tests\Traits\SetupDatabaseForTesting;
 
 class AppealListTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 
     public function test_user_can_view_appeals_list()
