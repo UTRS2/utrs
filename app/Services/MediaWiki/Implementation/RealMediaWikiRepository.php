@@ -45,7 +45,8 @@ class RealMediaWikiRepository implements MediaWikiRepository
     public function getApiForTarget(string $target): MediawikiApi
     {
         if (!in_array($target, $this->loadedApis)) {
-            $this->loadedApis[$target] = new RealMediaWikiApi(self::getTargetProperty($target, 'api_url'));
+            $this->loadedApis[$target] = new RealMediaWikiApi($target,
+                self::getTargetProperty($target, 'api_url'));
         }
 
         return $this->loadedApis[$target];
@@ -62,6 +63,9 @@ class RealMediaWikiRepository implements MediaWikiRepository
     public function getWikiDropdown(): array
     {
         return collect($this->getSupportedTargets())
+            ->filter(function ($wiki) {
+                return !$this->getTargetProperty($wiki, 'hidden_from_appeal_wiki_list', false);
+            })
             ->mapWithKeys(function ($wiki) {
                 return [$wiki => $this->getTargetProperty($wiki, 'name')];
             })

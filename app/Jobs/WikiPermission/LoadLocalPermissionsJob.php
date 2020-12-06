@@ -4,6 +4,7 @@ namespace App\Jobs\WikiPermission;
 
 use App\Models\User;
 use App\Services\Facades\MediaWikiRepository;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +14,7 @@ use Mediawiki\DataModel\User as MediawikiUser;
 
 class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $wiki;
 
@@ -43,11 +44,6 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
         return parent::getGroupName($groupName);
     }
 
-    public function shouldHaveUser(MediawikiUser $user, array $groups)
-    {
-        return in_array('sysop', $groups);
-    }
-
     public function getPermissionsToCheck()
     {
         return [
@@ -60,6 +56,30 @@ class LoadLocalPermissionsJob extends BaseWikiPermissionJob implements ShouldQue
 
     public function checkIsBlocked()
     {
-        return MediaWikiRepository::getApiForTarget($this->getPermissionWikiId())->getMediaWikiExtras()->getBlockInfo($this->user->username) !== null;
+        return MediaWikiRepository::getApiForTarget($this->getPermissionWikiId())
+                ->getMediaWikiExtras()->getBlockInfo($this->user->username) !== null;
+    }
+
+    protected function validateToolUserPermission(MediawikiUser $user, array $groups)
+    {
+        // drop 'user' group for blocked users and non-sysops
+        if (!in_array('sysop', $groups) || $this->checkIsBlocked()) {
+            $groups = array_values(array_filter($groups, function ($group) { return $group !== 'user'; }));
+        }
+
+        return $groups;
+    }
+
+    protected function getUserPermissions()
+    {
+        $services = MediaWikiRepository::getApiForTarget($this->getPermissionWikiId())->getAddWikiServices();
+        $user = $services->newUserGetter()->getFromUsername($this->user->username);
+
+        // user does not exist
+        if ($user->getId() === 0) {
+            return [];
+        }
+
+        return $this->validateToolUserPermission($user, $user->getGroups());
     }
 }

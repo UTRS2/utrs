@@ -65,4 +65,11 @@ trait TestHasUsers
         $permissions['enwiki'][] = 'oversight';
         return $this->getUser($permissions, $extraData);
     }
+
+    protected function getDeveloperUser($extraData = [])
+    {
+        $permissions = $this->userDefaultPermissions;
+        $permissions['*'] = ['developer'];
+        return $this->getUser($permissions, $extraData);
+    }
 }

@@ -158,10 +158,12 @@
                                         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
                                             @if($perms['functionary'])
                                                 <div>
-                                                    <a href="/appeal/open/{{ $id }}" class="btn btn-success">
-                                                        Re-open</a>
-                                                    <a href="/appeal/oversight/{{ $id }}" class="btn btn-danger">
-                                                        Oversight appeal</a>
+                                                    <form action="{{ route('appeal.action.reopen', $info) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-success">
+                                                            Re-open
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             @else
                                                 <div class="alert alert-danger" role="alert">
@@ -172,11 +174,14 @@
                                             <div>
                                                 <div class="mb-2">
                                                     @if($info->handlingadmin == null)
-                                                        <a href="/appeal/reserve/{{ $id }}" class="btn btn-success">
-                                                            Reserve
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.reserve', $info) }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            <button class="btn btn-success">
+                                                                Reserve
+                                                            </button>
+                                                        </form>
                                                     @elseif($info->handlingadmin == Auth::id() || $perms['tooladmin'] || $perms['developer'])
-                                                        <form action="{{ route('appeal.action.release', $info) }}" method="POST">
+                                                        <form action="{{ route('appeal.action.release', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-success">
                                                                 @if($info->handlingadmin != Auth::id()) Force @endif
@@ -189,26 +194,38 @@
                                                         </button>
                                                     @endif {{-- disabled button --}}
                                                     @if($perms['developer'])
-                                                        <a href="/appeal/invalidate/{{ $id }}" class="btn btn-danger">
-                                                            Invalidate
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.invalidate', $info) }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            <button class="btn btn-danger">
+                                                                Invalidate
+                                                            </button>
+                                                        </form>
                                                     @endif
                                                 </div>
 
                                                 <div class="mb-2">
-                                                    <a href="/appeal/close/{{ $id }}/accept" class="btn btn-danger">
-                                                        Accept appeal
-                                                    </a>
+                                                    <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_ACCEPT]) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-danger">
+                                                            Accept appeal
+                                                        </button>
+                                                    </form>
 
-                                                    <a href="/appeal/close/{{ $id }}/decline" class="btn btn-danger">
-                                                        Decline appeal
-                                                    </a>
+                                                    <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_DECLINE]) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-danger">
+                                                            Decline appeal
+                                                        </button>
+                                                    </form>
                                                 </div>
 
                                                 <div class="mb-2">
-                                                    <a href="/appeal/close/{{ $id }}/expire" class="btn btn-danger">
-                                                        Mark appear as expired
-                                                    </a>
+                                                    <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_EXPIRE]) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        <button class="btn btn-danger">
+                                                            Mark appeal as expired
+                                                        </button>
+                                                    </form>
                                                 </div>
 
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
@@ -226,16 +243,22 @@
                                                 @endif
                                                 @if(($info->status !== Appeal::STATUS_OPEN && $info->status !== Appeal::STATUS_EXPIRE && $info->status !== Appeal::STATUS_AWAITING_REPLY && $info->status !== Appeal::STATUS_DECLINE && $info->status !== Appeal::STATUS_ACCEPT) && ($perms['tooladmin'] || $perms['functionary'] || $perms['developer']))
                                                     <div class="mb-2">
-                                                        <a href="/appeal/open/{{ $id }}" class="btn btn-info">
-                                                            Return to tool users
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.reopen', $info) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-info">
+                                                                Return to tool users
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 @endif
                                                 @if($perms['developer'] && ($info->status=="NOTFOUND" || $info->status=="VERIFY"))
                                                     <div class="mb-2">
-                                                        <a href="/appeal/findagain/{{ $id }}" class="btn btn-info">
-                                                            Re-verify block
-                                                        </a>
+                                                        <form action="{{ route('appeal.action.findagain', $info) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-info">
+                                                                Re-verify block
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 @endif
                                             @endif

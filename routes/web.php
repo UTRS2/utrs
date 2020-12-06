@@ -30,8 +30,7 @@ Route::prefix('/public')->middleware('guest')->group(function () {
     Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
 });
 
-Route::get('/appeal/{id}', 'AppealController@appeal')
-    ->name('appeal.view');
+Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth')->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
@@ -39,14 +38,16 @@ Route::get('/locate', 'AppealController@search')->name('appeal.search');
 Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
-Route::get('/appeal/reserve/{appeal}', 'AppealController@reserve');
-Route::post('/appeal/release/{id}', 'AppealController@release')->name('appeal.action.release');
-Route::get('/appeal/open/{id}', 'AppealController@open');
-Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');
-Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
-Route::post('/appeal/checkuserreview/{appeal}', 'AppealController@checkuserreview')->name('appeal.action.checkuser');
-Route::post('/appeal/tooladmin/{appeal}', 'AppealController@admin')->name('appeal.action.tooladmin');
-Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
+
+Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')->name('appeal.action.reserve');
+Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
+
+Route::post('/appeal/open/{appeal}', 'Appeal\AppealActionController@reOpen')->name('appeal.action.reopen');
+Route::post('/appeal/findagain/{appeal}', 'Appeal\AppealActionController@reverifyBlockDetails')->name('appeal.action.findagain');
+Route::post('/appeal/close/{appeal}/{type}', 'Appeal\AppealActionController@close')->name('appeal.action.close');
+Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.checkuser');
+Route::post('/appeal/tooladmin/{appeal}', 'Appeal\AppealActionController@sendToTooladminReview')->name('appeal.action.tooladmin');
+Route::post('/appeal/invalidate/{appeal}', 'Appeal\AppealActionController@invalidate')->name('appeal.action.invalidate');
 
 Route::get('/appeal/template/{appeal}', 'AppealController@viewtemplates')->name('appeal.template');
 Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')->name('appeal.template.submit');
