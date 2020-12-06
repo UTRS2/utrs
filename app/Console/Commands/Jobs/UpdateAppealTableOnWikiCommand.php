@@ -2,20 +2,20 @@
 
 namespace App\Console\Commands\Jobs;
 
+use App\Services\Facades\MediaWikiRepository;
 use App\Jobs\Scheduled\UpdateWikiAppealListJob;
-use App\MwApi\MwApiUrls;
 use Illuminate\Console\Command;
 
-class UpdateAppealTableOnWiki extends Command
+class UpdateAppealTableOnWikiCommand extends Command
 {
     protected $signature = 'utrs-jobs:update-appeal-tables {--wiki=all}';
-    protected $description = 'Command description';
+    protected $description = 'Update on-wiki appeal tables';
 
     public function handle()
     {
         $wikis = $this->option('wiki');
         $wikis = $wikis === 'all'
-            ? MwApiUrls::getSupportedWikis()
+            ? MediaWikiRepository::getSupportedTargets()
             : explode(',', $wikis);
 
         foreach ($wikis as $wiki) {

@@ -3,8 +3,7 @@
 namespace App\Jobs\Scheduled;
 
 use App\Models\Appeal;
-use App\MwApi\MwApiGetter;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -71,7 +70,7 @@ class UpdateWikiAppealListJob implements ShouldQueue
 
     public function handle()
     {
-        $page = MwApiUrls::getWikiProperty($this->wiki, 'appeal_list_page');
+        $page = MediaWikiRepository::getTargetProperty($this->wiki, 'appeal_list_page');
 
         if (!$page) {
             // if a page hasn't been configured for this wiki, do nothing
@@ -83,7 +82,7 @@ class UpdateWikiAppealListJob implements ShouldQueue
         $text = $this->createContents($appeals);
 
         // get page information
-        $services = MwApiGetter::getServicesForWiki($this->wiki);
+        $services = MediaWikiRepository::getApiForTarget($this->wiki)->getAddWikiServices();
         $page = $services->newPageGetter()->getFromTitle($page);
 
         // prepare edit

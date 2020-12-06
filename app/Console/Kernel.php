@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:monitor')->daily()->at('05:00');
 
         // Wiki integration
-        $schedule->command('utrs-jobs:update-appeal-tables --wiki=enwiki')->everyThirtyMinutes();
+        $schedule->command('utrs-jobs:update-appeal-tables --wiki=enwiki')->everyFifteenMinutes();
     }
 
     /**
