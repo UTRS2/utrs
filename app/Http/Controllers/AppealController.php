@@ -11,7 +11,6 @@ use App\Models\Privatedata;
 use App\Models\Sendresponse;
 use App\Models\Template;
 use App\Models\User;
-use App\Jobs\GetBlockDetailsJob;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
