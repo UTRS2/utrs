@@ -2,14 +2,14 @@
 
 namespace Tests\Browser\Admin\Bans;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Tests\Traits\TestHasUsers;
+use Tests\Traits\SetupDatabaseForTesting;
 
 class BanCreateUpdateTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 
     public function test_non_tooladmin_cant_create_ban()

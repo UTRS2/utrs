@@ -2,14 +2,14 @@
 
 namespace Tests\Browser\Appeals;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Traits\SetupDatabaseForTesting;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Tests\Traits\TestHasUsers;
 
 class AppealCreateTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 
     public function test_logged_in_user_cant_make_appeal()

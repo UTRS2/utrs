@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Appeal\Action;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\SetupDatabaseForTesting;
 use Tests\Traits\TestHasUsers;
 
 abstract class BaseAppealActionTest extends TestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 }

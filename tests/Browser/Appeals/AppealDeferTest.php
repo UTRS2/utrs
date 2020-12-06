@@ -3,14 +3,14 @@
 namespace Tests\Browser\Appeals;
 
 use App\Models\Appeal;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Traits\SetupDatabaseForTesting;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Tests\Traits\TestHasUsers;
 
 class AppealDeferTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
     use TestHasUsers;
 
     public function test_can_defer_to_tooladmin()

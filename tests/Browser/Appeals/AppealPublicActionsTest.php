@@ -3,13 +3,14 @@
 namespace Tests\Browser\Appeals;
 
 use App\Models\Appeal;
+use Tests\Traits\SetupDatabaseForTesting;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class AppealPublicActionsTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use SetupDatabaseForTesting;
 
     public function test_user_can_see_own_appeal()
     {
