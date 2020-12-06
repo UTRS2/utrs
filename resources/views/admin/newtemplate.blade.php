@@ -22,9 +22,14 @@
 			</div>
 
 			<div class="form-group">
-                {{ Form::label("default_status-", 'Default status after replying:') }}
-                {{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, null, ['class' => 'form-control', 'id' => "default_status-"]) }}
+                {{ Form::label("default_status", 'Default status after replying:') }}
+                {{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('default_status'), ['class' => 'form-control']) }}
             </div>
+
+			<div class="form-group">
+				{{ Form::label('wiki_id', 'Wiki') }}
+				{{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-control']) }}
+			</div>
 
 			<button type="submit" class="btn btn-success">Submit</button>
 			{{ Form::close() }}

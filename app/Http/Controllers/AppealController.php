@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Appeal;
 use App\Models\LogEntry;
+use App\Models\Wiki;
 use App\Models\Old\Oldappeal;
 use App\Models\Old\Olduser;
-use App\Models\Permission;
 use App\Models\Privatedata;
 use App\Models\Sendresponse;
 use App\Models\Template;
 use App\Models\User;
+use App\Jobs\GetBlockDetailsJob;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
@@ -400,7 +401,14 @@ class AppealController extends Controller
     {
         $this->authorize('update', $appeal);
 
-        $templates = Template::where('active', '=', 1)->get();
+        $templates = Template::where('active', true)
+            ->where('wiki_id', function ($query) use ($appeal) {
+                $query->select('id')
+                    ->from((new Wiki())->getTable())
+                    ->where('database_name', $appeal->wiki);
+            })
+            ->get();
+
         return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'username' => $request->user()->username]);
     }
 
