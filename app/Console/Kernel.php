@@ -29,6 +29,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:monitor')->daily()->at('05:00');
         // $schedule->command('inspire')
         //          ->hourly();
+
+        $schedule->command('utrs-jobs:remove-appeal-private-data')->daily()->at('09:00');
+        $schedule->command('utrs-jobs:remove-log-entry-private-data')->daily()->at('10:00');
     }
 
     /**

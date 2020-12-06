@@ -27,11 +27,12 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",
         "facade/ignition": "^2.5.2",
-        "fakerphp/faker": "^1.11",
+        "fakerphp/faker": "^1.12",
         "laravel/dusk": "^6.8.1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^5.1.0",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.3",
+        "taavi/faker-acceptlanguage": "^1.0"
     },
     "config": {
         "optimize-autoloader": true,
