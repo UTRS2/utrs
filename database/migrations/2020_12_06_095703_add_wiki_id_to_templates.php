@@ -16,10 +16,12 @@ class AddWikiIdToTemplates extends Migration
         Schema::table('templates', function (Blueprint $table) {
             $table->unsignedBigInteger('wiki_id')
                 ->nullable(true);
+
             $table->foreign('wiki_id')
                 ->references('id')
                 ->on('wikis')
                 ->onDelete('cascade');
+            $table->index(['wiki_id', 'active']);
         });
     }
 
@@ -31,7 +33,8 @@ class AddWikiIdToTemplates extends Migration
     public function down()
     {
         Schema::table('templates', function (Blueprint $table) {
-            $table->dropForeign('templates_wiki_id_foreign');
+            $table->dropForeign(['wiki_id']);
+            $table->dropIndex(['wiki_id', 'active']);
             $table->dropColumn('wiki_id');
         });
     }
