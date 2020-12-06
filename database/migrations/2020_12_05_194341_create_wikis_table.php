@@ -18,6 +18,7 @@ class CreateWikisTable extends Migration
 
             $table->string('database_name');
             $table->unique('database_name');
+            $table->index('database_name');
 
             $table->string('display_name');
 
