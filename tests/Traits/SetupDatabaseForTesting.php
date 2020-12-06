@@ -4,19 +4,20 @@ namespace Tests\Traits;
 
 use App\Models\Wiki;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 /**
  * Extend {@link RefreshDatabase}, but also create some necessary objects
  */
 trait SetupDatabaseForTesting
 {
-    use RefreshDatabase {
-        refreshTestDatabase as parentRefreshTestDatabase;
+    use DatabaseMigrations {
+        runDatabaseMigrations as parentRunDatabaseMigrations;
     }
 
-    protected function refreshTestDatabase()
+    protected function runDatabaseMigrations()
     {
-        $this->parentRefreshTestDatabase();
+        $this->parentRunDatabaseMigrations();
 
         Wiki::factory()->create([
             'database_name' => 'enwiki',
