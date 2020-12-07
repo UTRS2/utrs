@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "75eabc436f960a3370a6d2b83c49354b",
+    "content-hash": "41bc28861d4db120af770127cc83cc00",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -5444,22 +5444,22 @@
         },
         {
             "name": "taavi/laravel-socialite-mediawiki",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/supertassu/laravel-socialite-mediawiki.git",
-                "reference": "9a3b8d6d1e861e2a5a6313c6db0ea3e1b695b22d"
+                "reference": "98b789f1f5ecfdbf98ebfab1d8263b67f2b336fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/supertassu/laravel-socialite-mediawiki/zipball/9a3b8d6d1e861e2a5a6313c6db0ea3e1b695b22d",
-                "reference": "9a3b8d6d1e861e2a5a6313c6db0ea3e1b695b22d",
+                "url": "https://api.github.com/repos/supertassu/laravel-socialite-mediawiki/zipball/98b789f1f5ecfdbf98ebfab1d8263b67f2b336fa",
+                "reference": "98b789f1f5ecfdbf98ebfab1d8263b67f2b336fa",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "laravel/socialite": "^4.4|^5.0",
-                "php": "^7.0"
+                "php": "^7.0|^8.0"
             },
             "type": "library",
             "extra": {
@@ -5487,9 +5487,9 @@
             "description": "A MediaWiki authentication provider for Laravel Socialite",
             "support": {
                 "issues": "https://github.com/supertassu/laravel-socialite-mediawiki/issues",
-                "source": "https://github.com/supertassu/laravel-socialite-mediawiki/tree/1.3.0"
+                "source": "https://github.com/supertassu/laravel-socialite-mediawiki/tree/v1.4.0"
             },
-            "time": "2020-11-24T15:02:40+00:00"
+            "time": "2020-12-06T14:11:41+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -9570,7 +9570,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3",
+        "php": "^7.3|^8.0",
         "ext-json": "*"
     },
     "platform-dev": [],
