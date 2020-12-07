@@ -25,6 +25,7 @@
         "wikimedia/ip-utils": "^3.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.5",
         "barryvdh/laravel-ide-helper": "^2.7",
         "facade/ignition": "^2.5.2",
         "fakerphp/faker": "^1.12",
