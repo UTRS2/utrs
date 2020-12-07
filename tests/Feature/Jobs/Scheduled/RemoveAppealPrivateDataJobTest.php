@@ -17,7 +17,7 @@ class RemoveAppealPrivateDataJobTest extends TestCase
 
     private function isPurged(Appeal $appeal): bool
     {
-        $job = new RemoveAppealPrivateDataJob($appeal->wiki);
+        $job = new RemoveAppealPrivateDataJob();
         return $job->fetchAppeals()
             ->where('id', $appeal->id)
             ->exists();
@@ -120,7 +120,7 @@ class RemoveAppealPrivateDataJobTest extends TestCase
                 'status' => Appeal::STATUS_DECLINE,
             ]);
 
-        $job = new RemoveAppealPrivateDataJob($appeal->wiki);
+        $job = new RemoveAppealPrivateDataJob();
 
         $this->assertNotNull($appeal->privatedata);
         $this->assertNotEmpty($appeal->privatedata->ipaddress);

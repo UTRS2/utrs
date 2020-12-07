@@ -15,14 +15,6 @@ class RemoveAppealPrivateDataJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /** @var string */
-    private $wiki;
-
-    public function __construct(string $wiki)
-    {
-        $this->wiki = $wiki;
-    }
-
     /**
      * Find appeals that need to be purged.
      * @return Builder
@@ -30,7 +22,6 @@ class RemoveAppealPrivateDataJob implements ShouldQueue
     public function fetchAppeals()
     {
         return Appeal::whereHas('privateData')
-            ->where('wiki', $this->wiki)
             ->whereIn('status', [
                 Appeal::STATUS_ACCEPT,
                 Appeal::STATUS_DECLINE,
