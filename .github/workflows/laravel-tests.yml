@@ -26,6 +26,7 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
+          extensions: zip
           php-version: ${{ matrix.php-versions }}
       - uses: actions/checkout@v1
       - name: Copy env file
