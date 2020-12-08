@@ -16,7 +16,7 @@ class ImportWikisFromConfig extends Command
      *
      * @var string
      */
-    protected $signature = 'utrs-maintenance:sync-wikis-to-database {--force: Skip all confirmation prompts in production}';
+    protected $signature = 'utrs-maintenance:sync-wikis-to-database {--force : Skip all confirmation prompts in production}';
 
     /**
      * The console command description.
