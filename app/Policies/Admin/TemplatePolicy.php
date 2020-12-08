@@ -15,11 +15,15 @@ class TemplatePolicy
      * Determine whether the user can view any templates.
      *
      * @param User $user
-     * @param Wiki $wiki
+     * @param Wiki|null $wiki
      * @return mixed
      */
-    public function viewAny(User $user, Wiki $wiki)
+    public function viewAny(User $user, ?Wiki $wiki)
     {
+        if (!$wiki) {
+            return $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
+        }
+
         return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki->database_name, 'tooladmin');
     }
 
