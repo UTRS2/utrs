@@ -3,14 +3,14 @@
 namespace Tests\Browser\Admin\Bans;
 
 use App\Models\Ban;
-use Tests\Traits\SetupDatabaseForTesting;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Tests\Traits\TestHasUsers;
 
 class BanViewTest extends DuskTestCase
 {
-    use SetupDatabaseForTesting;
+    use DatabaseMigrations;
     use TestHasUsers;
 
     public function test_non_oversighter_cant_view_oversighted_bans()

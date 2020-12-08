@@ -5,13 +5,13 @@ namespace Tests\Feature\Admin\Templates;
 use App\Models\Wiki;
 use App\Models\Template;
 use Tests\Traits\TestHasUsers;
-use Tests\Traits\SetupDatabaseForTesting;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
 class TemplateListTest extends TestCase
 {
     use TestHasUsers;
-    use SetupDatabaseForTesting;
+    use DatabaseMigrations;
 
     public function test_tooladmin_can_view_template_list()
     {
