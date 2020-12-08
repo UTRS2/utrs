@@ -4,14 +4,14 @@ namespace Tests\Browser\Appeals;
 
 use App\Models\Appeal;
 use App\Models\Template;
-use Tests\Traits\SetupDatabaseForTesting;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Tests\Traits\TestHasUsers;
 
 class AppealCommentsTest extends DuskTestCase
 {
-    use SetupDatabaseForTesting;
+    use DatabaseMigrations;
     use TestHasUsers;
 
     public function test_replying_to_marked_as_awaiting_reply()

@@ -3,13 +3,13 @@
 namespace Tests\Browser;
 
 use Tests\Traits\TestHasUsers;
-use Tests\Traits\SetupDatabaseForTesting;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class HomePageTest extends DuskTestCase
 {
-    use SetupDatabaseForTesting;
+    use DatabaseMigrations;
     use TestHasUsers;
 
     public function test_home_page_renders()

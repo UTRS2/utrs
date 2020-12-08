@@ -3,7 +3,7 @@
 namespace Tests\Feature\Jobs\WikiPermission;
 
 use App\Models\User;
-use Tests\Traits\SetupDatabaseForTesting;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Services\MediaWiki\Api\MediaWikiRepository;
 use Tests\Fakes\MediaWiki\FakeMediaWikiRepository;
@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class WikiPermissionJobTest extends TestCase
 {
-    use SetupDatabaseForTesting;
+    use DatabaseMigrations;
 
     /** @var FakeMediaWikiRepository */
     private $repository;
