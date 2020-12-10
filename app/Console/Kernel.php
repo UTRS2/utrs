@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:run --only-db')->daily()->at('23:00');
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:monitor')->daily()->at('05:00');
+
+        $schedule->command('utrs-jobs:reverify-user-permissions')->daily()->at('14:00');
         // $schedule->command('inspire')
         //          ->hourly();
     }
