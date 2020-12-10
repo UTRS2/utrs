@@ -54,71 +54,14 @@
                                 @endif
                                 <br/>
 
-                                <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/User_talk:{{ $info->appealfor }}"
-                                   class="btn btn-secondary">
-                                    User talk
-                                </a>
-
-                                <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/Special:Contributions/{{ $info->appealfor }}"
-                                   class="btn btn-light">
-                                    Contribs
-                                </a>
-
-                                <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/Special:BlockList/{{ $info->appealfor }}"
-                                   class="btn btn-light">
-                                    Find block
-                                </a>
-
-                                <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}w/index.php?title=Special:Log/block&page=User:{{ $info->appealfor }}"
-                                   class="btn btn-light">
-                                    Block log
-                                </a>
-
-                                <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{ $info->appealfor }}"
-                                   class="btn btn-light">
-                                    Global (b)locks
-                                </a>
-
-                                @if($perms['admin'])
-                                    <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/Special:Unblock/{{ $info->appealfor }}"
-                                       class="btn btn-warning">
-                                        Unblock
-                                    </a>
-                                @endif
+                                @component('components.user-action-buttons', ['target' => $info->appealfor, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
+                                @endcomponent
                                 @if($perms['checkuser'])
                                 <h5 class="card-title">CU data</h5>
                                 @if($checkuserdone && !is_null($cudata))
-                                    <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/User_talk:{{$cudata->ipaddress}}"
-                                       class="btn btn-secondary">
-                                        User talk
-                                    </a>
+                                    @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
+                                    @endcomponent
 
-                                    <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/Special:Contributions/{{ $cudata->ipaddress }}"
-                                       class="btn btn-light">
-                                        Contribs
-                                    </a>
-
-                                    <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/Special:BlockList/{{ $cudata->ipaddress }}"
-                                       class="btn btn-light">
-                                        Find block
-                                    </a>
-
-                                    <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}w/index.php?title=Special:Log/block&page=User:{{ $cudata->ipaddress }}"
-                                       class="btn btn-light">
-                                        Block log
-                                    </a>
-
-                                    <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{ $cudata->ipaddress }}"
-                                       class="btn btn-light">
-                                        Global (b)locks
-                                    </a>
-
-                                    @if($perms['admin'])
-                                        <a href="{{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base') }}wiki/Special:Unblock/{{ $cudata->ipaddress }}"
-                                           class="btn btn-warning">
-                                            Unblock
-                                        </a>
-                                    @endif
                                     <br/>
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
