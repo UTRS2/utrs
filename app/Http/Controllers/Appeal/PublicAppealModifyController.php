@@ -58,7 +58,8 @@ class PublicAppealModifyController extends Controller
                 ->setStatusCode(403);
         }
         
-        $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
+        $recentAppealExists = Appeal::where('id', '!=', $appeal->id)
+            ->where(function (Builder $query) use ($request) {
                 return $query->where('appealfor', $request->input('appealfor'))
                     ->orWhereHas('privateData', function (Builder $privateDataQuery) use ($request) {
                         return $privateDataQuery->where('ipaddress', $request->ip());
