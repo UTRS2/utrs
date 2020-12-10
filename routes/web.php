@@ -30,7 +30,7 @@ Route::prefix('/public')->middleware('guest')->group(function () {
     Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
 });
 
-Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
+Route::get('/appeal/{id}', 'AppealController@appeal')->middleware('auth')->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
