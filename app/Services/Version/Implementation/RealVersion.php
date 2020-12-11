@@ -13,7 +13,7 @@ class RealVersion implements Version
     public function getVersion(): string
     {
         if (!$this->version) {
-            // TODO: when we do cache clearing when deploying, cache the version here
+            // when we do cache clearing when deploying, cache the version here
             try {
                 $this->version = $this->tryDetermineVersion();
             } catch (Exception $ignored) {
