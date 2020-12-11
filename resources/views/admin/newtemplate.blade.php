@@ -26,10 +26,14 @@
                 {{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('default_status'), ['class' => 'form-control']) }}
             </div>
 
-			<div class="form-group">
-				{{ Form::label('wiki_id', 'Wiki') }}
-				{{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-control']) }}
-			</div>
+			@if($wikis->count() > 1)
+				<div class="form-group">
+					{{ Form::label('wiki_id', 'Wiki') }}
+					{{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-control']) }}
+				</div>
+			@else
+				{{ Form::hidden('wiki_id', $wikis->keys()->first()) }}
+			@endif
 
 			<button type="submit" class="btn btn-success">Submit</button>
 			{{ Form::close() }}

@@ -53,15 +53,23 @@ class AdminController extends Controller
             ->whereIn('wiki_id', $wikis)
             ->get();
 
-        $tableheaders = ['ID', 'Name', 'Wiki', 'Contents', 'Active'];
+        $tableheaders = ['ID', 'Name', 'Contents', 'Active'];
+        if ($wikis->count() > 1) {
+            $tableheaders[] = 'Wiki';
+        }
+
         $rowcontents = [];
 
         foreach ($templates as $template) {
             $idbutton = '<a href="/admin/templates/' . $template->id . '" class="btn btn-primary">' . $template->id . '</a>';
             $active = $template->active ? 'Yes' : 'No';
-            $wikiName = $template->wiki->display_name . ' (' . $template->wiki->database_name . ')';
 
-            $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($wikiName), htmlspecialchars($template->template), $active];
+            $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
+
+            if ($wikis->count() > 1) {
+                $wikiName = $template->wiki->display_name . ' (' . $template->wiki->database_name . ')';
+                $rowcontents[$template->id][] = $wikiName;
+            }
         }
 
         return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
@@ -75,7 +83,7 @@ class AdminController extends Controller
             ->filter(function (Wiki $wiki) use ($user) {
                 return $user->can('create', [Template::class, $wiki]);
             })
-            ->flatMap(function (Wiki $wiki) {
+            ->mapWithKeys(function (Wiki $wiki) {
                 return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
             });
 
