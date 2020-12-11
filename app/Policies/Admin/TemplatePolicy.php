@@ -18,7 +18,7 @@ class TemplatePolicy
      * @param Wiki|null $wiki
      * @return mixed
      */
-    public function viewAny(User $user, ?Wiki $wiki)
+    public function viewAny(User $user, ?Wiki $wiki = null)
     {
         if (!$wiki) {
             return $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
