@@ -8,7 +8,6 @@
 4. edit the DB details in .env
 5. php artisan key:generate
 6. php artisan migrate:fresh
-7. php artisan utrs-maintenance:sync-wikis-to-database
 
 The /public subdirectory is the webroot. You can either use `php artisan serve` to run a standalone webserver, or point your webserver of choice at /public
 
