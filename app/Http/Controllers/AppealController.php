@@ -50,12 +50,15 @@ class AppealController extends Controller
             $this->authorize('view', $info);
             $isDeveloper = $user->hasAnySpecifiedLocalOrGlobalPerms([], 'developer');
 
+            /** @var User $user */
+            $user = Auth::user();
+
             $logs = $info->comments;
 
             $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
 
             $perms = [];
-            $perms['checkuser'] = Permission::checkCheckuser(Auth::id(), $info->wiki);
+            $perms['checkuser'] = $user->can('viewCheckUserInformation', $info);
             $perms['functionary'] = $perms['checkuser'] || $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'oversight');
             $perms['admin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'admin');
             $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'tooladmin');
@@ -134,7 +137,9 @@ class AppealController extends Controller
         if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
             $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
-                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
+                    $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($wiki)
+                        ->getRequiredGroupsForAction('appeal_view');
+                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, $neededPermissions);
                 });
         }
 
@@ -267,24 +272,15 @@ class AppealController extends Controller
 
     public function checkuser(Appeal $appeal, Request $request)
     {
-        if (!Auth::check()) {
-            abort(403, 'No logged in user');
-        }
+        $this->authorize('viewCheckUserInformation', $appeal);
 
         $user = Auth::id();
-        $admin = Permission::checkAdmin($user, $appeal->wiki);
 
-        abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $user = Auth::id();
+        $lang = $request->header('Accept-Language');
 
         $reason = $request->input('reason');
-        $checkuser = Permission::checkCheckuser($user, $appeal->wiki);
-        if (!$checkuser) {
-            abort(403, 'You are not a checkuser.');
-        }
 
         LogEntry::create(['user_id' => $user, 'model_id' => $appeal->id, 'model_type' => Appeal::class, 'action' => 'checkuser', 'reason' => $reason, 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => LogEntry::LOG_PROTECTION_FUNCTIONARY]);
         return redirect()->route('appeal.view', $appeal);

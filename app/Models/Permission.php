@@ -11,7 +11,7 @@ class Permission extends Model
     protected $guarded = ['id'];
     public $timestamps = false;
 
-    const ALL_POSSIBILITIES = ['oversight', 'checkuser', 'steward', 'staff', 'developer', 'tooladmin', 'admin', 'user'];
+    const ALL_POSSIBILITIES = ['checkuser', 'oversight', 'steward', 'staff', 'developer', 'tooladmin', 'admin', 'user'];
 
     public function getPresentPermissionsAttribute()
     {
