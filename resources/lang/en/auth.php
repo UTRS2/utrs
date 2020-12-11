@@ -2,7 +2,7 @@
 
 return [
     'auth-needed-screen' => [
-        'title' => 'Authentication requred',
+        'title' => 'Authentication required',
         'text' => 'Please authenticate in order to access your appeal.',
         'key-text' => 'Please enter your appeal key in the text box',
         'key-placeholder' => 'Appeal key here',
