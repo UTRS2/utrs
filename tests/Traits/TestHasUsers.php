@@ -8,7 +8,7 @@ use App\Models\User;
 trait TestHasUsers
 {
     protected $userDefaultPermissions = [
-        'enwiki' => [
+        'enwiki' => [ // MediaWikiRepository::getSupportedTargets()[0]
             'user', 'admin',
         ]
     ];

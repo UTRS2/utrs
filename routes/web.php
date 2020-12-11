@@ -35,7 +35,7 @@ Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
 
-Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser');
+Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');
 Route::get('/appeal/respond/{id}', 'AppealController@respond');
 
@@ -67,9 +67,9 @@ Route::post('/admin/bans/create', 'Admin\BanController@create')->name('admin.ban
 Route::get('/admin/bans/{ban}', 'Admin\BanController@show')->name('admin.bans.view');
 Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
 
-Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
-Route::get('/admin/templates', 'AdminController@listtemplates');
+Route::get('/admin/sitenotices', 'AdminController@listsitenotices')->name('admin.sitenotices.list');
 
+Route::get('/admin/templates', 'AdminController@listtemplates')->name('admin.templates.list');
 Route::get('admin/templates/create', 'AdminController@showNewTemplate');
 Route::post('admin/templates/create', 'AdminController@makeTemplate');
 Route::get('admin/templates/{template}', 'AdminController@editTemplate')->name('admin.templates.edit');
