@@ -3,6 +3,7 @@
 namespace Tests\Feature\Appeal\Action;
 
 use App\Models\Appeal;
+use Illuminate\Support\Facades\Config;
 use App\Services\Facades\MediaWikiRepository;
 
 class AppealReserveReleaseTest extends BaseAppealActionTest
@@ -58,7 +59,31 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
             ->actingAs($user)
             ->post(route('appeal.action.reserve', $appeal));
         $response->assertStatus(403);
-        $response->assertSee("Only $wiki administrators are able to see this appeal.");
+        $response->assertSee('Viewing ' . $wiki . ' appeals is restricted to users in the following groups: admin');
+
+        $appeal->refresh();
+        $this->assertNull($appeal->handlingadmin);
+        $this->assertFalse($appeal->comments()
+            ->where('action', 'reserve')
+            ->where('user_id', $user->id)
+            ->exists());
+    }
+
+
+    public function test_user_cant_reserve_appeal_that_they_cant_take_actions_on()
+    {
+        Config::set('wikis.wikis.enwiki.permission_overrides.appeal_handle', ['checkuser']);
+
+        $user = $this->getUser();
+        $wiki = MediaWikiRepository::getSupportedTargets()[0];
+
+        $appeal = Appeal::factory()->create([ 'wiki' => $wiki, 'handlingadmin' => null, ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('appeal.action.reserve', $appeal));
+        $response->assertStatus(403);
+        $response->assertSee('You can not take actions on this appeal.');
 
         $appeal->refresh();
         $this->assertNull($appeal->handlingadmin);
@@ -147,7 +172,7 @@ class AppealReserveReleaseTest extends BaseAppealActionTest
             ->post(route('appeal.action.release', $appeal));
 
         $response->assertStatus(403);
-        $response->assertSee("Only $wiki administrators are able to see this appeal.");
+        $response->assertSee('Viewing ' . $wiki . ' appeals is restricted to users in the following groups: admin');
 
         $appeal->refresh();
         $this->assertEquals($reservedToUser->id, $appeal->handlingadmin);

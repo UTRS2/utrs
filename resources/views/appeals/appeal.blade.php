@@ -5,7 +5,7 @@
 @section('content')
     <div class="container">
         <div class="mb-1">
-            <a href="/review" class="btn btn-primary">
+            <a href="{{ route('appeal.list') }}" class="btn btn-primary">
                 Back to appeal list
             </a>
         </div>
@@ -74,7 +74,7 @@
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
                                     </div>
-                                    {{ Form::open(['url' => '/appeal/checkuser/' . $id]) }}
+                                    {{ Form::open(['url' => route('appeal.action.checkuser', $info)]) }}
                                         {{ Form::token() }}
 
                                         <div class="form-group">
@@ -92,12 +92,7 @@
                                 <div class="col-md-4"></div>
                                 <div class="col-md-8">
                                     <h5 class="card-title">Actions</h5>
-                                    @if(!$perms['admin'])
-                                        <div class="alert alert-danger" role="alert">
-                                            You are not an admin, and therefore can't perform any action on this
-                                            appeal.
-                                        </div>
-                                    @else
+                                    @can('update', $info)
                                         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
                                             @if($perms['functionary'])
                                                 <div>
@@ -206,7 +201,11 @@
                                                 @endif
                                             @endif
                                         </div>
-                                    @endif
+                                    @else
+                                        <div class="alert alert-danger" role="alert">
+                                            You are not permitted to perform any actions on this appeal.
+                                        </div>
+                                    @endcan
                                 </div>
                             </div>
                         </div>
@@ -401,7 +400,7 @@
                     administrators or the user involved.</i>
                 <br/>
                 <br/>
-                @if($perms['admin'])
+                @can('update', $info)
                     <div class="row">
                         <div class="col-md-6">
                             <h5 class="card-title">Send a templated reply</h5>
@@ -429,7 +428,7 @@
                             {{ Form::close() }}
                         </div>
                     </div>
-                @endif
+                @endcan
             </div>
         </div>
     </div>
