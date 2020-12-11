@@ -86,7 +86,7 @@
     <footer class="mt-4">
         <hr/>
         <p>
-            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs">report bugs</a>
+            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs/issues">report bugs</a>
         </p>
     </footer>
 </div>
