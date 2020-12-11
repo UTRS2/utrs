@@ -82,6 +82,13 @@
         </div>
     @endif
     @yield('content')
+
+    <footer class="mt-4">
+        <hr/>
+        <p>
+            Unblock Ticket Request System{!! Version::getVersion() !!}. <a href="https://github.com/utrs2/utrs">report bugs</a>
+        </p>
+    </footer>
 </div>
 </body>
 </html>
