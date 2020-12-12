@@ -75,7 +75,7 @@ class GetBlockDetailsJob implements ShouldQueue
                 LogEntry::create([
                     'user_id' => 0,
                     'model_id' => $this->appeal->id,
-                    'model_type' => 'appeal',
+                    'model_type' => Appeal::class,
                     'action' => 'closed - duplicate',
                     'reason' => 'this appeal duplicates appeal #' . $duplicateAppeal->id,
                     'ip' => 'DB entry',
@@ -95,7 +95,7 @@ class GetBlockDetailsJob implements ShouldQueue
                 LogEntry::create([
                     'user_id' => 0,
                     'model_id' => $this->appeal->id,
-                    'model_type' => 'appeal',
+                    'model_type' => Appeal::class,
                     'action' => 'closed - invalidate',
                     'reason' => 'banned from UTRS',
                     'ip' => 'DB entry',
