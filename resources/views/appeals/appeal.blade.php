@@ -416,7 +416,7 @@
                         </div>
                         <div class="col-md-6">
                             <h5 class="card-title">Drop a comment</h5>
-                            {{ Form::open(['url' => '/appeal/comment/' . $id]) }}
+                            {{ Form::open(['url' => route('appeal.action.comment', $info)]) }}
                                 {{ Form::token() }}
 
                                 <div class="form-group">
