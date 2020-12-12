@@ -36,8 +36,8 @@ Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
 Route::get('/locate', 'AppealController@search')->name('appeal.search');
 
 Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
-Route::post('/appeal/comment/{id}', 'AppealController@comment');
-Route::get('/appeal/respond/{id}', 'AppealController@respond');
+Route::post('/appeal/comment/{appeal}', 'AppealController@comment')->name('appeal.action.comment');
+Route::get('/appeal/respond/{appeal}', 'AppealController@respond');
 
 Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')->name('appeal.action.reserve');
 Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
