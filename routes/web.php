@@ -33,7 +33,9 @@ Route::prefix('/public')->middleware('guest')->group(function () {
 Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
-Route::get('/locate', 'AppealController@search')->name('appeal.search');
+
+Route::get('/search/quick', 'Appeal\AppealQuickSearchController@search')->name('appeal.search.quick');
+Route::get('/search', 'Appeal\AppealAdvancedSearchController@search')->name('appeal.search.advanced');
 
 Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
 Route::post('/appeal/comment/{id}', 'AppealController@comment');

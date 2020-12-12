@@ -23,7 +23,7 @@
         <div class="card mt-2 mb-4">
             <h5 class="card-header">Search appeals</h5>
             <div class="card-body">
-                {{ Form::open(['url' => route('appeal.search'), 'method' => 'GET']) }}
+                {{ Form::open(['url' => route('appeal.search.quick'), 'method' => 'GET']) }}
                 {{ Form::label('search', 'Search for Appeal ID or appealant') }}
                 <div class="input-group">
                     {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
@@ -39,6 +39,12 @@
                 </div>
 
                 {{ Form::close() }}
+
+                <div class="mt-2">
+                    <a href="{{ route('appeal.search.advanced') }}" class="btn btn-secondary">
+                        Advanced search
+                    </a>
+                </div>
             </div>
         </div>
     @endif
