@@ -38,8 +38,7 @@ Route::get('/search/quick', 'Appeal\AppealQuickSearchController@search')->name('
 Route::get('/search', 'Appeal\AppealAdvancedSearchController@search')->name('appeal.search.advanced');
 
 Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
-Route::post('/appeal/comment/{id}', 'AppealController@comment');
-Route::get('/appeal/respond/{id}', 'AppealController@respond');
+Route::post('/appeal/comment/{appeal}', 'AppealController@comment')->name('appeal.action.comment');
 
 Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')->name('appeal.action.reserve');
 Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
