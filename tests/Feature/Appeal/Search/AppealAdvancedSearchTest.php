@@ -43,6 +43,7 @@ class AppealAdvancedSearchTest extends TestCase
         $this->assertTrue($this->isFoundWithRequest($appeal, [
             'status_OPEN' => '1',
             'wiki_enwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should find when filters are exact');
 
         $this->assertTrue($this->isFoundWithRequest($appeal, [
@@ -50,17 +51,19 @@ class AppealAdvancedSearchTest extends TestCase
             'status_ACCEPT' => '1',
             'wiki_enwiki' => '1',
             'wiki_ptwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should find when filters have multiple choises');
 
         $this->assertFalse($this->isFoundWithRequest($appeal, [
             'status_ACCEPT' => '1',
             'wiki_enwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should not find when filters do not contain current status');
-
 
         $this->assertFalse($this->isFoundWithRequest($invalidAppeal, [
             'status_INVALID' => '1',
             'wiki_enwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should not find when appeal has a non-public status');
     }
 
@@ -71,6 +74,7 @@ class AppealAdvancedSearchTest extends TestCase
         $this->assertFalse($this->isFoundWithRequest($appeal, [
             'status_OPEN' => '1',
             'wiki_ptwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should not find when filters are exact');
 
         $this->assertFalse($this->isFoundWithRequest($appeal, [
@@ -78,6 +82,7 @@ class AppealAdvancedSearchTest extends TestCase
             'status_ACCEPT' => '1',
             'wiki_enwiki' => '1',
             'wiki_ptwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should not find when filters have multiple choices');
     }
 
@@ -89,24 +94,28 @@ class AppealAdvancedSearchTest extends TestCase
         $this->assertTrue($this->isFoundWithRequest($appeal, [
             'status_OPEN' => '1',
             'wiki_enwiki' => '1',
+            'blocktype_1' => '1',
             'handlingadmin' => $handlingAdmin->username,
         ]), 'should find when filters are exact');
 
         $this->assertFalse($this->isFoundWithRequest($appeal, [
             'status_OPEN' => '1',
             'wiki_enwiki' => '1',
+            'blocktype_1' => '1',
             'handlingadmin' => $handlingAdmin->username . 'asd',
         ]), 'should find when handling admin filter has a typo');
 
         $this->assertTrue($this->isFoundWithRequest($appeal, [
             'status_OPEN' => '1',
             'wiki_enwiki' => '1',
+            'blocktype_1' => '1',
         ]), 'should find when handling admin filter is not set');
 
         $this->assertFalse($this->isFoundWithRequest($appeal, [
             'status_OPEN' => '1',
             'wiki_enwiki' => '1',
             'handlingadmin_none' => '1',
+            'blocktype_1' => '1',
         ]), 'should not find when filtering for no handling admin');
     }
 }

@@ -19,11 +19,7 @@
             <tr>
         @endif
             <td>
-                @isset($appeal->handlingadmin)
-                    <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-danger">#{{ $appeal->id }}</a>
-                @else
-                    <a href="{{ route('appeal.view', $appeal) }}" class="btn btn-primary">#{{ $appeal->id }}</a>
-                @endisset
+                <a href="{{ route('appeal.view', $appeal) }}" class="btn {{ $appeal->handlingadmin ? 'btn-danger' : 'btn-primary' }}">#{{ $appeal->id }}</a>
                 </td>
                 <td>{{ $appeal->appealfor }}</td>
                 <td style="vertical-align: middle">
