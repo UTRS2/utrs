@@ -28,7 +28,7 @@
                 <div class="input-group">
                     {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
                     <div class="input-group-append">
-                        {{ Form::submit('Search', ['class' => 'btn btn-primary']) }}
+                        {{ Form::submit('Quick search', ['class' => 'btn btn-primary']) }}
                     </div>
 
                     @if($errors->has('search'))

@@ -62,7 +62,7 @@
                     @endforeach
                 </div>
 
-                <div class="mb-4">
+                <div>
                     <h5>Administrators involved</h5>
 
                     <div class="form-group mb-2">
