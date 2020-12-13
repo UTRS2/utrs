@@ -24,7 +24,7 @@
             <h5 class="card-header">Search appeals</h5>
             <div class="card-body">
                 {{ Form::open(['url' => route('appeal.search.quick'), 'method' => 'GET']) }}
-                {{ Form::label('search', 'Search for Appeal ID or appealant') }}
+                {{ Form::label('search', 'Search for Appeal ID or appellant') }}
                 <div class="input-group">
                     {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
                     <div class="input-group-append">

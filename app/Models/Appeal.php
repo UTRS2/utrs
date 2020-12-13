@@ -55,6 +55,10 @@ class Appeal extends Model
     const STATUS_DECLINE = 'DECLINE';
     const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
 
+    const BLOCKTYPE_IP = 0;
+    const BLOCKTYPE_ACCOUNT = 1;
+    const BLOCKTYPE_IP_UNDER_ACCOUNT = 2;
+
     public $timestamps = false;
     public $guarded = ['id'];
 

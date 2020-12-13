@@ -4,7 +4,7 @@
 @section('content')
     <div class="mb-2">
         <a href="{{ route('appeal.list') }}" class="btn btn-primary">
-            Back to appeal list
+            Back to regular appeal list
         </a>
     </div>
 
@@ -43,9 +43,29 @@
                 </div>
 
                 <div class="mb-4">
+                    <h5>Appellant</h5>
+
+                    <div class="form-group mb-2">
+                        {{ Form::label('appealfor', 'Appeal for') }}
+                        {{ Form::text('appealfor', Request::input('appealfor'), ['class' => 'form-control']) }}
+                        <p class="small">
+                            MySQL <code>LIKE</code> wildcards are supported.
+                        </p>
+                    </div>
+
+                    <span>Block type</span>
+                    @foreach($blockTypeInputs as $key => $value)
+                        <div class="custom-control custom-checkbox">
+                            {{ Form::checkbox('blocktype_' . $key, '1', $value, ['class' => 'custom-control-input', 'id' => 'blocktype_' . $key]) }}
+                            {{ Form::label('blocktype_' . $key, $blockTypeNames[$key], ['class' => 'custom-control-label']) }}
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mb-4">
                     <h5>Administrators involved</h5>
 
-                    <div class="form-group ,mb-2">
+                    <div class="form-group mb-2">
                         {{ Form::label('blockingadmin', 'Blocking administrator') }}
                         {{ Form::text('blockingadmin', Request::input('blockingadmin'), ['class' => 'form-control']) }}
                     </div>
@@ -59,13 +79,13 @@
                         {{ Form::checkbox('handlingadmin_none', '1', Request::input('handlingadmin_none'), ['class' => 'custom-control-input', 'id' => 'handlingadmin_none']) }}
                         {{ Form::label('handlingadmin_none', 'No handling administrator', ['class' => 'custom-control-label']) }}
                     </div>
-
                 </div>
             </div>
         </div>
 
         <div class="mt-2 mb-2">
             <button type="submit" class="btn btn-success">Search</button>
+            <a href="?" class="btn btn-danger">Clear filters</a>
         </div>
     </form>
 
@@ -81,7 +101,7 @@
                         No results found.
                     </div>
                 @else
-                    @component('appeals.appeallist', ['appeals' => $results])
+                    @component('components.appeal-table', ['appeals' => $results])
                     @endcomponent
                 @endif
             </div>

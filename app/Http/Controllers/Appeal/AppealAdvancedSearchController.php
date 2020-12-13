@@ -13,6 +13,12 @@ use Illuminate\Support\Collection;
 
 class AppealAdvancedSearchController extends Controller
 {
+    const ALL_BLOCK_TYPES_WITH_NAMES = [
+        Appeal::BLOCKTYPE_IP => 'IP address',
+        Appeal::BLOCKTYPE_ACCOUNT => 'Named account',
+        Appeal::BLOCKTYPE_IP_UNDER_ACCOUNT => 'IP under account',
+    ];
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -49,38 +55,52 @@ class AppealAdvancedSearchController extends Controller
                 return [$status => $request->get('status_' . $status, !$filled)];
             });
 
+        $blockTypeInputs = collect(array_keys(self::ALL_BLOCK_TYPES_WITH_NAMES))
+            ->mapWithKeys(function ($blockType) use ($request, $filled) {
+                return [$blockType => $request->get('blocktype_'.$blockType, !$filled)];
+            });
+
         $results = null;
         if ($filled) {
             $wikisToSearch = $wikiInputs->filter()->keys();
             $statusesToSearch = $statusInputs->filter()->keys();
+            $blockTypesToSearch = $blockTypeInputs->filter()->keys();
 
             $results = $this->doRunSearch(
                 $request,
                 $wikisToSearch,
                 $statusesToSearch,
+                $blockTypesToSearch,
             );
-
-            // dd($results);
         }
 
         return view('appeals.search.search', [
             'hasResults' => $filled,
             'results' => $results,
+            'blockTypeNames' => self::ALL_BLOCK_TYPES_WITH_NAMES,
 
             'wikiInputs' => $wikiInputs,
             'statusInputs' => $statusInputs,
+            'blockTypeInputs' => $blockTypeInputs,
         ]);
     }
 
-    private function doRunSearch(Request $request, Collection $wikisToSearch, Collection $statusesToSearch)
+    private function doRunSearch(Request $request, Collection $wikisToSearch, Collection $statusesToSearch,
+                                 Collection $blockTypesToSearch)
     {
         return Appeal::whereIn('wiki', $wikisToSearch)
             ->whereIn('status', $statusesToSearch)
+            ->whereIn('blocktype', $blockTypesToSearch)
+            ->when($request->input('appealfor'), function (Builder $query, $value) {
+                $query->where('appealfor', 'LIKE', $value);
+            })
             ->when($request->input('blockingadmin'), function (Builder $query, $value) {
                 $query->where('blockingadmin', $value);
             })
             ->when($request->input('handlingadmin'), function (Builder $query, $value) {
-                $query->where('handlingadmin', $value);
+                $query->whereHas('handlingAdminObject', function (Builder $adminQuery) use ($value) {
+                    $adminQuery->where('username', $value);
+                });
             })
             ->when($request->input('handlingadmin_none'), function (Builder $query) {
                 $query->whereNull('handlingadmin');
