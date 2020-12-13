@@ -50,7 +50,7 @@ jobs:
       - name: Clear config cache
         run: php${{ matrix.php }} artisan config:clear
       - name: Run migrations
-        run: php${{ matrix.php }} artisan migrate -v --force --seed
+        run: php${{ matrix.php }} artisan migrate -v --force
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Build assets
