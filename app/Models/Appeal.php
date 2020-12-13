@@ -21,9 +21,22 @@ class Appeal extends Model
     ];
 
     const REGULAR_NO_VIEW_STATUS = [
-        self::STATUS_INVALID        => self::STATUS_INVALID,
-        self::STATUS_NOTFOUND       => self::STATUS_NOTFOUND,
-        self::STATUS_VERIFY         => self::STATUS_VERIFY,
+        self::STATUS_INVALID,
+        self::STATUS_NOTFOUND,
+        self::STATUS_VERIFY,
+    ];
+
+    const ALL_STATUSES = [
+        self::STATUS_OPEN,
+        self::STATUS_VERIFY,
+        self::STATUS_AWAITING_REPLY,
+        self::STATUS_ADMIN,
+        self::STATUS_CHECKUSER,
+        self::STATUS_NOTFOUND,
+        self::STATUS_INVALID,
+        self::STATUS_ACCEPT,
+        self::STATUS_DECLINE,
+        self::STATUS_EXPIRE,
     ];
 
     const STATUS_OPEN = 'OPEN';
