@@ -231,6 +231,7 @@ return [
         // UTRS customs
 
         'MediaWikiRepository' => App\Services\Facades\MediaWikiRepository::class,
+        'Version' => App\Services\Facades\Version::class,
 
     ],
 

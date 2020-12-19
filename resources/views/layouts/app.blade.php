@@ -22,22 +22,52 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"> <!-- left nav -->
             @auth
-                <li class="nav-item">
-                    <a href="{{ route('appeal.list') }}" class="nav-link">Appeal list</a>
-                </li>
+                @can('viewAny', App\Models\Appeal::class)
+                    <li class="nav-item">
+                        <a href="{{ route('appeal.list') }}" class="nav-link">Open appeals</a>
+                    </li>
+                @endcan
+                @canany('viewAny', [App\Models\User::class, App\Models\Ban::class, App\Models\Template::class])
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Tool admin
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="adminNavbarDropdown">
+                            @can('viewAny', App\Models\Ban::class)
+                                <a class="dropdown-item" href="{{ route('admin.bans.list') }}">Bans</a>
+                            @endcan
+                            @can('viewAny', App\Models\Template::class)
+                                <a class="dropdown-item" href="{{ route('admin.templates.list') }}">Templates</a>
+                            @endcan
+                            @can('viewAny', App\Models\User::class)
+                                <a class="dropdown-item" href="{{ route('admin.users.list') }}">Users</a>
+                            @endcan
+                            @can('viewAny', App\Models\Sitenotice::class)
+                                <a class="dropdown-item disabled" href="{{ route('admin.sitenotices.list') }}">Site notices</a>
+                            @endcan
+                        </div>
+                    </li>
+                @endcanany
             @endauth
         </ul>
         <ul class="navbar-nav"> <!-- right nav -->
             @auth
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ Auth::user()->username }}
                     </a>
 
-                    <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
                         <a class="dropdown-item" href="{{ route('admin.users.view', Auth::user()) }}">My account</a>
                         <a class="dropdown-item" href="{{ route('logout') }}">Log out</a>
                     </div>
+                </li>
+            @else
+                <li class="nav-item">
+                    <a href="{{ route('login') }}" class="nav-link">
+                        Administrator login
+                    </a>
                 </li>
             @endauth
         </ul>
@@ -52,6 +82,13 @@
         </div>
     @endif
     @yield('content')
+
+    <footer class="mt-4">
+        <hr/>
+        <p>
+            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs/issues">report bugs</a>
+        </p>
+    </footer>
 </div>
 </body>
 </html>
