@@ -39,7 +39,8 @@ class AppealActionController extends Controller
         string $requiredPermission = 'update'
     )
     {
-        // first off, make sure that we can do the action
+        // first off, make sure that we can view the appeal and do the action
+        $this->authorize('view', $appeal);
         $this->authorize($requiredPermission, $appeal);
 
         if ($validate) {

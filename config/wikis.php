@@ -9,12 +9,24 @@ return [
         'password' => env('MEDIAWIKI_PASSWORD', ''),
     ],
 
+    'base_permissions' => [
+        'appeal_view' => ['admin', 'staff', 'steward'],
+        'appeal_handle' => ['admin', 'staff', 'steward'],
+        'appeal_checkuser' => ['checkuser', 'staff', 'steward'],
+    ],
+
     'globalwiki' => [
         'name' => 'Global locks/blocks',
         'api_url' => env('WIKI_URL_GLOBAL', 'https://meta.wikimedia.org/w/api.php'),
         'url_base' => 'https://meta.wikimedia.org/',
         'responding_user_title' => 'Wikimedia Steward',
         'hidden_from_appeal_wiki_list' => true,
+
+        'permission_overrides' => [
+            'appeal_view' => ['steward', 'staff'],
+            'appeal_handle' => ['steward', 'staff'],
+            'appeal_checkuser' => ['steward', 'staff'],
+        ],
     ],
 
     'wikis' => [

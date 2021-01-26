@@ -40,4 +40,10 @@ interface MediaWikiRepository
      * @return array Array with [dbName => Human readable name] pairs for all available wikis
      */
     public function getWikiDropdown(): array;
+
+    /**
+     * @param string $wiki
+     * @return WikiPermissionHandler
+     */
+    public function getWikiPermissionHandler(string $wiki): WikiPermissionHandler;
 }
