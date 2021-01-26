@@ -7,6 +7,11 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        php-versions:
+          - 7.3 # current production
+          - 8.0 # target, https://github.com/UTRS2/utrs/issues/375
     services:
       mysql:
         image: mariadb:10.5
@@ -18,6 +23,11 @@ jobs:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          extensions: zip, mbstring, dom, fileinfo, mysql
+          php-version: ${{ matrix.php-versions }}
       - uses: actions/checkout@v1
       - name: Copy env file
         run: cp .env.ci .env
