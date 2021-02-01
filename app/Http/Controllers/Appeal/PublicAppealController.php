@@ -9,7 +9,6 @@ use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
 use App\Models\Privatedata;
-use App\Models\Sendresponse;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -116,8 +115,7 @@ class PublicAppealController extends Controller
 
         $appeal->loadMissing('comments.userObject');
 
-        $replies = Sendresponse::where('appealID', '=', $appeal->id)->where('custom', '!=', 'null')->get();
-        return view('appeals.public.appeal', [ 'id' => $appeal->id, 'appeal' => $appeal, 'replies' => $replies ]);
+        return view('appeals.public.appeal', [ 'id' => $appeal->id, 'appeal' => $appeal, ]);
     }
 
     public function addComment(Request $request)

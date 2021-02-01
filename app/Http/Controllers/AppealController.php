@@ -6,9 +6,7 @@ use App\Models\Appeal;
 use App\Models\LogEntry;
 use App\Models\Old\Oldappeal;
 use App\Models\Old\Olduser;
-use App\Models\Permission;
 use App\Models\Privatedata;
-use App\Models\Sendresponse;
 use App\Models\Template;
 use App\Models\User;
 use App\Services\Facades\MediaWikiRepository;
@@ -64,7 +62,6 @@ class AppealController extends Controller
             $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'tooladmin');
             $perms['developer'] = $isDeveloper;
 
-            $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
             $checkuserdone = $info->comments()
                 ->where('user_id', Auth::id())
                 ->where('action', 'checkuser')
@@ -89,7 +86,6 @@ class AppealController extends Controller
                 'cudata' => $cudata,
                 'checkuserdone' => $checkuserdone,
                 'perms' => $perms,
-                'replies' => $replies,
                 'previousAppeals' => $previousAppeals,
             ]);
         }
@@ -330,7 +326,6 @@ class AppealController extends Controller
             ]);
         }
 
-        Sendresponse::create(['appealID' => $appeal->id, 'template' => $template->id]);
         LogEntry::create([
             'user_id' => $user->id,
             'model_id' => $appeal->id,
@@ -375,12 +370,6 @@ class AppealController extends Controller
                 'protected' => LogEntry::LOG_PROTECTION_NONE,
             ]);
         }
-
-        Sendresponse::create([
-            'appealID' => $appeal->id,
-            'template' => 0,
-            'custom' => $request->input('custom'),
-        ]);
 
         LogEntry::create([
             'user_id' => $user->id,
