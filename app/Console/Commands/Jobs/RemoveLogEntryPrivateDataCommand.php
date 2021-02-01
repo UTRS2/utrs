@@ -8,7 +8,7 @@ use App\Jobs\Scheduled\RemoveLogEntryPrivateDataJob;
 
 class RemoveLogEntryPrivateDataCommand extends Command
 {
-    protected $signature = 'utrs-jobs:remove-log-entry-private-data {--wiki=all}';
+    protected $signature = 'utrs-jobs:remove-log-entry-private-data';
     protected $description = 'Remove log entry private data';
 
     public function handle()
