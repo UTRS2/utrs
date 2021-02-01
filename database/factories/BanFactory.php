@@ -24,7 +24,7 @@ class BanFactory extends Factory
     {
         $unixTimestamp = $this->faker->boolean ? 0 : $this->faker->numberBetween(0, 60 * 60 * 24 * 30) + Carbon::now()->getTimestamp();
         return [
-            'target' => $this->faker->name,
+            'target' => $this->faker->lastName,
             'expiry' => Carbon::createFromTimestamp($unixTimestamp)->format('Y-m-d H:i:s'),
             'reason' => $this->faker->sentence,
             'ip' => 0,

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Appeal;
 use App\Models\Template;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,5 +27,14 @@ class TemplateFactory extends Factory
             'template' => implode("\n\n", $this->faker->sentences(2)),
             'active' => $this->faker->boolean(80),
         ];
+    }
+
+    public function withStatusChange()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'default_status' => $this->faker->randomElement(array_values(Appeal::REPLY_STATUS_CHANGE_OPTIONS)),
+            ];
+        });
     }
 }

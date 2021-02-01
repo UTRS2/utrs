@@ -13,14 +13,6 @@ class CreateSendResponse extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('sendresponses');
-        Schema::create('sendresponses', function (Blueprint $table) {
-            $table->increments('id');
-            $table->bigInteger('appealID');
-            $table->mediumInteger('template');
-            $table->string('custom')->nullable();
-            $table->boolean('sent')->default(0);
-        });
         Schema::dropIfExists('template');
         Schema::dropIfExists('templates');
         Schema::create('templates', function (Blueprint $table) {
@@ -38,7 +30,6 @@ class CreateSendResponse extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sendresponses');
         Schema::dropIfExists('template');
         Schema::dropIfExists('templates');
     }

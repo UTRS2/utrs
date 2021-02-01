@@ -30,7 +30,31 @@ First, install NPM dependencies using `npm install`. Then, you can use Laravel M
   production build should be commited to the repository for pull requests. This may change soon, see issue
   [#240](https://github.com/UTRS2/utrs/issues/240).
 
-## Setting up MediaWiki integration (for testing)
+## Seeding
+
+UTRS has a suite of [seeds](https://laravel.com/docs/8.x/seeding) that can be used to automatically generate sample data for your development environment.
+
+To **reset** your database, and create data based on seeds, you can always type
+
+```shell
+php artisan migrate:fresh --seed
+```
+
+Resetting your database will get rid of your user account and all of its permissions. You will find few `.env` variables to help with this:
+```dotenv
+# for seeding:
+DEVELOPER_USER_NAME=""
+DEVELOPER_USER_GRANT_ADMIN=""
+DEVELOPER_USER_GRANT_TOOLADMIN=""
+DEVELOPER_USER_GRANT_DEVELOPER=""
+```
+
+If you set `DEVELOPER_USER_NAME` to your user name, that user will automatically created. You can then set
+`DEVELOPER_USER_GRANT_ADMIN` and `DEVELOPER_USER_GRANT_TOOLADMIN` to `"enwiki"` and then you wll be granted admin and
+tooladmin access there. Finally, if you set `DEVELOPER_USER_GRANT_DEVELOPER` to `true`, you will receive the global
+developer permission which grants you full access to the interface.
+
+## Setting up MediaWiki integration for testing
 
 ### API calls
 
@@ -72,7 +96,7 @@ OAUTH_CLIENT_ID="some-client-id"
 OAUTH_CLIENT_SECRET="some-client-secret"
 ```
 
-## Jobs
+## Job executor (for production)
 For this to work, you need to have your own urls set up for config/wikis.php<br/>
 This application requires a job queue to verify blocks and do other critical and regualar tasks. Below is a guide to setting up:
 

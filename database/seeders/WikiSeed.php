@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 use App\Console\Commands\ImportWikisFromConfig;
 
-class WikiSeeder extends Seeder
+class WikiSeed extends Seeder
 {
     /**
      * Run the database seeds.
