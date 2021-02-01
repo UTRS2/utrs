@@ -261,6 +261,10 @@
                             </tr>
                         @endforeach
                     </table>
+
+                    <div class="mt-2">
+                        <a href="{{ route('appeal.search.advanced', ['appealfor' => $appeal->appealfor]) }}" class="btn btn-info">Advanced search</a>
+                    </div>
                 </div>
             </div>
         @endif
