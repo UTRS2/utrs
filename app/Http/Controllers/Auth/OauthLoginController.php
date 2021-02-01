@@ -77,13 +77,6 @@ class OauthLoginController extends Controller
                 ]);
             }
 
-            if ($user->wasRecentlyCreated) {
-                Wikitask::create([
-                    'task' => 'verifyaccount',
-                    'actionid' => $user->id,
-                ]);
-            }
-
             return $user;
         });
 
