@@ -31,7 +31,7 @@ class AppealReferTest extends BaseAppealActionTest
 
         $response = $this
             ->actingAs($user)
-            ->post(route('appeal.action.checkuser', $appeal), [
+            ->post(route('appeal.action.requestcheckuser', $appeal), [
                 'cu_reason' => 'Example CheckUser reason',
             ]);
         $response->assertRedirect();
@@ -52,7 +52,7 @@ class AppealReferTest extends BaseAppealActionTest
 
         $response = $this
             ->actingAs($user)
-            ->post(route('appeal.action.checkuser', $appeal));
+            ->post(route('appeal.action.requestcheckuser', $appeal));
         $response->assertSessionHasErrors('cu_reason');
 
         $appeal->refresh();
