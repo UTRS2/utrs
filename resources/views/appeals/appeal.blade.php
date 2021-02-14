@@ -74,7 +74,7 @@
                                     <div class="alert alert-danger" role="alert">
                                         You have not submitted a request to view the CheckUser data yet.
                                     </div>
-                                    {{ Form::open(['url' => route('appeal.action.checkuser', $info)]) }}
+                                    {{ Form::open(['url' => route('appeal.action.viewcheckuser', $info)]) }}
                                         {{ Form::token() }}
 
                                         <div class="form-group">
@@ -446,7 +446,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                {{ Form::open(['url' => route('appeal.action.checkuser', $info)]) }}
+                {{ Form::open(['url' => route('appeal.action.requestcheckuser', $info)]) }}
                 {{ Form::token() }}
                 <div class="modal-body">
 
