@@ -49,6 +49,11 @@
                         </div>
                     </li>
                 @endcanany
+                @can('viewAny', \App\Models\Wiki::class)
+                    <li class="nav-item">
+                        <a href="{{ route('wiki.list') }}" class="nav-link">Supported wikis</a>
+                    </li>
+                @endcan
             @endauth
         </ul>
         <ul class="navbar-nav"> <!-- right nav -->

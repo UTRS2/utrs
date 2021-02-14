@@ -11,9 +11,14 @@
 
 The /public subdirectory is the webroot. You can either use `php artisan serve` to run a standalone webserver, or point your webserver of choice at /public
 
+## Configuring wikis
+Currently, most details about supported wikis are stored in `config/wikis.php`, but a transition to storing them in the database is in progress.
+For this reason, you need to use `php artisan utrs-maintenance:sync-wikis-to-database` to synchronize changes in that file to the database for some details
+to work correctly.
+
 ## Building frontend assets
 
-The frontend is built using Bootstrap 4. It uses `purgecss` to remove unused classes to reduce bundle size. This can create complications for development thru.
+The frontend is built using Bootstrap 4. It uses `purgecss` to remove unused classes to reduce bundle size. This can create complications for development.
 
 First, install NPM dependencies using `npm install`. Then, you can use Laravel Mix (webpack wrapper) to build assets:
 

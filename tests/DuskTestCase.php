@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Tests\Traits\CreatesApplication;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;

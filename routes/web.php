@@ -76,6 +76,8 @@ Route::post('admin/templates/create', 'AdminController@makeTemplate');
 Route::get('admin/templates/{template}', 'AdminController@editTemplate')->name('admin.templates.edit');
 Route::post('admin/templates/{template}', 'AdminController@updateTemplate')->name('admin.templates.update');
 
+Route::get('/wikis/list', 'WikiController@index')->name('wiki.list');
+
 Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
 Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
 Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
