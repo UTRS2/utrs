@@ -13,10 +13,6 @@ class MakeCommentsLonger extends Migration
      */
     public function up()
     {
-        Schema::table('sendresponses', function (Blueprint $table) {
-            $table->text('custom')->change();
-        });
-
         Schema::table('logs', function (Blueprint $table) {
             $table->text('reason')->change();
         });
@@ -39,10 +35,6 @@ class MakeCommentsLonger extends Migration
 
         Schema::table('logs', function (Blueprint $table) {
             $table->string('reason')->change();
-        });
-
-        Schema::table('sendresponses', function (Blueprint $table) {
-            $table->string('custom')->change();
         });
     }
 }

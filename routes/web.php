@@ -33,11 +33,12 @@ Route::prefix('/public')->middleware('guest')->group(function () {
 Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
-Route::get('/locate', 'AppealController@search')->name('appeal.search');
+
+Route::get('/search/quick', 'Appeal\AppealQuickSearchController@search')->name('appeal.search.quick');
+Route::get('/search', 'Appeal\AppealAdvancedSearchController@search')->name('appeal.search.advanced');
 
 Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
-Route::post('/appeal/comment/{id}', 'AppealController@comment');
-Route::get('/appeal/respond/{id}', 'AppealController@respond');
+Route::post('/appeal/comment/{appeal}', 'AppealController@comment')->name('appeal.action.comment');
 
 Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')->name('appeal.action.reserve');
 Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
@@ -45,7 +46,7 @@ Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')
 Route::post('/appeal/open/{appeal}', 'Appeal\AppealActionController@reOpen')->name('appeal.action.reopen');
 Route::post('/appeal/findagain/{appeal}', 'Appeal\AppealActionController@reverifyBlockDetails')->name('appeal.action.findagain');
 Route::post('/appeal/close/{appeal}/{type}', 'Appeal\AppealActionController@close')->name('appeal.action.close');
-Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.checkuser');
+Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.requestcheckuser');
 Route::post('/appeal/tooladmin/{appeal}', 'Appeal\AppealActionController@sendToTooladminReview')->name('appeal.action.tooladmin');
 Route::post('/appeal/invalidate/{appeal}', 'Appeal\AppealActionController@invalidate')->name('appeal.action.invalidate');
 

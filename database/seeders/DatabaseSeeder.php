@@ -14,5 +14,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(WikiSeeder::class);
+        $this->call(UserSeed::class);
+
+        $this->call(AppealSeed::class);
+        $this->call(TemplateSeed::class);
+        $this->call(BanSeed::class);
     }
 }
