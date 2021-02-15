@@ -78,26 +78,17 @@ def runAPI(wiki, params):
     if wiki == "ptwiki":raw = callptwikiAPI(params)
     if wiki == "global":raw = callmetaAPI(params)
     return raw
-def appeallist():
-    fulltext=""
-    top = """
-    {| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle" |-
-    !Appeal Number
-    !Appellant
-    !Appeal Filed
-    !Status
-    """
-    fulltext+=top
-    results = calldb("select id,appealfor,submitted,status from appeals where status != 'CLOSED' AND status !='VERIFY' AND status != 'NOTFOUND' AND status != 'EXPIRE' AND status != 'DECLINE' AND status != 'ACCEPT' AND status != 'INVALID' AND wiki = 'enwiki';","read")
+
+def clearPrivateData():
+    results = calldb("select * from privatedatas;","read")
     for result in results:
-        username = result[1].encode('utf-8').strip()
-        if username.startswith('#'):
-            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[https://en.wikipedia.org/wiki/Special:BlockList?wpTarget="+username.replace('#','%23')+" Block ID "+username+"]\n|"+str(result[2])+"\n|"+str(result[3])
-        else:
-            fulltext += "\n|-\n|[https://"+credentials.utrshost+".wmflabs.org/appeal/"+str(result[0])+" "+str(result[0])+"]\n|"+"[[User talk:"+username+"|"+username+"]]\n|"+str(result[2])+"\n|"+str(result[3])
-    fulltext +="\n|}"
-    page = masterwiki.pages["User:AmandaNP/UTRS Appeals"]
-    page.save(fulltext, "Updating UTRS caselist")
+        id = result[1]
+        appeal = calldb("select id,status from appeals where id = "+str(id)+";","read")
+        if appeal[0][1] not in ["DECLINE","EXPIRE","ACCEPT","INVALID"]:continue
+        logs = calldb("select timestamp from log_entries where model_id = "+str(id)+" and (action RLIKE 'closed' or action LIKE '%decline' or action LIKE '%accept' or action LIKE '%expire%' or action LIKE '%invalid') and model_type = 'App\\\\Models\\\\Appeal';","read")
+        if datesince(logs[0], 7):
+            calldb("delete from privatedatas where appealID = "+str(id)+";","write")
+
 def datesince(orig,length):
     today = datetime.now()
     diff = today - timedelta(days=length)
@@ -110,5 +101,5 @@ def closeNotFound():
         if datesince(logs[0], 2):
             calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
             calldb("insert into log_entries (user_id, model_id,model_type, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','App\\\\Models\\\\Appeal','closed - expired','DB entry','DB/Python',0);","write")
-appeallist()
+clearPrivateData()
 closeNotFound()

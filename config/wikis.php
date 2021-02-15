@@ -37,6 +37,7 @@ return [
             'api_url' => env('WIKI_URL_ENWIKI', 'https://en.wikipedia.org/w/api.php'),
             'url_base' => 'https://en.wikipedia.org/',
             'responding_user_title' => 'English Wikipedia Administrator',
+            'appeal_list_page' => 'User:AmandaNP/UTRS Appeals',
         ],
         'ptwiki' => [
             'name' => 'Portuguese Wikipedia',
