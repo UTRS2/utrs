@@ -70,6 +70,10 @@ class Appeal extends Model
         'user_verified' => 'boolean',
     ];
 
+    protected $dates = [
+        'submitted',
+    ];
+
     // scopes
 
     public function scopeOpenOrRecent(Builder $query)
