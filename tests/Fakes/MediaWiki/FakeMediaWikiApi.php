@@ -46,4 +46,9 @@ class FakeMediaWikiApi implements MediaWikiApi
     {
         return $this->wiki;
     }
+
+    public function login(): void
+    {
+        // no-op
+    }
 }
