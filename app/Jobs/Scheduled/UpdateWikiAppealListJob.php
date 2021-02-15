@@ -46,7 +46,7 @@ class UpdateWikiAppealListJob implements ShouldQueue
             return 'No open UTRS appeals.';
         }
 
-        $data = '{| class="wikitable sortable"'
+        $data = '{| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle"'
             . "\n! Appeal Number"
             . "\n! Appealant"
             . "\n! Filed on"
