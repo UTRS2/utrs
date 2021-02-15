@@ -29,10 +29,10 @@
             @if($wikis->count() > 1)
                 <div class="form-group">
                     {{ Form::label('wiki_id', 'Wiki') }}
-                    {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-control']) }}
+                    {{ Form::select('wiki_id', $wikis, old('wiki_id', $template->wiki_id), ['class' => 'form-control']) }}
                 </div>
             @else
-                {{ Form::hidden('wiki_id', $wikis->keys()->first()) }}
+                {{ Form::hidden('wiki_id', $template->wiki_id) }}
             @endif
 
             <button type="submit" class="btn btn-success">Submit</button>
