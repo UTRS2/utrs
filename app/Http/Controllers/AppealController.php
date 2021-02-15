@@ -304,10 +304,8 @@ class AppealController extends Controller
         $this->authorize('update', $appeal);
 
         $templates = Template::where('active', true)
-            ->where('wiki_id', function ($query) use ($appeal) {
-                $query->select('id')
-                    ->from((new Wiki())->getTable())
-                    ->where('database_name', $appeal->wiki);
+            ->whereHas('wiki', function (Builder $query) use ($appeal) {
+                $query->where('database_name', $appeal->wiki);
             })
             ->get();
 

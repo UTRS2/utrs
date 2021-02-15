@@ -2,11 +2,10 @@
 
 namespace Tests;
 
-use Tests\Traits\CreatesApplication;
 use App\Services\Version\Api\Version;
+use Tests\Fakes\Version\FakeVersion;
 use Tests\Traits\CreatesApplication;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Tests\Fakes\Version\FakeVersion;
 
 abstract class TestCase extends BaseTestCase
 {
