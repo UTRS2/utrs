@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60affe6fe0c6fbb0a5cdbfd8342ffd33",
+    "content-hash": "4502a1a663a8e5f8882a0652cc1d4626",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -61,28 +61,28 @@
         },
         {
             "name": "addwiki/mediawiki-api-base",
-            "version": "2.6.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/addwiki/mediawiki-api-base.git",
-                "reference": "8e22bc7ff0891bd3d4e75aa2dd8bf445f8aca90c"
+                "reference": "a4bce0dffd7cf879fcb41baba5a1566e201e38ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/addwiki/mediawiki-api-base/zipball/8e22bc7ff0891bd3d4e75aa2dd8bf445f8aca90c",
-                "reference": "8e22bc7ff0891bd3d4e75aa2dd8bf445f8aca90c",
+                "url": "https://api.github.com/repos/addwiki/mediawiki-api-base/zipball/a4bce0dffd7cf879fcb41baba5a1566e201e38ad",
+                "reference": "a4bce0dffd7cf879fcb41baba5a1566e201e38ad",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "~6.0",
                 "guzzlehttp/promises": "~1.0",
-                "php": "^7.2",
+                "php": ">=5.5",
                 "psr/log": "~1.0"
             },
             "require-dev": {
-                "jakub-onderka/php-parallel-lint": "^0.9.2",
-                "mediawiki/mediawiki-codesniffer": "~34.0",
-                "phpunit/phpunit": "~9"
+                "jakub-onderka/php-parallel-lint": "0.9.2",
+                "mediawiki/mediawiki-codesniffer": "^13.0",
+                "phpunit/phpunit": "~4.8.0|~5.3.0"
             },
             "suggest": {
                 "etsy/phan": "Allows running static analysis on the package (requires PHP 7+)"
@@ -90,7 +90,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.5.x-dev"
                 }
             },
             "autoload": {
@@ -100,22 +100,21 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0-or-later"
+                "GPL-2.0+"
             ],
             "authors": [
                 {
                     "name": "Addshore"
                 }
             ],
-            "description": "Simple MediaWiki API library",
+            "description": "A basic Mediawiki api base library",
             "keywords": [
-                "api",
                 "mediawiki"
             ],
             "support": {
-                "source": "https://github.com/addwiki/mediawiki-api-base/tree/2.6.0"
+                "source": "https://github.com/addwiki/mediawiki-api-base/tree/2.5.0"
             },
-            "time": "2021-02-02T22:46:17+00:00"
+            "time": "2019-11-27T09:26:52+00:00"
         },
         {
             "name": "addwiki/mediawiki-datamodel",
@@ -6730,16 +6729,16 @@
         },
         {
             "name": "facade/ignition",
-            "version": "2.5.11",
+            "version": "2.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facade/ignition.git",
-                "reference": "e91d67353054bf827c64687fcac5ea44e4dcec54"
+                "reference": "be73521836f978106b3c3cf57de7eaeb261af520"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facade/ignition/zipball/e91d67353054bf827c64687fcac5ea44e4dcec54",
-                "reference": "e91d67353054bf827c64687fcac5ea44e4dcec54",
+                "url": "https://api.github.com/repos/facade/ignition/zipball/be73521836f978106b3c3cf57de7eaeb261af520",
+                "reference": "be73521836f978106b3c3cf57de7eaeb261af520",
                 "shasum": ""
             },
             "require": {
@@ -6803,7 +6802,7 @@
                 "issues": "https://github.com/facade/ignition/issues",
                 "source": "https://github.com/facade/ignition"
             },
-            "time": "2021-02-05T12:52:11+00:00"
+            "time": "2021-02-15T07:55:43+00:00"
         },
         {
             "name": "facade/ignition-contracts",
