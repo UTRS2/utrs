@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Wiki;
 use App\Models\Appeal;
-use App\Models\Ban;
-use App\Models\LogEntry;
 use App\Models\Sitenotice;
 use App\Models\Template;
 use App\Models\User;
-use Auth;
+use App\Utils\Logging\RequestLogContext;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -114,7 +112,11 @@ class AdminController extends Controller
 
         $template = Template::create($data);
 
-        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        $template->addLog(
+            new RequestLogContext($request),
+            'create'
+        );
+
         return redirect()->to('/admin/templates');
     }
 
@@ -160,7 +162,11 @@ class AdminController extends Controller
         }
 
         $template->update($data);
-        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => $logText, 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        $template->addLog(
+            new RequestLogContext($request),
+            $logText
+        );
+
         return redirect()->to('/admin/templates');
     }
 }
