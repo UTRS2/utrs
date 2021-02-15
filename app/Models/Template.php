@@ -12,4 +12,12 @@ class Template extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
+    protected $casts = [
+        'active' => 'boolean',
+    ];
+
+    public function wiki()
+    {
+        return $this->belongsTo(Wiki::class);
+    }
 }
