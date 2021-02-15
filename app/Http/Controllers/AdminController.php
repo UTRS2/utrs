@@ -118,10 +118,22 @@ class AdminController extends Controller
         return redirect()->to('/admin/templates');
     }
 
-    public function editTemplate(Template $template)
+    public function editTemplate(Request $request, Template $template)
     {
         $this->authorize('update', $template);
-        return view('admin.edittemplate', ["template" => $template]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('create', [Template::class, $wiki]);
+            })
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
+            });
+
+        return view('admin.edittemplate', ["template" => $template, 'wikis' => $wikis]);
     }
 
     public function updateTemplate(Request $request, Template $template)
@@ -136,10 +148,19 @@ class AdminController extends Controller
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')->ignore($template->id)],
             'template' => 'required|min:2|max:2048',
             'default_status' => ['required', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'wiki_id' => 'required|exists:wikis,id',
         ]);
 
+        $logText = 'update';
+
+        if ($data['wiki_id'] != $template->wiki_id) {
+            $newWiki = Wiki::findOrFail($data['wiki_id']);
+            $this->authorize('create', [Template::class, $newWiki]);
+            $logText .= ', change wiki to ' . $newWiki->database_name;
+        }
+
         $template->update($data);
-        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => $logText, 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
     }
 }

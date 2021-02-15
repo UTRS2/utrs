@@ -22,9 +22,9 @@
 			</div>
 
 			<div class="form-group">
-                {{ Form::label("default_status", 'Default status after replying:') }}
-                {{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('default_status'), ['class' => 'form-control']) }}
-            </div>
+				{{ Form::label("default_status", 'Default status after replying:') }}
+				{{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('default_status'), ['class' => 'form-control']) }}
+			</div>
 
 			@if($wikis->count() > 1)
 				<div class="form-group">
