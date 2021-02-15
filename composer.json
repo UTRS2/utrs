@@ -11,6 +11,7 @@
         "php": "^7.3|^8.0",
         "ext-json": "*",
         "addwiki/mediawiki-api": "~0.7.0",
+        "addwiki/mediawiki-api-base": "2.5.0",
         "doctrine/dbal": "^2.12",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
