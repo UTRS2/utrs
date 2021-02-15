@@ -6,7 +6,6 @@ use Log;
 use App\Models\LogEntry;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Wikitask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -74,13 +73,6 @@ class OauthLoginController extends Controller
                     'ip' => $ip,
                     'ua' => $ua . ' ' . $lang,
                     'protected' => LogEntry::LOG_PROTECTION_NONE,
-                ]);
-            }
-
-            if ($user->wasRecentlyCreated) {
-                Wikitask::create([
-                    'task' => 'verifyaccount',
-                    'actionid' => $user->id,
                 ]);
             }
 

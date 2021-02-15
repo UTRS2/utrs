@@ -13,6 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        $this->call(WikiSeed::class);
+
+        $this->call(UserSeed::class);
+
+        $this->call(AppealSeed::class);
+        $this->call(TemplateSeed::class);
+        $this->call(BanSeed::class);
     }
 }

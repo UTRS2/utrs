@@ -6,9 +6,7 @@ use App\Models\Appeal;
 use App\Models\LogEntry;
 use App\Models\Old\Oldappeal;
 use App\Models\Old\Olduser;
-use App\Models\Permission;
 use App\Models\Privatedata;
-use App\Models\Sendresponse;
 use App\Models\Template;
 use App\Models\User;
 use App\Services\Facades\MediaWikiRepository;
@@ -64,7 +62,6 @@ class AppealController extends Controller
             $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'tooladmin');
             $perms['developer'] = $isDeveloper;
 
-            $replies = Sendresponse::where('appealID', '=', $id)->where('custom', '!=', 'null')->get();
             $checkuserdone = $info->comments()
                 ->where('user_id', Auth::id())
                 ->where('action', 'checkuser')
@@ -89,7 +86,6 @@ class AppealController extends Controller
                 'cudata' => $cudata,
                 'checkuserdone' => $checkuserdone,
                 'perms' => $perms,
-                'replies' => $replies,
                 'previousAppeals' => $previousAppeals,
             ]);
         }
@@ -183,93 +179,6 @@ class AppealController extends Controller
         return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty()]);
     }
 
-    public function search(Request $request)
-    {
-        /** @var User $user */
-        $user = $request->user();
-
-        $search = $request->validate(['search' => 'required|min:1'])['search'];
-
-        $number = is_numeric($search) ? intval($search) : null;
-
-        // if search starts with a "#" and is followed by numbers, it should be treated as number
-        if (!$number && Str::startsWith($search, '#') && is_numeric(substr($search, 1))) {
-            $number = intval(substr($search, 1), 10);
-        }
-
-        $wikis = collect(MediaWikiRepository::getSupportedTargets(true));
-
-        // For users who aren't developers, stewards or staff, show appeals only for own wikis
-        if (!$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff', 'developer'])) {
-            $wikis = $wikis
-                ->filter(function ($wiki) use ($user) {
-                    return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');
-                });
-        }
-
-        $appeal = Appeal::where('appealfor', $search)
-            ->when($number, function (Builder $query, $number) {
-                return $query->orWhere('id', $number);
-            })
-            ->whereIn('wiki', $wikis)
-            ->orderByDesc('id')
-            ->first();
-
-        // for enwiki admins,
-        // try to find an UTRS 1 appeal if no UTRS 2 appeals were found
-        if (!$appeal && $wikis->contains('enwiki') && Schema::hasTable('oldappeals')) {
-            $appeal = Oldappeal::where(function (Builder $query) use ($search) {
-                return $query->where('hasAccount', true)
-                    ->where('wikiAccountName', $search);
-            })
-                ->orWhere(function (Builder $query) use ($search) {
-                    return $query->where('hasAccount', false)
-                        ->where('ip', $search);
-                })
-                ->when($number, function (Builder $query, $number) {
-                    return $query->orWhere('appealID', $number);
-                })
-                ->orderByDesc('appealID')
-                ->first();
-        }
-
-        // If no appeals were found at all, show error message
-        if (!$appeal) {
-            return redirect()
-                ->back(302, [], route('appeal.list'))
-                ->withErrors([
-                    'search' => 'No results found.'
-                ]);
-        }
-
-        if (!$user->can('view', $appeal)) {
-            return redirect()
-                ->back(302, [], route('appeal.list'))
-                ->withErrors([
-                    'search' => 'You are not allowed to view that appeal.'
-                ]);
-        }
-
-        return redirect()
-            ->to('/appeal/' . $appeal->id);
-    }
-
-    public function accountappeal()
-    {
-        if (Auth::id() !== null) {
-            return view('appeals.loggedin');
-        }
-        return view('appeals.makeappeal.account');
-    }
-
-    public function ipappeal()
-    {
-        if (Auth::id() !== null) {
-            return view('appeals.loggedin');
-        }
-        return view('appeals.makeappeal.ip');
-    }
-
     public function checkuser(Appeal $appeal, Request $request)
     {
         $this->authorize('viewCheckUserInformation', $appeal);
@@ -330,7 +239,6 @@ class AppealController extends Controller
             ]);
         }
 
-        Sendresponse::create(['appealID' => $appeal->id, 'template' => $template->id]);
         LogEntry::create([
             'user_id' => $user->id,
             'model_id' => $appeal->id,
@@ -375,12 +283,6 @@ class AppealController extends Controller
                 'protected' => LogEntry::LOG_PROTECTION_NONE,
             ]);
         }
-
-        Sendresponse::create([
-            'appealID' => $appeal->id,
-            'template' => 0,
-            'custom' => $request->input('custom'),
-        ]);
 
         LogEntry::create([
             'user_id' => $user->id,
