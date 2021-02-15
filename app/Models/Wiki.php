@@ -13,4 +13,9 @@ class Wiki extends Model
     protected $casts = [
         'is_accepting_appeals' => 'boolean',
     ];
+
+    public function templates()
+    {
+        return $this->hasMany(Template::class);
+    }
 }

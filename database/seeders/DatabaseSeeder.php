@@ -13,8 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(WikiSeed::class);
-
+        $this->call(WikiSeeder::class);
         $this->call(UserSeed::class);
 
         $this->call(AppealSeed::class);
