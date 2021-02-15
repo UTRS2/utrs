@@ -82,7 +82,10 @@ class UpdateWikiAppealListJob implements ShouldQueue
         $text = $this->createContents($appeals);
 
         // get page information
-        $services = MediaWikiRepository::getApiForTarget($this->wiki)->getAddWikiServices();
+        $api = MediaWikiRepository::getApiForTarget($this->wiki);
+        $api->login();
+
+        $services = $api->getAddWikiServices();
         $page = $services->newPageGetter()->getFromTitle($page);
 
         // prepare edit

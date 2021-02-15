@@ -35,7 +35,11 @@ class RealMediaWikiApi implements MediaWikiApi
 
         /** @var CookieJar $jar */
         $jar = $this->guzzleClient->getConfig('cookies');
-        if ($jar->getCookieByName('mediawiki_session')) {
+
+        // session names are unreliable, just assume there is at least some session if it's not empty
+        // checking the logged-in status when logging in isn't that expensive and this is significantly
+        // simpler than trying to guess the correct session cookie name which can change at any point anyways
+        if ($jar->count() > 0) {
             $this->hasExistingSession = true;
         }
     }
@@ -69,7 +73,7 @@ class RealMediaWikiApi implements MediaWikiApi
         return new RealMediaWikiExtras($this);
     }
 
-    public function login()
+    public function login(): void
     {
         if ($this->loggedIn) {
             return;
