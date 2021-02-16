@@ -14,4 +14,6 @@ interface MediaWikiApi
     public function getAddWikiServices(): MediawikiFactory;
 
     public function getMediaWikiExtras(): MediaWikiExtras;
+
+    public function login(): void;
 }

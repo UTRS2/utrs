@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Wiki;
 use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
@@ -33,33 +34,69 @@ class AdminController extends Controller
         return view('admin.tables', ['title' => 'All Sitenotices', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
     }
 
-    public function listtemplates()
+    public function listtemplates(Request $request)
     {
-        $this->authorize('viewAny', Template::class);
-        $alltemplates = Template::all();
+        /** @var User $user */
+        $user = $request->user();
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('viewAny', [Template::class, $wiki]);
+            })
+            ->pluck('id');
+
+        if ($wikis->isEmpty()) {
+            abort(403, "You can't view templates in any wikis!");
+            return '';
+        }
+
+        $templates = Template::with('wiki')
+            ->whereIn('wiki_id', $wikis)
+            ->get();
 
         $tableheaders = ['ID', 'Name', 'Contents', 'Active'];
+        if ($wikis->count() > 1) {
+            $tableheaders[] = 'Wiki';
+        }
+
         $rowcontents = [];
 
-        foreach ($alltemplates as $template) {
-            $idbutton = '<a href="/admin/templates/' . $template->id . '"><button type="button" class="btn btn-primary">' . $template->id . '</button></a>';
+        foreach ($templates as $template) {
+            $idbutton = '<a href="/admin/templates/' . $template->id . '" class="btn btn-primary">' . $template->id . '</a>';
             $active = $template->active ? 'Yes' : 'No';
+
             $rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
+
+            if ($wikis->count() > 1) {
+                $wikiName = $template->wiki->display_name . ' (' . $template->wiki->database_name . ')';
+                $rowcontents[$template->id][] = $wikiName;
+            }
         }
 
         return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
     }
 
-    public function showNewTemplate()
+    public function showNewTemplate(Request $request)
     {
-        $this->authorize('create', Template::class);
-        return view('admin.newtemplate');
+        /** @var User $user */
+        $user = $request->user();
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('create', [Template::class, $wiki]);
+            })
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
+            });
+
+        if ($wikis->isEmpty()) {
+            abort(403, "You can't create templates in any wikis!");
+            return '';
+        }
+
+        return view('admin.newtemplate', ['wikis' => $wikis]);
     }
 
     public function makeTemplate(Request $request)
     {
-        $this->authorize('create', Template::class);
-
         $ua = $request->userAgent();
         $ip = $request->ip();
         $lang = $request->header('Accept-Language');
@@ -68,7 +105,10 @@ class AdminController extends Controller
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')],
             'template' => 'required|min:2|max:2048',
             'default_status' => ['required', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'wiki_id' => 'required|exists:wikis,id',
         ]);
+
+        $this->authorize('create', [Template::class, Wiki::findOrFail($data['wiki_id'])]);
 
         $data['active'] = 1;
 
@@ -78,10 +118,22 @@ class AdminController extends Controller
         return redirect()->to('/admin/templates');
     }
 
-    public function editTemplate(Template $template)
+    public function editTemplate(Request $request, Template $template)
     {
         $this->authorize('update', $template);
-        return view('admin.edittemplate', ["template" => $template]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('create', [Template::class, $wiki]);
+            })
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
+            });
+
+        return view('admin.edittemplate', ["template" => $template, 'wikis' => $wikis]);
     }
 
     public function updateTemplate(Request $request, Template $template)
@@ -96,10 +148,19 @@ class AdminController extends Controller
             'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')->ignore($template->id)],
             'template' => 'required|min:2|max:2048',
             'default_status' => ['required', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'wiki_id' => 'required|exists:wikis,id',
         ]);
 
+        $logText = 'update';
+
+        if ($data['wiki_id'] != $template->wiki_id) {
+            $newWiki = Wiki::findOrFail($data['wiki_id']);
+            $this->authorize('create', [Template::class, $newWiki]);
+            $logText .= ', change wiki to ' . $newWiki->database_name;
+        }
+
         $template->update($data);
-        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => 'update', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        LogEntry::create(array('user_id' => Auth::id(), 'model_id' => $template->id, 'model_type' => Template::class, 'action' => $logText, 'ip' => $ip, 'ua' => $ua . " " . $lang));
         return redirect()->to('/admin/templates');
     }
 }

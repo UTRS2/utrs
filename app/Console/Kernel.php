@@ -24,14 +24,17 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // Backups
         $schedule->command('backup:run --only-db')->daily()->at('23:00');
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:monitor')->daily()->at('05:00');
-        // $schedule->command('inspire')
-        //          ->hourly();
 
+        // Private data removal
         $schedule->command('utrs-jobs:remove-appeal-private-data')->daily()->at('09:00');
         $schedule->command('utrs-jobs:remove-log-entry-private-data')->daily()->at('10:00');
+
+        // Wiki integration
+        $schedule->command('utrs-jobs:update-appeal-tables --wiki=enwiki')->everyFifteenMinutes();
     }
 
     /**

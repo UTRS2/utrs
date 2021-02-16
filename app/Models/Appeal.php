@@ -21,9 +21,22 @@ class Appeal extends Model
     ];
 
     const REGULAR_NO_VIEW_STATUS = [
-        self::STATUS_INVALID        => self::STATUS_INVALID,
-        self::STATUS_NOTFOUND       => self::STATUS_NOTFOUND,
-        self::STATUS_VERIFY         => self::STATUS_VERIFY,
+        self::STATUS_INVALID,
+        self::STATUS_NOTFOUND,
+        self::STATUS_VERIFY,
+    ];
+
+    const ALL_STATUSES = [
+        self::STATUS_OPEN,
+        self::STATUS_VERIFY,
+        self::STATUS_AWAITING_REPLY,
+        self::STATUS_ADMIN,
+        self::STATUS_CHECKUSER,
+        self::STATUS_NOTFOUND,
+        self::STATUS_INVALID,
+        self::STATUS_ACCEPT,
+        self::STATUS_DECLINE,
+        self::STATUS_EXPIRE,
     ];
 
     const STATUS_OPEN = 'OPEN';
@@ -42,6 +55,10 @@ class Appeal extends Model
     const STATUS_DECLINE = 'DECLINE';
     const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
 
+    const BLOCKTYPE_IP = 0;
+    const BLOCKTYPE_ACCOUNT = 1;
+    const BLOCKTYPE_IP_UNDER_ACCOUNT = 2;
+
     public $timestamps = false;
     public $guarded = ['id'];
 
@@ -51,6 +68,10 @@ class Appeal extends Model
 
     protected $casts = [
         'user_verified' => 'boolean',
+    ];
+
+    protected $dates = [
+        'submitted',
     ];
 
     // scopes
