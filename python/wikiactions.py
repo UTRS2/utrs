@@ -5,8 +5,6 @@ from mysql.connector import Error
 import credentials
 from datetime import datetime,timedelta,date
 
-import login
-
 def calldb(command,style):
     try:
         print command
