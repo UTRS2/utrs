@@ -27,6 +27,11 @@ class Ban extends Model
         return $this->morphMany(LogEntry::class, 'model');
     }
 
+    public function wiki()
+    {
+        return $this->belongsTo(Wiki::class);
+    }
+
     public function scopeActive(Builder $query)
     {
         return $query
@@ -37,6 +42,21 @@ class Ban extends Model
                 return $query
                     ->where('expiry', '>=', now())
                     ->orWhere('expiry', '<=', '2000-01-01 00:00:00');
+            });
+    }
+
+    /**
+     * Scope the query to only search for bans that are either global on in the specified wiki.
+     */
+    public function scopeWikiNameOrGlobal(Builder $query, string $wiki)
+    {
+        return $query
+            ->where(function (Builder $query) use ($wiki) {
+                return $query
+                    ->whereHas('wiki', function (Builder $query) use ($wiki) {
+                        return $query->where('database_name', $wiki);
+                    })
+                    ->orWhere('wiki_id', null);
             });
     }
 

@@ -27,6 +27,16 @@
                     <td>{!! $targetHtml !!}</td>
                 </tr>
                 <tr>
+                    <th>Wiki</th>
+                    <td>
+                        @if($ban->wiki)
+                            {{ $ban->wiki->display_name }} ({{ $ban->wiki->database_name }})
+                        @else
+                            All UTRS wikis
+                        @endif
+                    </td>
+                </tr>
+                <tr>
                     <th>Reason</th>
                     <td>{{ $ban->reason }}</td>
                 </tr>

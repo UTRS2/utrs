@@ -34,6 +34,7 @@ class CreateBanRequest extends BaseBanModifyRequest
             ],
             'reason' => 'required|max:128',
             'expiry' => 'required|date_format:Y-m-d H:i:s',
+            'wiki_id' => ['nullable', 'exists:wikis,id']
         ];
     }
 }

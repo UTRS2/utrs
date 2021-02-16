@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Ban;
 use App\Models\LogEntry;
+use App\Models\Template;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
+use App\Models\Wiki;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -22,8 +25,26 @@ class BanController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Ban::class);
-        $allbans = Ban::all();
+        /** @var User $user */
+        $user = $request->user();
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('viewAny', [Ban::class, $wiki]);
+            })
+            ->pluck('id');
+
+        if ($wikis->isEmpty()) {
+            abort(403, "You can't view bans in any wikis!");
+            return '';
+        }
+
+        $allbans = Ban::whereIn('wiki_id', $wikis)
+            // 0 is magic value and horrible hack, also please refactor these two inside a where() if adding more conditions
+            ->when($user->can('viewAny', [Ban::class, 0]), function (Builder $query) {
+                $query->orWhereNull('wiki_id');
+            })
+            ->with('wiki')
+            ->get();
 
         /** @var User $user */
         $user = $request->user();
@@ -31,6 +52,10 @@ class BanController extends Controller
         $protectedBansVisible = false;
 
         $tableheaders = [ 'ID', 'Target', 'Expires', 'Reason' ];
+        if ($wikis->count() > 1) {
+            $tableheaders[] = 'Wiki';
+        }
+
         $rowcontents = [];
 
         foreach ($allbans as $ban) {
@@ -60,6 +85,11 @@ class BanController extends Controller
             }
 
             $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
+
+            if ($wikis->count() > 1) {
+                $wikiName = $ban->wiki ? $ban->wiki->display_name . ' (' . $ban->wiki->database_name . ')' : 'All UTRS wikis';
+                $rowcontents[$ban->id][] = $wikiName;
+            }
         }
 
         $caption = null;
@@ -77,10 +107,33 @@ class BanController extends Controller
         ]);
     }
 
-    public function new()
+    public function new(Request $request)
     {
-        $this->authorize('create', Ban::class);
-        return view('admin.bans.new');
+        /** @var User $user */
+        $user = $request->user();
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('create', [Ban::class, $wiki]);
+            })
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
+            })
+            ->toArray();
+
+        if ($user->can('create', [Ban::class, null])) {
+            // more hackiness; of course zero or null can't be a collection item key, empty string is valid and nullable (which is important!)
+            // also this is an array and not a collection because otherwise this would mess its keys completely :(
+            $wikis[''] = 'All UTRS wikis';
+        }
+
+        if (empty($wikis)) {
+            abort(403, "You can't create templates in any wikis!");
+            return '';
+        }
+
+        return view('admin.bans.new', [
+            'wikis' => $wikis
+        ]);
     }
 
     public function create(CreateBanRequest $request)

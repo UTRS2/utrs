@@ -92,7 +92,7 @@ class User extends Authenticatable
 
     /**
      * check if this user has any of the specified permissions on any of the specified wikis or globally
-     * @param array|string $wikis
+     * @param array|string|null $wikis
      * @param array|string $wantedPerms
      * @return bool
      */
@@ -103,7 +103,8 @@ class User extends Authenticatable
         }
 
         if (!is_array($wantedPerms)) {
-            $wantedPerms = [$wantedPerms];
+            // if null is passed in, just make that an empty array
+            $wantedPerms = $wantedPerms ? [$wantedPerms] : [];
         }
 
         if (!in_array('*', $wikis)) {

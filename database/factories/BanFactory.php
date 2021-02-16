@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Ban;
+use App\Models\Wiki;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -30,6 +31,7 @@ class BanFactory extends Factory
             'ip' => 0,
             'is_protected' => $this->faker->boolean(30),
             'is_active' => $this->faker->boolean(80),
+            'wiki_id' => $this->faker->boolean ? null : $this->faker->numberBetween(1, Wiki::count()),
         ];
     }
 

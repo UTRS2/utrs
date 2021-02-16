@@ -4,6 +4,7 @@ namespace App\Policies\Admin;
 
 use App\Models\Ban;
 use App\Models\User;
+use App\Models\Wiki;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class BanPolicy
@@ -14,11 +15,21 @@ class BanPolicy
      * Determine whether the user can view any bans.
      *
      * @param User $user
+     * @param Wiki|int|null $wiki
      * @return mixed
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user, $wiki = null)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+        // horrible hack
+        if ($wiki === 0) {
+            return $user->hasAnySpecifiedLocalOrGlobalPerms([], 'tooladmin');
+        }
+
+        if (!$wiki) {
+            return $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
+        }
+
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki->database_name, 'tooladmin');
     }
 
     /**
@@ -30,7 +41,8 @@ class BanPolicy
      */
     public function view(User $user, Ban $ban)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+        $wikiDbName = $ban->wiki ? $ban->wiki->database_name : null;
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($wikiDbName, 'tooladmin');
     }
 
     /**
@@ -53,11 +65,16 @@ class BanPolicy
      * Determine whether the user can create bans.
      *
      * @param User $user
+     * @param Wiki $wiki
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, ?Wiki $wiki)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+        if (!$wiki) {
+            return $user->hasAnySpecifiedLocalOrGlobalPerms([], 'tooladmin');
+        }
+
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki->database_name, 'tooladmin');
     }
 
     /**
@@ -69,7 +86,8 @@ class BanPolicy
      */
     public function update(User $user, Ban $ban)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+        $wikiDbName = $ban->wiki ? $ban->wiki->database_name : null;
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($wikiDbName, 'tooladmin');
     }
 
     /**
@@ -81,7 +99,8 @@ class BanPolicy
      */
     public function delete(User $user, Ban $ban)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin']);
+        $wikiDbName = $ban->wiki ? $ban->wiki->database_name : null;
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($wikiDbName, 'tooladmin');
     }
 
     /**
@@ -93,6 +112,7 @@ class BanPolicy
      */
     public function oversight(User $user, ?Ban $ban = null)
     {
-        return $user->hasAnySpecifiedPermsOnAnyWiki(['oversight', 'steward', 'staff', 'developer']);
+        $wikiDbName = $ban->wiki ? $ban->wiki->database_name : null;
+        return $user->hasAnySpecifiedLocalOrGlobalPerms($wikiDbName, ['oversight', 'steward', 'staff', 'developer']);
     }
 }
