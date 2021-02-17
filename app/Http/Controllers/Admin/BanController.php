@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
 use App\Models\Wiki;
+use App\Policies\Admin\BanPolicy;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -33,14 +34,14 @@ class BanController extends Controller
             })
             ->pluck('id');
 
-        if ($wikis->isEmpty()) {
+        if ($wikis->isEmpty() && !$user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL])) {
             abort(403, "You can't view bans in any wikis!");
             return '';
         }
 
         $allbans = Ban::whereIn('wiki_id', $wikis)
             // 0 is magic value and horrible hack, also please refactor these two inside a where() if adding more conditions
-            ->when($user->can('viewAny', [Ban::class, 0]), function (Builder $query) {
+            ->when($user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL]), function (Builder $query) {
                 $query->orWhereNull('wiki_id');
             })
             ->with('wiki')
@@ -111,20 +112,7 @@ class BanController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-        $wikis = Wiki::get()
-            ->filter(function (Wiki $wiki) use ($user) {
-                return $user->can('create', [Ban::class, $wiki]);
-            })
-            ->mapWithKeys(function (Wiki $wiki) {
-                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
-            })
-            ->toArray();
-
-        if ($user->can('create', [Ban::class, null])) {
-            // more hackiness; of course zero or null can't be a collection item key, empty string is valid and nullable (which is important!)
-            // also this is an array and not a collection because otherwise this would mess its keys completely :(
-            $wikis[''] = 'All UTRS wikis';
-        }
+        $wikis = $this->constructWikiDropdown($user);
 
         if (empty($wikis)) {
             abort(403, "You can't create templates in any wikis!");
@@ -201,12 +189,15 @@ class BanController extends Controller
             $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
         }
 
+        $wikis = $this->constructWikiDropdown($request->user());
+
         return view('admin.bans.view', [
             'ban'             => $ban,
             'target'          => $target,
             'targetHtml'      => $targetHtml,
             'formattedExpiry' => $formattedExpiry,
             'formOldExpiry'   => $formOldExpiry,
+            'wikis'           => $wikis,
         ]);
     }
 
@@ -218,6 +209,14 @@ class BanController extends Controller
             $lang = $request->header('Accept-Language');
 
             $ban->fill($request->validated());
+
+            $changeDetails = [];
+
+            if ($ban->isDirty('wiki_id')) {
+                $newWiki = $ban->wiki_id ? Wiki::find($ban->wiki_id) : null;
+                $this->authorize('create', [Template::class, $newWiki]);
+                $changeDetails[] = 'change wiki to ' . ($newWiki ? $newWiki->database_name : 'all UTRS wikis');
+            }
 
             if ($ban->isDirty('is_protected')) {
                 LogEntry::create([
@@ -234,8 +233,6 @@ class BanController extends Controller
 
             $changes = $ban->getDirty();
             $ban->update();
-
-            $changeDetails = [];
 
             if (array_key_exists('reason', $changes)) {
                 $changeDetails[] = 'reason was set to "' . $ban->reason . '"';
@@ -267,5 +264,25 @@ class BanController extends Controller
         });
 
         return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
+    }
+
+    private function constructWikiDropdown(User $user): array
+    {
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('create', [Ban::class, $wiki]);
+            })
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
+            })
+            ->toArray();
+
+        if ($user->can('create', [Ban::class, null])) {
+            // more hackiness; of course zero or null can't be a collection item key, empty string is valid and nullable (which is important!)
+            // also this is an array and not a collection because otherwise this would mess its keys completely :(
+            $wikis[''] = 'All UTRS wikis';
+        }
+
+        return $wikis;
     }
 }

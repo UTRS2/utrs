@@ -66,6 +66,15 @@
                     </div>
                 </div>
 
+                @if(sizeof($wikis) > 1)
+                    <div class="form-group">
+                        {{ Form::label('wiki_id', 'Wiki') }}
+                        {{ Form::select('wiki_id', $wikis, old('wiki_id', $ban->wiki_id), ['class' => 'form-control']) }}
+                    </div>
+                @else
+                    {{ Form::hidden('wiki_id', array_keys($wikis)[0]) }}
+                @endif
+
                 <div class="form-group mb-4">
                     {{ Form::label('reason', 'Ban reason') }}
                     {{ Form::text('reason', old('reason', $ban->reason), ['class' => 'form-control']) }}

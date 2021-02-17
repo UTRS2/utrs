@@ -3,20 +3,18 @@
 namespace App\Http\Requests\Admin\Bans;
 
 use App\Models\Ban;
-use App\Http\Rules\IpOrCidrRule;
 use App\Http\Rules\MaxCidrSizeRule;
-use Carbon\Carbon;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
+use App\Models\Wiki;
 
 class CreateBanRequest extends BaseBanModifyRequest
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function getPermissionCheckTarget()
+    public function authorize()
     {
-        return Ban::class;
+        $wiki = $this->has('wiki_id')
+            ? Wiki::findOrFail($this->input('wiki_id'))
+            : null;
+
+        return $this->user()->can('create', [Ban::class, $wiki]);
     }
 
     /**
@@ -34,7 +32,7 @@ class CreateBanRequest extends BaseBanModifyRequest
             ],
             'reason' => 'required|max:128',
             'expiry' => 'required|date_format:Y-m-d H:i:s',
-            'wiki_id' => ['nullable', 'exists:wikis,id']
+            'wiki_id' => 'nullable|exists:wikis,id'
         ];
     }
 }
