@@ -45,19 +45,23 @@ trait TestHasUsers
         return $user;
     }
 
-    protected function getTooladminUser($extraData = []): User
+    protected function getTooladminUser($extraData = [], $wikis = ['enwiki']): User
     {
         $permissions = $this->userDefaultPermissions;
-        $permissions['enwiki'][] = 'tooladmin';
+        foreach ($wikis as $wiki) {
+            $permissions[$wiki][] = 'tooladmin';
+        }
         return $this->getUser($permissions, $extraData);
     }
 
-    protected function getFunctionaryTooladminUser($extraData = []): User
+    protected function getFunctionaryTooladminUser($extraData = [], $wikis = ['enwiki']): User
     {
         $permissions = $this->userDefaultPermissions;
-        $permissions['enwiki'][] = 'tooladmin';
-        $permissions['enwiki'][] = 'checkuser';
-        $permissions['enwiki'][] = 'oversight';
+        foreach ($wikis as $wiki) {
+            $permissions[$wiki][] = 'tooladmin';
+            $permissions[$wiki][] = 'checkuser';
+            $permissions[$wiki][] = 'oversight';
+        }
         return $this->getUser($permissions, $extraData);
     }
 
