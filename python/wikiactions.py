@@ -91,13 +91,4 @@ def datesince(orig,length):
     today = datetime.now()
     diff = today - timedelta(days=length)
     return diff > orig[0]
-def closeNotFound():
-    results = calldb("select id from appeals where status = 'NOTFOUND';","read")
-    for result in results:
-        id = result[0]
-        logs = calldb("select timestamp from log_entries where model_id = "+str(id)+" and action = 'create' and model_type = 'App\\\\Models\\\\Appeal';","read")
-        if datesince(logs[0], 2):
-            calldb("update appeals set status = 'EXPIRE' where id = "+str(id)+";","write")
-            calldb("insert into log_entries (user_id, model_id,model_type, action, ip, ua, protected) VALUES ('"+str(0)+"','"+str(id)+"','App\\\\Models\\\\Appeal','closed - expired','DB entry','DB/Python',0);","write")
 clearPrivateData()
-closeNotFound()
