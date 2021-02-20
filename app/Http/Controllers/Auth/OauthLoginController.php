@@ -21,8 +21,13 @@ class OauthLoginController extends Controller
 
     public function login()
     {
-        return Socialite::driver('mediawiki')
-            ->redirect();
+        try {
+            return Socialite::driver('mediawiki')->redirect();
+        } catch (Exception $e) {
+            //Cathing temporary credentials retrival error
+            //We are not concerned about logging this as it's a user issue, easily fixed.
+            abort(400); 
+        }
     }
 
     public function callback(Request $request)
