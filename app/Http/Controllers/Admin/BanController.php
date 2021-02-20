@@ -91,6 +91,12 @@ class BanController extends Controller
             ]);
         }
 
+        if (!$request->has('reason')) {
+            throw ValidationException::withMessages([
+                'reason' => 'You must provide a ban reason.',
+            ]);
+        }
+
         $ban = DB::transaction(function () use ($request) {
             $ban = Ban::create($request->validated());
 
@@ -176,6 +182,12 @@ class BanController extends Controller
                     'ip'         => $ip,
                     'ua'         => $ua . ' ' . $lang,
                     'protected'  => LogEntry::LOG_PROTECTION_FUNCTIONARY,
+                ]);
+            }
+
+            if ($request['update_reason'] == "") {
+                throw ValidationException::withMessages([
+                    'update_reason' => 'You must provide a reason.',
                 ]);
             }
 

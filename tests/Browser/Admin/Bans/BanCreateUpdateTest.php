@@ -29,7 +29,7 @@ class BanCreateUpdateTest extends DuskTestCase
                 ->visit(route('admin.bans.create'))
                 ->assertDontSee('403')
                 ->type('target', 'UTRS banned user')
-                ->type('reason', 'UTRS public ban reason')
+                ->type('update_reason', 'UTRS public ban reason')
                 ->type('comment', 'UTRS private ban comment')
                 ->press('Submit')
                 ->assertSee('Ban details')
