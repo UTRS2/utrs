@@ -30,13 +30,15 @@ class OauthLoginController extends Controller
         // run this inside a transaction.
         // helps mainly for development stuff, when loading permissions fails
         $user = DB::transaction(function () use ($request) {
-            $socialiteUser = Socialite::driver('mediawiki')->user();
 
-            // sanity check
-            if (!$socialiteUser->getId() || !$socialiteUser->getName()) {
-                Log::error('OAuth failed: MediaWiki api returned an invalid user object ' . json_encode($socialiteUser));
-                abort(500);
+            try {
+                $socialiteUser = Socialite::driver('mediawiki')->user();
+            } catch (Exception $e) {
+                //the previous sanity check code didn't account for OAuth tokens being undefinited, and therefore causing an error
+                //We are not concerned about logging this as it's a user issue, easily fixed.
+                abort(400); 
             }
+
 
             $user = User::firstWhere([
                 'username' => $socialiteUser->getName(),
