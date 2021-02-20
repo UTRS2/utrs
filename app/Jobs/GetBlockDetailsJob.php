@@ -127,35 +127,41 @@ class GetBlockDetailsJob implements ShouldQueue
      */
     public function handle(MediaWikiRepository $mediaWikiRepository)
     {
-        if ($this->appeal->wiki === 'global') {
-            $mediaWikiExtras = $mediaWikiRepository->getGlobalApi()->getMediaWikiExtras();
+        try {
+            if ($this->appeal->wiki === 'global') {
+                $mediaWikiExtras = $mediaWikiRepository->getGlobalApi()->getMediaWikiExtras();
 
-            $block = $mediaWikiExtras->getGlobalBlockInfo($this->appeal->appealfor, $this->appeal->id);
+                $block = $mediaWikiExtras->getGlobalBlockInfo($this->appeal->appealfor, $this->appeal->id);
 
-            if (!$block && !empty($this->appeal->hiddenip)) {
-                $block = $mediaWikiExtras->getGlobalBlockInfo($this->appeal->hiddenip, $this->appeal->id);
-            }
-        } else {
-            $mediaWikiExtras = $mediaWikiRepository->getApiForTarget($this->appeal->wiki)->getMediaWikiExtras();
-
-            if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
-                $block = $mediaWikiExtras->getBlockInfo(substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
+                if (!$block && !empty($this->appeal->hiddenip)) {
+                    $block = $mediaWikiExtras->getGlobalBlockInfo($this->appeal->hiddenip, $this->appeal->id);
+                }
             } else {
-                $block = $mediaWikiExtras->getBlockInfo($this->appeal->appealfor, $this->appeal->id);
+                $mediaWikiExtras = $mediaWikiRepository->getApiForTarget($this->appeal->wiki)->getMediaWikiExtras();
+
+                if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
+                    $block = $mediaWikiExtras->getBlockInfo(substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
+                } else {
+                    $block = $mediaWikiExtras->getBlockInfo($this->appeal->appealfor, $this->appeal->id);
+                }
+
+                if (!$block && !empty($this->appeal->hiddenip)) {
+                    $block = $mediaWikiExtras->getBlockInfo($this->appeal->hiddenip, $this->appeal->id);
+                }
             }
 
-            if (!$block && !empty($this->appeal->hiddenip)) {
-                $block = $mediaWikiExtras->getBlockInfo($this->appeal->hiddenip, $this->appeal->id);
+            if ($block) {
+                $this->handleBlockData($block);
+                return;
             }
-        }
 
-        if ($block) {
-            $this->handleBlockData($block);
-            return;
+            $this->appeal->update([
+                'status' => Appeal::STATUS_NOTFOUND,
+            ]);
         }
-
-        $this->appeal->update([
-            'status' => Appeal::STATUS_NOTFOUND,
-        ]);
+        catch(Exception $e) {
+            //Thanks, but no thanks. We are not interested in bad user messages being spun out. If it's invalid, it's invalid.
+            //If we can eventually set this up to be specific, ignore API error: baduser
+        }
     }
 }
