@@ -4,36 +4,37 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4502a1a663a8e5f8882a0652cc1d4626",
+    "content-hash": "a0ea7db4e0ba3fcd87ab27200442a918",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
-            "version": "0.7.3",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/addwiki/mediawiki-api.git",
-                "reference": "cd1321526235b0a0507f92259254bd738ffb39d3"
+                "reference": "eee8f072aba0a2e9886f290a73b8e10eb83e0cfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/addwiki/mediawiki-api/zipball/cd1321526235b0a0507f92259254bd738ffb39d3",
-                "reference": "cd1321526235b0a0507f92259254bd738ffb39d3",
+                "url": "https://api.github.com/repos/addwiki/mediawiki-api/zipball/eee8f072aba0a2e9886f290a73b8e10eb83e0cfc",
+                "reference": "eee8f072aba0a2e9886f290a73b8e10eb83e0cfc",
                 "shasum": ""
             },
             "require": {
-                "addwiki/mediawiki-api-base": "~2.4",
-                "addwiki/mediawiki-datamodel": "~0.7.0|~0.8.0"
+                "addwiki/mediawiki-api-base": "^2.8",
+                "addwiki/mediawiki-datamodel": "^2.8",
+                "php": ">=7.3"
             },
             "require-dev": {
-                "jakub-onderka/php-parallel-lint": "^0.9.2",
-                "mediawiki/mediawiki-codesniffer": "^13.0",
+                "mediawiki/mediawiki-codesniffer": "~35.0",
                 "monolog/monolog": "^1.23",
-                "phpunit/phpunit": "~4.8"
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "~9"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.7.x-dev"
+                    "dev-main": "2.8-dev"
                 }
             },
             "autoload": {
@@ -43,7 +44,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
@@ -52,37 +53,38 @@
             ],
             "description": "A MediaWiki API library",
             "keywords": [
+                "api",
                 "mediawiki"
             ],
             "support": {
-                "source": "https://github.com/addwiki/mediawiki-api/tree/0.7.3"
+                "source": "https://github.com/addwiki/mediawiki-api/tree/2.8.0"
             },
-            "time": "2020-01-14T08:52:25+00:00"
+            "time": "2021-02-16T19:46:17+00:00"
         },
         {
             "name": "addwiki/mediawiki-api-base",
-            "version": "2.5.0",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/addwiki/mediawiki-api-base.git",
-                "reference": "a4bce0dffd7cf879fcb41baba5a1566e201e38ad"
+                "reference": "d8eff31b54fd39d90eb14457e5ce478cfdf08394"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/addwiki/mediawiki-api-base/zipball/a4bce0dffd7cf879fcb41baba5a1566e201e38ad",
-                "reference": "a4bce0dffd7cf879fcb41baba5a1566e201e38ad",
+                "url": "https://api.github.com/repos/addwiki/mediawiki-api-base/zipball/d8eff31b54fd39d90eb14457e5ce478cfdf08394",
+                "reference": "d8eff31b54fd39d90eb14457e5ce478cfdf08394",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "~6.0",
+                "guzzlehttp/guzzle": "~6.3|~7.0",
                 "guzzlehttp/promises": "~1.0",
-                "php": ">=5.5",
+                "php": ">=7.3",
                 "psr/log": "~1.0"
             },
             "require-dev": {
-                "jakub-onderka/php-parallel-lint": "0.9.2",
-                "mediawiki/mediawiki-codesniffer": "^13.0",
-                "phpunit/phpunit": "~4.8.0|~5.3.0"
+                "mediawiki/mediawiki-codesniffer": "~35.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "~9"
             },
             "suggest": {
                 "etsy/phan": "Allows running static analysis on the package (requires PHP 7+)"
@@ -90,7 +92,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5.x-dev"
+                    "dev-main": "2.8-dev"
                 }
             },
             "autoload": {
@@ -100,45 +102,49 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
                     "name": "Addshore"
                 }
             ],
-            "description": "A basic Mediawiki api base library",
+            "description": "Simple MediaWiki API library",
             "keywords": [
+                "api",
                 "mediawiki"
             ],
             "support": {
-                "source": "https://github.com/addwiki/mediawiki-api-base/tree/2.5.0"
+                "source": "https://github.com/addwiki/mediawiki-api-base/tree/2.8.0"
             },
-            "time": "2019-11-27T09:26:52+00:00"
+            "time": "2021-02-16T19:46:17+00:00"
         },
         {
             "name": "addwiki/mediawiki-datamodel",
-            "version": "0.8.0",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/addwiki/mediawiki-datamodel.git",
-                "reference": "ed644d977f96bd9f1b165fbb9f186dbdf0c0ff7d"
+                "reference": "1082c8cd947ca313d4f2b95f9b1dc2b2b492052a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/addwiki/mediawiki-datamodel/zipball/ed644d977f96bd9f1b165fbb9f186dbdf0c0ff7d",
-                "reference": "ed644d977f96bd9f1b165fbb9f186dbdf0c0ff7d",
+                "url": "https://api.github.com/repos/addwiki/mediawiki-datamodel/zipball/1082c8cd947ca313d4f2b95f9b1dc2b2b492052a",
+                "reference": "1082c8cd947ca313d4f2b95f9b1dc2b2b492052a",
                 "shasum": ""
             },
+            "require": {
+                "php": ">=7.2"
+            },
             "require-dev": {
-                "jakub-onderka/php-parallel-lint": "0.9.2",
-                "mediawiki/mediawiki-codesniffer": "^13.0",
-                "phpunit/phpunit": "~4.8.0|~5.3.0"
+                "mediawiki/mediawiki-codesniffer": "~35.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "~9"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.8.x-dev"
+                    "dev-main": "2.8-dev"
                 }
             },
             "autoload": {
@@ -148,7 +154,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
@@ -160,9 +166,9 @@
                 "mediawiki"
             ],
             "support": {
-                "source": "https://github.com/addwiki/mediawiki-datamodel/tree/master"
+                "source": "https://github.com/addwiki/mediawiki-datamodel/tree/2.8.0"
             },
-            "time": "2018-07-30T09:55:08+00:00"
+            "time": "2021-02-16T19:46:19+00:00"
         },
         {
             "name": "asm89/stack-cors",
