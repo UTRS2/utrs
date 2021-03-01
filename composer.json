@@ -23,7 +23,7 @@
         "laravelcollective/html": "^6.2",
         "spatie/laravel-backup": "^6.10",
         "taavi/laravel-socialite-mediawiki": "^1.3",
-        "taavi/laravel-torblock": "^1.0",
+        "taavi/laravel-torblock": "^1.1",
         "wikimedia/ip-utils": "^3.0"
     },
     "require-dev": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c203383a73d6c32ea02ec151c645c3b",
+    "content-hash": "3bf17802da0097fc92431acba222bab1",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -5600,16 +5600,16 @@
         },
         {
             "name": "taavi/laravel-torblock",
-            "version": "v1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/supertassu/laravel-torblock.git",
-                "reference": "fc2beb99f6829cfbca7b6c766785d708c054f083"
+                "reference": "19cdd6f735868b5f1cfcd057c2026563bb990723"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/supertassu/laravel-torblock/zipball/fc2beb99f6829cfbca7b6c766785d708c054f083",
-                "reference": "fc2beb99f6829cfbca7b6c766785d708c054f083",
+                "url": "https://api.github.com/repos/supertassu/laravel-torblock/zipball/19cdd6f735868b5f1cfcd057c2026563bb990723",
+                "reference": "19cdd6f735868b5f1cfcd057c2026563bb990723",
                 "shasum": ""
             },
             "require": {
@@ -5653,9 +5653,9 @@
             "description": "Laravel package for blocking Tor exit nodes",
             "support": {
                 "issues": "https://github.com/supertassu/laravel-torblock/issues",
-                "source": "https://github.com/supertassu/laravel-torblock/tree/v1.0.1"
+                "source": "https://github.com/supertassu/laravel-torblock/tree/v1.1.0"
             },
-            "time": "2021-03-01T11:51:28+00:00"
+            "time": "2021-03-01T13:51:27+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
