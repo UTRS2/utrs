@@ -48,7 +48,7 @@ class UpdateWikiAppealListJob implements ShouldQueue
 
         $data = '{| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle"'
             . "\n! Appeal Number"
-            . "\n! Appealant"
+            . "\n! Appellant"
             . "\n! Filed on"
             . "\n! Status\n";
 
