@@ -143,7 +143,7 @@ class BanPolicy
                 ->map(function ($value) {
                     // migrate wiki ids for database names
                     if (is_numeric($value)) {
-                        // todo: do this as one query for all of the given ids
+                        // this should be done as one query for all of the given ids
                         return Wiki::findOrFail($value)->database_name;
                     }
 
