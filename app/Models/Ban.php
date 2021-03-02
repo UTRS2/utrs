@@ -56,7 +56,7 @@ class Ban extends Model
                     ->whereHas('wiki', function (Builder $query) use ($wiki) {
                         return $query->where('database_name', $wiki);
                     })
-                    ->orWhere('wiki_id', null);
+                    ->orWhereNull('wiki_id');
             });
     }
 
