@@ -115,7 +115,7 @@ class BanController extends Controller
         $wikis = $this->constructWikiDropdown($user);
 
         if (empty($wikis)) {
-            abort(403, "You can't create templates in any wikis!");
+            abort(403, "You can't bans in any wikis!");
             return '';
         }
 
@@ -174,7 +174,8 @@ class BanController extends Controller
         $this->authorize('view', $ban);
 
         $target = $request->user()->can('viewName', $ban) ? $ban->target : '(ban target removed)';
-        $targetHtml = $request->user()->can('viewName', $ban) ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
+        $targetHtml = $request->user()->can('viewName', $ban)
+            ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
             : '<i class="text-muted">(ban target removed)</i>';
 
         $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);

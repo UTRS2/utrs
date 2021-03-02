@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\Bans;
 
+use App\Models\Ban;
 use App\Models\Wiki;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -38,7 +39,7 @@ class BanCreateSuppressTest extends TestCase
             ->post(
                 route('admin.bans.create'),
                 [
-                    'target' => '1.2.3.4/24',
+                    'target' => '192.0.2.15/32',
                     'reason' => 'foo ar',
                     'expiry' => 'indefinite',
                     'wiki_id' => $wikiId,
@@ -46,6 +47,8 @@ class BanCreateSuppressTest extends TestCase
                 ]
             )
             ->assertSessionHasErrors([ 'is_protected' ]);
+
+        $this->assertFalse(Ban::where('target', '192.0.2.15/32')->exists());
     }
 
     public function provideTooladmin(): array
@@ -56,5 +59,59 @@ class BanCreateSuppressTest extends TestCase
             'Global queue only' => [ ['global'], ],
             'All wikis' => [ ['*'], ],
         ];
+    }
+
+    public function test_cant_suppress_wrong_wiki()
+    {
+        $user = $this->getUser([
+            'enwiki' => [
+                'user', 'admin', 'tooladmin',
+            ],
+            'ptwiki' => [
+                'user', 'admin', 'tooladmin', 'oversight'
+            ],
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.bans.new'))
+            ->assertSee('Add ban')
+            ->assertSee('Ban target visibility');
+
+        $enwikiId = Wiki::where('database_name', 'enwiki')
+            ->firstOrFail()
+            ->id;
+        $ptwikiId = Wiki::where('database_name', 'ptwiki')
+            ->firstOrFail()
+            ->id;
+
+        $this->actingAs($user)
+            ->post(
+                route('admin.bans.create'),
+                [
+                    'target' => '192.0.2.15/32',
+                    'reason' => 'foo ar',
+                    'expiry' => 'indefinite',
+                    'wiki_id' => $enwikiId,
+                    'is_protected' => true
+                ]
+            )
+            ->assertSessionHasErrors([ 'is_protected' ]);
+
+        $this->assertFalse(Ban::where('target', '192.0.2.15/32')->exists());
+
+        $this->actingAs($user)
+            ->post(
+                route('admin.bans.create'),
+                [
+                    'target' => '192.0.2.16/32',
+                    'reason' => 'foo ar',
+                    'expiry' => 'indefinite',
+                    'wiki_id' => $ptwikiId,
+                    'is_protected' => true
+                ]
+            )
+            ->assertRedirect();
+
+        $this->assertTrue(Ban::where('target', '192.0.2.16/32')->exists());
     }
 }
