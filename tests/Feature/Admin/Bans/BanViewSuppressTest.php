@@ -24,7 +24,7 @@ class BanViewSuppressTest extends TestCase
      */
     public function testBanTargetSuppression(string $suppressedOn, array $hasOversightOn, bool $expectedResult)
     {
-        $rights = collect(['enwiki', 'ptwiki', 'global'])
+        $rights = collect(['enwiki', 'ptwiki', '*'])
             ->mapWithKeys(function (string $wiki) use ($hasOversightOn) {
                 return [
                     $wiki => in_array($wiki, $hasOversightOn)
