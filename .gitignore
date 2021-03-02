@@ -25,3 +25,4 @@ _ide_helper_models.php
 .phpstorm.meta.php
 
 resources/lang/vendor/*
+!resources/lang/vendor/torblock
