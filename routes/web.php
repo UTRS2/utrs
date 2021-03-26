@@ -15,10 +15,17 @@ Route::view('/', 'home')->name('home');
 Route::redirect('/home', '/');
 
 Route::prefix('/public')->middleware('guest')->group(function () {
-    Route::view('/appeal/ip', 'appeals.public.makeappeal.ip')->name('public.appeal.create.ip');
-    Route::view('/appeal/account', 'appeals.public.makeappeal.account')->name('public.appeal.create.account');
+    Route::view('/appeal/ip', 'appeals.public.makeappeal.ip')
+        ->name('public.appeal.create.ip')
+        ->middleware('torblock');
 
-    Route::post('/appeal/store', 'Appeal\PublicAppealController@store')->name('public.appeal.store');
+    Route::view('/appeal/account', 'appeals.public.makeappeal.account')
+        ->name('public.appeal.create.account')
+        ->middleware('torblock');
+
+    Route::post('/appeal/store', 'Appeal\PublicAppealController@store')
+        ->name('public.appeal.store')
+        ->middleware('torblock');
 
     Route::get('/appeal/view', 'Appeal\PublicAppealController@view')->name('public.appeal.view');
     Route::post('/appeal/comment', 'Appeal\PublicAppealController@addComment')->name('public.appeal.comment');
