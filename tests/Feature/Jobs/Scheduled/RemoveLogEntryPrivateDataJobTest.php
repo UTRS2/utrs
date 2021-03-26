@@ -57,8 +57,8 @@ class RemoveLogEntryPrivateDataJobTest extends TestCase
         (new RemoveLogEntryPrivateDataJob())->handle();
 
         $logEntry->refresh();
-        $this->assertEmpty($logEntry->ip);
-        $this->assertEmpty($logEntry->ua);
+        $this->assertNull($logEntry->ip);
+        $this->assertNull($logEntry->ua);
     }
 
     public function test_should_not_purge_already_purged_entries()
