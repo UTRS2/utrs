@@ -55,6 +55,7 @@ class PublicAppealController extends Controller
         ]);
 
         $ban = Ban::whereIn('target', $banTargets)
+            ->wikiNameOrGlobal($data['wiki'])
             ->active()
             ->first();
 
