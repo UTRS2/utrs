@@ -15,6 +15,10 @@ class LogEntry extends Model
     public $timestamps = false;
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'timestamp' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
