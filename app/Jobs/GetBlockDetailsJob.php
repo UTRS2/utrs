@@ -86,6 +86,7 @@ class GetBlockDetailsJob implements ShouldQueue
 
             $banTargets = Ban::getTargetsToCheck($this->appeal->appealfor);
             $ban = Ban::whereIn('target', $banTargets)
+                ->wikiNameOrGlobal($this->appeal->wiki)
                 ->active()
                 ->first();
 

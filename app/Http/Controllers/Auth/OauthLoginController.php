@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Log;
-use App\Models\LogEntry;
+use App\Utils\Logging\RequestLogContext;
+use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -34,8 +34,7 @@ class OauthLoginController extends Controller
 
             // sanity check
             if (!$socialiteUser->getId() || !$socialiteUser->getName()) {
-                Log::error('OAuth failed: MediaWiki api returned an invalid user object ' . json_encode($socialiteUser));
-                abort(500);
+                throw new Exception('OAuth failed: MediaWiki api returned an invalid user object ' . json_encode($socialiteUser));
             }
 
             $user = User::firstWhere([
@@ -60,20 +59,11 @@ class OauthLoginController extends Controller
                 $user->username = $socialiteUser->getName();
                 $user->save();
 
-                $ua = $request->header('User-Agent');
-                $ip = $request->ip();
-                $lang = $request->header('Accept-Language');
-
-                LogEntry::create([
-                    'user_id' => $user->id,
-                    'model_id' => $user->id,
-                    'model_type' => User::class,
-                    'action' => 'modified user - changed user name from ' . $oldUsername . ' to ' . $socialiteUser->getName(),
-                    'reason' => 'automatically detected changed user name when logging in',
-                    'ip' => $ip,
-                    'ua' => $ua . ' ' . $lang,
-                    'protected' => LogEntry::LOG_PROTECTION_NONE,
-                ]);
+                $user->addLog(
+                    new RequestLogContext($request),
+                    'modified user - changed user name from ' . $oldUsername . ' to ' . $socialiteUser->getName(),
+                    'automatically detected changed user name when logging in'
+                );
             }
 
             return $user;

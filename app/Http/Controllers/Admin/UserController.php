@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Services\Facades\MediaWikiRepository;
+use App\Utils\Logging\RequestLogContext;
 use DB;
 use App\Http\Controllers\Controller;
-use App\Models\LogEntry;
 use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -114,20 +114,11 @@ class UserController extends Controller
             }
 
             if (!empty($allChanges)) {
-                $ua = $request->header('User-Agent');
-                $ip = $request->ip();
-                $lang = $request->header('Accept-Language');
-
-                LogEntry::create([
-                    'user_id' => $currentUser->id,
-                    'model_id' => $user->id,
-                    'model_type' => User::class,
-                    'action' => 'modified user - ' . implode(',', $allChanges),
-                    'reason' => $reason,
-                    'ip' => $ip,
-                    'ua' => $ua . " " . $lang,
-                    'protected' => LogEntry::LOG_PROTECTION_NONE,
-                ]);
+                $user->addLog(
+                    new RequestLogContext($request),
+                    'modified user - ' . implode(',', $allChanges),
+                    $reason
+                );
             }
         });
 

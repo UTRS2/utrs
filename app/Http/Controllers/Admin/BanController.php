@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
+use App\Models\Wiki;
+use App\Policies\Admin\BanPolicy;
+use App\Utils\Logging\RequestLogContext;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +25,27 @@ class BanController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Ban::class);
-        $allbans = Ban::all();
+        /** @var User $user */
+        $user = $request->user();
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('viewAny', [Ban::class, $wiki]);
+            })
+            ->pluck('id');
+
+        if ($user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL])) {
+            // bans with no wiki id are global
+            $wikis->push(null);
+        }
+
+        if ($wikis->isEmpty()) {
+            abort(403, "You can't view bans in any wikis!");
+            return '';
+        }
+
+        $allbans = Ban::whereIn('wiki_id', $wikis)
+            ->with('wiki')
+            ->get();
 
         /** @var User $user */
         $user = $request->user();
@@ -31,6 +53,10 @@ class BanController extends Controller
         $protectedBansVisible = false;
 
         $tableheaders = [ 'ID', 'Target', 'Expires', 'Reason' ];
+        if ($wikis->count() > 1) {
+            $tableheaders[] = 'Wiki';
+        }
+
         $rowcontents = [];
 
         foreach ($allbans as $ban) {
@@ -60,6 +86,11 @@ class BanController extends Controller
             }
 
             $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
+
+            if ($wikis->count() > 1) {
+                $wikiName = $ban->wiki ? $ban->wiki->display_name . ' (' . $ban->wiki->database_name . ')' : 'All UTRS wikis';
+                $rowcontents[$ban->id][] = $wikiName;
+            }
         }
 
         $caption = null;
@@ -77,10 +108,20 @@ class BanController extends Controller
         ]);
     }
 
-    public function new()
+    public function new(Request $request)
     {
-        $this->authorize('create', Ban::class);
-        return view('admin.bans.new');
+        /** @var User $user */
+        $user = $request->user();
+        $wikis = $this->constructWikiDropdown($user);
+
+        if (empty($wikis)) {
+            abort(403, "You can't ban users in any wikis!");
+            return '';
+        }
+
+        return view('admin.bans.new', [
+            'wikis' => $wikis
+        ]);
     }
 
     public function create(CreateBanRequest $request)
@@ -94,32 +135,19 @@ class BanController extends Controller
         $ban = DB::transaction(function () use ($request) {
             $ban = Ban::create($request->validated());
 
-            $ip = $request->ip();
-            $ua = $request->userAgent();
-            $lang = $request->header('Accept-Language');
-
-            LogEntry::create([
-                'user_id'    => $request->user()->id,
-                'model_id'   => $ban->id,
-                'model_type' => Ban::class,
-                'action'     => 'created',
-                'reason'     => $request->input('comment', ''),
-                'ip'         => $ip,
-                'ua'         => $ua . ' ' . $lang,
-                'protected'  => LogEntry::LOG_PROTECTION_NONE,
-            ]);
+            $ban->addLog(
+                new RequestLogContext($request),
+                'created',
+                $request->input('comment', '')
+            );
 
             if ($ban->is_protected) {
-                LogEntry::create([
-                    'user_id'    => $request->user()->id,
-                    'model_id'   => $ban->id,
-                    'model_type' => Ban::class,
-                    'action'     => 'oversighted',
-                    'reason'     => $request->input('os_reason', ''),
-                    'ip'         => $ip,
-                    'ua'         => $ua . ' ' . $lang,
-                    'protected'  => LogEntry::LOG_PROTECTION_FUNCTIONARY,
-                ]);
+                $ban->addLog(
+                    new RequestLogContext($request),
+                    'oversighted',
+                    $request->input('os_reason', ''),
+                    LogEntry::LOG_PROTECTION_FUNCTIONARY
+                );
             }
 
             return $ban;
@@ -133,7 +161,8 @@ class BanController extends Controller
         $this->authorize('view', $ban);
 
         $target = $request->user()->can('viewName', $ban) ? $ban->target : '(ban target removed)';
-        $targetHtml = $request->user()->can('viewName', $ban) ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
+        $targetHtml = $request->user()->can('viewName', $ban)
+            ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
             : '<i class="text-muted">(ban target removed)</i>';
 
         $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
@@ -148,41 +177,42 @@ class BanController extends Controller
             $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
         }
 
+        $wikis = $this->constructWikiDropdown($request->user());
+
         return view('admin.bans.view', [
             'ban'             => $ban,
             'target'          => $target,
             'targetHtml'      => $targetHtml,
             'formattedExpiry' => $formattedExpiry,
             'formOldExpiry'   => $formOldExpiry,
+            'wikis'           => $wikis,
         ]);
     }
 
     public function update(UpdateBanRequest $request, Ban $ban)
     {
         DB::transaction(function () use ($request, $ban) {
-            $ip = $request->ip();
-            $ua = $request->userAgent();
-            $lang = $request->header('Accept-Language');
-
             $ban->fill($request->validated());
 
+            $changeDetails = [];
+
+            if ($ban->isDirty('wiki_id')) {
+                $newWiki = $ban->wiki_id ? Wiki::find($ban->wiki_id) : null;
+                $this->authorize('create', [Ban::class, $newWiki]);
+                $changeDetails[] = 'change wiki to ' . ($newWiki ? $newWiki->database_name : 'all UTRS wikis');
+            }
+
             if ($ban->isDirty('is_protected')) {
-                LogEntry::create([
-                    'user_id'    => $request->user()->id,
-                    'model_id'   => $ban->id,
-                    'model_type' => Ban::class,
-                    'action'     => ($ban->is_protected ? '' : 'un-') . 'oversighted',
-                    'reason'     => $request->input('os_reason', ''),
-                    'ip'         => $ip,
-                    'ua'         => $ua . ' ' . $lang,
-                    'protected'  => LogEntry::LOG_PROTECTION_FUNCTIONARY,
-                ]);
+                $ban->addLog(
+                    new RequestLogContext($request),
+                    ($ban->is_protected ? '' : 'un-') . 'oversighted',
+                    $request->input('os_reason', ''),
+                    LogEntry::LOG_PROTECTION_FUNCTIONARY
+                );
             }
 
             $changes = $ban->getDirty();
             $ban->update();
-
-            $changeDetails = [];
 
             if (array_key_exists('reason', $changes)) {
                 $changeDetails[] = 'reason was set to "' . $ban->reason . '"';
@@ -200,19 +230,34 @@ class BanController extends Controller
             }
 
             if (!empty($changeDetails)) {
-                LogEntry::create([
-                    'user_id'    => $request->user()->id,
-                    'model_id'   => $ban->id,
-                    'model_type' => Ban::class,
-                    'action'     => 'updated - ' . implode(', ', $changeDetails),
-                    'reason'     => $request->input('update_reason', ''),
-                    'ip'         => $ip,
-                    'ua'         => $ua . ' ' . $lang,
-                    'protected'  => LogEntry::LOG_PROTECTION_NONE,
-                ]);
+                $ban->addLog(
+                    new RequestLogContext($request),
+                    'updated - ' . implode(', ', $changeDetails),
+                    $request->input('update_reason', '')
+                );
             }
         });
 
         return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
+    }
+
+    private function constructWikiDropdown(User $user): array
+    {
+        $wikis = Wiki::get()
+            ->filter(function (Wiki $wiki) use ($user) {
+                return $user->can('create', [Ban::class, $wiki]);
+            })
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name . ' (' . $wiki->database_name . ')'];
+            })
+            ->toArray();
+
+        if ($user->can('create', [Ban::class, null])) {
+            // more hackiness; of course zero or null can't be a collection item key, empty string is valid and nullable (which is important!)
+            // also this is an array and not a collection because otherwise this would mess its keys completely :(
+            $wikis[''] = 'All UTRS wikis';
+        }
+
+        return $wikis;
     }
 }

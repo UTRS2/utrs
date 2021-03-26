@@ -42,7 +42,16 @@
                 </p>
             </div>
 
-            @can('oversight', \App\Models\Ban::class)
+            @if(sizeof($wikis) > 1)
+                <div class="form-group">
+                    {{ Form::label('wiki_id', 'Wiki') }}
+                    {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-control']) }}
+                </div>
+            @else
+                {{ Form::hidden('wiki_id', array_keys($wikis)[0]) }}
+            @endif
+
+        @can('oversight', [\App\Models\Ban::class, array_keys($wikis)])
                 <div class="form-group mb-4">
                     Ban target visibility
                     <div class="custom-control custom-radio">

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\Logging\Loggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Utils\IPUtils;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Ban extends Model
 {
     use HasFactory;
+    use Loggable;
     
 	protected $primaryKey = 'id';
     public $timestamps = false;
@@ -27,6 +29,11 @@ class Ban extends Model
         return $this->morphMany(LogEntry::class, 'model');
     }
 
+    public function wiki()
+    {
+        return $this->belongsTo(Wiki::class);
+    }
+
     public function scopeActive(Builder $query)
     {
         return $query
@@ -37,6 +44,21 @@ class Ban extends Model
                 return $query
                     ->where('expiry', '>=', now())
                     ->orWhere('expiry', '<=', '2000-01-01 00:00:00');
+            });
+    }
+
+    /**
+     * Scope the query to only search for bans that are either global on in the specified wiki.
+     */
+    public function scopeWikiNameOrGlobal(Builder $query, string $wiki)
+    {
+        return $query
+            ->where(function (Builder $query) use ($wiki) {
+                return $query
+                    ->whereHas('wiki', function (Builder $query) use ($wiki) {
+                        return $query->where('database_name', $wiki);
+                    })
+                    ->orWhereNull('wiki_id');
             });
     }
 

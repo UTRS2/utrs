@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Services\Facades\MediaWikiRepository;
+use App\Utils\Logging\Loggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +15,7 @@ class User extends Authenticatable
 {
     use Notifiable;
     use HasFactory;
+    use Loggable;
 
     public $timestamps = false;
     protected $primaryKey = 'id';
@@ -68,11 +70,6 @@ class User extends Authenticatable
         return $this->hasMany(Permission::class, 'userid', 'id');
     }
 
-    public function logs()
-    {
-        return $this->morphMany(LogEntry::class, 'model');
-    }
-
     /**
      * check if this user has any of the specified permissions on any wikis or globally
      * @param array|string $wantedPerms
@@ -92,7 +89,7 @@ class User extends Authenticatable
 
     /**
      * check if this user has any of the specified permissions on any of the specified wikis or globally
-     * @param array|string $wikis
+     * @param array|string|null $wikis
      * @param array|string $wantedPerms
      * @return bool
      */
@@ -103,7 +100,8 @@ class User extends Authenticatable
         }
 
         if (!is_array($wantedPerms)) {
-            $wantedPerms = [$wantedPerms];
+            // if null is passed in, just make that an empty array
+            $wantedPerms = $wantedPerms ? [$wantedPerms] : [];
         }
 
         if (!in_array('*', $wikis)) {
