@@ -15,7 +15,7 @@ class MakeLogsPdFieldsNullable extends Migration
     {
         Schema::table('log_entries', function (Blueprint $table) {
             $table->string('ip',400)->nullable()->change();
-            $table->string('ua',700)->nullable()->change();
+            $table->string('ua',1200)->nullable()->change();
         });
     }
 
