@@ -70,8 +70,8 @@ class RemoveLogEntryPrivateDataJobTest extends TestCase
             'model_type' => User::class,
             'action' => 'comment',
             'reason' => 'foo bar',
-            'ip' => '',
-            'ua' => '',
+            'ip' => NULL,
+            'ua' => NULL,
             'protected' => LogEntry::LOG_PROTECTION_NONE,
             'timestamp' => now()->modify('-1 year'),
         ]);
