@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\Logging\Loggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Utils\IPUtils;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Ban extends Model
 {
     use HasFactory;
+    use Loggable;
     
 	protected $primaryKey = 'id';
     public $timestamps = false;

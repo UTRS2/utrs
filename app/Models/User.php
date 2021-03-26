@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
 use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
 use App\Services\Facades\MediaWikiRepository;
+use App\Utils\Logging\Loggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +15,7 @@ class User extends Authenticatable
 {
     use Notifiable;
     use HasFactory;
+    use Loggable;
 
     public $timestamps = false;
     protected $primaryKey = 'id';
@@ -66,11 +68,6 @@ class User extends Authenticatable
     public function permissions()
     {
         return $this->hasMany(Permission::class, 'userid', 'id');
-    }
-
-    public function logs()
-    {
-        return $this->morphMany(LogEntry::class, 'model');
     }
 
     /**

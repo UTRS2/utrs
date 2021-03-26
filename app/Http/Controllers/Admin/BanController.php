@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
 use App\Models\Wiki;
 use App\Policies\Admin\BanPolicy;
+use App\Utils\Logging\RequestLogContext;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -135,32 +136,19 @@ class BanController extends Controller
         $ban = DB::transaction(function () use ($request) {
             $ban = Ban::create($request->validated());
 
-            $ip = $request->ip();
-            $ua = $request->userAgent();
-            $lang = $request->header('Accept-Language');
-
-            LogEntry::create([
-                'user_id'    => $request->user()->id,
-                'model_id'   => $ban->id,
-                'model_type' => Ban::class,
-                'action'     => 'created',
-                'reason'     => $request->input('comment', ''),
-                'ip'         => $ip,
-                'ua'         => $ua . ' ' . $lang,
-                'protected'  => LogEntry::LOG_PROTECTION_NONE,
-            ]);
+            $ban->addLog(
+                new RequestLogContext($request),
+                'created',
+                $request->input('comment', '')
+            );
 
             if ($ban->is_protected) {
-                LogEntry::create([
-                    'user_id'    => $request->user()->id,
-                    'model_id'   => $ban->id,
-                    'model_type' => Ban::class,
-                    'action'     => 'oversighted',
-                    'reason'     => $request->input('os_reason', ''),
-                    'ip'         => $ip,
-                    'ua'         => $ua . ' ' . $lang,
-                    'protected'  => LogEntry::LOG_PROTECTION_FUNCTIONARY,
-                ]);
+                $ban->addLog(
+                    new RequestLogContext($request),
+                    'oversighted',
+                    $request->input('os_reason', ''),
+                    LogEntry::LOG_PROTECTION_FUNCTIONARY
+                );
             }
 
             return $ban;
@@ -205,10 +193,6 @@ class BanController extends Controller
     public function update(UpdateBanRequest $request, Ban $ban)
     {
         DB::transaction(function () use ($request, $ban) {
-            $ip = $request->ip();
-            $ua = $request->userAgent();
-            $lang = $request->header('Accept-Language');
-
             $ban->fill($request->validated());
 
             $changeDetails = [];
@@ -220,16 +204,12 @@ class BanController extends Controller
             }
 
             if ($ban->isDirty('is_protected')) {
-                LogEntry::create([
-                    'user_id'    => $request->user()->id,
-                    'model_id'   => $ban->id,
-                    'model_type' => Ban::class,
-                    'action'     => ($ban->is_protected ? '' : 'un-') . 'oversighted',
-                    'reason'     => $request->input('os_reason', ''),
-                    'ip'         => $ip,
-                    'ua'         => $ua . ' ' . $lang,
-                    'protected'  => LogEntry::LOG_PROTECTION_FUNCTIONARY,
-                ]);
+                $ban->addLog(
+                    new RequestLogContext($request),
+                    ($ban->is_protected ? '' : 'un-') . 'oversighted',
+                    $request->input('os_reason', ''),
+                    LogEntry::LOG_PROTECTION_FUNCTIONARY
+                );
             }
 
             $changes = $ban->getDirty();
@@ -251,16 +231,12 @@ class BanController extends Controller
             }
 
             if (!empty($changeDetails)) {
-                LogEntry::create([
-                    'user_id'    => $request->user()->id,
-                    'model_id'   => $ban->id,
-                    'model_type' => Ban::class,
-                    'action'     => 'updated - ' . implode(', ', $changeDetails),
-                    'reason'     => $request->input('update_reason', ''),
-                    'ip'         => $ip,
-                    'ua'         => $ua . ' ' . $lang,
-                    'protected'  => LogEntry::LOG_PROTECTION_NONE,
-                ]);
+                $ban->addLog(
+                    new RequestLogContext($request),
+                    'updated - ' . implode(', ', $changeDetails),
+                    $request->input('update_reason', ''),
+                    LogEntry::LOG_PROTECTION_FUNCTIONARY
+                );
             }
         });
 
