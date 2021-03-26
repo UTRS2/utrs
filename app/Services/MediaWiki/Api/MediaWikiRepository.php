@@ -46,4 +46,10 @@ interface MediaWikiRepository
      * @return WikiPermissionHandler
      */
     public function getWikiPermissionHandler(string $wiki): WikiPermissionHandler;
+
+    /**
+     * @param string $wiki
+     * @return WikiAccessChecker
+     */
+    public function getWikiAccessChecker(string $wiki): WikiAccessChecker;
 }
