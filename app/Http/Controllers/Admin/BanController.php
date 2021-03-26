@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Ban;
 use App\Models\LogEntry;
-use App\Models\Template;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
@@ -13,7 +12,6 @@ use App\Models\Wiki;
 use App\Policies\Admin\BanPolicy;
 use App\Utils\Logging\RequestLogContext;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -35,16 +33,17 @@ class BanController extends Controller
             })
             ->pluck('id');
 
-        if ($wikis->isEmpty() && !$user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL])) {
+        if ($user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL])) {
+            // bans with no wiki id are global
+            $wikis->push(null);
+        }
+
+        if ($wikis->isEmpty()) {
             abort(403, "You can't view bans in any wikis!");
             return '';
         }
 
         $allbans = Ban::whereIn('wiki_id', $wikis)
-            // 0 is magic value and horrible hack, also please refactor these two inside a where() if adding more conditions
-            ->when($user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL]), function (Builder $query) {
-                $query->orWhereNull('wiki_id');
-            })
             ->with('wiki')
             ->get();
 
@@ -116,7 +115,7 @@ class BanController extends Controller
         $wikis = $this->constructWikiDropdown($user);
 
         if (empty($wikis)) {
-            abort(403, "You can't bans in any wikis!");
+            abort(403, "You can't ban users in any wikis!");
             return '';
         }
 
@@ -199,7 +198,7 @@ class BanController extends Controller
 
             if ($ban->isDirty('wiki_id')) {
                 $newWiki = $ban->wiki_id ? Wiki::find($ban->wiki_id) : null;
-                $this->authorize('create', [Template::class, $newWiki]);
+                $this->authorize('create', [Ban::class, $newWiki]);
                 $changeDetails[] = 'change wiki to ' . ($newWiki ? $newWiki->database_name : 'all UTRS wikis');
             }
 
@@ -234,8 +233,7 @@ class BanController extends Controller
                 $ban->addLog(
                     new RequestLogContext($request),
                     'updated - ' . implode(', ', $changeDetails),
-                    $request->input('update_reason', ''),
-                    LogEntry::LOG_PROTECTION_FUNCTIONARY
+                    $request->input('update_reason', '')
                 );
             }
         });

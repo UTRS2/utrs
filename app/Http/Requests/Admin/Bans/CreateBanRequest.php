@@ -10,7 +10,7 @@ class CreateBanRequest extends BaseBanModifyRequest
 {
     public function authorize()
     {
-        $wiki = $this->has('wiki_id')
+        $wiki = ($this->has('wiki_id') && !$this->isEmptyString('wiki_id'))
             ? Wiki::findOrFail($this->input('wiki_id'))
             : null;
 
