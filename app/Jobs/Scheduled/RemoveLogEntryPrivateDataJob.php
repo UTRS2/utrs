@@ -21,10 +21,10 @@ class RemoveLogEntryPrivateDataJob implements ShouldQueue
      */
     public function fetchLogEntries()
     {
-        return LogEntry::where('timestamp', '<', now()->modify('-1 week'))
+        return LogEntry::where('timestamp', '<', now()->modify('-2 weeks'))
                 ->where(function (Builder $query) {
-                    $query->where('ip', '!=', '')
-                        ->orWhere('ua', '!=', '');
+                    $query->whereNull('ip')
+                        ->orWhereNull('ua');
                 });
     }
 
@@ -35,8 +35,8 @@ class RemoveLogEntryPrivateDataJob implements ShouldQueue
     public function purge(LogEntry $logEntry)
     {
         $logEntry->update([
-            'ip' => '',
-            'ua' => '',
+            'ip' => NULL,
+            'ua' => NULL,
         ]);
     }
 
