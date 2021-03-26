@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Appeal;
 use App\Models\Privatedata;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Taavi\FakerAcceptLanguage\AcceptLanguageFakerProvider;
 
 class PrivatedataFactory extends Factory
 {
@@ -17,11 +18,13 @@ class PrivatedataFactory extends Factory
      */
     public function definition()
     {
+        $this->faker->addProvider(new AcceptLanguageFakerProvider($this->faker));
+
         return [
             'appealID' => $this->faker->numberBetween(1, Appeal::count()),
             'ipaddress' => $this->faker->ipv4,
             'useragent' => $this->faker->userAgent,
-            'language' => $this->faker->locale,
+            'language' => $this->faker->acceptLanguage,
         ];
     }
 }
