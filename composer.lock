@@ -9690,6 +9690,50 @@
             "time": "2021-01-27T10:01:46+00:00"
         },
         {
+            "name": "taavi/faker-acceptlanguage",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/supertassu/faker-acceptlanguage.git",
+                "reference": "aac56e8c02e3d7b100715615305ed1e493f996bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/supertassu/faker-acceptlanguage/zipball/aac56e8c02e3d7b100715615305ed1e493f996bd",
+                "reference": "aac56e8c02e3d7b100715615305ed1e493f996bd",
+                "shasum": ""
+            },
+            "require": {
+                "fakerphp/faker": "^1.12",
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Taavi\\FakerAcceptLanguage\\": "includes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taavi Vaananen",
+                    "email": "mailbox@taavi.wtf"
+                }
+            ],
+            "description": "a Faker provider for generating HTTP Accept-Language headers",
+            "support": {
+                "issues": "https://github.com/supertassu/faker-acceptlanguage/issues",
+                "source": "https://github.com/supertassu/faker-acceptlanguage/tree/v1.0.0"
+            },
+            "time": "2020-12-06T18:39:48+00:00"
+        },
+        {
             "name": "theseer/tokenizer",
             "version": "1.2.0",
             "source": {
