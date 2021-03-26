@@ -23,8 +23,8 @@ class RemoveLogEntryPrivateDataJob implements ShouldQueue
     {
         return LogEntry::where('timestamp', '<', now()->modify('-2 weeks'))
                 ->where(function (Builder $query) {
-                    $query->whereNull('ip')
-                        ->orWhereNull('ua');
+                    $query->whereNotNull('ip')
+                        ->orWhereNotNull('ua');
                 });
     }
 
