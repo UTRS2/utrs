@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use App\Jobs\WikiPermission\LoadGlobalPermissionsJob;
-use App\Jobs\WikiPermission\LoadLocalPermissionsJob;
-use App\Services\Facades\MediaWikiRepository;
+use App\Jobs\LoadPermissionsJob;
 use App\Utils\Logging\Loggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Bus;
 
 class User extends Authenticatable
 {
@@ -42,22 +39,7 @@ class User extends Authenticatable
      */
     public function queuePermissionChecks()
     {
-        $localJobs = collect(MediaWikiRepository::getSupportedTargets(false))
-            ->map(function ($wiki) {
-                return new LoadLocalPermissionsJob($this, $wiki);
-            })
-            ->toArray();
-
-        Bus::batch(array_merge(
-            [new LoadGlobalPermissionsJob($this)],
-            $localJobs,
-        ))
-            ->then(function () {
-                $this->update([
-                    'last_permission_check_at' => now(),
-                ]);
-            })
-            ->dispatch();
+        LoadPermissionsJob::dispatch($this);
     }
 
     public function getVerifiedWikisAttribute()

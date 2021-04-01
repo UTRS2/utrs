@@ -4,7 +4,10 @@ namespace App\Services\MediaWiki\Implementation;
 
 use App\Services\MediaWiki\Api\MediaWikiApi;
 use App\Services\MediaWiki\Api\MediaWikiRepository;
+use App\Services\MediaWiki\Api\WikiAccessChecker;
 use App\Services\MediaWiki\Api\WikiPermissionHandler;
+use App\Services\MediaWiki\Implementation\Access\GlobalAccessChecker;
+use App\Services\MediaWiki\Implementation\Access\LocalAccessChecker;
 use Illuminate\Support\Str;
 
 class RealMediaWikiRepository implements MediaWikiRepository
@@ -85,5 +88,14 @@ class RealMediaWikiRepository implements MediaWikiRepository
         }
 
         return $this->loadedPermissionHandlers[$wiki];
+    }
+
+    public function getWikiAccessChecker(string $wiki): WikiAccessChecker
+    {
+        if ($wiki === 'global' || $wiki === '*') {
+            return new GlobalAccessChecker($this->getGlobalApi());
+        }
+
+        return new LocalAccessChecker($this->getApiForTarget($wiki));
     }
 }
