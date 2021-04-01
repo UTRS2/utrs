@@ -116,7 +116,7 @@ class UserController extends Controller
             if (!empty($allChanges)) {
                 $user->addLog(
                     new RequestLogContext($request),
-                    'modified user - ' . implode(',', $allChanges),
+                    'modified user - ' . implode(', ', $allChanges),
                     $reason
                 );
             }

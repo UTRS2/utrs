@@ -13,9 +13,9 @@
                 <tbody>
                 @foreach($logs as $log)
                     <tr class="{{ $log->action === 'comment' ? 'bg-success' : '' }}">
-                        @if($log->user === 0)
+                        @if($log->user_id === 0)
                             <td><i>System</i></td>
-                        @elseif($log->user === -1)
+                        @elseif($log->user_id === -1)
                             <td><i>Appealing user</i></td>
                         @elseif($log->user)
                             <td>
@@ -26,7 +26,7 @@
                                 @endcan
                             </td>
                         @else
-                            <td>Unknown actor: {{ $log->user }}</td>
+                            <td>Unknown actor: {{ $log->user_id }} {{ $log->user }}</td>
                         @endif
 
                         <td>{{ $log->timestamp }}</td>
