@@ -45,6 +45,11 @@ class LocalAccessChecker extends BaseAccessChecker
             $groups[] = 'admin';
         }
 
+        // temporary https://phabricator.wikimedia.org/T112147, GitHub #452
+        if (in_array('suppress', $groups)) {
+            $groups[] = 'oversight';
+        }
+
         return $groups;
     }
 }
