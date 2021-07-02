@@ -125,6 +125,34 @@ class Appeal extends Model
 
     // other functions
 
+    /**
+     * Check if the specified value can be used as a new status.
+     * @param string $newStatus
+     * @return bool
+     */
+    public function isValidStatusChange(string $newStatus): bool
+    {
+        return in_array($newStatus, $this->getValidStatusChanges());
+    }
+
+    /**
+     * @return string[] all allowed status changes for this appeal
+     */
+    public function getValidStatusChanges(): array
+    {
+        $values = self::REPLY_STATUS_CHANGE_OPTIONS;
+
+        // When in a status not normally possible to use in templates (like checkuser),
+        // allow not modifying the status.
+        // https://github.com/UTRS2/utrs/issues/455
+        if (!isset($values[$this->status])) {
+            // set key too, so this data can be directly fed to the html form dropdown generator
+            $values[$this->status] = $this->status;
+        }
+
+        return $values;
+    }
+
     public function getFormattedBlockReason($linkExtra = '')
     {
         if (!$this->blockreason || strlen($this->blockreason) === 0) {

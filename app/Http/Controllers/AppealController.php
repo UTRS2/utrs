@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Rules\PermittedStatusChange;
 use App\Models\Appeal;
 use App\Models\LogEntry;
 use App\Models\Wiki;
@@ -216,12 +217,12 @@ class AppealController extends Controller
 
         abort_unless($appeal->handlingadmin === $user->id, 403, 'You are not the handling administrator.');
 
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
 
         $status = $request->validate([
-            'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'status' => ['nullable', new PermittedStatusChange($appeal)],
         ])['status'];
 
         if ($status && $status !== $appeal->status) {
@@ -262,7 +263,7 @@ class AppealController extends Controller
         abort_unless($appeal->handlingadmin === $user->id, 403, 'You are not the handling administrator.');
 
         $status = $request->validate([
-            'status' => ['nullable', Rule::in(Appeal::REPLY_STATUS_CHANGE_OPTIONS)],
+            'status' => ['nullable', new PermittedStatusChange($appeal)],
         ])['status'];
 
         $ua = $request->userAgent();
