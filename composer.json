@@ -12,7 +12,7 @@
         "ext-json": "*",
         "addwiki/mediawiki-api": "^2.8",
         "addwiki/mediawiki-api-base": "^2.8",
-        "doctrine/dbal": "^2.12",
+        "doctrine/dbal": "^3.1",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
