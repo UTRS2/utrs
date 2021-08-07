@@ -13,6 +13,11 @@ use Illuminate\Validation\Rule;
 
 class TemplateController extends Controller
 {
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
+
 	public function index(Request $request)
 	{
 		/** @var User $user */
@@ -51,7 +56,14 @@ class TemplateController extends Controller
 			}
 		}
 
-		return view('admin.tables', ['title' => 'All Templates', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents, 'new' => true, 'createlink' => '/admin/templates/create', 'createtext' => 'New template']);
+		return view('admin.tables', [
+			'title' => 'All Templates',
+			'tableheaders' => $tableheaders,
+			'rowcontents' => $rowcontents,
+			'new' => true,
+			'createlink' => '/admin/templates/create',
+			'createtext' => 'New template'
+		]);
 	}
 
 	public function new(Request $request)
@@ -76,10 +88,6 @@ class TemplateController extends Controller
 
 	public function create(Request $request)
 	{
-		$ua = $request->userAgent();
-		$ip = $request->ip();
-		$lang = $request->header('Accept-Language');
-
 		$data = $request->validate([
 			'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')],
 			'template' => 'required|min:2|max:2048',
@@ -122,10 +130,6 @@ class TemplateController extends Controller
 	public function update(Request $request, Template $template)
 	{
 		$this->authorize('update', $template);
-
-		$ua = $request->userAgent();
-		$ip = $request->ip();
-		$lang = $request->header('Accept-Language');
 
 		$data = $request->validate([
 			'name' => ['required', 'min:2', 'max:128', Rule::unique('templates', 'name')->ignore($template->id)],
