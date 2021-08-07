@@ -77,11 +77,11 @@ Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans
 
 Route::get('/admin/sitenotices', 'AdminController@listsitenotices')->name('admin.sitenotices.list');
 
-Route::get('/admin/templates', 'AdminController@listtemplates')->name('admin.templates.list');
-Route::get('admin/templates/create', 'AdminController@showNewTemplate');
-Route::post('admin/templates/create', 'AdminController@makeTemplate');
-Route::get('admin/templates/{template}', 'AdminController@editTemplate')->name('admin.templates.edit');
-Route::post('admin/templates/{template}', 'AdminController@updateTemplate')->name('admin.templates.update');
+Route::get('/admin/templates', 'Admin\TemplateController@index')->name('admin.templates.list');
+Route::get('/admin/templates/create', 'Admin\TemplateController@new');
+Route::post('/admin/templates/create', 'Admin\TemplateController@create');
+Route::get('/admin/templates/{template}', 'Admin\TemplateController@show')->name('admin.templates.edit');
+Route::post('/admin/templates/{template}', 'Admin\TemplateController@update')->name('admin.templates.update');
 
 Route::get('/wikis/list', 'WikiController@index')->name('wiki.list');
 
