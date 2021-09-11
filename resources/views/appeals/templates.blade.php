@@ -34,7 +34,7 @@
                 {{ Form::open(['url' => route('appeal.template.submit', [$appeal, $template])]) }}
                 <div class="form-group">
                     {{ Form::label("status-" . $template->id, 'Change appeal status to:') }}
-                    {{ Form::select('status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('status', $template->default_status), ['class' => 'form-control', 'id' => "status-" . $template->id]) }}
+                    {{ Form::select('status', $appeal->getValidStatusChanges(), old('status', $template->default_status), ['class' => 'form-control', 'id' => "status-" . $template->id]) }}
                 </div>
 
                 <button type="submit" class="btn btn-success">Submit</button>
