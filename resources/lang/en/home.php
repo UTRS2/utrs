@@ -18,5 +18,5 @@ return [
     'admin-title'  => 'For administrators that are here',
     'admin-text'   => 'to comment on, process or assist with appeals, please select the button below. Please note that only administrators are allowed to participate in this form.',
     'admin-button' => 'Go to Appeals',
-    'login-button' => 'Login with Wikimedia account',
+    'login-button' => 'Login with your Wikimedia account',
 ];

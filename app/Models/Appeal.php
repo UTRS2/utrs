@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use RuntimeException;
-use App\MwApi\MwApiUrls;
 use Illuminate\Database\Eloquent\Model;
 
 class Appeal extends Model
@@ -21,9 +21,22 @@ class Appeal extends Model
     ];
 
     const REGULAR_NO_VIEW_STATUS = [
-        self::STATUS_INVALID        => self::STATUS_INVALID,
-        self::STATUS_NOTFOUND       => self::STATUS_NOTFOUND,
-        self::STATUS_VERIFY         => self::STATUS_VERIFY,
+        self::STATUS_INVALID,
+        self::STATUS_NOTFOUND,
+        self::STATUS_VERIFY,
+    ];
+
+    const ALL_STATUSES = [
+        self::STATUS_OPEN,
+        self::STATUS_VERIFY,
+        self::STATUS_AWAITING_REPLY,
+        self::STATUS_ADMIN,
+        self::STATUS_CHECKUSER,
+        self::STATUS_NOTFOUND,
+        self::STATUS_INVALID,
+        self::STATUS_ACCEPT,
+        self::STATUS_DECLINE,
+        self::STATUS_EXPIRE,
     ];
 
     const STATUS_OPEN = 'OPEN';
@@ -42,6 +55,10 @@ class Appeal extends Model
     const STATUS_DECLINE = 'DECLINE';
     const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
 
+    const BLOCKTYPE_IP = 0;
+    const BLOCKTYPE_ACCOUNT = 1;
+    const BLOCKTYPE_IP_UNDER_ACCOUNT = 2;
+
     public $timestamps = false;
     public $guarded = ['id'];
 
@@ -51,6 +68,10 @@ class Appeal extends Model
 
     protected $casts = [
         'user_verified' => 'boolean',
+    ];
+
+    protected $dates = [
+        'submitted',
     ];
 
     // scopes
@@ -104,13 +125,41 @@ class Appeal extends Model
 
     // other functions
 
+    /**
+     * Check if the specified value can be used as a new status.
+     * @param string $newStatus
+     * @return bool
+     */
+    public function isValidStatusChange(string $newStatus): bool
+    {
+        return in_array($newStatus, $this->getValidStatusChanges());
+    }
+
+    /**
+     * @return string[] all allowed status changes for this appeal
+     */
+    public function getValidStatusChanges(): array
+    {
+        $values = self::REPLY_STATUS_CHANGE_OPTIONS;
+
+        // When in a status not normally possible to use in templates (like checkuser),
+        // allow not modifying the status.
+        // https://github.com/UTRS2/utrs/issues/455
+        if (!isset($values[$this->status])) {
+            // set key too, so this data can be directly fed to the html form dropdown generator
+            $values[$this->status] = $this->status;
+        }
+
+        return $values;
+    }
+
     public function getFormattedBlockReason($linkExtra = '')
     {
         if (!$this->blockreason || strlen($this->blockreason) === 0) {
             return '';
         }
 
-        $linkPrefix = MwApiUrls::getWikiProperty($this->wiki, 'url_base') . 'wiki/';
+        $linkPrefix = MediaWikiRepository::getTargetProperty($this->wiki, 'url_base') . 'wiki/';
         $reason = htmlspecialchars($this->blockreason);
 
         preg_match_all('/\[\[([a-zA-Z9-9 _:\-\/]+)(?:\|([a-zA-Z9-9 _:\-\/]+))?\]\]/', $reason, $linkMatches, PREG_SET_ORDER);

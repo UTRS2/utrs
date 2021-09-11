@@ -27,6 +27,16 @@
                     <td>{!! $targetHtml !!}</td>
                 </tr>
                 <tr>
+                    <th>Wiki</th>
+                    <td>
+                        @if($ban->wiki)
+                            {{ $ban->wiki->display_name }} ({{ $ban->wiki->database_name }})
+                        @else
+                            All UTRS wikis
+                        @endif
+                    </td>
+                </tr>
+                <tr>
                     <th>Reason</th>
                     <td>{{ $ban->reason }}</td>
                 </tr>
@@ -55,6 +65,15 @@
                         {{ Form::radio('is_active', 1, old('is_active', $ban->is_active) == 1, ['class' => 'custom-control-input', 'id' => 'is_active-1']) }} {{ Form::label('is_active-1', 'Ban is active', ['class' => 'custom-control-label']) }}
                     </div>
                 </div>
+
+                @if(sizeof($wikis) > 1)
+                    <div class="form-group">
+                        {{ Form::label('wiki_id', 'Wiki') }}
+                        {{ Form::select('wiki_id', $wikis, old('wiki_id', $ban->wiki_id), ['class' => 'form-control']) }}
+                    </div>
+                @else
+                    {{ Form::hidden('wiki_id', array_keys($wikis)[0]) }}
+                @endif
 
                 <div class="form-group mb-4">
                     {{ Form::label('reason', 'Ban reason') }}

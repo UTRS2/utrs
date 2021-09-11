@@ -13,12 +13,9 @@ use Illuminate\Validation\Validator;
  */
 class UpdateBanRequest extends BaseBanModifyRequest
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function getPermissionCheckTarget()
+    public function authorize()
     {
-        return $this->ban;
+        return $this->user()->can('update', $this->ban);
     }
 
     /**
@@ -32,6 +29,7 @@ class UpdateBanRequest extends BaseBanModifyRequest
             'reason'    => 'nullable|max:128',
             'expiry'    => 'nullable|date_format:Y-m-d H:i:s',
             'is_active' => 'nullable|boolean',
+            'wiki_id'   => 'nullable|exists:wikis,id'
         ];
     }
 }

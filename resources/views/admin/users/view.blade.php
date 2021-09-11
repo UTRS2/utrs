@@ -36,6 +36,10 @@
                     <td>{{ $user->username }}</td>
                 </tr>
                 <tr>
+                    <th>CentralAuth ID</th>
+                    <td>{{ $user->mediawiki_id ?? '(not known)' }}</td>
+                </tr>
+                <tr>
                     <th>Last Permission Check</th>
                     <td>{{ $user->last_permission_check_at }}</td>
                 </tr>
@@ -63,7 +67,7 @@
                 </thead>
 
                 <tbody>
-                @foreach(\App\MwApi\MwApiUrls::getSupportedWikis(true) as $wiki)
+                @foreach(\App\Services\Facades\MediaWikiRepository::getSupportedTargets(true) as $wiki)
                     @php
                         $wikiDbName = $wiki === 'global' ? '*' : $wiki;
                         /** @var \App\Models\User $user */ /** @var \App\Models\Permission $permission */

@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Appeal;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AppealFactory extends Factory
@@ -32,7 +32,7 @@ class AppealFactory extends Factory
             'submitted' => $this->faker->dateTimeBetween('-3 days', '-1 hour'),
             'appealsecretkey' => implode('', $this->faker->words()),
             'appealtext' => $this->faker->sentence,
-            'wiki' => MwApiUrls::getSupportedWikis()[0],
+            'wiki' => MediaWikiRepository::getSupportedTargets(false)[0],
             'user_verified' => 0,
         ];
     }

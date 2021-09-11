@@ -10,3 +10,7 @@ $enable-shadows: true;
 .table-dark-primary {
   background: #004085;
 }
+
+.table td {
+  vertical-align: middle;
+}

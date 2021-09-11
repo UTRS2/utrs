@@ -35,6 +35,7 @@ class BanCreateUpdateTest extends DuskTestCase
                 ->assertSee('Ban details')
                 ->assertSee('UTRS banned user')
                 ->assertSee('indefinite')
+                ->assertSee('English Wikipedia')
                 ->assertSee('Action: created, Reason: UTRS private ban comment')
                 ->type('reason', 'Another reason.')
                 ->click('[for=is_active-0]')

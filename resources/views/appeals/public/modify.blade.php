@@ -19,7 +19,7 @@
             {{ Form::token() }}
             <div class="form-group mb-4">
                 {{ Form::label('wiki', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki', \App\MwApi\MwApiUrls::getWikiDropdown(), old('wiki', $appeal->wiki), ['class' => 'custom-select']) }}
+                {{ Form::select('wiki', \App\Services\Facades\MediaWikiRepository::getWikiDropdown(), old('wiki', $appeal->wiki), ['class' => 'custom-select']) }}
             </div>
 
             <div class="form-group mb-4">

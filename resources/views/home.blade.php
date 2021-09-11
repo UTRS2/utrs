@@ -6,7 +6,7 @@
         {{ __('home.noemail-text') }}
     </div>
 
-    <div class="card-group d-flex justify-content-center">
+    <div class="card-group justify-content-center">
         <div class="card bg-light mb-3 text-center">
             <div class="card-header">{{ __('home.appeal-block-header') }}</div>
             <div class="card-body">

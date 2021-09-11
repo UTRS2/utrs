@@ -8,12 +8,12 @@ use App\Models\User;
 trait TestHasUsers
 {
     protected $userDefaultPermissions = [
-        'enwiki' => [
+        'enwiki' => [ // MediaWikiRepository::getSupportedTargets()[0]
             'user', 'admin',
         ]
     ];
 
-    protected function getUser($permissions = null, $extraData = [])
+    protected function getUser($permissions = null, $extraData = []): User
     {
         if (!$permissions) {
             $permissions = $this->userDefaultPermissions;
@@ -23,10 +23,11 @@ trait TestHasUsers
             $extraData['last_permission_check_at'] = now();
         }
 
-        User::unsetEventDispatcher(); // prevent loading user permissions, we'll do that manually
-
+        // prevent loading user permissions, we'll do that manually
+        $dispatcher = User::getEventDispatcher();
+        User::unsetEventDispatcher();
         $user = User::factory()->create($extraData);
-        $wikis = [];
+        User::setEventDispatcher($dispatcher);
 
         foreach ($permissions as $wiki => $values) {
             $toSet = collect(Permission::ALL_POSSIBILITIES)
@@ -39,30 +40,35 @@ trait TestHasUsers
                 'userid' => $user->id,
                 'wiki' => $wiki,
             ], $toSet);
-
-            if ($toSet['user']) {
-                $wikis[] = $wiki;
-            }
         }
 
-        $user->wikis = implode(',', $wikis);
-        $user->save();
         return $user;
     }
 
-    protected function getTooladminUser($extraData = [])
+    protected function getTooladminUser($extraData = [], $wikis = ['enwiki']): User
     {
         $permissions = $this->userDefaultPermissions;
-        $permissions['enwiki'][] = 'tooladmin';
+        foreach ($wikis as $wiki) {
+            $permissions[$wiki][] = 'tooladmin';
+        }
         return $this->getUser($permissions, $extraData);
     }
 
-    protected function getFunctionaryTooladminUser($extraData = [])
+    protected function getFunctionaryTooladminUser($extraData = [], $wikis = ['enwiki']): User
     {
         $permissions = $this->userDefaultPermissions;
-        $permissions['enwiki'][] = 'tooladmin';
-        $permissions['enwiki'][] = 'checkuser';
-        $permissions['enwiki'][] = 'oversight';
+        foreach ($wikis as $wiki) {
+            $permissions[$wiki][] = 'tooladmin';
+            $permissions[$wiki][] = 'checkuser';
+            $permissions[$wiki][] = 'oversight';
+        }
+        return $this->getUser($permissions, $extraData);
+    }
+
+    protected function getDeveloperUser($extraData = []): User
+    {
+        $permissions = $this->userDefaultPermissions;
+        $permissions['*'] = ['developer'];
         return $this->getUser($permissions, $extraData);
     }
 }

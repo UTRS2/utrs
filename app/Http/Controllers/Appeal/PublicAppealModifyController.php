@@ -7,7 +7,7 @@ use App\Jobs\GetBlockDetailsJob;
 use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,7 +38,7 @@ class PublicAppealModifyController extends Controller
 
         $data = $request->validate([
             'appealfor' => 'required|max:50',
-            'wiki'      => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
+            'wiki'      => [ 'required', Rule::in(MediaWikiRepository::getSupportedTargets()) ],
             'blocktype' => 'required|numeric|max:2|min:0',
             'hiddenip'  => 'nullable|ip',
         ]);
@@ -58,7 +58,8 @@ class PublicAppealModifyController extends Controller
                 ->setStatusCode(403);
         }
         
-        $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
+        $recentAppealExists = Appeal::where('id', '!=', $appeal->id)
+            ->where(function (Builder $query) use ($request) {
                 return $query->where('appealfor', $request->input('appealfor'))
                     ->orWhereHas('privateData', function (Builder $privateDataQuery) use ($request) {
                         return $privateDataQuery->where('ipaddress', $request->ip());

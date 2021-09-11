@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\MwApi\MwApiUrls;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -14,6 +14,10 @@ class LogEntry extends Model
 
     public $timestamps = false;
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'timestamp' => 'datetime',
+    ];
 
     public function user()
     {
@@ -47,7 +51,7 @@ class LogEntry extends Model
             return null;
         }
 
-        return in_array($this->model->wiki, MwApiUrls::getSupportedWikis(true))
+        return in_array($this->model->wiki, MediaWikiRepository::getSupportedTargets())
             ? $this->model->wiki
             : null;
     }

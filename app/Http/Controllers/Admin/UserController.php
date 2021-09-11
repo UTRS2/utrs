@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\Facades\MediaWikiRepository;
+use App\Utils\Logging\RequestLogContext;
+use DB;
 use App\Http\Controllers\Controller;
-use App\Models\LogEntry;
 use App\Models\Permission;
 use App\Models\User;
-use App\MwApi\MwApiUrls;
-use DB;
 use Illuminate\Http\Request;
 
 /**
@@ -23,12 +23,12 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
         $allusers = User::all();
 
-        $tableheaders = ['ID', 'Username', 'Last Permissions Check'];
+        $tableheaders = ['ID', 'Username', 'CentralAuth ID', 'Last Permissions Check'];
         $rowcontents = [];
 
         foreach ($allusers as $user) {
             $idbutton = '<a href="' . route('admin.users.view', $user) . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
-            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $user->last_permission_check_at];
+            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $user->mediawiki_id ?? '(not known)', $user->last_permission_check_at];
         }
 
         return view('admin.tables', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'rowcontents' => $rowcontents]);
@@ -75,9 +75,9 @@ class UserController extends Controller
                 $allChanges[] = 'queue wiki permission reload';
             }
 
-            foreach (MwApiUrls::getSupportedWikis(true) as $wiki) {
+            foreach (MediaWikiRepository::getSupportedTargets() as $wiki) {
                 $wikiDbName = $wiki === 'global' ? '*' : $wiki;
-                /** @var \App\Models\Permission $permission */
+                /** @var Permission $permission */
                 $permission = $user->permissions->where('wiki', $wikiDbName)->first();
 
                 $updateSet = [];
@@ -114,20 +114,11 @@ class UserController extends Controller
             }
 
             if (!empty($allChanges)) {
-                $ua = $request->header('User-Agent');
-                $ip = $request->ip();
-                $lang = $request->header('Accept-Language');
-
-                LogEntry::create([
-                    'user_id' => $currentUser->id,
-                    'model_id' => $user->id,
-                    'model_type' => User::class,
-                    'action' => 'modified user - ' . implode(',', $allChanges),
-                    'reason' => $reason,
-                    'ip' => $ip,
-                    'ua' => $ua . " " . $lang,
-                    'protected' => LogEntry::LOG_PROTECTION_NONE,
-                ]);
+                $user->addLog(
+                    new RequestLogContext($request),
+                    'modified user - ' . implode(', ', $allChanges),
+                    $reason
+                );
             }
         });
 

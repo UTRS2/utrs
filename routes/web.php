@@ -15,10 +15,17 @@ Route::view('/', 'home')->name('home');
 Route::redirect('/home', '/');
 
 Route::prefix('/public')->middleware('guest')->group(function () {
-    Route::view('/appeal/ip', 'appeals.public.makeappeal.ip')->name('public.appeal.create.ip');
-    Route::view('/appeal/account', 'appeals.public.makeappeal.account')->name('public.appeal.create.account');
+    Route::view('/appeal/ip', 'appeals.public.makeappeal.ip')
+        ->name('public.appeal.create.ip')
+        ->middleware('torblock');
 
-    Route::post('/appeal/store', 'Appeal\PublicAppealController@store')->name('public.appeal.store');
+    Route::view('/appeal/account', 'appeals.public.makeappeal.account')
+        ->name('public.appeal.create.account')
+        ->middleware('torblock');
+
+    Route::post('/appeal/store', 'Appeal\PublicAppealController@store')
+        ->name('public.appeal.store')
+        ->middleware('torblock');
 
     Route::get('/appeal/view', 'Appeal\PublicAppealController@view')->name('public.appeal.view');
     Route::post('/appeal/comment', 'Appeal\PublicAppealController@addComment')->name('public.appeal.comment');
@@ -30,23 +37,25 @@ Route::prefix('/public')->middleware('guest')->group(function () {
     Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
 });
 
-Route::get('/appeal/{id}', 'AppealController@appeal')
-    ->name('appeal.view');
+Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
 
 Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
-Route::get('/locate', 'AppealController@search')->name('appeal.search');
 
-Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser');
-Route::post('/appeal/comment/{id}', 'AppealController@comment');
-Route::get('/appeal/respond/{id}', 'AppealController@respond');
-Route::get('/appeal/reserve/{appeal}', 'AppealController@reserve');
-Route::post('/appeal/release/{id}', 'AppealController@release')->name('appeal.action.release');
-Route::get('/appeal/open/{id}', 'AppealController@open');
-Route::get('/appeal/findagain/{appeal}', 'AppealController@findagain');
-Route::get('/appeal/close/{id}/{type}', 'AppealController@close');
-Route::post('/appeal/checkuserreview/{appeal}', 'AppealController@checkuserreview')->name('appeal.action.checkuser');
-Route::post('/appeal/tooladmin/{appeal}', 'AppealController@admin')->name('appeal.action.tooladmin');
-Route::get('/appeal/invalidate/{id}', 'AppealController@invalidate');
+Route::get('/search/quick', 'Appeal\AppealQuickSearchController@search')->name('appeal.search.quick');
+Route::get('/search', 'Appeal\AppealAdvancedSearchController@search')->name('appeal.search.advanced');
+
+Route::post('/appeal/checkuser/{appeal}', 'AppealController@checkuser')->name('appeal.action.viewcheckuser');
+Route::post('/appeal/comment/{appeal}', 'AppealController@comment')->name('appeal.action.comment');
+
+Route::post('/appeal/reserve/{appeal}', 'Appeal\AppealActionController@reserve')->name('appeal.action.reserve');
+Route::post('/appeal/release/{appeal}', 'Appeal\AppealActionController@release')->name('appeal.action.release');
+
+Route::post('/appeal/open/{appeal}', 'Appeal\AppealActionController@reOpen')->name('appeal.action.reopen');
+Route::post('/appeal/findagain/{appeal}', 'Appeal\AppealActionController@reverifyBlockDetails')->name('appeal.action.findagain');
+Route::post('/appeal/close/{appeal}/{type}', 'Appeal\AppealActionController@close')->name('appeal.action.close');
+Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.requestcheckuser');
+Route::post('/appeal/tooladmin/{appeal}', 'Appeal\AppealActionController@sendToTooladminReview')->name('appeal.action.tooladmin');
+Route::post('/appeal/invalidate/{appeal}', 'Appeal\AppealActionController@invalidate')->name('appeal.action.invalidate');
 
 Route::get('/appeal/template/{appeal}', 'AppealController@viewtemplates')->name('appeal.template');
 Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')->name('appeal.template.submit');
@@ -66,13 +75,15 @@ Route::post('/admin/bans/create', 'Admin\BanController@create')->name('admin.ban
 Route::get('/admin/bans/{ban}', 'Admin\BanController@show')->name('admin.bans.view');
 Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
 
-Route::get('/admin/sitenotices', 'AdminController@listsitenotices');
-Route::get('/admin/templates', 'AdminController@listtemplates');
+Route::get('/admin/sitenotices', 'AdminController@listsitenotices')->name('admin.sitenotices.list');
 
+Route::get('/admin/templates', 'AdminController@listtemplates')->name('admin.templates.list');
 Route::get('admin/templates/create', 'AdminController@showNewTemplate');
 Route::post('admin/templates/create', 'AdminController@makeTemplate');
 Route::get('admin/templates/{template}', 'AdminController@editTemplate')->name('admin.templates.edit');
 Route::post('admin/templates/{template}', 'AdminController@updateTemplate')->name('admin.templates.update');
+
+Route::get('/wikis/list', 'WikiController@index')->name('wiki.list');
 
 Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
 Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');

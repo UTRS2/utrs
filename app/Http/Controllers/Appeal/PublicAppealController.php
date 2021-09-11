@@ -9,9 +9,7 @@ use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
 use App\Models\Privatedata;
-use App\Models\Sendresponse;
-use App\MwApi\MwApiUrls;
-use App\Utils\IPUtils;
+use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +27,7 @@ class PublicAppealController extends Controller
         $data = $request->validate([
             'appealtext' => 'required|max:4000',
             'appealfor'  => 'required|max:50',
-            'wiki'       => [ 'required', Rule::in(MwApiUrls::getSupportedWikis(true)) ],
+            'wiki'       => [ 'required', Rule::in(MediaWikiRepository::getSupportedTargets(true)) ],
             'blocktype'  => 'required|numeric|max:2|min:0',
         ]);
 
@@ -57,6 +55,7 @@ class PublicAppealController extends Controller
         ]);
 
         $ban = Ban::whereIn('target', $banTargets)
+            ->wikiNameOrGlobal($data['wiki'])
             ->active()
             ->first();
 
@@ -99,7 +98,7 @@ class PublicAppealController extends Controller
          * allowing these appeals to be created till other master tasks
          * either prevent it or we go live with those wikis
          **/
-        if ($appeal->wiki == "ptwiki" || $appeal->wiki == "global") {
+        if ($appeal->wiki !== 'enwiki') {
             LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #' . $appeal->id);
         }
 
@@ -117,8 +116,7 @@ class PublicAppealController extends Controller
 
         $appeal->loadMissing('comments.userObject');
 
-        $replies = Sendresponse::where('appealID', '=', $appeal->id)->where('custom', '!=', 'null')->get();
-        return view('appeals.public.appeal', [ 'id' => $appeal->id, 'appeal' => $appeal, 'replies' => $replies ]);
+        return view('appeals.public.appeal', [ 'id' => $appeal->id, 'appeal' => $appeal, ]);
     }
 
     public function addComment(Request $request)

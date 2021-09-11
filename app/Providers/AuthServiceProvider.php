@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Wiki;
 use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
+use App\Policies\WikiPolicy;
 use App\Models\Old\Oldappeal;
 use App\Models\Sitenotice;
 use App\Models\Template;
@@ -34,6 +36,7 @@ class AuthServiceProvider extends ServiceProvider
         Sitenotice::class => SiteNoticePolicy::class,
         Template::class => TemplatePolicy::class,
         User::class => UserPolicy::class,
+        Wiki::class => WikiPolicy::class,
     ];
 
     /**

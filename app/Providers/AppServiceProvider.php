@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\MediaWiki\Api\MediaWikiRepository;
+use App\Services\MediaWiki\Implementation\RealMediaWikiRepository;
+use App\Services\Version\Api\Version;
+use App\Services\Version\Implementation\RealVersion;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +20,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            MediaWikiRepository::class,
+            RealMediaWikiRepository::class,
+        );
+
+        $this->app->alias(MediaWikiRepository::class, 'mediawiki');
+
+        $this->app->bind(
+            Version::class,
+            RealVersion::class,
+        );
+
+        $this->app->alias(Version::class, 'utrs_version');
     }
 
     /**
