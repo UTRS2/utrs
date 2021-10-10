@@ -65,8 +65,8 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Build assets
         run: npm run production
-      - name: Run PHPUnit
-        run: php artisan test
+      - name: Run tests
+        run: composer test
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Start chromedriver
