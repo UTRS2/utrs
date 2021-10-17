@@ -55,7 +55,7 @@ class AppealController extends Controller
 
             $logs = $info->comments;
 
-            $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
+            $cudata = Privatedata::where('appeal_id', '=', $id)->get()->first();
 
             $perms = [];
             $perms['checkuser'] = $user->can('viewCheckUserInformation', $info);
