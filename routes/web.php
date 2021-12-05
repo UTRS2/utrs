@@ -15,11 +15,11 @@ Route::view('/', 'home')->name('home');
 Route::redirect('/home', '/');
 
 Route::prefix('/public')->middleware('guest')->group(function () {
-    Route::view('/appeal/ip', 'appeals.public.makeappeal.ip')
+    Route::get('/appeal/ip', 'Appeal\PublicAppealCreateController@showIpForm')
         ->name('public.appeal.create.ip')
         ->middleware('torblock');
 
-    Route::view('/appeal/account', 'appeals.public.makeappeal.account')
+    Route::get('/appeal/account', 'Appeal\PublicAppealCreateController@showAccountForm')
         ->name('public.appeal.create.account')
         ->middleware('torblock');
 

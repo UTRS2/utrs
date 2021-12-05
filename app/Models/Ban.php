@@ -50,14 +50,12 @@ class Ban extends Model
     /**
      * Scope the query to only search for bans that are either global on in the specified wiki.
      */
-    public function scopeWikiNameOrGlobal(Builder $query, string $wiki)
+    public function scopeWikiIdOrGlobal(Builder $query, int $wikiId)
     {
         return $query
-            ->where(function (Builder $query) use ($wiki) {
+            ->where(function (Builder $query) use ($wikiId) {
                 return $query
-                    ->whereHas('wiki', function (Builder $query) use ($wiki) {
-                        return $query->where('database_name', $wiki);
-                    })
+                    ->where('wiki_id', $wikiId)
                     ->orWhereNull('wiki_id');
             });
     }

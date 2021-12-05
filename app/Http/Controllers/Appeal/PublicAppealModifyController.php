@@ -7,7 +7,7 @@ use App\Jobs\GetBlockDetailsJob;
 use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
-use App\Services\Facades\MediaWikiRepository;
+use App\Models\Wiki;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,14 +22,27 @@ class PublicAppealModifyController extends Controller
             abort(403, "Appeal is not available to be modified.");
         }
 
-        return view('appeals.public.modify', [ 'appeal' => $appeal, 'hash' => $hash ]);
+        $wikis = Wiki::where('is_accepting_appeals', true)
+            ->get()
+            ->mapWithKeys(function (Wiki $wiki) {
+                return [$wiki->id => $wiki->display_name];
+            });
+
+        return view(
+            'appeals.public.modify',
+            [
+                'appeal' => $appeal,
+                'hash' => $hash,
+                'wikis' => $wikis,
+            ]
+        );
     }
 
     public function submit(Request $request)
     {
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $hash = $request->input('hash');
 
         $appeal = Appeal::where('appealsecretkey', $hash)
@@ -38,10 +51,17 @@ class PublicAppealModifyController extends Controller
 
         $data = $request->validate([
             'appealfor' => 'required|max:50',
-            'wiki'      => [ 'required', Rule::in(MediaWikiRepository::getSupportedTargets()) ],
+            'wiki_id'   => [
+                'required',
+                'numeric',
+                Rule::exists('wikis', 'id')->where('is_accepting_appeals', true)
+            ],
             'blocktype' => 'required|numeric|max:2|min:0',
             'hiddenip'  => 'nullable|ip',
         ]);
+
+        // back compat, at least for now
+        $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
 
         $banTargets = Ban::getTargetsToCheck([
             $ip,
@@ -49,6 +69,7 @@ class PublicAppealModifyController extends Controller
         ]);
 
         $ban = Ban::whereIn('target', $banTargets)
+            ->wikiIdOrGlobal($data['wiki_id'])
             ->active()
             ->first();
 
