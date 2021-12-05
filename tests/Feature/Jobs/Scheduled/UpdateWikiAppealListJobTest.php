@@ -5,10 +5,13 @@ namespace Tests\Feature\Jobs\Scheduled;
 use App\Models\Appeal;
 use App\Services\Facades\MediaWikiRepository;
 use App\Jobs\Scheduled\UpdateWikiAppealListJob;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
 class UpdateWikiAppealListJobTest extends TestCase
 {
+    use DatabaseMigrations;
+
     public function getJob()
     {
         return new UpdateWikiAppealListJob(MediaWikiRepository::getSupportedTargets()[0]);
@@ -22,8 +25,7 @@ class UpdateWikiAppealListJobTest extends TestCase
     public function test_renders_standard_appeal_correctly()
     {
         $job = $this->getJob();
-        // add ID manually, since we're not saving it into the database so it doesn't have one itself
-        $appeal = Appeal::factory()->make([ 'id' => 1 ]);
+        $appeal = Appeal::factory()->create();
 
         $text = $job->createContents(collect([$appeal]));
 
@@ -38,8 +40,7 @@ class UpdateWikiAppealListJobTest extends TestCase
     public function test_renders_block_id_appeal_correctly()
     {
         $job = $this->getJob();
-        // add ID manually, since we're not saving it into the database so it doesn't have one itself
-        $appeal = Appeal::factory()->make([ 'id' => 1, 'appealfor' => '#1']);
+        $appeal = Appeal::factory()->create([ 'appealfor' => '#1']);
 
         $text = $job->createContents(collect([$appeal]));
 

@@ -36,12 +36,6 @@ interface MediaWikiRepository
     public function getGlobalApi(): MediaWikiApi;
 
     /**
-     * Provides an array that can be used to build a dropdown for all available wikis.
-     * @return array Array with [dbName => Human readable name] pairs for all available wikis
-     */
-    public function getWikiDropdown(): array;
-
-    /**
      * @param string $wiki
      * @return WikiPermissionHandler
      */

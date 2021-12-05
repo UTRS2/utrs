@@ -21,10 +21,10 @@ class PrivatedataFactory extends Factory
         $this->faker->addProvider(new AcceptLanguageFakerProvider($this->faker));
 
         return [
-            'appealID' => $this->faker->numberBetween(1, Appeal::count()),
+            'appeal_id' => $this->faker->numberBetween(1, Appeal::count()),
             'ipaddress' => $this->faker->ipv4,
             'useragent' => $this->faker->userAgent,
-            'language' => $this->faker->acceptLanguage,
+            'language'  => $this->faker->acceptLanguage,
         ];
     }
 }

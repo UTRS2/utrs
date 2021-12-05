@@ -120,7 +120,7 @@ class Appeal extends Model
 
     public function privateData()
     {
-        return $this->hasOne(Privatedata::class, 'appealID', 'id');
+        return $this->hasOne(Privatedata::class, 'appeal_id', 'id');
     }
 
     // other functions

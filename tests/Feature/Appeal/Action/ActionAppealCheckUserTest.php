@@ -57,7 +57,7 @@ class ActionAppealCheckUserTest extends BaseAppealActionTest
         $appeal = Appeal::factory()->create();
 
         Privatedata::factory()->create([
-            'appealID' => $appeal->id,
+            'appeal_id' => $appeal->id,
         ]);
 
         $response = $this
@@ -77,7 +77,7 @@ class ActionAppealCheckUserTest extends BaseAppealActionTest
         $user = $this->getFunctionaryTooladminUser();
         $appeal = Appeal::factory()->create();
         Privatedata::factory()->create([
-            'appealID' => $appeal->id,
+            'appeal_id' => $appeal->id,
             'useragent' => 'Example string to look out for!!!',
         ]);
 

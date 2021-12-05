@@ -55,7 +55,7 @@ class AppealController extends Controller
 
             $logs = $info->comments;
 
-            $cudata = Privatedata::where('appealID', '=', $id)->get()->first();
+            $cudata = Privatedata::where('appeal_id', '=', $id)->get()->first();
 
             $perms = [];
             $perms['checkuser'] = $user->can('viewCheckUserInformation', $info);
@@ -305,9 +305,7 @@ class AppealController extends Controller
         $this->authorize('update', $appeal);
 
         $templates = Template::where('active', true)
-            ->whereHas('wiki', function (Builder $query) use ($appeal) {
-                $query->where('database_name', $appeal->wiki);
-            })
+            ->where('wiki_id', $appeal->wiki_id)
             ->get();
 
         return view('appeals.templates', ['templates' => $templates, 'appeal' => $appeal, 'username' => $request->user()->username]);
