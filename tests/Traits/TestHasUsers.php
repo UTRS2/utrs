@@ -37,7 +37,7 @@ trait TestHasUsers
                 ->toArray();
 
             Permission::firstOrCreate([
-                'userid' => $user->id,
+                'user_id' => $user->id,
                 'wiki' => $wiki,
             ], $toSet);
         }
