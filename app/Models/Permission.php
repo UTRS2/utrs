@@ -29,7 +29,7 @@ class Permission extends Model
 
     public function userObject()
     {
-        return $this->belongsTo(User::class, 'userid');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

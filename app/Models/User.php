@@ -49,7 +49,7 @@ class User extends Authenticatable
 
     public function permissions()
     {
-        return $this->hasMany(Permission::class, 'userid', 'id');
+        return $this->hasMany(Permission::class, 'user_id', 'id');
     }
 
     /**

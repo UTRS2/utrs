@@ -48,7 +48,7 @@ class LoadPermissionsJob implements ShouldQueue, ShouldBeUnique
             $groups = $checker->getUserGroups($this->user->username);
 
             $permObject = Permission::firstOrNew([
-                'userid' => $this->user->id,
+                'user_id' => $this->user->id,
                 'wiki' => $wiki,
             ]);
 

@@ -82,7 +82,7 @@ class PublicAppealController extends Controller
             $appeal = Appeal::create($data);
 
             Privatedata::create([
-                'appealID'  => $appeal->id,
+                'appeal_id' => $appeal->id,
                 'ipaddress' => $ip,
                 'useragent' => $ua,
                 'language'  => $lang,

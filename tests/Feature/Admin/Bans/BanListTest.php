@@ -64,6 +64,13 @@ class BanListTest extends TestCase
             'wiki_id' => $wikiId + 1,
         ]);
 
+        Ban::factory()->create([
+            'target' => 'Ban affecting all wikis',
+            'is_protected' => false,
+            'is_active' => true,
+            'wiki_id' => null,
+        ]);
+
         $this->actingAs($this->getTooladminUser())
             ->get(route('admin.bans.list'))
             ->assertDontSee('403')
@@ -74,7 +81,8 @@ class BanListTest extends TestCase
             ->assertSee('Add ban')
             ->assertSee('indefinite')
             ->assertSee('2030-01-01 10:00:00')
-            ->assertDontSee('Ban on another wiki');
+            ->assertDontSee('Ban on another wiki')
+            ->assertDontSee('Ban affecting all wikis');
     }
 
     public function test_oversighter_can_view_oversighted_bans()
@@ -93,4 +101,17 @@ class BanListTest extends TestCase
             ->assertSee('Protected ban');
     }
 
+    public function test_global_tooladmin_can_see_bans_affecting_all_wikis()
+    {
+        Ban::factory()->create([
+            'target' => 'Ban affecting all wikis',
+            'is_protected' => false,
+            'is_active' => true,
+            'wiki_id' => null,
+        ]);
+
+        $this->actingAs($this->getTooladminUser([], ['enwiki', '*']))
+            ->get(route('admin.bans.list'))
+            ->assertSee('Ban affecting all wikis');
+    }
 }
