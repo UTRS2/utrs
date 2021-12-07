@@ -9,11 +9,11 @@ use App\Models\Appeal;
 use App\Models\Ban;
 use App\Models\LogEntry;
 use App\Models\Privatedata;
+use App\Models\Wiki;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log as LaravelLog;
 use Illuminate\Validation\Rule;
 
 class PublicAppealController extends Controller
@@ -27,9 +27,16 @@ class PublicAppealController extends Controller
         $data = $request->validate([
             'appealtext' => 'required|max:4000',
             'appealfor'  => 'required|max:50',
-            'wiki'       => [ 'required', Rule::in(MediaWikiRepository::getSupportedTargets(true)) ],
+            'wiki_id'    => [
+                'required',
+                'numeric',
+                Rule::exists('wikis', 'id')->where('is_accepting_appeals', true)
+            ],
             'blocktype'  => 'required|numeric|max:2|min:0',
         ]);
+
+        // back compat, at least for now
+        $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
 
         $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
         $data['appealsecretkey'] = $key;
@@ -37,7 +44,8 @@ class PublicAppealController extends Controller
         $data['appealfor'] = trim($data['appealfor']);
 
         $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
-                return $query->where('appealfor', $request->input('appealfor'))
+                return $query
+                    ->where('appealfor', $request->input('appealfor'))
                     ->orWhereHas('privateData', function (Builder $privateDataQuery) use ($request) {
                         return $privateDataQuery->where('ipaddress', $request->ip());
                     });
@@ -55,7 +63,7 @@ class PublicAppealController extends Controller
         ]);
 
         $ban = Ban::whereIn('target', $banTargets)
-            ->wikiNameOrGlobal($data['wiki'])
+            ->wikiIdOrGlobal($data['wiki_id'])
             ->active()
             ->first();
 
@@ -69,6 +77,7 @@ class PublicAppealController extends Controller
             return response('Test: not actually saving anything');
         }
 
+        /** @var Appeal $appeal */
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
             $appeal = Appeal::create($data);
 
@@ -93,16 +102,7 @@ class PublicAppealController extends Controller
             return $appeal;
         });
 
-        /**
-         * Yes, this is a hard hack and not optimal, but we are still
-         * allowing these appeals to be created till other master tasks
-         * either prevent it or we go live with those wikis
-         **/
-        if ($appeal->wiki !== 'enwiki') {
-            LaravelLog::warning('An appeal has been created on an unsupported wiki. AppealID #' . $appeal->id);
-        }
-
-        return view('appeals.public.makeappeal.hash', [ 'hash' => $key ]);
+        return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey ]);
     }
 
     public function view(Request $request)

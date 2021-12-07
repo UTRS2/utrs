@@ -12,6 +12,7 @@ use App\Models\Wiki;
 use App\Policies\Admin\BanPolicy;
 use App\Utils\Logging\RequestLogContext;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -33,17 +34,20 @@ class BanController extends Controller
             })
             ->pluck('id');
 
-        if ($user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL])) {
-            // bans with no wiki id are global
-            $wikis->push(null);
-        }
+        $canSeeGlobal = $user->can('viewAny', [Ban::class, BanPolicy::WIKI_GLOBAL]);
 
-        if ($wikis->isEmpty()) {
+        if ($wikis->isEmpty() && !$canSeeGlobal) {
             abort(403, "You can't view bans in any wikis!");
             return '';
         }
 
-        $allbans = Ban::whereIn('wiki_id', $wikis)
+        $allbans = Ban::where(function (Builder $query) use ($wikis, $canSeeGlobal) {
+            return $query
+                ->whereIn('wiki_id', $wikis)
+                ->when($canSeeGlobal, function (Builder $query) {
+                    return $query->orWhereNull('wiki_id');
+                });
+        })
             ->with('wiki')
             ->get();
 
@@ -53,7 +57,7 @@ class BanController extends Controller
         $protectedBansVisible = false;
 
         $tableheaders = [ 'ID', 'Target', 'Expires', 'Reason' ];
-        if ($wikis->count() > 1) {
+        if ($wikis->count() > ($canSeeGlobal ? 0 : 1)) {
             $tableheaders[] = 'Wiki';
         }
 

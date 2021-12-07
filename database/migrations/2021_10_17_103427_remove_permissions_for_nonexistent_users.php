@@ -22,6 +22,7 @@ class RemovePermissionsForNonexistentUsers extends Migration
                     ->select('id')
                     ->distinct()
                     ->get()
+                    ->pluck('id')
             )
             ->delete();
     }

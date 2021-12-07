@@ -25,7 +25,6 @@ class UserFactory extends Factory
         return [
             'username' => $this->faker->name,
             'remember_token' => Str::random(10),
-            'wikis' => '',
         ];
     }
 }

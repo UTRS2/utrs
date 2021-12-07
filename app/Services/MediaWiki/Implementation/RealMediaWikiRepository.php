@@ -65,21 +65,6 @@ class RealMediaWikiRepository implements MediaWikiRepository
         return $this->getApiForTarget('global');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getWikiDropdown(): array
-    {
-        return collect($this->getSupportedTargets())
-            ->filter(function ($wiki) {
-                return !$this->getTargetProperty($wiki, 'hidden_from_appeal_wiki_list', false);
-            })
-            ->mapWithKeys(function ($wiki) {
-                return [$wiki => $this->getTargetProperty($wiki, 'name')];
-            })
-            ->toArray();
-    }
-
     public function getWikiPermissionHandler(string $wiki): WikiPermissionHandler
     {
         if (!array_key_exists($wiki, $this->loadedPermissionHandlers)) {

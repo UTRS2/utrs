@@ -18,8 +18,8 @@
             {{ Form::open(['url' => route('public.appeal.modify.submit')]) }}
             {{ Form::token() }}
             <div class="form-group mb-4">
-                {{ Form::label('wiki', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki', \App\Services\Facades\MediaWikiRepository::getWikiDropdown(), old('wiki', $appeal->wiki), ['class' => 'custom-select']) }}
+                {{ Form::label('wiki_id', __('appeals.forms.block-wiki')) }}<br>
+                {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'custom-select']) }}
             </div>
 
             <div class="form-group mb-4">
