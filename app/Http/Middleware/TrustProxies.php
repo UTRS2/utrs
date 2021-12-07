@@ -16,6 +16,8 @@ class TrustProxies extends Middleware
         // https://openstack-browser.toolforge.org/project/project-proxy
         '172.16.0.164', // proxy-01.project-proxy.eqiad.wmflabs
         '172.16.0.165', // proxy-02.project-proxy.eqiad.wmflabs
+        '172.16.5.238', // proxy-03.project-proxy.eqiad1.wikimedia.cloud
+        '172.16.5.200', // proxy-04.project-proxy.eqiad1.wikimedia.cloud
     ];
 
     /**

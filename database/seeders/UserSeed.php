@@ -28,7 +28,7 @@ class UserSeed extends Seeder
 
         if ($grantDeveloper) {
             Permission::create([
-                'userid' => $user->id,
+                'user_id' => $user->id,
                 'developer' => 1,
                 'wiki' => '*',
             ]);
@@ -42,7 +42,7 @@ class UserSeed extends Seeder
     {
         foreach (explode(' ', $wikis) as $wiki) {
             Permission::firstOrCreate([
-                'userid' => $user->id,
+                'user_id' => $user->id,
                 'wiki' => $wiki,
             ])->update([
                 $permission => 1,

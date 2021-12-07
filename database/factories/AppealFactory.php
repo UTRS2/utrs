@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Appeal;
+use App\Models\Wiki;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,9 @@ class AppealFactory extends Factory
      */
     public function definition()
     {
+        // first because many tests (sadly) assume that ://
+        $wiki = Wiki::first();
+
         return [
             'appealfor' => $this->faker->firstName,
             'blocktype' => 1,
@@ -32,7 +36,8 @@ class AppealFactory extends Factory
             'submitted' => $this->faker->dateTimeBetween('-3 days', '-1 hour'),
             'appealsecretkey' => implode('', $this->faker->words()),
             'appealtext' => $this->faker->sentence,
-            'wiki' => MediaWikiRepository::getSupportedTargets(false)[0],
+            'wiki' => $wiki->database_name,
+            'wiki_id' => $wiki->id,
             'user_verified' => 0,
         ];
     }

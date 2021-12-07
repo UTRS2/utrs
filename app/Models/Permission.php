@@ -29,7 +29,7 @@ class Permission extends Model
 
     public function userObject()
     {
-        return $this->belongsTo(User::class, 'userid');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -60,24 +60,5 @@ class Permission extends Model
         return $this->present_permissions
             ->intersect($perms)
             ->isNotEmpty();
-    }
-
-    /** @deprecated use {@link Permission::hasAnySpecifiedPerms()} instead, or use policies */
-    public static function hasAnyPermission($userId, $wiki, $permissionArray)
-    {
-        abort_if(is_null($userId), 403, 'No logged in user');
-        return User::findOrFail($userId)->hasAnySpecifiedLocalOrGlobalPerms($wiki, $permissionArray);
-    }
-
-    /** @deprecated use {@link User::hasAnySpecifiedLocalOrGlobalPerms()} instead, or use policies */
-    public static function checkCheckuser($id, $wiki)
-    {
-        return self::hasAnyPermission($id, $wiki, ['checkuser']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
-    }
-
-    /** @deprecated use {@link User::hasAnySpecifiedLocalOrGlobalPerms()} instead, or use policies */
-    public static function checkAdmin($id, $wiki)
-    {
-        return self::hasAnyPermission($id, $wiki, ['admin']) || self::hasAnyPermission($id, '*', ['steward', 'staff', 'developer']);
     }
 }
