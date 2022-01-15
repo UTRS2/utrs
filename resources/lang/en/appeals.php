@@ -56,7 +56,7 @@ return [
 
         'appeal-info' => 'Block appeal information',
 
-        'admin-only-notice' => 'Only administrator will be able to see your appeal.',
+        'admin-only-notice' => 'Only administrators will be able to see your appeal.',
         'word-notice'       => 'There is a 4,000 word maximum in this textbox. If you go over it, you will be prevented from filing an appeal.',
         'question-why'      => 'Why should you be unblocked?',
 
