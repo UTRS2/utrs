@@ -39,10 +39,10 @@
                                 Appeal number: #{{ $info->id }}&nbsp;
                                 @if($info->user_verified)
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
-                                <br/><i>This appeal has been verified<br/>to the the account on the wiki.</i>
+                                <br/><i>This appeal has been verified<br/>to the account on the wiki.</i>
                                 @else
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
-                                <br/><i>This appeal has not been/will not <br/>be verified to the the account on the wiki.</i>
+                                <br/><i>This appeal has not been/will not <br/>be verified to the account on the wiki.</i>
                                 @endif
                                 <br/>Appeal status: {{ $info->status }}
                                 <br/>Blocking Admin: {{ $info->blockingadmin }}
