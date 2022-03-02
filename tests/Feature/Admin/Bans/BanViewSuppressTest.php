@@ -24,7 +24,7 @@ class BanViewSuppressTest extends TestCase
      */
     public function testBanTargetSuppression(string $suppressedOn, array $hasOversightOn, bool $expectedResult)
     {
-        $rights = collect(['enwiki', 'ptwiki', '*'])
+        $rights = collect(['enwiki', 'ptwiki', 'global'])
             ->mapWithKeys(function (string $wiki) use ($hasOversightOn) {
                 return [
                     $wiki => in_array($wiki, $hasOversightOn)
@@ -60,7 +60,7 @@ class BanViewSuppressTest extends TestCase
     {
         return [
             'Local oversighter can view suppressed' => [ 'enwiki', [ 'enwiki' ], true ],
-            'Global oversighter can view suppressed' => [ 'enwiki', [ '*' ], true ],
+            'Global oversighter can view suppressed' => [ 'enwiki', [ 'global' ], true ],
             'Wrong wiki oversighter can not view suppressed' => [ 'enwiki', [ 'ptwiki' ], false ],
             'Regular user can not view suppressed' => [ 'enwiki', [], false ],
         ];

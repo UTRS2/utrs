@@ -86,8 +86,8 @@ class User extends Authenticatable
             $wantedPerms = $wantedPerms ? [$wantedPerms] : [];
         }
 
-        if (!in_array('*', $wikis)) {
-            $wikis[] = '*';
+        if (!in_array('global', $wikis)) {
+            $wikis[] = 'global';
         }
 
         return $this->permissions

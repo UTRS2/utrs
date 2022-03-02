@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $appends = ['presentPermissions', 'wikiFormKey'];
+    protected $appends = ['presentPermissions'];
     protected $guarded = ['id'];
     public $timestamps = false;
 
@@ -19,12 +19,6 @@ class Permission extends Model
             ->filter(function ($possiblePerm) {
                 return $this->$possiblePerm;
             });
-    }
-
-    // this is a really stupid hack; but laravel's request()->input('...') doesn't really like form keys with *'s.
-    public function getWikiFormKeyAttribute()
-    {
-        return $this->wiki === '*' ? 'global' : $this->wiki;
     }
 
     public function userObject()

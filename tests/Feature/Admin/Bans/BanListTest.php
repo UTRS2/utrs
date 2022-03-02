@@ -110,7 +110,7 @@ class BanListTest extends TestCase
             'wiki_id' => null,
         ]);
 
-        $this->actingAs($this->getTooladminUser([], ['enwiki', '*']))
+        $this->actingAs($this->getTooladminUser([], ['enwiki', 'global']))
             ->get(route('admin.bans.list'))
             ->assertSee('Ban affecting all wikis');
     }

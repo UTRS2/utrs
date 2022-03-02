@@ -31,7 +31,7 @@ class BanCreateSuppressTest extends TestCase
             ->assertDontSee('Ban target visibility');
 
         // get an id of a wiki where the user is a tooladmin, or if globally, for enwiki
-        $wikiId = Wiki::where('database_name', $wikis[0] === '*' ? 'enwiki' : $wikis)
+        $wikiId = Wiki::where('database_name', $wikis[0] === 'global' ? 'enwiki' : $wikis)
             ->firstOrFail()
             ->id;
 
@@ -57,7 +57,7 @@ class BanCreateSuppressTest extends TestCase
             'Normal wiki' => [ ['enwiki'], ],
             'Two normal wikis' => [ ['enwiki', 'ptwiki'], ],
             'Global queue only' => [ ['global'], ],
-            'All wikis' => [ ['*'], ],
+            'All wikis' => [ ['global'], ],
         ];
     }
 
