@@ -38,6 +38,9 @@ class Kernel extends ConsoleKernel
 
         // Close expired NOTFOUND appeals
         $schedule->command('utrs-jobs:close-expired-notfound')->everyFourHours();
+
+        // Permission updates
+        $schedule->command('utrs-jobs:reverify-user-permissions')->daily()->at('14:00');
     }
 
     /**
