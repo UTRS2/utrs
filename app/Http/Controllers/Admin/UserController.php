@@ -76,9 +76,8 @@ class UserController extends Controller
             }
 
             foreach (MediaWikiRepository::getSupportedTargets() as $wiki) {
-                $wikiDbName = $wiki === 'global' ? '*' : $wiki;
                 /** @var Permission $permission */
-                $permission = $user->permissions->where('wiki', $wikiDbName)->first();
+                $permission = $user->permissions->where('wiki', $wiki)->first();
 
                 $updateSet = [];
 
@@ -86,7 +85,7 @@ class UserController extends Controller
                 foreach (Permission::ALL_POSSIBILITIES as $key) {
                     $oldValue = $permission && $permission->$key;
 
-                    if ($currentUser->can('updatePermission', [$user, $wikiDbName, $key])) {
+                    if ($currentUser->can('updatePermission', [$user, $wiki, $key])) {
                         $value = (bool) $request->input('permission.' . $wiki . '.' . $key, false);
 
                         if ($value != $oldValue) {

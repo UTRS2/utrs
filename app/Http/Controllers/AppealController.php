@@ -132,7 +132,7 @@ class AppealController extends Controller
         $wikis = collect(MediaWikiRepository::getSupportedTargets());
 
         // For users who aren't developers, stewards or staff, show appeals only for own wikis
-        if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff'])) {
+        if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['global'], ['steward', 'staff'])) {
             $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
                     $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($wiki)

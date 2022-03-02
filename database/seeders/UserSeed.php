@@ -30,7 +30,7 @@ class UserSeed extends Seeder
             Permission::create([
                 'user_id' => $user->id,
                 'developer' => 1,
-                'wiki' => '*',
+                'wiki' => 'global',
             ]);
         }
 

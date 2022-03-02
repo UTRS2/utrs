@@ -40,7 +40,7 @@ class RealMediaWikiRepository implements MediaWikiRepository
         $target = Str::lower($target);
         $prefix = 'wikis.wikis.' . $target . '.';
 
-        if ($target === 'global' || $target === '*') {
+        if ($target === 'global') {
             $prefix = 'wikis.globalwiki.';
         }
 
@@ -77,7 +77,7 @@ class RealMediaWikiRepository implements MediaWikiRepository
 
     public function getWikiAccessChecker(string $wiki): WikiAccessChecker
     {
-        if ($wiki === 'global' || $wiki === '*') {
+        if ($wiki === 'global') {
             return new GlobalAccessChecker($this->getGlobalApi());
         }
 

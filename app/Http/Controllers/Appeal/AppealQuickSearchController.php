@@ -38,7 +38,7 @@ class AppealQuickSearchController extends Controller
         $wikis = collect(MediaWikiRepository::getSupportedTargets(true));
 
         // For users who aren't developers, stewards or staff, show appeals only for own wikis
-        if (!$user->hasAnySpecifiedLocalOrGlobalPerms(['*'], ['steward', 'staff', 'developer'])) {
+        if (!$user->hasAnySpecifiedLocalOrGlobalPerms(['global'], ['steward', 'staff', 'developer'])) {
             $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
                     return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, 'admin');

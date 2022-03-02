@@ -69,19 +69,18 @@
                 <tbody>
                 @foreach(\App\Services\Facades\MediaWikiRepository::getSupportedTargets(true) as $wiki)
                     @php
-                        $wikiDbName = $wiki === 'global' ? '*' : $wiki;
                         /** @var \App\Models\User $user */ /** @var \App\Models\Permission $permission */
-                        $permission = $user->permissions->where('wiki', $wikiDbName)->first();
+                        $permission = $user->permissions->where('wiki', $wiki)->first();
                     @endphp
                     <tr>
                         <td>
-                            {{ $wikiDbName }}
+                            {{ $wiki }}
                         </td>
 
                         @foreach(\App\Models\Permission::ALL_POSSIBILITIES as $permNode)
                             @php $oldValue = $permission && $permission->$permNode; @endphp
                             <td>
-                                @can('updatePermission', [$user, $wikiDbName, $permNode])
+                                @can('updatePermission', [$user, $wiki, $permNode])
                                     {{ Form::checkbox('permission[' . $wiki . '][' . $permNode . ']', 1,
                                         old('permission.' . $wiki . '.' . $permNode, $oldValue)) }}
                                 @else
