@@ -1,4 +1,4 @@
-<table class="table table-bordered table-dark">
+<table class="table table-dark">
     <thead>
     <tr>
         <th scope="col">ID #</th>
@@ -12,9 +12,9 @@
     <tbody>
     @foreach($appeals as $appeal)
         @if($appeal->status === "ADMIN")
-            <tr class="bg-primary">
+            <tr class="table-dark-primary">
         @elseif($appeal->status === "CHECKUSER")
-            <tr class="bg-warning" style="color: #212529!important;">
+            <tr class="table-dark-warning">
         @else
             <tr>
         @endif

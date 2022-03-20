@@ -56,7 +56,6 @@
             @component('components.appeal-table', ['appeals' => $appeals[$type]])
             @endcomponent
         </div>
-    </div>
     @endforeach
 
 @endsection
