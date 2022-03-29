@@ -179,7 +179,7 @@ class PublicAppealController extends Controller
             'user_id'    => 0,
             'model_id'   => $appeal->id,
             'model_type' => Appeal::class,
-            'action'     => 'account verifed',
+            'action'     => 'account verified',
             'ip'         => $ip,
             'ua'         => $ua . ' ' . $lang,
         ]);
