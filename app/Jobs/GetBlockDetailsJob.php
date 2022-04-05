@@ -142,7 +142,14 @@ class GetBlockDetailsJob implements ShouldQueue
             if (Str::startsWith($this->appeal->appealfor, '#') && is_numeric(substr($this->appeal->appealfor, 1))) {
                 $block = $mediaWikiExtras->getBlockInfo(substr($this->appeal->appealfor, 1), $this->appeal->id, 'bkids');
             } else {
-                $block = $mediaWikiExtras->getBlockInfo($this->appeal->appealfor, $this->appeal->id);
+                try {
+                    $block = $mediaWikiExtras->getBlockInfo($this->appeal->appealfor, $this->appeal->id);
+                } catch(Exception $e) {
+                    //If the script errors out for any reason, mark not found
+                    $this->appeal->update([
+                        'status' => Appeal::STATUS_NOTFOUND,
+                    ]);
+                }
             }
 
             if (!$block && !empty($this->appeal->hiddenip)) {
