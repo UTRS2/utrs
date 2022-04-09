@@ -151,7 +151,6 @@ class GetBlockDetailsJob implements ShouldQueue
         }
 
         if ($block) {
-            echo $block;
             $this->handleBlockData($block);
             return;
         }
