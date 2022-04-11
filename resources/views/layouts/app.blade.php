@@ -75,6 +75,7 @@
                     </a>
                 </li>
             @endauth
+            <li class="nav-item nav-link">Language: {{App::getLocale()}}</li>
         </ul>
     </div>
 </nav>

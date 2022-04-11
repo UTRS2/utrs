@@ -2,12 +2,29 @@
 
 return [
     'closed-notice' => 'This appeal is closed. No further changes can be made to it.',
+    'no-action' => 'You are not permitted to perform any actions on this appeal.',
 
     'not-found-text'      => 'We were not able to locate your block. Please :link to correct the information in your appeal.',
     'not-found-link-text' => 'click here',
     'not-found-button'    => 'Fix block information',
 
     'appeal-title' => 'Appeal for ":name"',
+    'appeal-number' => 'Appeal number',
+    'appeal-for'    => 'Appeal for',
+    'appeal-none'   => 'None',
+
+    'comments' => [
+        'system'    => 'System',
+        'restricted' => 'Access to comment is restricted.',
+        'action'    => 'Action',
+        'reason'    => 'Reason',
+        'leave' => 'Leave a comment',
+        'add' => 'Add a comment to this appeal',
+    ],
+
+    'send-reply-header'  => 'Send a templated reply',
+    'send-reply-button'  => 'Send a reply to the user',
+    'not-handling-admin' => 'You are not the handling admin.',
 
     'details-status'         => 'Appeal status',
     'details-block-admin'    => 'Blocking administrator',
@@ -15,10 +32,53 @@ return [
     'details-submitted'      => 'Time submitted',
     'details-handling-admin' => 'Handling administrator',
 
+    'header-previous-appeals' => 'Previous appeals',
     'content-question-why' => 'Why should you be unblocked?',
 
     'comment-color-text' => 'Lines that are in blue indicate a response to or from the user. Lines in green are private comments from administrators.',
     'comment-input-text' => 'Add a comment to this appeal:',
+
+    'verify' => [
+        'verified' => 'This appeal has been verified to the account on the wiki.',
+        'not-verified' => 'This appeal has not been or will not be verified to the account on the wiki.',
+    ],
+
+    'links' => [
+        'user-talk' => 'User talk',
+        'contribs'  => 'Contributions',
+        'find-block'=> 'Find block',
+        'block-log' => 'Block log',
+        'ca'        => 'CentralAuth',
+        'unblock'   => 'Unblock',
+        'reopen'    => 'Re-open',
+        'reserve'   => 'Reserve',
+        'release'   => 'Release',
+        'force'     => 'Force',
+        'invalidate'=> 'Oversight',
+        'accept'    => 'Accept appeal',
+        'decline'   => 'Decline appeal',
+        'checkuser' => 'CheckUser',
+        'tooladmin' => 'Tool administrator',
+        'expire'    => 'Mark appeal as expired',
+        'return'    => 'Return to tool users',
+        'reverify'  => 'Reverify appeal',
+        'advance-search' => 'Advanced search',
+
+    ],
+
+    'cu' => [
+        'data-expire'   => 'The CU data for this appeal has expired.',
+        'no-request'    => 'You have not submitted a request to view the CheckUser data yet.',
+        'reason'        => 'Reason',
+        'submit'        => 'Submit',
+        'title'         => 'CheckUser data',
+        'review-req'    => 'What would you like the checkuser to review in this appeal?',
+        'submit-title'  => 'Submit to CheckUser review'
+    ],
+    
+    'nav' => [
+        'back-appeal-list' => 'Go back to appeal list',
+    ],
 
     'section-headers' => [
         'details'     => 'Appeal details',

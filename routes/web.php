@@ -10,7 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::middleware('set.locale')->group(function () {
+//Route::middleware('set.locale')->group(function () {
 
     Route::view('/', 'home')->name('home');
     Route::redirect('/home', '/');
@@ -89,4 +89,4 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
     Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
     Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
-});
+//});
