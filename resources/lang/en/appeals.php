@@ -35,6 +35,22 @@ return [
         'default' => 'This appeal is in progress.',
     ],
 
+    'publicheader' => [
+        'afterfile' => 'After filing this appeal, you will get an appeal key. You will have to check back here for updates.
+
+                        An administrator will look at your request in due time. Depending on which language and site you are
+                        appealing from, appeal times may vary excessively.
+
+                        Please note, any text you input for your appeal you agree to release under a public domain licence so that it can be
+                        copied over to Wikipedia if needed. If you do not agree, do not file an appeal.
+
+                        If you have any questions, you can contact us. Please note: We will not expedite, approve, deny, or edit
+                        your appeal. It is for information only.',
+        'appealkey' => 'On the next page, you will be issued a Appeal Key. Keep it in a safe place. If you forget it, you are able
+                        to recover it, but only if your Wikimedia Account has a valid email address. DO NOT SHARE this key with
+                        anyone.'
+    ],
+
     'forms' => [
         'header-account' => 'Appeal a block on an account',
         'header-ip'      => 'Appeal a block on an IP address',
