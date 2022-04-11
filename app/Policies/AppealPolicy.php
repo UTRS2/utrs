@@ -40,13 +40,14 @@ class AppealPolicy
             return $this->deny('Viewing ' . $appeal->wiki . ' appeals is restricted to users in the following groups: ' . implode(', ', $neededPermissions));
         }
 
+        //Oversight allows viewing any appeals
         if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'oversight') || $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'steward')) {
             return true;
         }
 
         if ($appeal->status === Appeal::STATUS_INVALID) {
             // Developers can already see everything based on override in AuthServiceProvider
-            return $this->deny('This appeal has been marked as invalid.');
+            return $this->deny('This appeal has been marked as been oversighted.');
         }
 
         // view also has some filters
