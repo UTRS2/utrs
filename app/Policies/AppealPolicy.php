@@ -40,9 +40,14 @@ class AppealPolicy
             return $this->deny('Viewing ' . $appeal->wiki . ' appeals is restricted to users in the following groups: ' . implode(', ', $neededPermissions));
         }
 
+        //Oversight allows viewing any appeals
+        if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'oversight') || $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'steward')) {
+            return true;
+        }
+
         if ($appeal->status === Appeal::STATUS_INVALID) {
             // Developers can already see everything based on override in AuthServiceProvider
-            return $this->deny('This appeal has been marked as invalid.');
+            return $this->deny('This appeal has been marked as been oversighted.');
         }
 
         // view also has some filters
@@ -94,8 +99,15 @@ class AppealPolicy
      */
     public function performDeveloperActions(User $user, Appeal $appeal)
     {
+        
         // Handle via Gate::before()
-        return $this->deny('Only developers can take developer actions on appeals.');
+        if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'steward')||
+            $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'oversight')) {
+            return true;    
+        }
+        else {
+            return $this->deny('Only developers can take developer actions on appeals.');
+        }
     }
 
     public function viewCheckUserInformation(User $user, Appeal $appeal)
