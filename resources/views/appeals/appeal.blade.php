@@ -131,7 +131,7 @@
                                                             {{__('appeals.links.reserve')}}
                                                         </button>
                                                     @endif {{-- disabled button --}}
-                                                    @if($perms['developer'])
+                                                    @if($perms['developer'] || $perms['oversight'])
                                                         <form action="{{ route('appeal.action.invalidate', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-danger">
