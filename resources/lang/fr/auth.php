@@ -7,6 +7,7 @@ return [
         'key-placeholder' => 'Clé d\'appel ici',
         'submit-text'     => 'Voir mon recours',
         'login-text'      => 'Les administrateurs peuvent utiliser leur compte Wikimedia pour se connecter afin d\'examiner cet appel.',
-        'oauth-button'    => 'Connectez-vous avec votre compte Wikimédia'
+        'oauth-button'    => 'Connectez-vous avec votre compte Wikimédia',
+        'key-title'       => 'Si vous avez déjà un appel'
     ]
 ];
