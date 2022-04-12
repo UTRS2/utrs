@@ -14,6 +14,7 @@ Route::middleware('set.locale')->group(function () {
 
     Route::view('/', 'home')->name('home');
     Route::redirect('/home', '/');
+    Route::get('/changelang/{lang}', 'LanguageController@change');
 
     Route::prefix('/public')->middleware('guest')->group(function () {
         Route::get('/appeal/ip', 'Appeal\PublicAppealCreateController@showIpForm')

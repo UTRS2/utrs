@@ -75,7 +75,16 @@
                     </a>
                 </li>
             @endauth
-            <li class="nav-item nav-link">Language: {{App::getLocale()}}</li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Language: {{App::getLocale()}}</a>
+
+                <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
+                    <a class="dropdown-item" href="/changelang/en">English</a>
+                    <a class="dropdown-item" href="/changelang/fr">Français</a>
+                    <a class="dropdown-item" href="/changelang/pt-BR">Português (Brasil)</a>
+                    <a class="dropdown-item" href="/changelang/pt-PT">Português</a>
+                </div>
+            </li>
         </ul>
     </div>
 </nav>
