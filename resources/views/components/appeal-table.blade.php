@@ -1,12 +1,12 @@
 <table class="table table-bordered table-dark">
     <thead>
     <tr>
-        <th scope="col">ID #</th>
-        <th scope="col">Subject</th>
-        <th scope="col">Status/Type/Wiki</th>
-        <th scope="col">Blocking Admin</th>
-        <th scope="col">Block Reason</th>
-        <th scope="col">Date</th>
+        <th scope="col">{{__('appeals.appeal-number')}}</th>
+        <th scope="col">{{__('appeals.appeal-for')}}</th>
+        <th scope="col">{{__('appeals.details-status')}}</th>
+        <th scope="col">{{__('appeals.details-block-admin')}}</th>
+        <th scope="col">{{__('appeals.details-block-reason')}}</th>
+        <th scope="col">{{__('appeals.details-submitted')}}</th>
     </tr>
     </thead>
     <tbody>
@@ -25,15 +25,15 @@
                 <td style="vertical-align: middle">
                     {{ $appeal->status }}<br/>
                     @if($appeal->blocktype === 0)
-                        IP address
+                        {{__('appeals.appeal-types.ip')}}
                     @elseif($appeal->blocktype === 1)
-                        Account
+                        {{__('appeals.appeal-types.account')}}
                     @elseif($appeal->blocktype === 2)
-                        IP underneath account
+                        {{__('appeals.appeal-types.ip-under')}}
                     @else
-                        Unknown type: {{ $appeal->blocktype }}
+                        {{__('appeals.appeal-types.unknown')}}: {{ $appeal->blocktype }}
                     @endif
-                    on {{ $appeal->wiki }}
+                    {{__('generic.on')}} {{ $appeal->wiki }}
                 </td>
                 <td>{{ $appeal['blockingadmin'] }}</td>
                 <td>{!! $appeal->getFormattedBlockReason('style="color: #00ffea!important;"') !!}</td>

@@ -141,8 +141,12 @@ class AppealController extends Controller
                 });
         }
 
-        $appealtypes = ['assigned'=>'Assigned to me','unassigned'=>'All unreserved open appeals','reserved'=>'Open reserved appeals'];
-        if($isDeveloper) { $appealtypes['developer']='Developer access appeals'; }
+        $appealtypes = [
+            'assigned'=>__('appeals.appeal-types.assigned-me'),
+            'unassigned'=>__('appeals.appeal-types.unassigned'),
+            'reserved'=>__('appeals.appeal-types.reserved'),
+        ];
+        if($isDeveloper) { $appealtypes['developer']=__('appeals.appeal-types.developer'); }
 
         $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
         $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];

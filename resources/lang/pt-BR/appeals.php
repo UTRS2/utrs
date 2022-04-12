@@ -1,18 +1,18 @@
 <?php
 return [
-    'closed-notice'           => 'Este recurso está encerrado. Nenhuma outra alteração pode ser feita nele.',
+    'closed-notice'           => 'Esta apelação está encerrada. Nenhuma outra alteração pode ser feita nela.',
     'not-found-text'          => 'Não foi possível localizar seu bloco. Por favor :link para corrigir as informações em sua apelação.',
     'not-found-link-text'     => 'Clique aqui',
     'not-found-button'        => 'Corrigir informações do bloco',
-    'appeal-title'            => 'Recurso para ":name"',
+    'appeal-title'            => 'Apelação de ":name"',
     'details-status'          => 'Status da apelação',
-    'details-block-admin'     => 'Administrador de bloqueio',
+    'details-block-admin'     => 'Bloqueio efetuado por',
     'details-block-reason'    => 'Motivo do bloqueio',
     'details-submitted'       => 'Hora de envio',
-    'details-handling-admin'  => 'Manipulando o administrador',
+    'details-handling-admin'  => 'Administrador res',
     'content-question-why'    => 'Por que você deve ser desbloqueado?',
     'comment-color-text'      => 'As linhas em azul indicam uma resposta de ou para o usuário. As linhas em verde são comentários privados dos administradores.',
-    'comment-input-text'      => 'Adicione um comentário a esta apelação:',
+    'comment-input-text'      => 'Adicionar um comentário a esta apelação:',
     'section-headers'         => [
         'details'     => 'Detalhes da apelação',
         'content'     => 'Conteúdo da apelação',
@@ -92,28 +92,38 @@ return [
         'advance-search' => 'Busca Avançada'
     ],
     'cu'                      => [
-        'data-expire'  => 'Os dados de CU para esta apelação expiraram.',
-        'no-request'   => 'Você ainda não enviou uma solicitação para visualizar os dados do CheckUser.',
+        'data-expire'  => 'Os dados de verificação para esta apelação expiraram.',
+        'no-request'   => 'Você ainda não enviou uma solicitação para visualizar os dados de verificação.',
         'reason'       => 'Razão',
         'submit'       => 'Enviar',
-        'title'        => 'Verificar dados do usuário',
-        'review-req'   => 'O que você gostaria que o usuário de verificação analisasse nesta contestação?',
-        'submit-title' => 'Enviar para revisão CheckUser'
+        'title'        => 'Dados de verificação',
+        'review-req'   => 'O que você gostaria que o verificador analisasse nesta apelação?',
+        'submit-title' => 'Enviar para revisão dos verificadores'
     ],
     'no-action'               => 'Você não tem permissão para realizar nenhuma ação nesta apelação.',
-    'appeal-for'              => 'Apelar para',
+    'appeal-for'              => 'Apelação de',
     'appeal-none'             => 'Nenhum',
     'header-previous-appeals' => 'Recursos anteriores',
     'comments'                => [
         'system'     => 'Sistema',
-        'restricted' => 'O acesso ao comentário é restrito.',
-        'action'     => 'Açao',
+        'restricted' => 'O acesso a este comentário é restrito.',
+        'action'     => 'Ação',
         'reason'     => 'Razão',
-        'leave'      => 'Deixe um comentário',
+        'leave'      => 'Deixar um comentário',
         'add'        => 'Adicionar um comentário a esta apelação'
     ],
     'send-reply-header'       => 'Envie uma resposta modelo',
     'send-reply-button'       => 'Envie uma resposta ao usuário',
     'not-handling-admin'      => 'Você não é o administrador de manipulação.',
-    'spam'                    => 'Foi detectado que você ou outra pessoa está tentando enviar spam ao nosso sistema com recursos. Aguarde até que sua apelação anterior seja encerrada ou, se já estiver encerrada, tente novamente mais tarde. Se você estiver solicitando o desbloqueio de um endereço IP, isso pode significar que uma apelação já foi enviada para o seu IP. Nesse caso, tente novamente mais tarde ou entre em contato conosco para ajudar a esclarecer o problema.'
+    'spam'                    => 'Foi detectado que você ou outra pessoa está tentando enviar spam ao nosso sistema com recursos. Aguarde até que sua apelação anterior seja encerrada ou, se já estiver encerrada, tente novamente mais tarde. Se você estiver solicitando o desbloqueio de um endereço IP, isso pode significar que uma apelação já foi enviada para o seu IP. Nesse caso, tente novamente mais tarde ou entre em contato conosco para ajudar a esclarecer o problema.',
+    'appeal-types'            => [
+        'ip'          => 'endereço de IP',
+        'account'     => 'Conta',
+        'ip-under'    => 'Endereço IP sob uma conta',
+        'unknown'     => 'Tipo desconhecido',
+        'assigned-me' => 'Atribuído a mim',
+        'unassigned'  => 'Todos os recursos abertos não reservados',
+        'reserved'    => 'Abrir apelações reservadas',
+        'developer'   => 'Apelações de acesso do desenvolvedor'
+    ]
 ];

@@ -23,6 +23,17 @@ return [
         'add' => 'Add a comment to this appeal',
     ],
 
+    'appeal-types' => [
+        'ip'        => 'IP address',
+        'account'   => 'Account',
+        'ip-under'  => 'IP address underneath an account',
+        'unknown'   => 'Unknown type',
+        'assigned-me' => 'Assigned to me',
+        'unassigned'=>'All unreserved open appeals',
+        'reserved'=>'Open reserved appeals',
+        'developer'=>'Developer access appeals',
+    ],
+
     'send-reply-header'  => 'Send a templated reply',
     'send-reply-button'  => 'Send a reply to the user',
     'not-handling-admin' => 'You are not the handling admin.',

@@ -16,9 +16,25 @@ return [
     'language'	   => 'Language',
 
     'admin-tools'  => [
+    	'title'		=> 'Administrator Tools',
     	'bans'		=> 'Manage Bans',
     	'template'	=> 'Manage Templates',
     	'users'		=> 'Manage Users',
-    	'sitenotice'=> 'Manage Site notices'
+    	'sitenotice'=> 'Manage Site notices',
+    	'sn-disabled'=> 'Site notice management is currently not functional.',
     ],
+
+    'list-headers'	=> [
+    	'search-appeals'	=> 'Search appeals',
+    	'assign-me'			=> 'Assigned to me',
+    	'search-appeals'	=> 'All unreserved open appeals',
+    	'open-res-appeals'	=> 'Open reserved appeals',
+    	'dev-appeals'		=> 'Developer access appeals',
+    ],
+
+    'no-appeals'	=> 'Notice: You do not have the necessary permissions to view appeals on any queues.',
+    'search-text'	=> 'Search for Appeal ID or appellant',
+    'quick-search'	=> 'Quick search',
+    'advanced-search' => 'Advanced search',
+    'on'			=> 'on',
 ];
