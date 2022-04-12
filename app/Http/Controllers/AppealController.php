@@ -165,8 +165,7 @@ class AppealController extends Controller
         $appeals[$appealtypes['unassigned']] = Appeal::whereIn('wiki', $wikis)
             ->whereNotIn('status', $basicStatuses)
             ->where(function ($query) {
-            $query->where('handlingadmin','!=',Auth::id())
-            ->orWhereNull('handlingadmin');
+            $query->whereNull('handlingadmin');
         })->get();
         $appeals[$appealtypes['reserved']] = Appeal::whereIn('wiki', $wikis)
             ->whereNotIn('status', $basicStatuses)
