@@ -114,5 +114,6 @@ return [
     ],
     'send-reply-header'       => 'Envie uma resposta modelo',
     'send-reply-button'       => 'Envie uma resposta ao usuário',
-    'not-handling-admin'      => 'Você não é o administrador de manipulação.'
+    'not-handling-admin'      => 'Você não é o administrador de manipulação.',
+    'spam'                    => 'Foi detectado que você ou outra pessoa está tentando enviar spam ao nosso sistema com recursos. Aguarde até que sua apelação anterior seja encerrada ou, se já estiver encerrada, tente novamente mais tarde. Se você estiver solicitando o desbloqueio de um endereço IP, isso pode significar que uma apelação já foi enviada para o seu IP. Nesse caso, tente novamente mais tarde ou entre em contato conosco para ajudar a esclarecer o problema.'
 ];

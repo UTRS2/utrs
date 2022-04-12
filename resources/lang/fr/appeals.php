@@ -114,5 +114,6 @@ return [
     ],
     'send-reply-header'       => 'Envoyer un modèle de réponse',
     'send-reply-button'       => 'Envoyer une réponse à l\'utilisateur',
-    'not-handling-admin'      => 'Vous n\'êtes pas l\'administrateur de la gestion.'
+    'not-handling-admin'      => 'Vous n\'êtes pas l\'administrateur de la gestion.',
+    'spam'                    => 'Il a été détecté que vous ou quelqu\'un d\'autre essayez de spammer notre système avec des appels. Veuillez attendre que votre appel précédent soit fermé, ou s\'il est déjà fermé, veuillez réessayer plus tard. Si vous demandez le déblocage d\'une adresse IP, cela peut signifier qu\'un appel a déjà été déposé pour votre adresse IP. Dans ce cas, veuillez réessayer plus tard ou contactez-nous pour clarifier le problème.'
 ];
