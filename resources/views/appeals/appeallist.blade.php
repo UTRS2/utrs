@@ -2,33 +2,33 @@
 @section('content')
     @if($tooladmin)
         <div class="card">
-            <h5 class="card-header">Admin tools</h5>
+            <h5 class="card-header">{{__('generic.admin-tools.title')}}</h5>
             <div class="card-body">
                 <div class="alert alert-danger" role="alert">
-                    Site notice management is currently not functional.
+                    {{__('generic.admin-tools.sn-disabled')}}
                 </div>
-                <a href="/admin/templates" class="btn btn-primary">Manage Templates</a>
-                <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">Manage Bans</a>
-                <a href="{{ route('admin.users.list') }}" class="btn btn-primary">Manage Users</a>
-                <a href="/admin/sitenotices" class="btn btn-primary disabled">Manage Sitenotices</a>
+                <a href="/admin/templates" class="btn btn-primary">{{__('generic.admin-tools.template')}}</a>
+                <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">{{__('generic.admin-tools.bans')}}</a>
+                <a href="{{ route('admin.users.list') }}" class="btn btn-primary">{{__('generic.admin-tools.users')}}</a>
+                <a href="/admin/sitenotices" class="btn btn-primary disabled">{{__('generic.admin-tools.sitenotice')}}</a>
             </div>
         </div>
     @endif
 
     @if($noWikis)
         <div class="alert alert-warning mt-2" role="alert">
-            <b>Notice:</b> You do not have the necessary permissions to view appeals on any queues.
+            {{__('generic.no-appeals')}}
         </div>
     @else
         <div class="card mt-2 mb-4">
-            <h5 class="card-header">Search appeals</h5>
+            <h5 class="card-header">{{__('generic.list-headers.search-appeals')}}</h5>
             <div class="card-body">
                 {{ Form::open(['url' => route('appeal.search.quick'), 'method' => 'GET']) }}
-                {{ Form::label('search', 'Search for Appeal ID or appellant') }}
+                {{ Form::label('search', __('generic.search-text')) }}
                 <div class="input-group">
                     {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
                     <div class="input-group-append">
-                        {{ Form::submit('Quick search', ['class' => 'btn btn-primary']) }}
+                        {{ Form::submit(__('generic.quick-search'), ['class' => 'btn btn-primary']) }}
                     </div>
 
                     @if($errors->has('search'))
@@ -42,7 +42,7 @@
 
                 <div class="mt-2">
                     <a href="{{ route('appeal.search.advanced') }}" class="btn btn-secondary">
-                        Advanced search
+                        {{__('generic.advanced-search')}}
                     </a>
                 </div>
             </div>

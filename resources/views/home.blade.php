@@ -53,7 +53,7 @@
     <div class="card">
         <div class="card-body">
             <div class="text-center">
-                <h5 class="card-title">If you already have an appeal</h5>
+                <h5 class="card-title">{{__('auth.auth-needed-screen.key-title')}}</h5>
                 <p class="card-text">{{ Form::label('hash', __('auth.auth-needed-screen.key-text')) }}</p>
                 {{ Form::open(['url' => route('public.appeal.view'), 'method' => 'GET']) }}
                 <div class="input-group w-100 mb-3">

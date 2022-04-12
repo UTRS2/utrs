@@ -100,7 +100,7 @@
                 <thead>
                 <tr>
                     <th scope="col">{{ __('generic.logs-user') }}</th>
-                    <th scope="col">{{ __('generic.logs-user') }}</th>
+                    <th scope="col">{{ __('generic.logs-time') }}</th>
                     <th scope="col">{{ __('generic.logs-action') }}</th>
                 </tr>
                 </thead>

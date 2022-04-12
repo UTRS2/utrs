@@ -24,34 +24,34 @@
             @auth
                 @can('viewAny', App\Models\Appeal::class)
                     <li class="nav-item">
-                        <a href="{{ route('appeal.list') }}" class="nav-link">Open appeals</a>
+                        <a href="{{ route('appeal.list') }}" class="nav-link">{{__('generic.open-appeals')}}</a>
                     </li>
                 @endcan
                 @canany('viewAny', [App\Models\User::class, App\Models\Ban::class, App\Models\Template::class])
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Tool admin
+                            {{__('generic.tool-admin')}}
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="adminNavbarDropdown">
                             @can('viewAny', App\Models\Ban::class)
-                                <a class="dropdown-item" href="{{ route('admin.bans.list') }}">Bans</a>
+                                <a class="dropdown-item" href="{{ route('admin.bans.list') }}">{{__('generic.admin-tools.bans')}}</a>
                             @endcan
                             @can('viewAny', App\Models\Template::class)
-                                <a class="dropdown-item" href="{{ route('admin.templates.list') }}">Templates</a>
+                                <a class="dropdown-item" href="{{ route('admin.templates.list') }}">{{__('generic.admin-tools.template')}}</a>
                             @endcan
                             @can('viewAny', App\Models\User::class)
-                                <a class="dropdown-item" href="{{ route('admin.users.list') }}">Users</a>
+                                <a class="dropdown-item" href="{{ route('admin.users.list') }}">{{__('generic.admin-tools.users')}}</a>
                             @endcan
                             @can('viewAny', App\Models\Sitenotice::class)
-                                <a class="dropdown-item disabled" href="{{ route('admin.sitenotices.list') }}">Site notices</a>
+                                <a class="dropdown-item disabled" href="{{ route('admin.sitenotices.list') }}">{{__('generic.admin-tools.sitenotice')}}</a>
                             @endcan
                         </div>
                     </li>
                 @endcanany
                 @can('viewAny', \App\Models\Wiki::class)
                     <li class="nav-item">
-                        <a href="{{ route('wiki.list') }}" class="nav-link">Supported wikis</a>
+                        <a href="{{ route('wiki.list') }}" class="nav-link">{{__('generic.support-wiki')}}</a>
                     </li>
                 @endcan
             @endauth
@@ -71,10 +71,20 @@
             @else
                 <li class="nav-item">
                     <a href="{{ route('login') }}" class="nav-link">
-                        Administrator login
+                        {{__('generic.admin-login')}}
                     </a>
                 </li>
             @endauth
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('generic.language')}}: {{App::getLocale()}}</a>
+
+                <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
+                    <a class="dropdown-item" href="/changelang/en">English</a>
+                    <a class="dropdown-item" href="/changelang/fr">Français</a>
+                    <a class="dropdown-item" href="/changelang/pt-BR">Português (Brasil)</a>
+                    <a class="dropdown-item" href="/changelang/pt-PT">Português</a>
+                </div>
+            </li>
         </ul>
     </div>
 </nav>

@@ -6,14 +6,14 @@
     <div class="container">
         <div class="mb-1">
             <a href="{{ route('appeal.list') }}" class="btn btn-primary">
-                Back to appeal list
+                {{__('appeals.nav.back-appeal-list')}}
             </a>
         </div>
 
         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
             <br/>
             <div class="alert alert-danger" role="alert">
-                This appeal is closed. No further changes can be made to it.
+                {{__('appeals.closed-notice')}}
             </div>
         @endif
 
@@ -29,35 +29,35 @@
         @endif
 
         <div class="card my-2">
-            <h4 class="card-header">Appeal details</h4>
+            <h4 class="card-header">{{__('appeals.section-headers.details')}}</h4>
             <div class="card-body">
                 <div>
                     <div class="row">
                         <div class="col-md-5">
-                            <h4 class="card-title">Appeal for "{{ $info->appealfor }}"</h4>
+                            <h4 class="card-title">{{__('appeals.appeal-title',['name'=>$info->appealfor])}}</h4>
                             <p class="card-text">
-                                Appeal number: #{{ $info->id }}&nbsp;
+                                {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
                                 @if($info->user_verified)
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
-                                <br/><i>This appeal has been verified<br/>to the account on the wiki.</i>
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                <i>{{__('appeals.verify.verified')}}</i>
                                 @else
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
-                                <br/><i>This appeal has not been/will not <br/>be verified to the account on the wiki.</i>
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
+                                <i>{{__('appeals.verify.not-verified')}}</i>
                                 @endif
-                                <br/>Appeal status: {{ $info->status }}
-                                <br/>Blocking Admin: {{ $info->blockingadmin }}
-                                <br/>Block Reason: {!! $info->getFormattedBlockReason() !!}
-                                <br/>Time Submitted: {{ $info->submitted }}
+                                <br/>{{__('appeals.details-status')}}: {{ $info->status }}
+                                <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
+                                <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
+                                <br/>{{__('appeals.details-submitted')}}: {{ $info->submitted }}
                                 <br/>Wiki: {{ $info->wiki }}
                                 @if(!is_null($info->handlingadmin))
-                                    <br/>Handling Admin: {{ $info->handlingAdminObject->username }}
+                                    <br/>{{__('appeals.details-handling-admin')}}: {{ $info->handlingAdminObject->username }}
                                 @endif
                                 <br/>
 
                                 @component('components.user-action-buttons', ['target' => $info->appealfor, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                 @endcomponent
                                 @if($perms['checkuser'])
-                                <h5 class="card-title">CU data</h5>
+                                <h5 class="card-title">{{__('appeals.cu.title')}}</h5>
                                 @if($checkuserdone && !is_null($cudata))
                                     @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                     @endcomponent
@@ -68,21 +68,21 @@
                                     Browser Language: {{$cudata->language}}
                                 @elseif(is_null($cudata))
                                     <div class="alert alert-danger" role="alert">
-                                        The CU data for this appeal has expired.
+                                        {{__('appeals.cu.data-expire')}}
                                     </div>
                                 @else
                                     <div class="alert alert-danger" role="alert">
-                                        You have not submitted a request to view the CheckUser data yet.
+                                        {{__('appeals.cu.no-request')}}
                                     </div>
                                     {{ Form::open(['url' => route('appeal.action.viewcheckuser', $info)]) }}
                                         {{ Form::token() }}
 
                                         <div class="form-group">
-                                            {{ Form::label('reason', 'Reason') }}
+                                            {{ Form::label('reason', __('appeals.cu.reason')) }}
                                             {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
-                                        {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
+                                        {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-success']) }}
                                     {{ Form::close() }}
                                 @endif
                             @endif
@@ -99,13 +99,13 @@
                                                     <form action="{{ route('appeal.action.reopen', $info) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         <button class="btn btn-success">
-                                                            Re-open
+                                                            {{__('appeals.links.reopen')}}
                                                         </button>
                                                     </form>
                                                 </div>
                                             @else
                                                 <div class="alert alert-danger" role="alert">
-                                                    This appeal is closed and no further action can be taken.
+                                                    {{__('appeals.closed-notice')}}
                                                 </div>
                                             @endif
                                         @else
@@ -115,27 +115,27 @@
                                                         <form action="{{ route('appeal.action.reserve', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-success">
-                                                                Reserve
+                                                                {{__('appeals.links.reserve')}}
                                                             </button>
                                                         </form>
                                                     @elseif($info->handlingadmin == Auth::id() || $perms['tooladmin'] || $perms['developer'])
                                                         <form action="{{ route('appeal.action.release', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-success">
-                                                                @if($info->handlingadmin != Auth::id()) Force @endif
-                                                                Release
+                                                                @if($info->handlingadmin != Auth::id()) {{__('appeals.links.force')}} @endif
+                                                                {{__('appeals.links.release')}}
                                                             </button>
                                                         </form>
                                                     @else
                                                         <button class="btn btn-success" disabled>
-                                                            Reserve
+                                                            {{__('appeals.links.reserve')}}
                                                         </button>
                                                     @endif {{-- disabled button --}}
                                                     @if($perms['developer'] || $perms['oversight'])
                                                         <form action="{{ route('appeal.action.invalidate', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-danger">
-                                                                Invalidate/Oversight
+                                                                {{__('appeals.links.invalidate')}}
                                                             </button>
                                                         </form>
                                                     @endif
@@ -145,14 +145,14 @@
                                                     <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_ACCEPT]) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         <button class="btn btn-danger">
-                                                            Accept appeal
+                                                            {{__('appeals.links.accept')}}
                                                         </button>
                                                     </form>
 
                                                     <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_DECLINE]) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         <button class="btn btn-danger">
-                                                            Decline appeal
+                                                            {{__('appeals.links.decline')}}
                                                         </button>
                                                     </form>
                                                 </div>
@@ -161,7 +161,7 @@
                                                     <form action="{{ route('appeal.action.close', [$info, Appeal::STATUS_EXPIRE]) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         <button class="btn btn-danger">
-                                                            Mark appeal as expired
+                                                            {{__('appeals.links.expire')}}
                                                         </button>
                                                     </form>
                                                 </div>
@@ -174,7 +174,7 @@
                                                         <form action="{{ route('appeal.action.tooladmin', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
                                                             <button class="btn btn-warning">
-                                                                Tool admin
+                                                                {{__('appeals.links.tooladmin')}}
                                                             </button>
                                                         </form>
                                                     </div>
@@ -184,7 +184,7 @@
                                                         <form action="{{ route('appeal.action.reopen', $info) }}" method="POST">
                                                             @csrf
                                                             <button class="btn btn-info">
-                                                                Return to tool users
+                                                                {{__('appeals.links.return')}}
                                                             </button>
                                                         </form>
                                                     </div>
@@ -194,7 +194,7 @@
                                                         <form action="{{ route('appeal.action.findagain', $info) }}" method="POST">
                                                             @csrf
                                                             <button class="btn btn-info">
-                                                                Re-verify block
+                                                                {{__('appeals.links.reverify')}}
                                                             </button>
                                                         </form>
                                                     </div>
@@ -203,7 +203,7 @@
                                         </div>
                                     @else
                                         <div class="alert alert-danger" role="alert">
-                                            You are not permitted to perform any actions on this appeal.
+                                            {{__('appeals.noaction')}}
                                         </div>
                                     @endcan
                                 </div>
@@ -218,17 +218,17 @@
         <br />
             <div class="card my-2">
                 <h4 class="card-header">
-                    Previous appeals
+                    {{__('appeals.header-previous-appeals')}}
                 </h4>
 
                 <div class="card-body">
                     <table class="table table-dark">
                         <tr>
-                            <th>Appeal #</th>
-                            <th>Appeal For</th>
-                            <th>Status</th>
-                            <th>Handling admin</th>
-                            <th>Submitted at</th>
+                            <th>{{__('appeals.appeal-number')}}</th>
+                            <th>{{__('appeals.appeal-for')}}</th>
+                            <th>{{__('appeals.details-status')}}</th>
+                            <th>{{__('appeals.details-handling-admin')}}</th>
+                            <th>{{__('appeals.details-submitted')}}</th>
                         </tr>
 
                         @foreach($previousAppeals as $appeal)
@@ -251,7 +251,7 @@
                                     @if($appeal->handlingAdminObject)
                                         {{ $appeal->handlingAdminObject->username }}
                                     @else
-                                        <i>None</i>
+                                        <i>{{__('appeals.appeal-none')}}</i>
                                     @endif
                                 </td>
 
@@ -263,40 +263,40 @@
                     </table>
 
                     <div class="mt-2">
-                        <a href="{{ route('appeal.search.advanced', ['appealfor' => $appeal->appealfor]) }}" class="btn btn-info">Advanced search</a>
+                        <a href="{{ route('appeal.search.advanced', ['appealfor' => $appeal->appealfor]) }}" class="btn btn-info">{{__('appeals.links.advance-search')}}</a>
                     </div>
                 </div>
             </div>
         @endif
         <br />
         <div class="card my-2">
-            <h4 class="card-header">Appeal Content</h4>
+            <h4 class="card-header">{{__('appeals.section-headers.content')}}</h4>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <b>Why should you be unblocked?</b>
+                        <b>{{__('appeals.content-question-why')}}</b>
                         <p>{{ $info->appealtext }}</p>
                     </div>
                     <div class="col-md-6">
                         <div class="row">
                                 <div class="col-12">
                                     @if($info->status === Appeal::STATUS_ACCEPT)
-                                        <center>This appeal was approved.<br/>
+                                        <center>{{__('appeals.status-texts.ACCEPT')}}<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
                                                     class="img-fluid"></center>
                                     @elseif($info->status === Appeal::STATUS_EXPIRE)
-                                        <center>This appeal expired.<br/>
+                                        <center>{{__('appeals.status-texts.EXPIRE')}}<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
                                                     class="img-fluid"></center>
                                     @elseif($info->status === Appeal::STATUS_DECLINE)
-                                        <center>This appeal was denied.<br/>
+                                        <center>{{__('appeals.status-texts.DECLINE')}}<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
                                                     class="img-fluid"></center>
                                     @else
-                                        <center>This appeal is in progress.<br/>
+                                        <center>{{__('appeals.status-texts.default')}}<br/>
                                             <br/><img
                                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png"
                                                     class="img-fluid"></center>
@@ -309,14 +309,14 @@
         </div>
         <br />
         <div class="card my-2">
-            <h4 class="card-header">Admin Comments</h4>
+            <h4 class="card-header">{{__('appeals.section-headers.comments')}}</h4>
             <div class="card-body">
                 <table class="table table-dark">
                 <thead>
                 <tr>
-                    <th scope="col">Commenting User</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Comment</th>
+                    <th scope="col">{{ __('generic.logs-user') }}</th>
+                    <th scope="col">{{ __('generic.logs-time') }}</th>
+                    <th scope="col">{{ __('generic.logs-action') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -325,7 +325,7 @@
                         @if(is_null($comment['commentUser']))
                             @if($comment->action !== "comment" && $comment->action !== "responded")
                                 @if($comment->user_id == 0)
-                                    <td><i>System</i></td>
+                                    <td><i>{{__('appeals.comments.system')}}</i></td>
                                 @elseif($comment->user_id === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
@@ -337,22 +337,22 @@
                                 @endif
                                 <td><i>{{ $comment->timestamp }}</i></td>
                                 @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
-                                    <td><i>Access to comment is restricted.</i></td>
+                                    <td><i>{{__('appeals.comments.restricted')}}</i></td>
                                 @else
                                     @if($comment->comment !== null)
                                         <td><i>{{ $comment->comment }}</i></td>
                                     @else
                                         @if(!is_null($comment->reason))
-                                            <td><i>Action: {{ $comment->action }},
-                                                    Reason: {{ $comment->reason }}</i></td>
+                                            <td><i>{{__('appeals.comments.action')}}: {{ $comment->action }},
+                                                    {{__('appeals.comments.reason')}}: {{ $comment->reason }}</i></td>
                                         @else
-                                            <td><i>Action: {{ $comment->action }}</i></td>
+                                            <td><i>{{__('appeals.comments.action')}}: {{ $comment->action }}</i></td>
                                         @endif
                                     @endif
                                 @endif
                             @else
                                 @if($comment->user_id == 0)
-                                    <td><i>System</i></td>
+                                    <td><i>{{__('appeals.comments.system')}}</i></td>
                                 @elseif($comment->user_id === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
@@ -364,7 +364,7 @@
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
-                                    <td>Access to comment is restricted.</td>
+                                    <td>{{__('appeals.comments.restricted')}}</td>
                                     @else
                                         @if($comment->comment !== null)
                                             <td>{{ $comment->comment }}</td>
@@ -375,7 +375,7 @@
                                 @endif
                             @else
                                 @if($comment->user_id == 0)
-                                    <td><i>System</i></td>
+                                    <td><i>{{__('appeals.comments.system')}}</i></td>
                                 @elseif($comment->user_id === -1)
                                     <td><i>{{ $info->appealfor }}</i></td>
                                 @else
@@ -387,7 +387,7 @@
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
-                                    <td><i>Access to comment is restricted.</i></td>
+                                    <td><i>{{__('appeals.comments.restricted')}}</i></td>
                                 @else
                                     @if($comment->comment !== null)
                                         <td>{{ $comment->comment }}</td>
@@ -400,35 +400,34 @@
                         @endforeach
                 </tbody>
             </table>
-                <i>Lines that are in blue indicate a response to or from the user. Lines in green are comments from other
-                    administrators or the user involved.</i>
+                <i>{{__('appeals.comment-color-text')}}</i>
                 <br/>
                 <br/>
                 @can('update', $info)
                     <div class="row">
                         <div class="col-md-6">
-                            <h5 class="card-title">Send a templated reply</h5>
+                            <h5 class="card-title">{{__('appeals.send-reply-header')}}</h5>
                             @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
                                 <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
-                                    Send a reply to the user
+                                    {{__('appeals.send-reply-button')}}
                                 </a>
                             @else
                                 <div class="alert alert-danger" role="alert">
-                                    You are not the handling admin.
+                                    {{__('appeals.not-handling-admin')}}
                                 </div>
                             @endif
                         </div>
                         <div class="col-md-6">
-                            <h5 class="card-title">Drop a comment</h5>
+                            <h5 class="card-title">{{__('appeals.comments.leave')}}</h5>
                             {{ Form::open(['url' => route('appeal.action.comment', $info)]) }}
                                 {{ Form::token() }}
 
                                 <div class="form-group">
-                                    {{ Form::label('comment', 'Add a comment to this appeal') }}
+                                    {{ Form::label('comment', __('appeals.comments.add')) }}
                                     {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
-                                {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
+                                {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-success']) }}
                             {{ Form::close() }}
                         </div>
                     </div>
@@ -441,7 +440,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="checkuserModalTitle">Submit to CheckUser review</h5>
+                    <h5 class="modal-title" id="checkuserModalTitle">{{__('appeals.cu.submit-title')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -451,13 +450,13 @@
                 <div class="modal-body">
 
                     <div class="form-group mb-4">
-                        {{ Form::label('cu_reason', 'What would you like the checkuser to review in this appeal?') }}
+                        {{ Form::label('cu_reason', __('appeals.cu.review-req')) }}
                         {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    {{ Form::submit('Submit', ['class' => 'btn btn-primary']) }}
+                    {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-primary']) }}
                 </div>
                 {{ Form::close() }}
             </div>
