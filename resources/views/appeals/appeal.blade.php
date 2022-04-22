@@ -47,7 +47,7 @@
                                 <br/>{{__('appeals.details-status')}}: {{ $info->status }}
                                 <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
                                 <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
-                                @if($info->hiddenip != NULL)
+                                @if($info->hiddenip != NULL && $info->blocktype==2)
                                 <br/><b style="color:red">{{__('appeals.cu.under-ip')}}</b>
                                 @endif
                                 <br/>{{__('appeals.details-submitted')}}: {{ $info->submitted }}
