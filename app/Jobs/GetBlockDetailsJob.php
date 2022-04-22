@@ -62,7 +62,7 @@ class GetBlockDetailsJob implements ShouldQueue
         $status = Appeal::STATUS_OPEN;
 
         if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget())) {
-            $this->appeal->appealfor = $block->getBlockTarget();
+            //$this->appeal->appealfor = $block->getBlockTarget();
 
             $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
                 ->where('id', '!=', $this->appeal->id) // data should not be saved yet, but just in case
