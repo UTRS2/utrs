@@ -68,6 +68,7 @@
                                 @endcomponent
                                 @endif
                                 @if($checkuserdone && !is_null($cudata))
+                                    <br/>
                                     IP address: {{$cudata->ipaddress}}<br/>
                                     @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                     @endcomponent
