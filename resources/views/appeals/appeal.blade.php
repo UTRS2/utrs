@@ -47,6 +47,9 @@
                                 <br/>{{__('appeals.details-status')}}: {{ $info->status }}
                                 <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
                                 <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
+                                @if($info->hiddenip != NULL)
+                                <br/><b style="color:red">{{__('appeals.cu.under-ip')}}</b>
+                                @endif
                                 <br/>{{__('appeals.details-submitted')}}: {{ $info->submitted }}
                                 <br/>Wiki: {{ $info->wiki }}
                                 @if(!is_null($info->handlingadmin))
@@ -57,13 +60,18 @@
                                 @component('components.user-action-buttons', ['target' => $info->appealfor, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                 @endcomponent
                                 @if($perms['checkuser'])
+                                <br/><br/>
                                 <h5 class="card-title">{{__('appeals.cu.title')}}</h5>
+                                @if($info->hiddenip!=NULL)
+                                <b style="color:red">{{__('appeals.cu.user-ip')}}: {{$info->hiddenip}}</b><br/>
+                                @component('components.user-action-buttons', ['target' => $info->hiddenip, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
+                                @endcomponent
+                                @endif
                                 @if($checkuserdone && !is_null($cudata))
+                                    IP address: {{$cudata->ipaddress}}<br/>
                                     @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                     @endcomponent
-
                                     <br/>
-                                    IP address: {{$cudata->ipaddress}}<br/>
                                     Useragent: {{$cudata->useragent}}<br/>
                                     Browser Language: {{$cudata->language}}
                                 @elseif(is_null($cudata))
@@ -169,7 +177,7 @@
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
                                                     <div class="mb-2">
                                                         <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
-                                                            CheckUser
+                                                            {{__('appeals.links.checkuser')}}
                                                         </button>
                                                         <form action="{{ route('appeal.action.tooladmin', $info) }}" method="POST" style="display: inline;">
                                                             @csrf
