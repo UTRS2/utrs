@@ -33,7 +33,7 @@ class PublicAppealController extends Controller
                 Rule::exists('wikis', 'id')->where('is_accepting_appeals', true)
             ],
             'blocktype'  => 'required|numeric|max:2|min:0',
-            'hiddenip'   => 'ip'
+            'hiddenip'   => 'nullable|ip'
         ]);
 
         // back compat, at least for now
