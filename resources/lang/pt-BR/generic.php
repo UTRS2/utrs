@@ -1,33 +1,33 @@
 <?php
 return [
     'submit'          => 'Enviar',
-    'logs-user'       => 'Do utilizador',
-    'logs-time'       => 'Tempo',
+    'logs-user'       => 'Usuário',
+    'logs-time'       => 'Horário',
     'logs-action'     => 'Comentário ou ação',
     'logs-system'     => 'Sistema',
     'logs-private'    => 'O acesso a esta entrada é restrito.',
     'admin-login'     => 'Login de administrador',
     'open-appeals'    => 'Apelações abertas',
-    'tool-admin'      => 'Administração de ferramentas',
-    'support-wiki'    => 'Wikis suportados',
+    'tool-admin'      => 'Administração da ferramenta',
+    'support-wiki'    => 'Wikis suportadas',
     'admin-tools'     => [
         'bans'        => 'Gerenciar banimentos',
-        'template'    => 'Gerenciar modelos',
+        'template'    => 'Gerenciar predefinições',
         'users'       => 'Gerenciar usuários',
         'sitenotice'  => 'Gerenciar avisos do site',
         'title'       => 'Ferramentas do administrador',
         'sn-disabled' => 'O gerenciamento de avisos do site não está funcional no momento.'
     ],
-    'language'        => 'Linguagem',
+    'language'        => 'Idioma',
     'list-headers'    => [
-        'search-appeals'   => 'Todos os recursos abertos não reservados',
-        'assign-me'        => 'Atribuído a mim',
+        'search-appeals'   => 'Todas as apelações abertas não reservadas',
+        'assign-me'        => 'Designado a mim',
         'open-res-appeals' => 'Abrir apelações reservadas',
-        'dev-appeals'      => 'Apelações de acesso do desenvolvedor'
+        'dev-appeals'      => 'Apelações para os desenvolvedores'
     ],
     'no-appeals'      => 'Aviso: você não tem as permissões necessárias para visualizar apelações em nenhuma fila.',
-    'search-text'     => 'Pesquisar ID de apelação ou apelante',
+    'search-text'     => 'Pesquisar por ID de apelação ou apelante',
     'quick-search'    => 'Pesquisa rápida',
-    'advanced-search' => 'Busca Avançada',
+    'advanced-search' => 'Busca avançada',
     'on'              => 'em'
 ];
