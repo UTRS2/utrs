@@ -85,7 +85,9 @@ return [
         'submit'        => 'Submit',
         'title'         => 'CheckUser data',
         'review-req'    => 'What would you like the checkuser to review in this appeal?',
-        'submit-title'  => 'Submit to CheckUser review'
+        'submit-title'  => 'Submit to CheckUser review',
+        'user-ip'       => 'User inputted IP',
+        'under-ip'      => 'This appeal has an underlying IP that may be blocked. You may need to consult a CheckUser.',
     ],
     
     'nav' => [

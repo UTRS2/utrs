@@ -43,33 +43,34 @@ class VerifyBlockJob implements ShouldQueue
 
         // create token
         $token = Str::random(32);
+        if(env('APP_ENV')=="production") {
+            $url = url(route('public.appeal.verifyownership', [$this->appeal, $token]));
+            $title = 'UTRS appeal verification';
+            $message = <<<EOF
+    Hello,
 
-        $url = url(route('public.appeal.verifyownership', [$this->appeal, $token]));
-        $title = 'UTRS appeal verification';
-        $message = <<<EOF
-Hello,
+    Someone appealed your Wikipedia block using the Unblock Ticket Request System (UTRS).
+    If this was you, please verify this appeal by using this link:
 
-Someone appealed your Wikipedia block using the Unblock Ticket Request System (UTRS).
-If this was you, please verify this appeal by using this link:
+    $url
 
-$url
+    If this wasn't you, no action is needed.
 
-If this wasn't you, no action is needed.
-
-Thanks,
-the UTRS team
-EOF;
+    Thanks,
+    the UTRS team
+    EOF;
 
 
-        try {
-            $result = MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->sendEmail($this->appeal->getWikiEmailUsername(), $title, $message);
+            try {
+                $result = MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->sendEmail($this->appeal->getWikiEmailUsername(), $title, $message);
 
-            if (!$result) {
-                throw new RuntimeException('Failed sending an e-mail');
+                if (!$result) {
+                    throw new RuntimeException('Failed sending an e-mail');
+                }
+            } catch (Exception $exception) {
+                // wrap exception to add appeal number to log
+                throw new RuntimeException('Failed to send verification email for appeal #' . $this->appeal->id, 0, $exception);
             }
-        } catch (Exception $exception) {
-            // wrap exception to add appeal number to log
-            throw new RuntimeException('Failed to send verification email for appeal #' . $this->appeal->id, 0, $exception);
         }
 
         // after the e-mail has been sent, persist the token in the database

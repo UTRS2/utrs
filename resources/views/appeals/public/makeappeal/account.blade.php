@@ -38,6 +38,11 @@
                 </div>
             </div>
 
+            <div class="form-group mb-4">
+                {{ Form::label('hiddenip', __('appeals.forms.hiddenip-question', ['option' => __('appeals.forms.direct-no')])) }}
+                {{ Form::text('hiddenip', old('hiddenip'), ['class' => 'form-control']) }}
+            </div>
+
             <h5>{{ __('appeals.forms.appeal-info') }}</h5>
 
             <div class="alert alert-warning" role="alert">
