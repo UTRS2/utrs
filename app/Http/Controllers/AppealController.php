@@ -59,11 +59,12 @@ class AppealController extends Controller
 
             $perms = [];
             $perms['checkuser'] = $user->can('viewCheckUserInformation', $info);
-            $perms['functionary'] = $perms['checkuser'] || $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'oversight');
+            $perms['oversight'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'oversight');
+            $perms['functionary'] = $perms['checkuser'] || $perms['oversight'];
             $perms['admin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'admin');
             $perms['tooladmin'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'tooladmin');
             $perms['developer'] = $isDeveloper;
-            $perms['oversight'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'oversight');
+            
             $perms['steward'] = $user->hasAnySpecifiedLocalOrGlobalPerms($info->wiki, 'steward');
 
             $checkuserdone = $info->comments()
