@@ -23,7 +23,21 @@ return [
         'add' => 'Add a comment to this appeal',
     ],
 
+    'status' => [
+        'OPEN'              => 'Open',
+        'AWAITING_REPLY'    => 'Awaiting reply',
+        'ACCEPT'            => 'Accepted',
+        'DECLINE'           => 'Declined',
+        'EXPIRE'            => 'Expired',
+        'INVALID'           => 'Oversighted',
+        'NOTFOUND'          => 'Block not found',
+        'VERIFY'            => 'Needing verification',
+        'CHECKUSER'         => 'Needing a checkuser',
+        'ADMIN'             => 'Needing an administrator',
+    ],
+
     'appeal-types' => [
+        'title'     => 'Appeal Type',
         'ip'        => 'IP address',
         'account'   => 'Account',
         'ip-under'  => 'IP address underneath an account',

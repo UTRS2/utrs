@@ -98,7 +98,9 @@ return [
         'submit'       => 'Enviar',
         'title'        => 'Verificar dados do usuário',
         'review-req'   => 'O que você gostaria que o usuário de verificação analisasse nesta contestação?',
-        'submit-title' => 'Enviar para revisão CheckUser'
+        'submit-title' => 'Enviar para revisão CheckUser',
+        'user-ip'      => 'IP inserido pelo usuário',
+        'under-ip'     => 'Esta apelação tem um IP subjacente que pode ser bloqueado. Você pode precisar consultar um CheckUser.'
     ],
     'no-action'               => 'Você não tem permissão para realizar nenhuma ação nesta apelação.',
     'appeal-for'              => 'Apelar para',
@@ -124,6 +126,19 @@ return [
         'assigned-me' => 'Atribuído a mim',
         'unassigned'  => 'Todos os recursos abertos não reservados',
         'reserved'    => 'Abrir apelações reservadas',
-        'developer'   => 'Apelações de acesso do desenvolvedor'
+        'developer'   => 'Apelações de acesso do desenvolvedor',
+        'title'       => 'Tipo de Apelação'
+    ],
+    'status'                  => [
+        'OPEN'           => 'Aberto',
+        'AWAITING_REPLY' => 'Aguardando resposta',
+        'ACCEPT'         => 'Aceitaram',
+        'DECLINE'        => 'Recusado',
+        'EXPIRE'         => 'Expirado',
+        'INVALID'        => 'Supervisionado',
+        'NOTFOUND'       => 'Bloco não encontrado',
+        'VERIFY'         => 'Precisando de verificação',
+        'CHECKUSER'      => 'Precisando de um usuário de verificação',
+        'ADMIN'          => 'Precisando de um administrador'
     ]
 ];

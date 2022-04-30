@@ -50,7 +50,9 @@ return [
         'submit'       => 'Soumettre',
         'title'        => 'Vérifier les données de l\'utilisateur',
         'review-req'   => 'Que voudriez-vous que l\'utilisateur vérifie dans cet appel ?',
-        'submit-title' => 'Soumettre à CheckUser review'
+        'submit-title' => 'Soumettre à CheckUser review',
+        'user-ip'      => 'IP saisie par l\'utilisateur',
+        'under-ip'     => 'Cet appel a une adresse IP sous-jacente qui peut être bloquée. Vous devrez peut-être consulter un CheckUser.'
     ],
     'nav'                     => [
         'back-appeal-list' => 'Retour à la liste d\'appel'
@@ -124,6 +126,19 @@ return [
         'assigned-me' => 'Assigné à moi',
         'unassigned'  => 'Tous les appels ouverts non réservés',
         'reserved'    => 'Appels réservés ouverts',
-        'developer'   => 'Appels concernant l\'accès des développeurs'
+        'developer'   => 'Appels concernant l\'accès des développeurs',
+        'title'       => 'Type d\'appel'
+    ],
+    'status'                  => [
+        'OPEN'           => 'Ouvrir',
+        'AWAITING_REPLY' => 'En attente de réponse',
+        'ACCEPT'         => 'Accepté',
+        'DECLINE'        => 'Diminué',
+        'EXPIRE'         => 'Expiré',
+        'INVALID'        => 'Surveillé',
+        'NOTFOUND'       => 'Bloc introuvable',
+        'VERIFY'         => 'Besoin de vérification',
+        'CHECKUSER'      => 'Besoin d\'un utilisateur de contrôle',
+        'ADMIN'          => 'Besoin d\'un administrateur'
     ]
 ];
