@@ -44,7 +44,15 @@
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i>
                                 @endif
-                                <br/>{{__('appeals.details-status')}}: {{ $info->status }}
+                                <br/>{{__('appeals.appeal-types.title')}}: 
+                                @if($info->blocktype==0)
+                                    {{__('appeals.appeal-types.ip')}}
+                                @elseif($info->blocktype==1)
+                                    {{__('appeals.appeal-types.account')}}
+                                @elseif($info->blocktype==2)
+                                    {{__('appeals.appeal-types.ip-under')}}
+                                @endif
+                                <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }}
                                 <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
                                 <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
                                 @if($info->hiddenip != NULL && $info->blocktype==2)

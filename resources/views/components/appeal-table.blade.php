@@ -23,7 +23,7 @@
                 </td>
                 <td>{{ $appeal->appealfor }}</td>
                 <td style="vertical-align: middle">
-                    {{ $appeal->status }}<br/>
+                    {{ __('appeals.status.'.$appeal->status) }}<br/>
                     @if($appeal->blocktype === 0)
                         {{__('appeals.appeal-types.ip')}}
                     @elseif($appeal->blocktype === 1)

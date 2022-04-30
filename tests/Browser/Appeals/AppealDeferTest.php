@@ -20,11 +20,11 @@ class AppealDeferTest extends DuskTestCase
 
             $browser->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
-                ->assertSee(Appeal::STATUS_OPEN)
-                ->assertDontSee(Appeal::STATUS_ADMIN)
+                ->assertSee(__('appeals.status.OPEN'))
+                ->assertDontSee(__('appeals.status.ADMIN'))
                 ->press('Tool admin')
-                ->assertSee(Appeal::STATUS_ADMIN)
-                ->assertDontSee(Appeal::STATUS_OPEN);
+                ->assertSee(__('appeals.status.ADMIN'))
+                ->assertDontSee(__('appeals.details-status').': '.__('appeals.status.OPEN'));
 
             $appeal->refresh();
             $this->assertEquals(Appeal::STATUS_ADMIN, $appeal->status);
