@@ -24,7 +24,7 @@ class AppealDeferTest extends DuskTestCase
                 ->assertDontSee(__('appeals.status.ADMIN'))
                 ->press('Tool admin')
                 ->assertSee(__('appeals.status.ADMIN'))
-                ->assertDontSee(__('appeals.status.OPEN'));
+                ->assertDontSee(__('appeals.details-status'.': '.__('appeals.status.OPEN'));
 
             $appeal->refresh();
             $this->assertEquals(Appeal::STATUS_ADMIN, $appeal->status);

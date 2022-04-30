@@ -66,7 +66,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
                 ->press('Submit')
                 ->assertSee(__('appeals.status.AWAITING_REPLY'))
-                ->assertDontSee(__('appeals.status.OPEN'))
+                ->assertDontSee(__('appeals.details-status'.': '.__('appeals.status.OPEN'))
                 ->assertSee($targetTemplateTextStart);
         });
 
