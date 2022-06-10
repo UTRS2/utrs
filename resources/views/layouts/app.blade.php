@@ -81,6 +81,7 @@
                 <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
                     <a class="dropdown-item" href="/changelang/en">English</a>
                     <a class="dropdown-item" href="/changelang/fr">Français</a>
+                    <a class="dropdown-item" href="/changelang/es">Español</a>
                     <a class="dropdown-item" href="/changelang/pt-BR">Português (Brasil)</a>
                     <a class="dropdown-item" href="/changelang/pt-PT">Português</a>
                 </div>
