@@ -140,7 +140,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
         $entry = $entries->getLatest();
 
-        if (!$entry || $entry->getDetails()['params'][0] !== 'locked') {
+        if (!$entry || !in_array('locked',$entry->getDetails()['params']['added']) {
             return null;
         }
 
