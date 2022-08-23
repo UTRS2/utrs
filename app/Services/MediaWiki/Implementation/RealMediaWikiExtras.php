@@ -124,7 +124,8 @@ class RealMediaWikiExtras implements MediaWikiExtras
                 return null;
             }
 
-            return $response['query']['globalblocks'][0];
+            $blockData = $response['query']['globalblocks'][0];
+            return RealBlock::fromArray($blockData);
         }
 
         try {

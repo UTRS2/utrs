@@ -33,10 +33,10 @@ class RealBlock implements Block
         $this->blockTimestamp = $blockTimestamp;
     }
 
-    public static function fromArray($blockData)
+    public static function fromArray(array $blockData)
     {
         return new RealBlock(
-            $blockData['user'],
+            $blockData['user'] ?? $blockData['address'],
             $blockData['by'],
             $blockData['reason'],
             $blockData['timestamp'],
