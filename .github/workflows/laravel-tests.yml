@@ -6,12 +6,12 @@ on:
   pull_request: {}
 jobs:
   laravel-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         php-versions:
-          - 7.3 # current production
-          - 8.0 # target, https://github.com/UTRS2/utrs/issues/375
+          - 7.4 # current production
+          - 8.1 # latest upstream release
     services:
       mysql:
         image: mariadb:10.5
