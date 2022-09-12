@@ -100,26 +100,25 @@ OAUTH_CLIENT_SECRET="some-client-secret"
 For this to work, you need to have your own urls set up for config/wikis.php<br/>
 This application requires a job queue to verify blocks and do other critical and regualar tasks. Below is a guide to setting up:
 
-1. pecl install redis
-2. Ensure jobs work with php artisan queue:work
-3. sudo adduser supervisor
-4. sudo apt-get install supervisor
-5. Add the following block at /etc/supervisor/conf.d/utrs.conf, example, replacing /path/tos:
+1. Ensure jobs work with php artisan queue:work
+2. Add the following block at /etc/systemd/system/utrs-jobrunner.service, example, replacing /path/tos:
 
 DO NOT CHANGE ANY OF THESE VALUES EXCEPT THE PATHS
 
 ```
-[program:utrs-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/artisan queue:work --sleep=3 --tries=3
-autostart=true
-autorestart=true
-user=supervisor
-numprocs=1
-redirect_stderr=true
-stdout_logfile=/path/to/log/file.log
-stopwaitsecs=300
+[Unit]
+Description=UTRS job runner
+
+[Service]
+Restart=always
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/prometheus-node-exporter $ARGS
+TimeoutStopSec=20s
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-6. sudo supervisord
-
+3. sudo systemctl daemon-reload
+4. sudo systemctl enable --now utrs-jobrunner.service
