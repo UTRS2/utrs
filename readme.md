@@ -113,7 +113,7 @@ Description=UTRS job runner
 Restart=always
 User=www-data
 Group=www-data
-ExecStart=/usr/bin/prometheus-node-exporter $ARGS
+ExecStart=/path/to/artisan queue:work
 TimeoutStopSec=20s
 
 [Install]
@@ -121,4 +121,5 @@ WantedBy=multi-user.target
 ```
 
 3. sudo systemctl daemon-reload
-4. sudo systemctl enable --now utrs-jobrunner.service
+4. sudo systemctl enable utrs-jobrunner.service
+5. sudo systemctl start utrs-jobrunner.service
