@@ -7,17 +7,15 @@ use App\Models\User;
 use App\Services\MediaWiki\Api\MediaWikiRepository;
 use App\Utils\Logging\SystemLogContext;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 /**
  * Update permissions of a user on all wikis
  */
-class LoadPermissionsJob implements ShouldQueue, ShouldBeUnique
+class LoadPermissionsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -87,5 +85,10 @@ class LoadPermissionsJob implements ShouldQueue, ShouldBeUnique
         $this->user->update([
             'last_permission_check_at' => now(),
         ]);
+    }
+
+    public function displayName(): string
+    {
+        return get_class($this) . ': user ' . $this->user->username . ' (#' . $this->user->id . ')';
     }
 }

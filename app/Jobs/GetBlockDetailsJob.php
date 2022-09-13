@@ -159,4 +159,9 @@ class GetBlockDetailsJob implements ShouldQueue
             'status' => Appeal::STATUS_NOTFOUND,
         ]);
     }
+
+    public function displayName(): string
+    {
+        return get_class($this) . ': appeal #' . $this->appeal->id;
+    }
 }
