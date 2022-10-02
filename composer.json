@@ -26,7 +26,7 @@
         "taavi/laravel-socialite-mediawiki": "^1.3",
         "taavi/laravel-torblock": "^1.1",
         "tio/laravel": "^1.18",
-        "wikimedia/ip-utils": "^3.0"
+        "wikimedia/ip-utils": "^4.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.5",
