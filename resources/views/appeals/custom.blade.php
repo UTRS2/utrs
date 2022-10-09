@@ -13,9 +13,7 @@
             <h5 class="card-header">Response</h5>
             <div class="card-body">
                 Dear {{ $appeal->appealfor }},
-                <div class="form-group">
-                    {{ Form::textarea('custom', null, ['class' => 'form-control', 'rows' => 10, 'style' => 'height: 10rem;']) }}
-                </div>
+                {{ Form::textarea('custom', null, ['class' => 'form-control', 'rows' => 10, 'style' => 'height: 10rem;']) }}
                 {{ $userlist[Auth::id()] }}<br/>
                 {{ \App\Services\Facades\MediaWikiRepository::getTargetProperty($appeal->wiki, 'responding_user_title') }}
             </div>
@@ -24,10 +22,8 @@
         <div class="card mb-4">
             <h5 class="card-header">Options</h5>
             <div class="card-body">
-                <div class="form-group">
-                    {{ Form::label('status', 'Change appeal status to:') }}
-                    {{ Form::select('status', $appeal->getValidStatusChanges(), old('status', $appeal->status), ['class' => 'form-control']) }}
-                </div>
+                {{ Form::label('status', 'Change appeal status to:', ['class' => 'form-label']) }}
+                {{ Form::select('status', $appeal->getValidStatusChanges(), old('status', $appeal->status), ['class' => 'form-control']) }}
             </div>
         </div>
 

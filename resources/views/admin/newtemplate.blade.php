@@ -11,24 +11,24 @@
 			{{ Form::open(array('url' => 'admin/templates/create')) }}
 			{{ Form::token() }}
 
-			<div class="form-group">
-				{{ Form::label('name', 'Template name') }}
+			<div class="mb-4">
+				{{ Form::label('name', 'Template name', ['class' => 'form-label']) }}
 				{{ Form::text('name', old('name'), ['class' => 'form-control']) }}
 			</div>
 
-			<div class="form-group">
-				{{ Form::label('template', 'What should the template say?') }}
+			<div class="mb-4">
+				{{ Form::label('template', 'What should the template say?', ['class' => 'form-label']) }}
 				{{ Form::textarea('template', old('template'), ['class' => 'form-control h-25','rows'=>'15']) }}
 			</div>
 
-			<div class="form-group">
-				{{ Form::label("default_status", 'Default status after replying:') }}
+			<div class="mb-4">
+				{{ Form::label("default_status", 'Default status after replying:', ['class' => 'form-label']) }}
 				{{ Form::select('default_status', \App\Models\Appeal::REPLY_STATUS_CHANGE_OPTIONS, old('default_status'), ['class' => 'form-control']) }}
 			</div>
 
 			@if($wikis->count() > 1)
-				<div class="form-group">
-					{{ Form::label('wiki_id', 'Wiki') }}
+				<div class="mb-4">
+					{{ Form::label('wiki_id', 'Wiki', ['class' => 'form-label']) }}
 					{{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-control']) }}
 				</div>
 			@else

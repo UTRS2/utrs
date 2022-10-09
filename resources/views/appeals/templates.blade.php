@@ -14,7 +14,7 @@
     @foreach($templates as $template)
         <div class="card mt-2 mb-2">
             <h6 class="card-header">
-                <button class="p-0 btn btn-link" data-toggle="collapse" data-target="#contents-{{ $template->id }}">
+                <button class="p-0 btn btn-link" data-bs-toggle="collapse" data-bs-target="#contents-{{ $template->id }}">
                     {{ $template->name }}
                 </button>
             </h6>
@@ -32,8 +32,8 @@
                 <hr/>
 
                 {{ Form::open(['url' => route('appeal.template.submit', [$appeal, $template])]) }}
-                <div class="form-group">
-                    {{ Form::label("status-" . $template->id, 'Change appeal status to:') }}
+                <div class="mb-4">
+                    {{ Form::label("status-" . $template->id, 'Change appeal status to:', ['class' => 'form-label']) }}
                     {{ Form::select('status', $appeal->getValidStatusChanges(), old('status', $template->default_status), ['class' => 'form-control', 'id' => "status-" . $template->id]) }}
                 </div>
 

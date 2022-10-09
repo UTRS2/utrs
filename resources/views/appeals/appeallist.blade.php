@@ -24,19 +24,17 @@
             <h5 class="card-header">{{__('generic.list-headers.search-appeals')}}</h5>
             <div class="card-body">
                 {{ Form::open(['url' => route('appeal.search.quick'), 'method' => 'GET']) }}
-                {{ Form::label('search', __('generic.search-text')) }}
+                {{ Form::label('search', __('generic.search-text'), ['class' => 'form-label']) }}
                 <div class="input-group">
                     {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
-                    <div class="input-group-append">
-                        {{ Form::submit(__('generic.quick-search'), ['class' => 'btn btn-primary']) }}
-                    </div>
+                    {{ Form::submit(__('generic.quick-search'), ['class' => 'input-group-button btn btn-primary']) }}
+                </div>
 
-                    @if($errors->has('search'))
-                        <span class="invalid-feedback" role="alert">
+                @if($errors->has('search'))
+                    <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('search') }}</strong>
                     </span>
-                    @endif
-                </div>
+                @endif
 
                 {{ Form::close() }}
 
