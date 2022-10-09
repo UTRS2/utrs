@@ -65,7 +65,7 @@
                             {{ Auth::user()->username }}
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
+                        <div class="dropdown-menu dropdown-menu-right ms-auto" aria-labelledby="userNavbarDropdown">
                             <a class="dropdown-item" href="{{ route('admin.users.view', Auth::user()) }}">My account</a>
                             <a class="dropdown-item" href="{{ route('logout') }}">Log out</a>
                         </div>
@@ -80,7 +80,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('generic.language')}}: {{App::getLocale()}}</a>
 
-                    <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-right ms-auto" aria-labelledby="userNavbarDropdown">
                         <a class="dropdown-item" href="/changelang/en">English</a>
                         <a class="dropdown-item" href="/changelang/fr">Français</a>
                         <a class="dropdown-item" href="/changelang/es">Español</a>
