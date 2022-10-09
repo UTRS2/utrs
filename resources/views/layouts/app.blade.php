@@ -7,12 +7,12 @@
         @endif
         {{ config('app.name') }}
     </title>
-    <link rel="stylesheet" href="{{ url(mix('css/app.css')) }}">
-    <script src="{{ url(mix('js/app.js')) }}"></script>
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.1/css/bootstrap.css">
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.1/js/bootstrap.js"></script>
     <script type="text/javascript">@yield('scripts')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
-<body> {{-- classes potentially purged by purgecss that should still be kept: modal-open modal-backdrop fade show --}}
+<body>
 <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
     <a class="navbar-brand" href="/">{{ config('app.name') }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
