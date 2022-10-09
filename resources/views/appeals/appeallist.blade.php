@@ -7,7 +7,7 @@
                 <div class="alert alert-danger" role="alert">
                     {{__('generic.admin-tools.sn-disabled')}}
                 </div>
-                <a href="/admin/templates" class="btn btn-primary">{{__('generic.admin-tools.template')}}</a>
+                <a href="{{ route('admin.templates.list') }}" class="btn btn-primary">{{__('generic.admin-tools.template')}}</a>
                 <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">{{__('generic.admin-tools.bans')}}</a>
                 <a href="{{ route('admin.users.list') }}" class="btn btn-primary">{{__('generic.admin-tools.users')}}</a>
                 <a href="/admin/sitenotices" class="btn btn-primary disabled">{{__('generic.admin-tools.sitenotice')}}</a>

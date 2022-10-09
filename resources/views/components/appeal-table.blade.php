@@ -33,7 +33,10 @@
                 @else
                     {{__('appeals.appeal-types.unknown')}}: {{ $appeal->blocktype }}
                 @endif
-                <br /><span class="badge bg-success" style="padding-right: 0.6em; padding-left: 0.6em; border-radius: 10rem;"><b>{{ $appeal->wiki }}</b></span>
+                <br />
+                <span class="badge bg-success p-1 fw-bold">
+                    {{ $appeal->wiki }}
+                </span>
             </td>
             <td>{{ $appeal['blockingadmin'] }}</td>
             <td>{!! $appeal->getFormattedBlockReason('style="color: #00ffea!important;"') !!}</td>
