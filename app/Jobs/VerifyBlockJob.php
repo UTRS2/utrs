@@ -78,9 +78,4 @@ class VerifyBlockJob implements ShouldQueue
             'verify_token' => $token,
         ]);
     }
-
-    public function displayName(): string
-    {
-        return get_class($this) . ': appeal #' . $this->appeal->id;
-    }
 }
