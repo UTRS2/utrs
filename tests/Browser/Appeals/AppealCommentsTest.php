@@ -24,7 +24,7 @@ class AppealCommentsTest extends DuskTestCase
             $browser->visit('/public/appeal/view?hash=' . $appeal->appealsecretkey)
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
-                ->press('Submit')
+                ->clickLink('Submit', 'button')
                 ->assertSee('This is an example comment')
                 ->assertSee(Appeal::STATUS_OPEN)
                 ->assertDontSee(Appeal::STATUS_AWAITING_REPLY);
@@ -89,7 +89,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee('On this screen, you will see a list of templates to choose from in responding to a user')
                 ->clickLink('Reply custom text')
                 ->type('custom', 'Go away.')
-                ->press('Submit')
+                ->clickLink('Submit', 'button')
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee('set status as ');
         });
