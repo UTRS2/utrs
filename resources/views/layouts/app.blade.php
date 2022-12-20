@@ -90,7 +90,7 @@
     </div>
 </nav>
 
-<div class="container" style="width:100%">
+<div class="container" style="max-width:100%">
     <br/>
     @if(session()->has('message'))
         <div class="alert alert-info">
