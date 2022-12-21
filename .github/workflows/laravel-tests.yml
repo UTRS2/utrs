@@ -41,20 +41,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
             ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: Cache NPM dependencies
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-dependencies
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-            ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Install Composer dependencies
         run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
-      - name: Install NPM dependencies
-        run: npm install
       - name: Set app key
         run: php artisan key:generate
       - name: Clear config cache
@@ -63,8 +51,6 @@ jobs:
         run: php${{ matrix.php }} artisan migrate -v --force
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Build assets
-        run: npm run production
       - name: Run tests
         run: composer test
         env:

@@ -55,44 +55,44 @@
         <div class="card mb-4">
             <h5 class="card-header">Modify ban options</h5>
             <div class="card-body">
-                <div class="form-group mb-4">
+                <div class="mb-4">
                     Active
-                    <div class="custom-control custom-radio">
-                        {{ Form::radio('is_active', 0, old('is_active', $ban->is_active) == 0, ['class' => 'custom-control-input', 'id' => 'is_active-0']) }} {{ Form::label('is_active-0', 'Ban has no effect', ['class' => 'custom-control-label']) }}
+                    <div class="form-check">
+                        {{ Form::radio('is_active', 0, old('is_active', $ban->is_active) == 0, ['class' => 'form-check-input', 'id' => 'is_active-0']) }} {{ Form::label('is_active-0', 'Ban has no effect', ['class' => 'form-check-label']) }}
                     </div>
 
-                    <div class="custom-control custom-radio">
-                        {{ Form::radio('is_active', 1, old('is_active', $ban->is_active) == 1, ['class' => 'custom-control-input', 'id' => 'is_active-1']) }} {{ Form::label('is_active-1', 'Ban is active', ['class' => 'custom-control-label']) }}
+                    <div class="form-check">
+                        {{ Form::radio('is_active', 1, old('is_active', $ban->is_active) == 1, ['class' => 'form-check-input', 'id' => 'is_active-1']) }} {{ Form::label('is_active-1', 'Ban is active', ['class' => 'form-check-label']) }}
                     </div>
                 </div>
 
                 @if(sizeof($wikis) > 1)
-                    <div class="form-group">
-                        {{ Form::label('wiki_id', 'Wiki') }}
+                    <div class="mb-4">
+                        {{ Form::label('wiki_id', 'Wiki', ['class' => 'form-label']) }}
                         {{ Form::select('wiki_id', $wikis, old('wiki_id', $ban->wiki_id), ['class' => 'form-control']) }}
                     </div>
                 @else
                     {{ Form::hidden('wiki_id', array_keys($wikis)[0]) }}
                 @endif
 
-                <div class="form-group mb-4">
-                    {{ Form::label('reason', 'Ban reason') }}
+                <div class="mb-4">
+                    {{ Form::label('reason', 'Ban reason', ['class' => 'form-label']) }}
                     {{ Form::text('reason', old('reason', $ban->reason), ['class' => 'form-control']) }}
                     <p class="small">
                         This will be shown to the user.
                     </p>
                 </div>
 
-                <div class="form-group mb-4">
-                    {{ Form::label('expiry', 'Expiration') }}
+                <div class="mb-4">
+                    {{ Form::label('expiry', 'Expiration', ['class' => 'form-label']) }}
                     {{ Form::text('expiry', old('expiry', $formOldExpiry), ['class' => 'form-control']) }}
                     <p class="small">
                         Leave empty or as 'indefinite' for a permanent ban.
                     </p>
                 </div>
 
-                <div class="form-group mb-4">
-                    {{ Form::label('update_reason', 'Reason for changes') }}
+                <div class="mb-4">
+                    {{ Form::label('update_reason', 'Reason for changes', ['class' => 'form-label']) }}
                     {{ Form::input('text', 'update_reason', old('update_reason'), ['class' => 'form-control' . ($errors->has('update_reason') ? ' is-invalid' : '')]) }}
 
                     @error('update_reason')
@@ -104,19 +104,19 @@
 
                 @can('oversight', $ban)
                     <hr/>
-                    <div class="form-group mb-2">
+                    <div class="mb-2">
                         Ban target visibility
-                        <div class="custom-control custom-radio">
-                            {{ Form::radio('is_protected', 0, old('is_protected', $ban->is_protected) == 0, ['class' => 'custom-control-input', 'id' => 'is_protected-0']) }} {{ Form::label('is_protected-0', 'Ban target is visible to all users who can view ban list', ['class' => 'custom-control-label']) }}
+                        <div class="form-check">
+                            {{ Form::radio('is_protected', 0, old('is_protected', $ban->is_protected) == 0, ['class' => 'form-check-input', 'id' => 'is_protected-0']) }} {{ Form::label('is_protected-0', 'Ban target is visible to all users who can view ban list', ['class' => 'form-check-label']) }}
                         </div>
 
-                        <div class="custom-control custom-radio">
-                            {{ Form::radio('is_protected', 1, old('is_protected', $ban->is_protected) == 1, ['class' => 'custom-control-input', 'id' => 'is_protected-1']) }} {{ Form::label('is_protected-1', 'Ban target is oversighted', ['class' => 'custom-control-label']) }}
+                        <div class="form-check">
+                            {{ Form::radio('is_protected', 1, old('is_protected', $ban->is_protected) == 1, ['class' => 'form-check-input', 'id' => 'is_protected-1']) }} {{ Form::label('is_protected-1', 'Ban target is oversighted', ['class' => 'form-check-label']) }}
                         </div>
                     </div>
 
-                    <div class="form-group mb-4">
-                        {{ Form::label('os_reason', 'Visibility change reason') }}
+                    <div class="mb-4">
+                        {{ Form::label('os_reason', 'Visibility change reason', ['class' => 'form-label']) }}
                         {{ Form::text('os_reason', old('os_reason'), ['class' => 'form-control']) }}
                         <p class="small">
                             Reason for restricting the ban target visibility to oversighters only. This can only be seen

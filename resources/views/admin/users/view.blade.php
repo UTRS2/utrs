@@ -99,10 +99,8 @@
         <div class="card mb-4">
             <h5 class="card-header">Options</h5>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox">
-                        {{ Form::checkbox('refresh_from_wiki', 1, old('refresh_from_wiki') === 1, ['class' => 'custom-control-input', 'id' => 'refresh_from_wiki']) }} {{ Form::label('refresh_from_wiki', 'Reload permissions from attached wikis', ['class' => 'custom-control-label']) }}
-                    </div>
+                <div class="form-check">
+                    {{ Form::checkbox('refresh_from_wiki', 1, old('refresh_from_wiki') === 1, ['class' => 'form-check-input', 'id' => 'refresh_from_wiki']) }} {{ Form::label('refresh_from_wiki', 'Reload permissions from attached wikis', ['class' => 'form-check-label']) }}
                 </div>
             </div>
         </div>
@@ -111,8 +109,8 @@
         <div class="card mb-4">
             <h5 class="card-header">Save changes</h5>
             <div class="card-body">
-                <div class="form-group">
-                    {{ Form::label('reason', 'Reason') }}
+                <div class="mb-4">
+                    {{ Form::label('reason', 'Reason', ['class' => 'form-label']) }}
                     {{ Form::input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
 
                     @error('reason')

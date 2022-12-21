@@ -169,8 +169,8 @@
             @if(!in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_INVALID]))
                 {{ Form::open(array('url' => route('public.appeal.comment'))) }}
                 {{ Form::hidden('appealsecretkey', $appeal->appealsecretkey) }}
-                <div class="form-group">
-                    {{ Form::label('comment', __('appeals.comment-input-text')) }}
+                <div class="mb-4">
+                    {{ Form::label('comment', __('appeals.comment-input-text'), ['class' => 'form-label']) }}
                     {{ Form::textarea('comment', old('comment'), ['rows' => 4, 'class' => 'form-control']) }}
                 </div>
                 <button type="submit" class="btn btn-success">{{ __('generic.submit') }}</button>

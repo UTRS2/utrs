@@ -32,14 +32,14 @@
             {{ Form::token() }}
 
             <h5>About you</h5>
-            <div class="form-group mb-4">
-                {{ Form::label('wiki_id', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'custom-select']) }}
+            <div class="mb-4">
+                {{ Form::label('wiki_id', __('appeals.forms.block-wiki'), ['class' => 'form-label']) }}<br>
+                {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'form-select']) }}
             </div>
             {{ Form::hidden('blocktype', 0) }}
 
-            <div class="form-group mb-4">
-                {{ Form::label('appealfor', __('appeals.forms.block-ip')) }}
+            <div class="mb-4">
+                {{ Form::label('appealfor', __('appeals.forms.block-ip'), ['class' => 'form-label']) }}
                 {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
             </div>
 
@@ -50,8 +50,8 @@
                 <br/>{{ __('appeals.forms.word-notice') }}
             </div>
 
-            <div class="form-group mb-4">
-                {{ Form::label('appealtext', __('appeals.forms.question-why')) }}
+            <div class="mb-4">
+                {{ Form::label('appealtext', __('appeals.forms.question-why'), ['class' => 'form-label']) }}
                 {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
             </div>
 

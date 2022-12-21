@@ -7,7 +7,7 @@
                 <div class="alert alert-danger" role="alert">
                     {{__('generic.admin-tools.sn-disabled')}}
                 </div>
-                <a href="/admin/templates" class="btn btn-primary">{{__('generic.admin-tools.template')}}</a>
+                <a href="{{ route('admin.templates.list') }}" class="btn btn-primary">{{__('generic.admin-tools.template')}}</a>
                 <a href="{{ route('admin.bans.list') }}" class="btn btn-primary">{{__('generic.admin-tools.bans')}}</a>
                 <a href="{{ route('admin.users.list') }}" class="btn btn-primary">{{__('generic.admin-tools.users')}}</a>
                 <a href="/admin/sitenotices" class="btn btn-primary disabled">{{__('generic.admin-tools.sitenotice')}}</a>
@@ -24,19 +24,17 @@
             <h5 class="card-header">{{__('generic.list-headers.search-appeals')}}</h5>
             <div class="card-body">
                 {{ Form::open(['url' => route('appeal.search.quick'), 'method' => 'GET']) }}
-                {{ Form::label('search', __('generic.search-text')) }}
+                {{ Form::label('search', __('generic.search-text'), ['class' => 'form-label']) }}
                 <div class="input-group">
                     {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
-                    <div class="input-group-append">
-                        {{ Form::submit(__('generic.quick-search'), ['class' => 'btn btn-primary']) }}
-                    </div>
+                    {{ Form::submit(__('generic.quick-search'), ['class' => 'input-group-button btn btn-primary']) }}
+                </div>
 
-                    @if($errors->has('search'))
-                        <span class="invalid-feedback" role="alert">
+                @if($errors->has('search'))
+                    <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('search') }}</strong>
                     </span>
-                    @endif
-                </div>
+                @endif
 
                 {{ Form::close() }}
 

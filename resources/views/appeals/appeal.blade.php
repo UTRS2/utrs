@@ -94,8 +94,8 @@
                                     {{ Form::open(['url' => route('appeal.action.viewcheckuser', $info)]) }}
                                         {{ Form::token() }}
 
-                                        <div class="form-group">
-                                            {{ Form::label('reason', __('appeals.cu.reason')) }}
+                                        <div class="mb-4">
+                                            {{ Form::label('reason', __('appeals.cu.reason'), ['class' => 'form-label']) }}
                                             {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
@@ -185,7 +185,7 @@
 
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
                                                     <div class="mb-2">
-                                                        <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
+                                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkuserModal">
                                                             {{__('appeals.links.checkuser')}}
                                                         </button>
                                                         <form action="{{ route('appeal.action.tooladmin', $info) }}" method="POST" style="display: inline;">
@@ -439,8 +439,8 @@
                             {{ Form::open(['url' => route('appeal.action.comment', $info)]) }}
                                 {{ Form::token() }}
 
-                                <div class="form-group">
-                                    {{ Form::label('comment', __('appeals.comments.add')) }}
+                                <div class="mb-4">
+                                    {{ Form::label('comment', __('appeals.comments.add'), ['class' => 'form-label']) }}
                                     {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
@@ -458,21 +458,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="checkuserModalTitle">{{__('appeals.cu.submit-title')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 {{ Form::open(['url' => route('appeal.action.requestcheckuser', $info)]) }}
                 {{ Form::token() }}
-                <div class="modal-body">
 
-                    <div class="form-group mb-4">
-                        {{ Form::label('cu_reason', __('appeals.cu.review-req')) }}
-                        {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
-                    </div>
+                <div class="modal-body">
+                    {{ Form::label('cu_reason', __('appeals.cu.review-req'), ['class' => 'form-label']) }}
+                    {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-primary']) }}
                 </div>
                 {{ Form::close() }}
