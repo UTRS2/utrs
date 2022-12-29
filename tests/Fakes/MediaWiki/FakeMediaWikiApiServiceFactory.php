@@ -2,7 +2,7 @@
 
 namespace Tests\Fakes\MediaWiki;
 
-use Mediawiki\Api\MediawikiFactory;
+use Addwiki\Mediawiki\Api\MediawikiFactory;
 use Tests\Fakes\MediaWiki\Factories\FakeUserGetter;
 
 class FakeMediaWikiApiServiceFactory extends MediawikiFactory
