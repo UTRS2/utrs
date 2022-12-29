@@ -25,7 +25,7 @@ class SendVerfEmailCommand extends Command
         $url = url(route('public.appeal.verifyownership', [$appeal, $token]));
         // check if the user can be e-mailed according to MediaWiki API
         if (!MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->canEmail($appeal->getWikiEmailUsername())) {
-            $this->info('User hasn't set email address onwiki');
+            $this->info("User hasn't set email address onwiki");
             return;
         }
         $title = 'UTRS appeal verification';
