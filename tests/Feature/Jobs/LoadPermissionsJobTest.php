@@ -6,6 +6,7 @@ use App\Jobs\LoadPermissionsJob;
 use App\Services\MediaWiki\Api\MediaWikiRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Fakes\MediaWiki\FakeMediaWikiRepository;
+use Mediawiki\Api\MediawikiFactory;
 use Tests\TestCase;
 use Tests\Traits\TestHasUsers;
 
