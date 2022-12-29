@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\Facades\MediaWikiRepository;
 use App\Jobs\Scheduled\RemoveAppealPrivateDataJob;
 use App\Models\Appeal;
+use Illuminate\Support\Str;
 
 class SendVerfEmailCommand extends Command
 {
