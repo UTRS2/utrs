@@ -14,12 +14,12 @@ class SendVerfEmailCommand extends Command
 
     public function handle()
     {
-        if (!is_numeric($id)) {
+        if (!is_numeric($this->argument('id'))) {
           $this->error('Error: ID is not numeric');
           return 1;
         }
         $this->info('Sending Verf Email...');
-        $appeal = Appeal::findOrFail($id);
+        $appeal = Appeal::findOrFail($this->argument('id'));
         $url = url(route('public.appeal.verifyownership', [$appeal, $token]));
         $title = 'UTRS appeal verification';
          $message = <<<EOF
