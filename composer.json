@@ -10,8 +10,8 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-json": "*",
-        "addwiki/mediawiki-api": "^2.8",
-        "addwiki/mediawiki-api-base": "^2.8",
+        "addwiki/mediawiki-api": "^3.0",
+        "addwiki/mediawiki-api-base": "^3.0",
         "doctrine/dbal": "^3.1",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
