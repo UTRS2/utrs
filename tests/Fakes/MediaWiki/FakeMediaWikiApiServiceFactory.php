@@ -16,7 +16,7 @@ class FakeMediaWikiApiServiceFactory extends MediawikiFactory
         $this->fakeApi = $api;
     }
 
-    public function newUserGetter()
+    public function newUserGetter(): UserGetter
     {
         return new FakeUserGetter($this->fakeApi);
     }
