@@ -8,7 +8,7 @@ use App\Jobs\Scheduled\RemoveAppealPrivateDataJob;
 use App\Models\Appeal;
 use App\Services\Facades\MediaWikiRepository;
 
-class RemoveAppealPrivateDataCommand extends Command
+class SendVerfEmailCommand extends Command
 {
     protected $signature = 'utrs-jobs:verf-email {id}';
     protected $description = 'Send Verification email';
@@ -34,7 +34,7 @@ class RemoveAppealPrivateDataCommand extends Command
     EOF;
         
         $result = MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->sendEmail($appeal->getWikiEmailUsername(), $title, $message);
-        $this->info('Result: '.$result)
+        $this->info('Result: '.$result);
         $this->info('Done sending');
         return 0;
     }
