@@ -23,6 +23,11 @@ class SendVerfEmailCommand extends Command
         $this->info('Sending Verf Email...');
         $appeal = Appeal::findOrFail($this->argument('id'));
         $url = url(route('public.appeal.verifyownership', [$appeal, $token]));
+        // check if the user can be e-mailed according to MediaWiki API
+        if (!MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->canEmail($appeal->getWikiEmailUsername())) {
+            $this->info('User hasn't set email address onwiki');
+            return;
+        }
         $title = 'UTRS appeal verification';
          $message = <<<EOF
     Hello,
