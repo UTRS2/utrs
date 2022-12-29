@@ -16,7 +16,7 @@ class RemoveAppealPrivateDataCommand extends Command
     public function handle()
     {
         if (!is_numeric($id)) {
-          $this->error('Error: ID is not numeric')
+          $this->error('Error: ID is not numeric');
           return 1;
         }
         $this->info('Sending Verf Email...');
