@@ -18,6 +18,7 @@ class SendVerfEmailCommand extends Command
           $this->error('Error: ID is not numeric');
           return 1;
         }
+        $token = Str::random(32);
         $this->info('Sending Verf Email...');
         $appeal = Appeal::findOrFail($this->argument('id'));
         $url = url(route('public.appeal.verifyownership', [$appeal, $token]));
@@ -34,6 +35,9 @@ class SendVerfEmailCommand extends Command
         
         $result = MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->sendEmail($appeal->getWikiEmailUsername(), $title, $message);
         $this->info('Result: '.$result);
+        $appeal->update([
+            'verify_token' => $token,
+        ]);
         $this->info('Done sending');
         return 0;
     }
