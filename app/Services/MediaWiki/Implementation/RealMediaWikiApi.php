@@ -10,7 +10,7 @@ use GuzzleHttp\Cookie\FileCookieJar;
 use App\Services\MediaWiki\Api\MediaWikiApi;
 use App\Services\MediaWiki\Api\MediaWikiExtras;
 use Mediawiki\Api\ApiUser;
-use Mediawiki\Api\MediawikiApi as AddwikiMediaWikiApi;
+use App\Services\Mediawiki\Api\MediawikiApi as AddwikiMediaWikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use RuntimeException;
 
