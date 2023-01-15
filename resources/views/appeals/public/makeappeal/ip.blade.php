@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
 @section('title', 'Appeal a block on an IP address')
+@section('scripts')
+        function getIP() {
+            const url = "https://api64.ipify.org/"
+            const auth = confirm('The following button will connect to' + url + ' to obtain your IP address. Press OK if you agree to allow this.')
+            if (!auth) {
+                console.error("Authorization to check API rejected. Site will not connect.");
+                return;
+            }
+            fetch(url).then(res => res.text()).then(data => document.getElementById("appealfor").value=data);
+            document.getElementById("appealfor").disabled=true;
+        }
+@endsection
 @section('content')
     <div class="alert alert-danger" role="alert">
         On the next page, you will be issued a Appeal Key. Keep it in a safe place. If you forget it, you WILL NOT
@@ -41,6 +53,10 @@
             <div class="form-group mb-4">
                 {{ Form::label('appealfor', __('appeals.forms.block-ip')) }}
                 {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
+                <noscript>
+                    <div class="alert alert-warning" role="alert">The following button will not work as you don't have javascript enabled.</div>
+                </noscript>
+                <br /><button type="button" class="btn btn-info" onclick="getIP()">Don't know your IP? Get IP address automatically.</button>
             </div>
 
             <h5>{{ __('appeals.forms.appeal-info') }}</h5>
