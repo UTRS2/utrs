@@ -52,7 +52,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
                 Per [utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.'] --~~~~
 
             ';
-            $currentAppeal = Appeal::id($appeal->id);
+            $currentAppeal = Appeal::findOrFail($appeal->id);
             $currentAppeal->handlingAdmin = 3823;
             $currentAppeal->save();
             LogEntry::create([
