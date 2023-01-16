@@ -63,7 +63,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
                 'action'     => "reserve",
                 'ip'         => "127.0.0.1",
                 'ua'         => "DB/Laravel/SRGP Script",
-                'protected'  => Log::LOG_PROTECTION_NONE,
+                'protected'  => LogEntry::LOG_PROTECTION_NONE,
             ]);
             LogEntry::create([
                 'user_id'    => 3823,
@@ -73,7 +73,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
                 'action'     => "comment",
                 'ip'         => "127.0.0.1",
                 'ua'         => "DB/Laravel/SRGP Script",
-                'protected'  => Log::LOG_PROTECTION_NONE,
+                'protected'  => LogEntry::LOG_PROTECTION_NONE,
             ]);
         }
         return $data;
