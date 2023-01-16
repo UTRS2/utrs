@@ -32,7 +32,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             ])
             ->where('blockreason','LIKE', '%open prox%')
             ->where('user_verified',1)
-            ->whereNot('handlingAdmin',3823)
+            ->where('handlingAdmin','!=',3823)
             ->get();
     }
 
