@@ -32,24 +32,25 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             ])
             ->where('blockreason','LIKE', '%open prox%')
             ->where('user_verified',1)
-            ->where('handlingAdmin','!=',3823)
+            ->where('handlingAdmin','is',NULL)
             ->get();
     }
 
     public function createContents(Collection $appeals)
     {
         if ($appeals->isEmpty()) {
-            return 'No open UTRS appeals.';
+            return false;
         }
         $data = '';
         foreach ($appeals as $appeal) {
-            $data .= '=== Global IP Block Exempt for {{subst:u|'.$appeal->appealfor.'}} ===\n
+            $data .= '=== Global IP Block Exempt for {{subst:u|'.$appeal->appealfor.'}} ===
             {{sr-request
-                |status = \n
-                |domain = global\n
-                |user name = '.$appeal->appealfor.'\n
-                }}\n
+                |status = 
+                |domain = global
+                |user name = '.$appeal->appealfor.'
+                }}
                 Per [utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.'] --~~~~
+
             ';
             $currentAppeal = Appeal::id($appeal->id);
             $currentAppeal->handlingAdmin = 3823;
@@ -89,6 +90,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
 
         // get appeals and create table
         $appeals = $this->fetchAppeals();
+        if(!$appeals) {return;}
         $text = $this->createContents($appeals);
 
         // get page information
@@ -101,7 +103,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
         // prepare edit
         $existing = $page->getRevisions()->getLatest()->getContent()->getData();
         $pos = strpos($existing,'== Requests for 2 Factor Auth tester permissions ==');
-        $newtext = substr_replace($existing,$text.'\n',$pos,0);
+        $newtext = substr_replace($existing,$text.'',$pos,0);
         $content = new Content($newtext);
         $revision = new Revision($content, $page->getPageIdentifier());
         $editFlags = new EditInfo('Script: Adding UTRS IPBE appeals to SRG - Manual request of AmandaNP', EditInfo::NOTMINOR/*, EditInfo::BOT*/);
