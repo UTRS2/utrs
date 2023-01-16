@@ -21,6 +21,7 @@ return [
         'url_base' => 'https://meta.wikimedia.org/',
         'responding_user_title' => 'Wikimedia Steward',
         'hidden_from_appeal_wiki_list' => true,
+        'SRGP' => 'User:AmandaNP/SRGP test',//'Steward requests/Global permissions',
 
         'permission_overrides' => [
             'appeal_view' => ['steward', 'staff'],
