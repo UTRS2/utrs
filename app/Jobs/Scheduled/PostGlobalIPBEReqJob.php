@@ -55,7 +55,7 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
             $currentAppeal = Appeal::findOrFail($appeal->id);
             $currentAppeal->handlingAdmin = 3823;
             $currentAppeal->save();
-            /*LogEntry::create([
+            LogEntry::create([
                 'user_id'    => 3823,
                 'model_id'   => $appeal->id,
                 'model_type' => Appeal::class,
@@ -74,7 +74,7 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
                 'ip'         => "127.0.0.1",
                 'ua'         => "DB/Laravel/SRGP Script",
                 'protected'  => LogEntry::LOG_PROTECTION_NONE,
-            ]);*/
+            ]);
         }
         return $data;
     }
