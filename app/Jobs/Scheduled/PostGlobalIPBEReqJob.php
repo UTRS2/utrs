@@ -21,7 +21,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
 
     public function fetchAppeals()
     {
-        return Appeal::where('wiki', 3)
+        return Appeal::where('wiki_id', 3)
             ->whereNotIn('status', [
                 Appeal::STATUS_VERIFY,
                 Appeal::STATUS_NOTFOUND,
@@ -30,9 +30,9 @@ class PostGlobalIPBEReqJob implements ShouldQueue
                 Appeal::STATUS_ACCEPT,
                 Appeal::STATUS_INVALID,
             ])
-            ->where('blockreason','LIKE', '%open prox%')
+            ->where('blockreason','RLIKE', '(O|o)pen prox')
             ->where('user_verified',1)
-            ->where('handlingAdmin','is',NULL)
+            ->whereNull('handlingAdmin')
             ->get();
     }
 
