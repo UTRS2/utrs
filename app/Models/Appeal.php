@@ -61,7 +61,6 @@ class Appeal extends Model
 
     public $timestamps = false;
     public $guarded = ['id'];
-    protected $primaryKey = "id";
 
     protected $attributes = [
         'blockfound' => 0
