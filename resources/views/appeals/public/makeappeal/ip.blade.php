@@ -10,7 +10,9 @@
                 return;
             }
             fetch(url).then(res => res.text()).then(data => document.getElementById("appealfor").value=data);
-            document.getElementById("appealfor").disabled=true;
+            document.getElementById("appealfor").style.visibility="hidden";
+            document.getElementById("appealfor").style.display="none";
+            document.getElementById("forhidden").style.display="block";
         }
 @endsection
 @section('content')
@@ -56,6 +58,7 @@
                 <noscript>
                     <div class="alert alert-warning" role="alert">The following button will not work as you don't have javascript enabled.</div>
                 </noscript>
+                <br /><div style="display: none" class="alert alert-success" role="alert" id="forhidden">This question has been answered automatically.</div>
                 <br /><button type="button" class="btn btn-info" onclick="getIP()">Don't know your IP? Get IP address automatically.</button>
             </div>
 
