@@ -53,6 +53,24 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
 
 ';
             $currentAppeal = Appeal::findOrFail($appeal->id);
+            $gg = MediaWikiRepository::getApiForTarget('global')->getMediaWikiExtras()->getGlobalGroupMembership($appeal->appealfor);
+            if (in_array('global-ipblock-exempt', $gg)) {
+                $currentAppeal->status = Appeal::STATUS_ACCEPT;
+                $currentAppeal->save();
+                LogEntry::create([
+                    'user_id'    => 3823,
+                    'model_id'   => $appeal->id,
+                    'model_type' => Appeal::class,
+                    'reason'     => "User already has GIPBE, appeal not needed.",
+                    'action'     => "comment",
+                    'ip'         => "127.0.0.1",
+                    'ua'         => "DB/Laravel/SRGP Script",
+                    'protected'  => LogEntry::LOG_PROTECTION_NONE,
+                ]);
+                $this->info($currentAppeal->appealfor . ' already has GIPBE...ignore...');
+                continue;
+            }
+            
             $currentAppeal->handlingAdmin = 3823;
             $currentAppeal->save();
             LogEntry::create([
