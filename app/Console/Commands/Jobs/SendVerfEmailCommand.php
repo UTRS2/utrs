@@ -28,6 +28,7 @@ class SendVerfEmailCommand extends Command
             $this->info("User hasn't set email address onwiki");
             $appeal->user_verified=-1;
             $appeal->save();
+            dd($appeal);
             return;
         }
         $title = 'UTRS appeal verification';
