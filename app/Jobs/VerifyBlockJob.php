@@ -62,6 +62,11 @@ class VerifyBlockJob implements ShouldQueue
 
 
             try {
+                if (!MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->canEmail($appeal->getWikiEmailUsername())) {
+                    //user has not set an email on wiki
+                    $this->appeal->update(['user_verified'=>-1]);
+                    return;
+                }
                 $result = MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->sendEmail($this->appeal->getWikiEmailUsername(), $title, $message);
 
                 if (!$result) {

@@ -26,7 +26,7 @@ class SendVerfEmailCommand extends Command
         // check if the user can be e-mailed according to MediaWiki API
         if (!MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->canEmail($appeal->getWikiEmailUsername())) {
             $this->info("User hasn't set email address onwiki");
-            $this->appeal->update(['user_verified'=>-1]);
+            $appeal->update(['user_verified'=>-1]);
             return;
         }
         $title = 'UTRS appeal verification';
