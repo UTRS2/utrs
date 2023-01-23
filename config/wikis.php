@@ -22,6 +22,7 @@ return [
         'responding_user_title' => 'Wikimedia Steward',
         'hidden_from_appeal_wiki_list' => true,
         'SRGP' => 'Steward requests/Global permissions',
+        'appeal_list_page' => 'User:AmandaNP/UTRS Appeals',
 
         'permission_overrides' => [
             'appeal_view' => ['steward', 'staff'],
