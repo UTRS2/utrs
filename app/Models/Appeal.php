@@ -66,9 +66,10 @@ class Appeal extends Model
         'blockfound' => 0
     ];
 
-    protected $casts = [
+    //This screws with new implemnation of -1 for never verified
+    /*protected $casts = [
         'user_verified' => 'boolean',
-    ];
+    ];*/
 
     protected $dates = [
         'submitted',
