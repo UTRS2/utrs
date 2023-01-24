@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Jobs\Scheduled\PostGlobalIPBEReqJob;
 
 class Kernel extends ConsoleKernel
 {
@@ -35,12 +36,15 @@ class Kernel extends ConsoleKernel
 
         // Wiki integration
         $schedule->command('utrs-jobs:update-appeal-tables --wiki=enwiki')->everyFifteenMinutes();
+        $schedule->command('utrs-jobs:update-appeal-tables --wiki=global')->hourly();
+        $schedule->job(new PostGlobalIPBEReqJob)->hourly();
 
         // Close expired NOTFOUND appeals
         $schedule->command('utrs-jobs:close-expired-notfound')->everyFourHours();
 
         // Permission updates
         $schedule->command('utrs-jobs:reverify-user-permissions')->daily()->at('14:00');
+        
     }
 
     /**
