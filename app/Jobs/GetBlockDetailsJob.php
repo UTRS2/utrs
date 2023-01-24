@@ -117,7 +117,7 @@ class GetBlockDetailsJob implements ShouldQueue
         if (!$this->appeal->user_verified && !$this->appeal->verify_token
             && $block && $this->appeal->blocktype !== 0
             && $this->appeal->status !== Appeal::STATUS_INVALID) {
-            VerifyBlockJob::dispatch($this->appeal);
+            VerifyBlockJob::dispatchNow($this->appeal);
         }
     }
 
