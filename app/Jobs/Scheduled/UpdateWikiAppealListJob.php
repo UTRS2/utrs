@@ -48,13 +48,24 @@ class UpdateWikiAppealListJob implements ShouldQueue
 
         $data = '{| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle"'
             . "\n! Appeal Number"
+            . "\n! Block Type"
             . "\n! Appellant"
             . "\n! Filed on"
             . "\n! Status\n";
 
         $data .= $appeals->map(function (Appeal $appeal) {
+            if ($appeal->blocktype == 2) {
+                $blocktype = "IP block underneath an account";
+            }
+            if ($appeal->blocktype == 1) {
+                $blocktype = "Account";
+            }
+            if ($appeal->blocktype == 0) {
+                $blocktype = "IP address";
+            }
             return  "|-\n"
                 . "| [" . url(route('appeal.view', $appeal)) . ' #' . $appeal->id . "] \n| "
+                . "| ". $blocktype . " \n| "
                 . (str_starts_with($appeal->appealfor, '#')
                     ? '[{{fullurl:Special:BlockList|wpTarget=' . urlencode($appeal->appealfor) . '}} Block ID ' . $appeal->appealfor . ']'
                     : '[[User talk:' . $appeal->appealfor . '|]]'

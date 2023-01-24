@@ -21,7 +21,15 @@
             <td>
             <a href="{{ route('appeal.view', $appeal) }}" class="btn {{ $appeal->handlingadmin ? 'btn-danger' : 'btn-primary' }}">#{{ $appeal->id }}</a>
             </td>
-            <td>{{ $appeal->appealfor }}</td>
+            <td>{{ $appeal->appealfor }}
+            @if($appeal->user_verified == 1)
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+            @elseif($appeal->user_verified == -1)
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+            @else
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
+            @endif
+            </td>
             <td style="vertical-align: middle">
                 {{ __('appeals.status.'.$appeal->status) }}<br/>
                 @if($appeal->blocktype === 0)
