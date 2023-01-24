@@ -20,7 +20,7 @@ class UpdateAppealTableOnWikiCommand extends Command
 
         foreach ($wikis as $wiki) {
             $this->line("Scheduling for $wiki");
-            UpdateWikiAppealListJob::dispatch($wiki);
+            UpdateWikiAppealListJob::dispatchNow($wiki);
         }
     }
 }
