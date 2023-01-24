@@ -43,7 +43,7 @@
                                 @elseif($info->user_verified == -1)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
                                 <i>This appeal will not be able to be verified.</i>
-                                @elseif(!$appeal->blocktype == 0)
+                                @elseif(!$info->blocktype == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i>
                                 @endif
