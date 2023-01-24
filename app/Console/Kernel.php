@@ -36,7 +36,7 @@ class Kernel extends ConsoleKernel
 
         // Wiki integration
         $schedule->command('utrs-jobs:update-appeal-tables --wiki=enwiki')->everyFifteenMinutes();
-        $scheulde->job(new PostGlobalIPBEReqJob)->hourly();
+        $schedule->job(new PostGlobalIPBEReqJob)->hourly();
 
         // Close expired NOTFOUND appeals
         $schedule->command('utrs-jobs:close-expired-notfound')->everyFourHours();
