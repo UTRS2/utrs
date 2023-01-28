@@ -83,9 +83,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
             ));
         } catch (Exception $e) {
             Log::error("MediaWiki API Failure: " . $e->getMessage() . " on appealID #". $appealId);
-            return null;
-            //Temp comment this out to see if we can handle with the return null above
-            //throw $e;
+            throw $e;
         }
 
         if (empty($response['query']['blocks'])) {
@@ -103,7 +101,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
             return null;
         }
 
-        if (IPUtils::isIp($target) || IPUtils::isIpRange($target)) {
+        if (IPUtils::isIp($target) || IPUtils::isIpRange($target) || $target[0]=="#") {
             // is ip
 
             try {
@@ -116,6 +114,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
                     ]
                 ));
             } catch (Exception $e) {
+                if (str_contains($e->getMessage(), "IP parameter is not valid")) {
+                    //MW Doesn't like the "IP" given. aka doesn't match the format
+                    return null;
+                }
                 Log::error("MediaWiki API Failure: ".$e->getMessage()." on appealID #" . $appealId);
                 throw $e;
             }
@@ -141,9 +143,23 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
         $entry = $entries->getLatest();
 
-        if (!$entry || !in_array('locked',$entry->getDetails()['params']['added'])) {
-            return null;
+        //New method to logs requires split determination on log type
+        try {
+            if (!$entry || !in_array('locked',$entry->getDetails()['params']['added'])) {
+                return null;
+            }    
+        } catch(Exception $e) {
+            $tag = false;
+            foreach ($entry->getDetails()['params'] as $item) {
+                if ($item =="locked") {
+                    $tag = true;
+                }
+            }
+            if (!$tag) {
+                return null;
+            }
         }
+        
 
         return new RealBlock(
             $entry->getUser(),
