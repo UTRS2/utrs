@@ -153,7 +153,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
                     $tag = true;
                 }
             }
-            if (!tag) {
+            if (!$tag) {
                 return null;
             }
         }
