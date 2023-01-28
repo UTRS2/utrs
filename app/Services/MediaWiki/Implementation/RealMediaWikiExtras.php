@@ -83,9 +83,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
             ));
         } catch (Exception $e) {
             Log::error("MediaWiki API Failure: " . $e->getMessage() . " on appealID #". $appealId);
-            return null;
-            //Temp comment this out to see if we can handle with the return null above
-            //throw $e;
+            throw $e;
         }
 
         if (empty($response['query']['blocks'])) {
