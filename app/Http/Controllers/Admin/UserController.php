@@ -98,7 +98,7 @@ class UserController extends Controller
                     if (!$permission) {
                         $permission = new Permission();
                         $permission->user_id = $user->id;
-                        $permission->wiki = $wikiDbName;
+                        $permission->wiki = $wiki;
                     }
 
                     $permission->fill($updateSet)->saveOrFail();
