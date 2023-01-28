@@ -84,6 +84,8 @@ class AppealController extends Controller
                 ->orderByDesc('id')
                 ->get();
 
+            $urlname = urlencode($info->appealfor);
+
             return view('appeals.appeal', [
                 'id' => $id,
                 'info' => $info,
@@ -92,6 +94,7 @@ class AppealController extends Controller
                 'checkuserdone' => $checkuserdone,
                 'perms' => $perms,
                 'previousAppeals' => $previousAppeals,
+                'urlname' => $urlname,
             ]);
         }
 
