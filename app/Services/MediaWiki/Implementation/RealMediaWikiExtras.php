@@ -116,7 +116,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
                     ]
                 ));
             } catch (Exception $e) {
-                if (str_contains($e->message, "IP parameter is not valid")) {
+                if (str_contains($e['message'], "IP parameter is not valid")) {
                     //MW Doesn't like the "IP" given. aka doesn't match the format
                     return null;
                 }
