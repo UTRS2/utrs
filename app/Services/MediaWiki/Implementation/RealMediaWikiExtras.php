@@ -141,9 +141,23 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
         $entry = $entries->getLatest();
 
-        if (!$entry || !in_array('locked',$entry->getDetails()['params']['added'])) {
-            return null;
+        //New method to logs requires split determination on log type
+        try {
+            if (!$entry || !in_array('locked',$entry->getDetails()['params']['added'])) {
+                return null;
+            }    
+        } catch(Exception $e) {
+            $tag = false;
+            for ($entry->getDetails()['params'] as $item) {
+                if ($item =="locked") {
+                    $tag = true;
+                }
+            }
+            if (!tag) {
+                return;
+            }
         }
+        
 
         return new RealBlock(
             $entry->getUser(),
