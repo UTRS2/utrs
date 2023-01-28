@@ -148,7 +148,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
             }    
         } catch(Exception $e) {
             $tag = false;
-            for ($entry->getDetails()['params'] as $item) {
+            foreach ($entry->getDetails()['params'] as $item) {
                 if ($item =="locked") {
                     $tag = true;
                 }
