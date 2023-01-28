@@ -154,7 +154,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
                 }
             }
             if (!tag) {
-                return;
+                return null;
             }
         }
         
