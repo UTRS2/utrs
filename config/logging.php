@@ -57,7 +57,7 @@ return [
             'url' => env('SLACK_SYSERROR_URL'),
             'username' => 'UTRS',
             'emoji' => ':no_entry:',
-            'level' => 'warning',
+            'level' => 'debug',
         ],
 
         'papertrail' => [

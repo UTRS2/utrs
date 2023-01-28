@@ -235,7 +235,13 @@ class AppealActionController extends Controller
             $appeal,
             're-verify block details',
             function (Appeal $appeal) {
-                GetBlockDetailsJob::dispatchNow($appeal);
+                if(app()->environment('production')) {
+                    GetBlockDetailsJob::dispatchNow($appeal);    
+                }
+                else {
+                    GetBlockDetailsJob::dispatch($appeal);
+                }
+                
             },
             function (Appeal $appeal) {
                 return in_array($appeal->status, [ Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND ])
