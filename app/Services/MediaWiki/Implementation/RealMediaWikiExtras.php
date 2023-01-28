@@ -101,7 +101,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
             return null;
         }
 
-        if (IPUtils::isIp($target) || IPUtils::isIpRange($target)) {
+        if (IPUtils::isIp($target) || IPUtils::isIpRange($target) || $target[0]=="#") {
             // is ip
 
             try {
