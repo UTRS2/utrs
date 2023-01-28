@@ -68,7 +68,7 @@
                                 @endif
                                 <br/>
 
-                                @component('components.user-action-buttons', ['target' => $info->appealfor, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
+                                @component('components.user-action-buttons', ['target' => $urlname, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                 @endcomponent
                                 @if($perms['checkuser'])
                                 <br/><br/>
