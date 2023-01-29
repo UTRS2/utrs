@@ -38,6 +38,7 @@ class VerifyBlockJob implements ShouldQueue
     {
         // check if the user can be e-mailed according to MediaWiki API
         if (!MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->canEmail($this->appeal->getWikiEmailUsername())) {
+            $this->appeal->update(['user_verified'=>-1]);
             return;
         }
 
@@ -62,15 +63,10 @@ class VerifyBlockJob implements ShouldQueue
 
 
             try {
-                if (!MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->canEmail($appeal->getWikiEmailUsername())) {
-                    //user has not set an email on wiki
-                    $this->appeal->update(['user_verified'=>-1]);
-                    return;
-                }
                 $result = MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->sendEmail($this->appeal->getWikiEmailUsername(), $title, $message);
 
                 if (!$result) {
-                    throw new RuntimeException('Failed sending an e-mail');
+                    throw new RuntimeException('Failed sending an e-mail: No result from MW API');
                 }
             } catch (Exception $exception) {
                 // wrap exception to add appeal number to log
