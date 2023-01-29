@@ -13,6 +13,8 @@ interface MediaWikiRepository
      */
     public function getSupportedTargets($includeGlobal = true): array;
 
+    public function getID(string $target);
+
     /**
      * Retrieves the given property for the given target, or $default if none available.
      * @param string $target Target wiki to get property for

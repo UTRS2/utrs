@@ -1,6 +1,13 @@
 @extends('layouts.app')
 @php use App\Models\Appeal; use App\Models\LogEntry; @endphp
 
+@section('scripts')
+function displayTransfer() {
+    document.getElementById('transfer').style.display = "block";
+    document.getElementById('transferbutton').style.display = "none";
+}
+@endsection
+
 @section('title', 'Appeal #' . $id)
 @section('content')
     <div class="container">
@@ -220,6 +227,32 @@
                                                     </div>
                                                 @endif
                                             @endif
+                                        </div><br />
+                                        <div>
+                                            <button class="btn btn-info" onclick="displayTransfer()" id="transferbutton">Transfer to another wiki</button>
+
+                                            <div style="display: none;" id="transfer">
+                                                <br />
+                                                {{ Form::open(['url' => route('appeal.transfer', [$info])]) }}
+                                                    {{ Form::token() }}
+                                                    <div class="form-group">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                Transfer to another wiki
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <p class="card-text">
+                                                        {{ Form::label('wiki', 'Transfer this to:') }}<br />
+                                                        {{ Form::select('wiki', $wikis, ['class' => 'form-control']) }}
+                                                        <br /><br />
+                                                        {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-success']) }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                {{ Form::close() }}
+                                            </div>
                                         </div>
                                     @else
                                         <div class="alert alert-danger" role="alert">

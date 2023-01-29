@@ -58,6 +58,7 @@ Route::middleware('set.locale')->group(function () {
     Route::post('/appeal/checkuserreview/{appeal}', 'Appeal\AppealActionController@sendToCheckUserReview')->name('appeal.action.requestcheckuser');
     Route::post('/appeal/tooladmin/{appeal}', 'Appeal\AppealActionController@sendToTooladminReview')->name('appeal.action.tooladmin');
     Route::post('/appeal/invalidate/{appeal}', 'Appeal\AppealActionController@invalidate')->name('appeal.action.invalidate');
+    Route::post('/appeal/transfer/{appeal}', 'Appeal\AppealActionController@transfer')->name('appeal.transfer');
 
     Route::get('/appeal/template/{appeal}', 'AppealController@viewtemplates')->name('appeal.template');
     Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')->name('appeal.template.submit');
