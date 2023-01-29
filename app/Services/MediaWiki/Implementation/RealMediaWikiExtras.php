@@ -82,6 +82,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
                 ]
             ));
         } catch (Exception $e) {
+            if (str_contains($e->getMessage(), "Invalid value")) {
+                //UTRS can't recognize this as an IP and MW is rejecting the username
+                return null;
+            }
             Log::error("MediaWiki API Failure: " . $e->getMessage() . " on appealID #". $appealId);
             throw $e;
         }
