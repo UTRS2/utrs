@@ -89,7 +89,9 @@
         </ul>
     </div>
 </nav>
-
+@env(['local','dev'])
+<div class="alert alert-warning" role="alert">BE AWARE: You are running UTRS in development mode. There are some functionality differences, plus, this will help you know whether you are looking at live or dev ;).</div>
+@endenv
 <div class="container" style="max-width:100%">
     <br/>
     @if(session()->has('message'))

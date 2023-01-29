@@ -86,6 +86,13 @@ class AppealController extends Controller
 
             $urlname = urlencode($info->appealfor);
 
+            $wikis = \array_diff(collect(MediaWikiRepository::getSupportedTargets())->toArray(),[$info->wiki]);
+            $newwikis=[];
+
+            foreach ($wikis as $wiki) {
+                $newwikis[] = [MediaWikiRepository::getID($wiki)=>$wiki];
+            }
+
             return view('appeals.appeal', [
                 'id' => $id,
                 'info' => $info,
@@ -95,6 +102,7 @@ class AppealController extends Controller
                 'perms' => $perms,
                 'previousAppeals' => $previousAppeals,
                 'urlname' => $urlname,
+                'wikis' => $newwikis,
             ]);
         }
 

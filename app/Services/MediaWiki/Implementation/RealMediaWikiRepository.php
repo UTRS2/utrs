@@ -8,6 +8,7 @@ use App\Services\MediaWiki\Api\WikiAccessChecker;
 use App\Services\MediaWiki\Api\WikiPermissionHandler;
 use App\Services\MediaWiki\Implementation\Access\GlobalAccessChecker;
 use App\Services\MediaWiki\Implementation\Access\LocalAccessChecker;
+use App\Models\Wiki;
 use Illuminate\Support\Str;
 
 class RealMediaWikiRepository implements MediaWikiRepository
@@ -17,6 +18,14 @@ class RealMediaWikiRepository implements MediaWikiRepository
 
     /** @var array [wiki id => {@link RealWikiPermissionHandler}] */
     private $loadedPermissionHandlers = [];
+
+    public function getID(string $target) {
+        return Wiki::where('database_name',$target)->get()->first()->id;
+    }
+
+    public function getCodedName(string $target) {
+        return Wiki::where('id',$target)->get()->first()->database_name;
+    }
 
     /**
      * {@inheritDoc}

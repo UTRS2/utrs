@@ -10,6 +10,7 @@ use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\Facades\MediaWikiRepository;
 
 class AppealActionController extends Controller
 {
@@ -180,6 +181,27 @@ class AppealActionController extends Controller
                     ? 'This appeal is already waiting for CheckUser review.'
                     : true;
             }
+        );
+    }
+
+    public function transfer(Request $request, Appeal $appeal)
+    {
+        return $this->doAction(
+            $request,
+            $appeal,
+            'transfered appeal to another wiki',
+            function (Appeal $appeal, Request $request) {
+                $id = $request->all()['wiki'];
+
+                $appeal->wiki_id = $id;
+                $appeal->wiki = MediaWikiRepository::getCodedName($id);
+                $appeal->save();
+
+                GetBlockDetailsJob::dispatchNow($appeal);
+
+                return NULL;
+            },
+            
         );
     }
 
