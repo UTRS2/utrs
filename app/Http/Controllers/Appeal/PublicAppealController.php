@@ -98,7 +98,7 @@ class PublicAppealController extends Controller
                 'ua'         => $ua . ' ' . $lang,
             ]);
 
-            GetBlockDetailsJob::dispatch($appeal);
+            GetBlockDetailsJob::dispatchNow($appeal);
 
             return $appeal;
         });
