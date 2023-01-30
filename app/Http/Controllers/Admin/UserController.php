@@ -27,6 +27,24 @@ class UserController extends Controller
         $rowcontents = [];
 
         foreach ($allusers as $user) {
+            $allperms = Permission::where('user_id',$user->id)->get();
+            $activePerms = sizeof($allperms) > 0;
+            if(!$activePerms) {continue;}
+            $canAdmin = false;
+            foreach($allperms as $perm) {
+                if(
+                    $perm->oversight ||
+                    $perm->checkuser ||
+                    $perm->steward ||
+                    $perm->staff ||
+                    $perm->developer ||
+                    $perm->tooladmin ||
+                    $perm->admin
+                ) {
+                    $canAdmin = true;
+                }
+            }
+            if (!$canAdmin) {continue;}
             $idbutton = '<a href="' . route('admin.users.view', $user) . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
             $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $user->mediawiki_id ?? '(not known)', $user->last_permission_check_at];
         }
