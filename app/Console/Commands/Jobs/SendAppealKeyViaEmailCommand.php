@@ -22,7 +22,7 @@ class SendAppealKeyViaEmailCommand extends Command
         $this->info('Sending AppealKey Email...');
         $appeal = Appeal::findOrFail($this->argument('id'));
         // check if the user can be e-mailed according to MediaWiki API
-        if (!$appeal->user_verified == -1) {
+        if ($appeal->user_verified == -1) {
             $this->info("User hasn't set email address onwiki - can't send key");
             return;
         }
