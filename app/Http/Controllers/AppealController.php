@@ -84,7 +84,7 @@ class AppealController extends Controller
                 ->orderByDesc('id')
                 ->get();
 
-            $urlname = urlencode($info->appealfor);
+            $urlname = str_replace("+","_",urlencode($info->appealfor));
 
             $wikis = \array_diff(collect(MediaWikiRepository::getSupportedTargets())->toArray(),[$info->wiki]);
             $newwikis=[];
