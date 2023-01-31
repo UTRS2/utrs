@@ -61,7 +61,7 @@ class GetBlockDetailsJob implements ShouldQueue
     {
         $status = Appeal::STATUS_OPEN;
 
-        if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget())) {
+        /*if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget())) {
             $this->appeal->appealfor = $block->getBlockTarget();
 
             $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
@@ -104,7 +104,7 @@ class GetBlockDetailsJob implements ShouldQueue
                     'protected' => 0
                 ]);
             }
-        }
+        }*/
 
         $this->appeal->update([
             'blockfound' => 1,
