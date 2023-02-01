@@ -34,9 +34,10 @@ class GetBlockDetailsJob implements ShouldQueue
      * Utility method to check if block target given by user needs correcting
      * @param string $givenBlockTarget Block target given by the blocked user in the form
      * @param string $actualBlockTarget Block target queried from MediaWiki API
+     * @param int $blocktype Whether this is an IP, User, or IP under user taken from the appeal
      * @return bool true if block target should be corrected in the database, false otherwise
      */
-    private function shouldCorrectBlockTarget(string $givenBlockTarget, string $actualBlockTarget)
+    private function shouldCorrectBlockTarget(string $givenBlockTarget, string $actualBlockTarget, int $blocktype)
     {
         // if it's already correct, no need to do anything
         if (strtolower($givenBlockTarget) === strtolower($actualBlockTarget)) {
@@ -46,6 +47,13 @@ class GetBlockDetailsJob implements ShouldQueue
         // if it's a range and given ip is inside it, no need to do anything
         if (IPUtils::isIpRange($actualBlockTarget) && IPUtils::isIp($givenBlockTarget)
             && IPUtils::isIpInsideRange($actualBlockTarget, $givenBlockTarget)) {
+            return false;
+        }
+
+        // Stopping ANY Account based appeal from being corrected down to an IP address
+        // BE VERY CAREFUL WITH THIS LINE, THIS HAS CAUSED A CVE BEFORE.
+        // https://github.com/UTRS2/utrs/security/advisories/GHSA-h76p-r6xc-7rwx
+        if($blocktype!=0) {
             return false;
         }
 
@@ -61,7 +69,7 @@ class GetBlockDetailsJob implements ShouldQueue
     {
         $status = Appeal::STATUS_OPEN;
 
-        /*if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget())) {
+        if ($block && $this->shouldCorrectBlockTarget($this->appeal->appealfor, $block->getBlockTarget(),$this->appeal->blocktype)) {
             $this->appeal->appealfor = $block->getBlockTarget();
 
             $duplicateAppeal = Appeal::where('appealfor', $this->appeal->appealfor)
@@ -104,7 +112,7 @@ class GetBlockDetailsJob implements ShouldQueue
                     'protected' => 0
                 ]);
             }
-        }*/
+        }
 
         $this->appeal->update([
             'blockfound' => 1,

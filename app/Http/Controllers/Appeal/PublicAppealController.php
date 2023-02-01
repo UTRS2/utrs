@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Utils\IPUtils;
+use Redirect;
 
 class PublicAppealController extends Controller
 {
@@ -35,6 +37,28 @@ class PublicAppealController extends Controller
             'blocktype'  => 'required|numeric|max:2|min:0',
             'hiddenip'   => 'nullable|ip'
         ]);
+
+        //If blocktype == 0 and appealfor not IP/range
+        if ($data['blocktype']==0 && !(IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
+            return Redirect::back()->withErrors(['msg'=>'That is not a valid IP address, please try again.'])->withInput();
+        }
+
+        if ($data['blocktype']!=0 && (IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
+            return Redirect::back()->withErrors(['msg'=>'You need to enter a username, not an IP address, please try again.'])->withInput();
+        }
+        
+        if ($data['blocktype']==2 && (!isset($data['hiddenip'])||$data['hiddenip']===NULL)) {
+            return Redirect::back()->withErrors(['msg'=>'No underlying IP address provided, please try again.'])->withInput();
+
+        }
+
+        if ($data['blocktype']==2 && (!isset($data['hiddenip'])||$data['hiddenip']==NULL)) {
+            if (!(IPUtils::isIp($data['hiddenip']) || IPUtils::isIpRange($data['hiddenip']))) {
+                return Redirect::back()->withErrors(['msg'=>'The underlying IP is not an IP address, please try again.'])->withInput();
+            }
+        }
+
+        
 
         // back compat, at least for now
         $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
