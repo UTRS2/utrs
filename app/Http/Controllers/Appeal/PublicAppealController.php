@@ -43,10 +43,10 @@ class PublicAppealController extends Controller
             return Redirect::back()->withErrors(['msg'=>'That is not a valid IP address, please try again.'])->withInput();
         }
 
-        if ($data['blocktype']!==0 && (IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
+        if ($data['blocktype']!=0 && (IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
             return Redirect::back()->withErrors(['msg'=>'You need to enter a username, not an IP address, please try again.'])->withInput();
         }
-        //dd($data);
+        
         if ($data['blocktype']==2 && (!isset($data['hiddenip'])||$data['hiddenip']===NULL)) {
             return Redirect::back()->withErrors(['msg'=>'No underlying IP address provided, please try again.'])->withInput();
 
