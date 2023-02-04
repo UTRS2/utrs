@@ -70,7 +70,7 @@ class VerifyBlockJob implements ShouldQueue
                 }
             } catch (Exception $exception) {
                 // wrap exception to add appeal number to log
-                throw new RuntimeException('Failed to send verification email for appeal #' . $this->appeal->id . " - ".$exception->getMessage(), 0, $exception);
+                throw new RuntimeException('Failed to send verification email for appeal #' . $this->appeal->id . ' - '.$exception->getMessage(), 0, $exception);
             }
         }
 
