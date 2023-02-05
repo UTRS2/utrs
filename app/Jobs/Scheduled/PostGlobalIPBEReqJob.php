@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Mediawiki\DataModel\Content;
 use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Revision;
+use DB;
 
 class PostGlobalIPBEReqJob implements ShouldQueue
 {
@@ -21,7 +22,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
 
     public function fetchAppeals()
     {
-        return Appeal::where('wiki_id', 3)
+        $query = Appeal::where('wiki_id', 3)
             ->whereNotIn('status', [
                 Appeal::STATUS_VERIFY,
                 Appeal::STATUS_NOTFOUND,
@@ -33,7 +34,14 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             ->where('blockreason','RLIKE', '(O|o)pen prox')
             ->where('user_verified',1)
             ->whereNull('handlingAdmin')
+            ->join('log_entries', function ($join) {
+                $join->on('log_entries.model_id','=','appeals.id')
+                    ->on('log_entries.reasaon','LIKE','posted IPBE request onwiki');
+            })
+            ->select('appeals.*')
             ->get();
+        dd($query);
+        return $query;
     }
 
     public function createContents(Collection $appeals)
