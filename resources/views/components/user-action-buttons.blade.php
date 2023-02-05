@@ -23,6 +23,11 @@
     {{__('appeals.links.ca')}}
 </a>
 
+<a href="https://meta.toolforge.org/stalktoy/{{ $target }}"
+   class="btn btn-light">
+    ST
+</a>
+
 @if($canUnblock)
     <a href="{{ $baseUrl }}wiki/Special:Unblock/{{ $target }}"
        class="btn btn-warning">
