@@ -36,7 +36,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             ->whereNull('handlingAdmin')
             ->join('log_entries', function ($join) {
                 $join->on('log_entries.model_id','=','appeals.id')
-                    ->on('log_entries.reasaon','LIKE','posted IPBE request onwiki');
+                    ->on('log_entries.reason','LIKE','posted IPBE request onwiki');
             })
             ->select('appeals.*')
             ->get();
