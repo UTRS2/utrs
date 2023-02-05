@@ -34,12 +34,16 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             ->where('blockreason','RLIKE', '(O|o)pen prox')
             ->where('user_verified',1)
             ->whereNull('handlingAdmin')
-            ->join('log_entries', function ($join) {
+            ->leftJoin('log_entries', function ($join) {
                 $join->on('log_entries.model_id','=','appeals.id')
-                    ->where('reason','LIKE','posted IPBE request onwiki');
+                    ->where('log_entries.reason','RLIKE','posted IPBE request onwiki')
+                    ->where('log_entries.user_id',3823);
             })
             ->select('appeals.*')
             ->get();
+        /*This is the query needing to be ran:
+        select * from appeals left join log_entries on (log_entries.model_id = appeals.id and log_entries.reason NOT RLIKE 'posted IPBE request onwiki' and log_entries.user_id = 3823) where wiki_id = 3 and status not in ('EXPIRE','VERIFY','NOTFOUND','DECLINE','ACCEPT','INVALID') and blockreason RLIKE '(O|o)pen prox' and user_verified=1 and handlingAdmin is null;
+        */
         dd($query);
         return $query;
     }
