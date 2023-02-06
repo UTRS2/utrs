@@ -22,16 +22,6 @@ class ActivateGIPBEReqCommand extends Command
     protected $description = 'Posts Global IP Block Exemption requests to meta';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
