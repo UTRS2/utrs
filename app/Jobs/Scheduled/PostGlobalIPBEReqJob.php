@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Mediawiki\DataModel\Content;
 use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Revision;
+use DB;
 
 class PostGlobalIPBEReqJob implements ShouldQueue
 {
@@ -21,7 +22,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
 
     public function fetchAppeals()
     {
-        return Appeal::where('wiki_id', 3)
+        $query = Appeal::where('wiki_id', 3)
             ->whereNotIn('status', [
                 Appeal::STATUS_VERIFY,
                 Appeal::STATUS_NOTFOUND,
@@ -33,7 +34,18 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             ->where('blockreason','RLIKE', '(O|o)pen prox')
             ->where('user_verified',1)
             ->whereNull('handlingAdmin')
+            ->leftJoin('log_entries', function ($join) {
+                $join->on('log_entries.model_id','=','appeals.id')
+                    ->where('log_entries.reason','RLIKE','posted IPBE request onwiki')
+                    ->where('log_entries.user_id',3823);
+            })
+            ->select('appeals.*')
             ->get();
+        /*This is the query needing to be ran:
+        select * from appeals left join log_entries on (log_entries.model_id = appeals.id and log_entries.reason NOT RLIKE 'posted IPBE request onwiki' and log_entries.user_id = 3823) where wiki_id = 3 and status not in ('EXPIRE','VERIFY','NOTFOUND','DECLINE','ACCEPT','INVALID') and blockreason RLIKE '(O|o)pen prox' and user_verified=1 and handlingAdmin is null;
+        */
+
+        return $query;
     }
 
     public function createContents(Collection $appeals)
@@ -124,7 +136,7 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
         $newtext = substr_replace($existing,$text.'',$pos,0);
         $content = new Content($newtext);
         $revision = new Revision($content, $page->getPageIdentifier());
-        $editFlags = new EditInfo('Script: Adding UTRS IPBE appeals to SRG - Manual request of AmandaNP', EditInfo::NOTMINOR/*, EditInfo::BOT*/);
+        $editFlags = new EditInfo('Script: Adding UTRS IPBE appeals to SRGP', EditInfo::NOTMINOR, EditInfo::BOT);
 
         // save it
         $services->newRevisionSaver()->save($revision, $editFlags);
