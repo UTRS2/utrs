@@ -122,7 +122,6 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
         $appeals = $this->fetchAppeals();
         if(!$appeals) {return;}
         $text = $this->createContents($appeals);
-        dd($text);
 
         // get page information
         $api = MediaWikiRepository::getApiForTarget('global');
@@ -137,7 +136,7 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
         $newtext = substr_replace($existing,$text.'',$pos,0);
         $content = new Content($newtext);
         $revision = new Revision($content, $page->getPageIdentifier());
-        $editFlags = new EditInfo('Script: Adding UTRS IPBE appeals to SRG - Manual request of AmandaNP', EditInfo::NOTMINOR/*, EditInfo::BOT*/);
+        $editFlags = new EditInfo('Script: Adding UTRS IPBE appeals to SRGP', EditInfo::NOTMINOR, EditInfo::BOT);
 
         // save it
         $services->newRevisionSaver()->save($revision, $editFlags);
