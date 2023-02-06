@@ -268,6 +268,23 @@ class AppealController extends Controller
             'ua' => $ua . " " . $lang,
             'protected' => LogEntry::LOG_PROTECTION_NONE,
         ]);
+        
+        if ($appeal->user_verified==1) {
+            $title = 'UTRS appeal response';
+            $baseURL = route('public.appeal.view');
+            $message = <<<EOF
+                Hello,
+                Your appeal, #$appeal->id, has be reviewed and the following message was left for you:
+
+                $template->template
+
+                Please reply using the following link: $baseURL?hash=$appeal->appealsecretkey
+
+                Thanks,
+                the UTRS team
+                EOF;
+            $result = MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->sendEmail($appeal->getWikiEmailUsername(), $title, $message);
+        }
 
         return redirect()->route('appeal.view', $appeal);
     }
