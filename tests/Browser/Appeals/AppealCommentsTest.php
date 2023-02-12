@@ -26,6 +26,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
                 ->press('Submit')
+                ->press('View appeal details')
                 ->assertSee('This is an example comment')
                 ->assertSee(Appeal::STATUS_OPEN)
                 ->assertDontSee(Appeal::STATUS_AWAITING_REPLY);
