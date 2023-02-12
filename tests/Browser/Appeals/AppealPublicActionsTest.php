@@ -38,7 +38,7 @@ class AppealPublicActionsTest extends DuskTestCase
                 ->assertSee(Appeal::STATUS_NOTFOUND)
                 ->assertDontSee('Add a comment to this appeal')
                 ->assertSee('We were not able to locate your block. Please')
-                ->click('Fix block information')
+                ->press('Fix block information')
                 ->assertSee('You are now modifying your appeal to be resubmitted. Please ensure the information is correct.')
                 ->assertInputValue('appealfor', $appeal->appealfor)
                 ->type('appealfor', 'Blocked user')
