@@ -144,6 +144,10 @@ class PublicAppealController extends Controller
             return response()->view('appeals.public.wrongkey', [], 404);
         }
 
+        if ($appeal->status == Appeal::STATUS_INVALID) {
+            return response()->view('appeals.public.oversight', [], 403);
+        }
+
         $appeal->loadMissing('comments.userObject');
 
         return view('appeals.public.appeal', [ 'id' => $appeal->id, 'appeal' => $appeal, ]);
