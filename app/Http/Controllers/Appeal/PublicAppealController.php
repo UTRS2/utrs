@@ -63,7 +63,7 @@ class PublicAppealController extends Controller
         // back compat, at least for now
         $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
 
-        $key = hash('md5', $ip . $ua . $lang . (microtime() . rand()));
+        $key = hash('sha512', $ip . $ua . $lang . (microtime() . rand()));
         $data['appealsecretkey'] = $key;
         $data['status'] = Appeal::STATUS_VERIFY;
         $data['appealfor'] = trim($data['appealfor']);
@@ -132,8 +132,13 @@ class PublicAppealController extends Controller
 
     public function view(Request $request)
     {
-        $hash = $request->input('hash');
-        $appeal = Appeal::where('appealsecretkey', '=', $hash)->first();
+        $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
+        $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
+        if($weborigin != $envappurl) {
+            abort(403);
+        }
+        $appealkey = $request->input('appealkey');
+        $appeal = Appeal::where('appealsecretkey', '=', $appealkey)->first();
 
         if (!$appeal) {
             return response()->view('appeals.public.wrongkey', [], 404);
@@ -146,8 +151,13 @@ class PublicAppealController extends Controller
 
     public function addComment(Request $request)
     {
-        $key = $request->input('appealsecretkey');
-        $appeal = Appeal::where('appealsecretkey', $key)->firstOrFail();
+        $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
+        $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
+        if($weborigin != $envappurl) {
+            abort(403);
+        }
+        $appealkey = $request->input('appealsecretkey');
+        $appeal = Appeal::where('appealsecretkey', $appealkey)->firstOrFail();
 
         abort_if($appeal->status === Appeal::STATUS_ACCEPT || $appeal->status === Appeal::STATUS_DECLINE || $appeal->status === Appeal::STATUS_EXPIRE || $appeal->status === Appeal::STATUS_INVALID, 400, "Appeal is closed");
 
@@ -173,7 +183,7 @@ class PublicAppealController extends Controller
             ]);
         }
 
-        return redirect()->back();
+        return view('appeals.public.modifydone',['appealkey'=> $appealkey]);
     }
 
     public function showVerifyOwnershipForm(Appeal $appeal, string $token)

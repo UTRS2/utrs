@@ -29,11 +29,11 @@ Route::middleware('set.locale')->group(function () {
             ->name('public.appeal.store')
             ->middleware('torblock');
 
-        Route::get('/appeal/view', 'Appeal\PublicAppealController@view')->name('public.appeal.view');
+        Route::post('/appeal/view', 'Appeal\PublicAppealController@view')->name('public.appeal.view');
         Route::post('/appeal/comment', 'Appeal\PublicAppealController@addComment')->name('public.appeal.comment');
 
-        Route::get('/appeal/modify/{hash}', 'Appeal\PublicAppealModifyController@showForm')->name('public.appeal.modify');
-        Route::post('/appeal/modify', 'Appeal\PublicAppealModifyController@submit')->name('public.appeal.modify.submit');
+        Route::post('/appeal/modify', 'Appeal\PublicAppealModifyController@showForm')->name('public.appeal.modify');
+        Route::post('/appeal/modify/submit', 'Appeal\PublicAppealModifyController@submit')->name('public.appeal.modify.submit');
 
         Route::get('/appeal/verify/{appeal}/{token}', 'Appeal\PublicAppealController@showVerifyOwnershipForm')->name('public.appeal.verifyownership');
         Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');

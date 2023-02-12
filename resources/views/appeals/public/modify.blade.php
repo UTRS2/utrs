@@ -47,7 +47,7 @@
                 {{ Form::text('hiddenip', old('hiddenip', $appeal->hiddenip), ['class' => 'form-control']) }}
             </div>
 
-            {{ Form::hidden('hash', $hash) }}
+            {{ Form::hidden('appealkey', $appealkey) }}
             <button type="submit" class="btn btn-success">{{ __('generic.submit') }}</button>
             {{ Form::close() }}
 

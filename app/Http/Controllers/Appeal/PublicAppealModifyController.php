@@ -14,9 +14,15 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PublicAppealModifyController extends Controller
 {
-    public function showForm($hash)
+    public function showForm(Request $request)
     {
-        $appeal = Appeal::where('appealsecretkey', $hash)->firstOrFail();
+        $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
+        $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
+        if($weborigin != $envappurl) {
+            abort(403);
+        }
+        $appealkey = $request->input('appealkey');
+        $appeal = Appeal::where('appealsecretkey', $appealkey)->firstOrFail();
 
         if ($appeal->status !== Appeal::STATUS_NOTFOUND) {
             abort(403, "Appeal is not available to be modified.");
@@ -32,7 +38,7 @@ class PublicAppealModifyController extends Controller
             'appeals.public.modify',
             [
                 'appeal' => $appeal,
-                'hash' => $hash,
+                'appealkey' => $request->input('appealkey'),
                 'wikis' => $wikis,
             ]
         );
@@ -40,12 +46,18 @@ class PublicAppealModifyController extends Controller
 
     public function submit(Request $request)
     {
+        $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
+        $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
+        if($weborigin != $envappurl) {
+            abort(403);
+        }
+        
         $ua = $request->userAgent();
         $ip = $request->ip();
         $lang = $request->header('Accept-Language');
-        $hash = $request->input('hash');
+        $appealkey = $request->input('appealkey');
 
-        $appeal = Appeal::where('appealsecretkey', $hash)
+        $appeal = Appeal::where('appealsecretkey', $appealkey)
             ->where('status', Appeal::STATUS_NOTFOUND)
             ->firstOrFail();
 
@@ -106,7 +118,6 @@ class PublicAppealModifyController extends Controller
 
         GetBlockDetailsJob::dispatch($appeal);
 
-        return redirect()
-            ->to(route('public.appeal.view') . '?' . http_build_query([ 'hash' => $appeal->appealsecretkey ]));
+        return view('appeals.public.modifydone',['appealkey'=> $appealkey]);
     }
 }

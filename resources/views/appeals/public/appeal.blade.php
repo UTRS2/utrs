@@ -8,7 +8,7 @@
     @endif
     @if($appeal->status === Appeal::STATUS_NOTFOUND)
         <div class="alert alert-danger" role="alert">
-            {!! str_replace(':link', '<a href="' . route('public.appeal.modify', $appeal->appealsecretkey) .'" class="alert-link">' . htmlspecialchars(__('appeals.not-found-link-text')) . '</a>', htmlspecialchars(__('appeals.not-found-text'))) !!}
+            {{__('appeals.not-found-text')}}
         </div>
     @endif
     <div class="card mb-4 mt-4">
@@ -44,10 +44,11 @@
                 </table>
 
                 @if($appeal->status == Appeal::STATUS_NOTFOUND)
-                    <a href="{{ route('public.appeal.modify', $appeal->appealsecretkey) }}"
-                       class="btn btn-success">
-                        {{ __('appeals.not-found-button') }}
-                    </a>
+                    {{ Form::open(['url' => route('public.appeal.modify')]) }}
+                    {{ Form::token() }}
+                    {{ Form::hidden('appealkey', $appeal->appealsecretkey) }}
+                    {{ Form::submit(__('appeals.not-found-button'), ['class' => 'btn btn-success']) }}
+                    {{ Form::close() }}
                 @endif
             </div>
         </div>

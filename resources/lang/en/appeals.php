@@ -5,7 +5,7 @@ return [
     'no-action' => 'You are not permitted to perform any actions on this appeal.',
     'spam'      => 'It has been detected that you or someone else is trying to spam our system with appeals. Please wait until your previous appeal is closed, or if it is already closed, please try again later. If you are applying for an unblock of an IP address, this could mean that an appeal has already been submitted for your IP. In this case, please try again later or contact us to help clarify the issue.',
 
-    'not-found-text'      => 'We were not able to locate your block. Please :link to correct the information in your appeal.',
+    'not-found-text'      => 'We were not able to locate your block. Please click the button below to correct the information in your appeal.',
     'not-found-link-text' => 'click here',
     'not-found-button'    => 'Fix block information',
 
