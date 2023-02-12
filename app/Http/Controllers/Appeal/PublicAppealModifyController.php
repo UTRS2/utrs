@@ -101,7 +101,7 @@ class PublicAppealModifyController extends Controller
             ->openOrRecent()
             ->exists();
 
-        if ($recentAppealExists) {
+        if ($recentAppealExists && env('APP_SPAM_FILTER', true) == true) {
             return view('appeals.spam');
         }
 

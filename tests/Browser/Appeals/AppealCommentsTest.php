@@ -21,7 +21,8 @@ class AppealCommentsTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) use ($appeal) {
-            $browser->visit('/public/appeal/view?hash=' . $appeal->appealsecretkey)
+            $browser->visit('/')->type('appealkey',$appeal->appealsecretkey)
+                ->press('View my appeal')
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
                 ->press('Submit')
