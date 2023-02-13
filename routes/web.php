@@ -91,4 +91,7 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
     Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
     Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
+
+    Route::get('/branch','BranchController@showBranchList');
+    Route::get('/branch/set/{branch}','BranchController@switchBranch');
 });
