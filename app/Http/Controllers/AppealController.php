@@ -278,7 +278,8 @@ class AppealController extends Controller
 
                 $template->template
 
-                Please reply using the following link: $baseURL?hash=$appeal->appealsecretkey
+                Please reply by going to the following link and entering your appealkey: $baseURL
+                In case you forgot your appealkey, it is: $appeal->appealsecretkey
 
                 Thanks,
                 the UTRS team
