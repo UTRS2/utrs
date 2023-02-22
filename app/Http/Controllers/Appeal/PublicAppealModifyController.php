@@ -19,7 +19,7 @@ class PublicAppealModifyController extends Controller
         $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
         $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
         if($weborigin != $envappurl) {
-            abort(403);
+            abort(403, 'External requests prohibited');
         }
         $appealkey = $request->input('appealkey');
         $appeal = Appeal::where('appealsecretkey', $appealkey)->firstOrFail();

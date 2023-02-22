@@ -192,7 +192,10 @@ class PublicAppealController extends Controller
 
     public function showVerifyOwnershipForm(Appeal $appeal, string $token)
     {
-        abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
+        //abort_if($appeal->verify_token !== $token, 400, 'Invalid token');
+        if ($appeal->verify_token !== $token) {
+            return redirect('/')->with('error','Important: Your token to verify is no longer valid. This may be because you have already verified your appeal. Please enter your appeal key below to view the status of the appeal.');
+        }
         return view('appeals.public.verify', [ 'appeal' => $appeal ]);
     }
 
@@ -223,8 +226,7 @@ class PublicAppealController extends Controller
             'ua'         => $ua . ' ' . $lang,
         ]);
 
-        return redirect()
-            ->to(route('public.appeal.view') . '?' . http_build_query([ 'hash' => $appeal->appealsecretkey ]));
+        return view('appeals.public.modifydone',['appealkey'=> $appeal->appealsecretkey]);
     }
 
     public function redirectLegacy(Request $request)
