@@ -62,7 +62,11 @@ function displayTransfer() {
                                 @elseif($info->blocktype==2)
                                     {{__('appeals.appeal-types.ip-under')}}
                                 @endif
+                                @if($info->status=="INVALID")
+                                <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }} <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Octagon_delete.svg/20px-Octagon_delete.svg.png">
+                                @else
                                 <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }}
+                                @endif
                                 <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
                                 <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
                                 @if($info->hiddenip != NULL && $info->blocktype==2)
@@ -120,7 +124,7 @@ function displayTransfer() {
                                 <div class="col-md-8">
                                     <h5 class="card-title">Actions</h5>
                                     @can('update', $info)
-                                        @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
+                                        @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE || $info->status === Appeal::STATUS_INVALID)
                                             @if($perms['functionary'])
                                                 <div>
                                                     <form action="{{ route('appeal.action.reopen', $info) }}" method="POST" style="display: inline;">
