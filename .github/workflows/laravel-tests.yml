@@ -76,7 +76,7 @@ jobs:
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Run Browser Tests
-        run: php artisan dusk
+        run: php artisan dusk --lang=en_US
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - uses: actions/upload-artifact@v2
