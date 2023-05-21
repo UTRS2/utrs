@@ -15,7 +15,8 @@ class HomePageTest extends DuskTestCase
     public function test_home_page_renders()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser->visit('/changelang/en')
+                    ->visit('/')
                     ->assertSee(config('app.name'));
         });
     }
@@ -23,7 +24,8 @@ class HomePageTest extends DuskTestCase
     public function test_can_see_login_button()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser->visit('/changelang/en')
+                ->visit('/')
                 ->assertSeeLink('Login')
                 ->assertDontSeeLink('Go to Appeals');
         });
@@ -32,7 +34,8 @@ class HomePageTest extends DuskTestCase
     public function test_can_view_appeals_button()
     {
         $this->browse(function (Browser $browser) {
-            $browser->loginAs($this->getUser())
+            $browser->visit('/changelang/en')
+                ->loginAs($this->getUser())
                 ->visit('/')
                 ->assertDontSeeLink('Login')
                 ->assertSeeLink('Go to Appeals');

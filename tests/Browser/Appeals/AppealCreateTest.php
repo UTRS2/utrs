@@ -15,7 +15,8 @@ class AppealCreateTest extends DuskTestCase
     public function test_logged_in_user_cant_make_appeal()
     {
         $this->browse(function (Browser $browser) {
-            $browser->loginAs($this->getUser())
+            $browser->visit('/changelang/en')
+                ->loginAs($this->getUser())
                 ->visit('/')
                 ->clickLink('Appeal my IP block')
                 ->assertDontSee('What wiki are you blocked on?')
@@ -26,7 +27,8 @@ class AppealCreateTest extends DuskTestCase
     public function test_can_create_account_block_appeal()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser->visit('/changelang/en')
+                ->visit('/')
                 ->clickLink('Appeal my block')
                 ->type('appealfor', 'Example')
                 ->click('[for=blocktype-1]')
@@ -39,7 +41,8 @@ class AppealCreateTest extends DuskTestCase
     public function test_can_create_ip_block_appeal()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser->visit('/changelang/en')
+                ->visit('/')
                 ->clickLink('Appeal my IP block')
                 ->type('appealfor', '1.1.1.1')
                 ->type('appealtext', 'Why did you only block me even thru [other editors name here] was also edit warring? This is unfair! I demand to talk to a supervisor!')

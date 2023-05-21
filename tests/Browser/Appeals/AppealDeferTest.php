@@ -18,7 +18,8 @@ class AppealDeferTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $appeal = Appeal::factory()->create();
 
-            $browser->loginAs($this->getUser())
+            $browser->visit('/changelang/en')
+                ->loginAs($this->getUser())
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee(__('appeals.status.ADMIN'))
