@@ -46,7 +46,7 @@ class AppealPublicActionsTest extends DuskTestCase
                 ->type('appealfor', 'Blocked user')
                 ->press('Submit')
                 ->press('View appeal details')
-                ->assertSee('Appeal for "Blocked user"'*/); 
+                ->assertSee('Appeal for "Blocked user"')*/; 
         });
     }
 }
