@@ -16,13 +16,13 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_replying_to_marked_as_awaiting_reply()
     {
-        app()->setLocale('en');
         $appeal = Appeal::factory()->create([
             'status' => Appeal::STATUS_AWAITING_REPLY,
         ]);
 
         $this->browse(function (Browser $browser) use ($appeal) {
-            $browser->visit('/')->type('appealkey',$appeal->appealsecretkey)
+            $browser->visit('/changelang/en')
+                ->visit('/')->type('appealkey',$appeal->appealsecretkey)
                 ->press('View my appeal')
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
@@ -40,7 +40,6 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_using_template()
     {
-        app()->setLocale('en');
         $appeal = Appeal::factory()->create();
 
         Template::factory()->count(2)->create([ 'active' => true, ]);
@@ -54,6 +53,7 @@ class AppealCommentsTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($appeal, $targetTemplate, $targetTemplateTextStart, $nonActiveTemplate) {
             $browser->loginAs($this->getUser())
+                ->visit('/changelang/en')
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee(__('appeals.status.AWAITING_REPLY'))
@@ -81,11 +81,11 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_custom_reply()
     {
-        app()->setLocale('en');
         $appeal = Appeal::factory()->create();
 
         $this->browse(function (Browser $browser) use ($appeal) {
             $browser->loginAs($this->getUser())
+                ->visit('/changelang/en')
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee('Send a reply to user')
