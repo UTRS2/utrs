@@ -70,7 +70,7 @@ jobs:
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Start chromedriver
-        run: chromedriver --lang=en_US &
+        run: chromedriver &
       - name: Start Laravel Server
         run: php artisan serve &
         env:
