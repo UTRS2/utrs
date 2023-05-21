@@ -14,6 +14,8 @@ class AppealCommentsTest extends DuskTestCase
     use DatabaseMigrations;
     use TestHasUsers;
 
+    app()->setLocale('en');
+
     public function test_replying_to_marked_as_awaiting_reply()
     {
         $appeal = Appeal::factory()->create([
