@@ -14,10 +14,9 @@ class AppealCommentsTest extends DuskTestCase
     use DatabaseMigrations;
     use TestHasUsers;
 
-    app()->setLocale('en');
-
     public function test_replying_to_marked_as_awaiting_reply()
     {
+        app()->setLocale('en');
         $appeal = Appeal::factory()->create([
             'status' => Appeal::STATUS_AWAITING_REPLY,
         ]);
@@ -41,6 +40,7 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_using_template()
     {
+        app()->setLocale('en');
         $appeal = Appeal::factory()->create();
 
         Template::factory()->count(2)->create([ 'active' => true, ]);
@@ -81,6 +81,7 @@ class AppealCommentsTest extends DuskTestCase
 
     public function test_custom_reply()
     {
+        app()->setLocale('en');
         $appeal = Appeal::factory()->create();
 
         $this->browse(function (Browser $browser) use ($appeal) {
