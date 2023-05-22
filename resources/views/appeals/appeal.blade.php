@@ -231,8 +231,7 @@ function displayTransfer() {
                                                     </div>
                                                 @endif
                                             @endif
-                                        </div><br />
-                                        <div>
+                                        
                                             <button class="btn btn-info" onclick="displayTransfer()" id="transferbutton">Transfer to another wiki</button>
 
                                             <div style="display: none;" id="transfer">
@@ -368,7 +367,7 @@ function displayTransfer() {
         <div class="card my-2">
             <h4 class="card-header">{{__('appeals.section-headers.comments')}}</h4>
             <div class="card-body">
-                <table class="table table-dark">
+                <table class="table table-dark" id="comments">
                 <thead>
                 <tr>
                     <th scope="col">{{ __('generic.logs-user') }}</th>

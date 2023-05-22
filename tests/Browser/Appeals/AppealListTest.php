@@ -15,7 +15,8 @@ class AppealListTest extends DuskTestCase
     public function test_user_can_view_appeals_list()
     {
         $this->browse(function (Browser $browser) {
-            $browser->loginAs($this->getUser())
+            $browser->visit('/changelang/en')
+                ->loginAs($this->getUser())
                 ->visit('/review')
                 ->assertSee('All unreserved open appeals')
                 ->assertDontSee('403');
