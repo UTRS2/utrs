@@ -33,6 +33,7 @@ class AppealCreateTest extends DuskTestCase
                 ->type('appealfor', 'Example')
                 ->click('[for=blocktype-1]')
                 ->type('appealtext', 'I did not do anything wrong! The admin is corrupt and if I\'m not unblocked, [hidden per WP:NLT]!')
+                ->waitForText('Submit',5)
                 ->press('Submit')
                 ->assertSee('Do not lose this Appeal Key. You can only recover it if you have an account with an email address enabled.');
         });

@@ -52,6 +52,7 @@ class AppealCommentsTest extends DuskTestCase
         $nonActiveTemplate = Template::factory()->create([ 'active' => false, ]);
 
         $this->browse(function (Browser $browser) use ($appeal, $targetTemplate, $targetTemplateTextStart, $nonActiveTemplate) {
+
             $browser->loginAs($this->getUser())
                 ->visit('/changelang/en')
                 ->visit('/appeal/' . $appeal->id)
@@ -66,6 +67,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee($targetTemplate->name)
                 ->assertDontSee($nonActiveTemplate->name)
                 ->press($targetTemplate->name)
+                ->waitForText($targetTemplateTextStart,5)
                 ->assertSee($targetTemplateTextStart)
                 ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
                 ->press('Submit')
