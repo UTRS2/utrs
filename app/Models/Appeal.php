@@ -20,6 +20,12 @@ class Appeal extends Model
         self::STATUS_EXPIRE         => self::STATUS_EXPIRE,
     ];
 
+    const APPEAL_CLOSED = [
+        self::STATUS_ACCEPT         => self::STATUS_ACCEPT,
+        self::STATUS_DECLINE        => self::STATUS_DECLINE,
+        self::STATUS_EXPIRE         => self::STATUS_EXPIRE,
+    ];
+
     const REGULAR_NO_VIEW_STATUS = [
         self::STATUS_INVALID,
         self::STATUS_NOTFOUND,

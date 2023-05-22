@@ -227,8 +227,14 @@ class AppealController extends Controller
         return redirect()->route('appeal.view', $appeal);
     }
 
-    public function respond(Request $request, Appeal $appeal, Template $template)
+    public function respond(Request $request, Appeal $appeal, Template $template=NULL)
     {
+        if(!$template) {
+            $respondText = $request->input('custom');
+        }
+        else {
+            $respondText = $template->template;
+        }
         $this->authorize('update', $appeal);
         $user = $request->user();
 
@@ -263,89 +269,60 @@ class AppealController extends Controller
             'model_id' => $appeal->id,
             'model_type' => Appeal::class,
             'action' => 'responded',
-            'reason' => $template->template,
+            'reason' => $respondText,
             'ip' => $ip,
             'ua' => $ua . " " . $lang,
             'protected' => LogEntry::LOG_PROTECTION_NONE,
         ]);
         
-        if ($appeal->user_verified==1) {
+        if ($appeal->user_verified==1 && !in_array($appeal->status, Appeal::APPEAL_CLOSED)) {
             $title = 'UTRS appeal response';
             $baseURL = route('home');
             $message = <<<EOF
                 Hello,
                 Your appeal, #$appeal->id, has be reviewed and the following message was left for you:
 
-                $template->template
+                $respondText
 
                 Please reply by going to the following link and entering your appealkey: $baseURL
                 In case you forgot your appealkey, it is: $appeal->appealsecretkey
 
                 Thanks,
-                the UTRS team
+                $user->username
                 EOF;
             $result = MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->sendEmail($appeal->getWikiEmailUsername(), $title, $message);
         }
 
-        return redirect()->route('appeal.view', $appeal);
-    }
-
-    public function respondCustomSubmit(Request $request, Appeal $appeal)
-    {
-        $this->authorize('update', $appeal);
-        $user = $request->user();
-
-        abort_unless($appeal->handlingadmin === $user->id, 403, 'You are not the handling administrator.');
-
-        $status = $request->validate([
-            'status' => ['nullable', new PermittedStatusChange($appeal)],
-        ])['status'];
-
-        $ua = $request->userAgent();
-        $ip = $request->ip();
-        $lang = $request->header('Accept-Language');
-
-        if ($status && $status !== $appeal->status) {
-            $appeal->update([
-                'status' => $status,
-            ]);
-
-            LogEntry::create([
-                'user_id' => $user->id,
-                'model_id' => $appeal->id,
-                'model_type' => Appeal::class,
-                'action' => 'set status as ' . $status,
-                'ip' => $ip,
-                'ua' => $ua . ' ' . $lang,
-                'protected' => LogEntry::LOG_PROTECTION_NONE,
-            ]);
-        }
-
-        LogEntry::create([
-            'user_id' => $user->id,
-            'model_id' => $appeal->id,
-            'model_type' => Appeal::class,
-            'action' => 'responded',
-            'reason' => $request->input('custom'),
-            'ip' => $ip,
-            'ua' => $ua . " " . $lang,
-            'protected' => LogEntry::LOG_PROTECTION_NONE,
-        ]);
-        
-        if ($appeal->user_verified==1) {
+        elseif ($appeal->user_verified==1)  {
             $title = 'UTRS appeal response';
             $baseURL = route('home');
+            switch (variable) {
+                 case Appeal::STATUS_ACCEPT:
+                     $textStatus = "has been accepted";
+                     break;
+                case Appeal::STATUS_DECLINE:
+                     $textStatus = "has been declined";
+                     break;
+                case Appeal::STATUS_EXPIRE:
+                     $textStatus = "has expired";
+                     break;
+                 default:
+                     $textStatus = "has been reviewed";
+                     break;
+            }
+
             $message = <<<EOF
                 Hello,
-                Your appeal, #$appeal->id, has be reviewed and the following message was left for you:
+                Your appeal, #$appeal->id, $textStatus and the following message was left for you:
 
-                $request->input('custom')
+                $respondText
 
-                Please reply by going to the following link and entering your appealkey: $baseURL
+                Your appeal is now closed. You will need to take time to consider the reply from the administrator. Should you wish to file a new appeal, you will need to wait a few days to do so, to ensure that you have thought about the administrator's reply. 
+                You can still view it by going to the following link and entering your appealkey: $baseURL
                 In case you forgot your appealkey, it is: $appeal->appealsecretkey
 
                 Thanks,
-                the UTRS team
+                $user->username
                 EOF;
             $result = MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->sendEmail($appeal->getWikiEmailUsername(), $title, $message);
         }
