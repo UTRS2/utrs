@@ -25,7 +25,7 @@ class AppealCreateBanTest extends TestCase
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
-            'appealfor' => 'Not banned user',
+            'appealfor' => 'DeltaQuad',
             'wiki_id' => $wikiId,
             'blocktype' => 1,
         ]);
@@ -40,7 +40,7 @@ class AppealCreateBanTest extends TestCase
 
         Ban::factory()->create([
             'is_active' => true,
-            'target' => 'Banned user 1',
+            'target' => 'DeltaQuad',
             'reason' => 'Lorem ipsum text',
             'wiki_id' => $wikiId,
         ]);
@@ -48,7 +48,7 @@ class AppealCreateBanTest extends TestCase
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
-            'appealfor' => 'Banned user 1',
+            'appealfor' => 'DeltaQuad',
             'wiki_id' => $wikiId,
             'blocktype' => 1,
         ]);
@@ -80,7 +80,7 @@ class AppealCreateBanTest extends TestCase
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
-            'appealfor' => 'Not banned user',
+            'appealfor' => 'DeltaQuad',
             'wiki_id' => $wikiId,
             'blocktype' => 1,
         ]);
@@ -112,7 +112,7 @@ class AppealCreateBanTest extends TestCase
         $response = $this->post('/public/appeal/store', [
             'test_do_not_actually_save_anything' => true,
             'appealtext' => 'Example appeal test',
-            'appealfor' => 'Not banned user',
+            'appealfor' => 'DeltaQuad',
             'wiki_id' => $wikiId,
             'blocktype' => 1,
         ]);
