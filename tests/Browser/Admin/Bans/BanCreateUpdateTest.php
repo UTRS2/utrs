@@ -15,7 +15,8 @@ class BanCreateUpdateTest extends DuskTestCase
     public function test_non_tooladmin_cant_create_ban()
     {
         $this->browse(function (Browser $browser) {
-            $browser->loginAs($this->getUser())
+            $browser->visit('/changelang/en')
+                ->loginAs($this->getUser())
                 ->visit(route('admin.bans.create'))
                 ->assertSee('403')
                 ->assertDontSee('Add ban');
@@ -25,7 +26,8 @@ class BanCreateUpdateTest extends DuskTestCase
     public function test_tooladmin_can_create_and_modify_user_ban()
     {
         $this->browse(function (Browser $browser) {
-            $browser->loginAs($this->getTooladminUser())
+            $browser->visit('/changelang/en')
+                ->loginAs($this->getTooladminUser())
                 ->visit(route('admin.bans.create'))
                 ->assertDontSee('403')
                 ->type('target', 'UTRS banned user')

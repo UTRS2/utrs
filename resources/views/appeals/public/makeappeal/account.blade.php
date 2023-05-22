@@ -86,7 +86,7 @@
                 {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
             </div>
 
-            {{ Form::submit(__('generic.submit'), ['class' => 'btn btn-success']) }}
+            {{ Form::button(__('generic.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
             {{ Form::close() }}
         </div>
     </div>

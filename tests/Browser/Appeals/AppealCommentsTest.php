@@ -21,7 +21,8 @@ class AppealCommentsTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) use ($appeal) {
-            $browser->visit('/')->type('appealkey',$appeal->appealsecretkey)
+            $browser->visit('/changelang/en')
+                ->visit('/')->type('appealkey',$appeal->appealsecretkey)
                 ->press('View my appeal')
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
@@ -51,7 +52,9 @@ class AppealCommentsTest extends DuskTestCase
         $nonActiveTemplate = Template::factory()->create([ 'active' => false, ]);
 
         $this->browse(function (Browser $browser) use ($appeal, $targetTemplate, $targetTemplateTextStart, $nonActiveTemplate) {
+
             $browser->loginAs($this->getUser())
+                ->visit('/changelang/en')
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee(__('appeals.status.AWAITING_REPLY'))
@@ -64,6 +67,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee($targetTemplate->name)
                 ->assertDontSee($nonActiveTemplate->name)
                 ->press($targetTemplate->name)
+                ->waitForText($targetTemplateTextStart,5)
                 ->assertSee($targetTemplateTextStart)
                 ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
                 ->press('Submit')
@@ -83,6 +87,7 @@ class AppealCommentsTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($appeal) {
             $browser->loginAs($this->getUser())
+                ->visit('/changelang/en')
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee('Send a reply to user')

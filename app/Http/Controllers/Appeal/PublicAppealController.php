@@ -20,6 +20,19 @@ use Redirect;
 
 class PublicAppealController extends Controller
 {
+    public static function checkValidUser($username, $wiki) {
+        
+        $api = MediaWikiRepository::getApiForTarget($wiki);
+        $services = $api->getAddWikiServices();
+
+        $user = $services->newUserGetter()->getFromUsername($username);
+        if($user->getId() > 0) {
+            return True;
+        } else {
+            return False;
+        }
+    }
+
     public function store(Request $request)
     {
         $ua = $request->userAgent();
@@ -38,6 +51,9 @@ class PublicAppealController extends Controller
             'hiddenip'   => 'nullable|ip'
         ]);
 
+        // back compat, at least for now
+        $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
+
         //If blocktype == 0 and appealfor not IP/range
         if ($data['blocktype']==0 && !(IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
             return Redirect::back()->withErrors(['msg'=>'That is not a valid IP address, please try again.'])->withInput();
@@ -47,6 +63,10 @@ class PublicAppealController extends Controller
             return Redirect::back()->withErrors(['msg'=>'You need to enter a username, not an IP address, please try again.'])->withInput();
         }
         
+        if (($data['blocktype']==2 || $data['blocktype']==1) && !self::checkValidUser($data['appealfor'],$data['wiki'])) {
+            return Redirect::back()->withErrors(['msg'=>'You need to enter a valid username, please try again.'])->withInput();
+        }
+
         if ($data['blocktype']==2 && (!isset($data['hiddenip'])||$data['hiddenip']===NULL)) {
             return Redirect::back()->withErrors(['msg'=>'No underlying IP address provided, please try again.'])->withInput();
 
@@ -60,8 +80,7 @@ class PublicAppealController extends Controller
 
         
 
-        // back compat, at least for now
-        $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
+        
 
         $key = hash('sha512', $ip . $ua . $lang . (microtime() . rand()));
         $data['appealsecretkey'] = $key;

@@ -64,7 +64,7 @@ Route::middleware('set.locale')->group(function () {
     Route::post('/appeal/template/{appeal}/{template}', 'AppealController@respond')->name('appeal.template.submit');
 
     Route::get('/appeal/custom/{appeal}', 'AppealController@respondCustom')->name('appeal.customresponse');
-    Route::post('/appeal/custom/{appeal}', 'AppealController@respondCustomSubmit')->name('appeal.customresponse.submit');
+    Route::post('/appeal/custom/{appeal}', 'AppealController@respond')->name('appeal.customresponse.submit');
 
     Route::get('/publicappeal', 'Appeal\PublicAppealController@redirectLegacy');
 

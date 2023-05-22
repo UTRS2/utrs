@@ -83,18 +83,7 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
                 continue;
             }
             
-            $currentAppeal->handlingAdmin = 3823;
             $currentAppeal->save();
-            LogEntry::create([
-                'user_id'    => 3823,
-                'model_id'   => $appeal->id,
-                'model_type' => Appeal::class,
-                'reason'     => NULL,
-                'action'     => "reserve",
-                'ip'         => "127.0.0.1",
-                'ua'         => "DB/Laravel/SRGP Script",
-                'protected'  => LogEntry::LOG_PROTECTION_NONE,
-            ]);
             LogEntry::create([
                 'user_id'    => 3823,
                 'model_id'   => $appeal->id,
