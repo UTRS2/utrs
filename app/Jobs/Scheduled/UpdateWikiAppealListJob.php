@@ -57,17 +57,17 @@ class UpdateWikiAppealListJob implements ShouldQueue
         $data .= $appeals->map(function (Appeal $appeal) {
             switch ($appeal->user_verified) {
                 case 1:
-                    image = 'Oxygen480-status-security-high.svg';
+                    $image = 'Oxygen480-status-security-high.svg';
                     break;
                 case 0:
-                    image = 'Oxygen480-status-security-medium.svg';
+                    $image = 'Oxygen480-status-security-medium.svg';
                     break;
                 case -1:
-                    image = 'Oxygen480-status-security-low.svg';
+                    $image = 'Oxygen480-status-security-low.svg';
                     break;
                 
                 default:
-                    image = 'File:Oxygen480-status-dialog-information.svg';
+                    $image = 'File:Oxygen480-status-dialog-information.svg';
                     break;
             }
             if ($appeal->blocktype == 2) {
