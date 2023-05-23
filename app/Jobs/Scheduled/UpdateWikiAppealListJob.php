@@ -51,9 +51,25 @@ class UpdateWikiAppealListJob implements ShouldQueue
             . "\n! Block Type"
             . "\n! Appellant"
             . "\n! Filed on"
-            . "\n! Status\n";
+            . "\n! Status"
+            . "\n! Verified?\n";
 
         $data .= $appeals->map(function (Appeal $appeal) {
+            switch ($appeal->user_verified) {
+                case 1:
+                    $image = 'Oxygen480-status-security-high.svg';
+                    break;
+                case 0:
+                    $image = 'Oxygen480-status-security-medium.svg';
+                    break;
+                case -1:
+                    $image = 'Oxygen480-status-security-low.svg';
+                    break;
+                
+                default:
+                    $image = 'File:Oxygen480-status-dialog-information.svg';
+                    break;
+            }
             if ($appeal->blocktype == 2) {
                 $blocktype = "IP block underneath an account";
             }
@@ -71,7 +87,8 @@ class UpdateWikiAppealListJob implements ShouldQueue
                     : '[[User talk:' . $appeal->appealfor . '|]]'
                 )
                 . "\n| " . $appeal->submitted
-                . "\n| " . $appeal->status;
+                . "\n| " . $appeal->status
+                . "\n| [[File:" . $image . "|20px]]";
         })
             ->join("\n");
 

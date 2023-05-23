@@ -13,7 +13,7 @@
             {{ Form::open(['url' => route('public.appeal.view')]) }}
             {{ Form::token() }}
             {{ Form::hidden('appealkey', $appealkey) }}
-            {{ Form::submit(__('appeals.key.view-appeal-details'), ['class' => 'btn btn-primary']) }}
+            {{ Form::button(__('appeals.key.view-appeal-details'), ['class' => 'btn btn-primary','type'=>'submit']) }}
             {{ Form::close() }}
         </p>
     </div>

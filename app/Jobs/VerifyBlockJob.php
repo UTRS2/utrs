@@ -36,6 +36,10 @@ class VerifyBlockJob implements ShouldQueue
      */
     public function handle()
     {
+        if ($this->appeal->blocktype == 0) {
+            $this->appeal->update(['user_verified'=>-1]);
+            return;
+        }
         // check if the user can be e-mailed according to MediaWiki API
         if (!MediaWikiRepository::getApiForTarget($this->appeal->wiki)->getMediaWikiExtras()->canEmail($this->appeal->getWikiEmailUsername())) {
             $this->appeal->update(['user_verified'=>-1]);
