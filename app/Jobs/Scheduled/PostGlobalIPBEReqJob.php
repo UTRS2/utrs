@@ -22,6 +22,11 @@ class PostGlobalIPBEReqJob implements ShouldQueue
 
     public function fetchAppeals()
     {
+        /* FORMER ATTEMPT - DOES NOT WORK
+        This is the query needing to be ran:
+        select * from `appeals` **** join `log_entries` on `log_entries`.`model_id` = `appeals`.`id` and `log_entries`.`reason` != 'posted IPBE request onwiki' and `log_entries`.`user_id` = 3823 where `wiki_id` = 3 and `status` not in ('EXPIRE','VERIFY','NOTFOUND','DECLINE','ACCEPT','INVALID') and `user_verified` = 1 and `handlingAdmin` is null;
+        */
+
         $query = Appeal::where('wiki_id', 3)
             ->whereNotIn('status', [
                 Appeal::STATUS_VERIFY,
@@ -30,19 +35,26 @@ class PostGlobalIPBEReqJob implements ShouldQueue
                 Appeal::STATUS_DECLINE,
                 Appeal::STATUS_ACCEPT,
                 Appeal::STATUS_INVALID,
-            ])
-            ->where('user_verified',1)
-            ->whereNull('handlingAdmin')
-            ->leftJoin('log_entries', function ($join) {
-                $join->on('log_entries.model_id','=','appeals.id')
-                    ->where('log_entries.reason','!=','posted IPBE request onwiki')
-                    ->where('log_entries.user_id',3823);
-            })
-            ->select('appeals.*')
-            ->get();
-        /*This is the query needing to be ran:
-        select * from appeals left join log_entries on (log_entries.model_id = appeals.id and log_entries.reason NOT RLIKE 'posted IPBE request onwiki' and log_entries.user_id = 3823) where wiki_id = 3 and status not in ('EXPIRE','VERIFY','NOTFOUND','DECLINE','ACCEPT','INVALID') and blockreason RLIKE '(O|o)pen prox' and user_verified=1 and handlingAdmin is null;
-        */
+            ])->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->get();
+        
+        $blacklist = array();
+        foreach ($query as $appeal) {
+            foreach ($appeal->comments()->get() as $comment) {
+                if ($comment->user_id == 3823 && $comment->reason == "posted IPBE request onwiki") {
+                    print_r($comment->model_id);
+                    array_push($blacklist,$comment->model_id);
+                }
+            }
+        }
+        $query = Appeal::where('wiki_id', 3)
+            ->whereNotIn('status', [
+                Appeal::STATUS_VERIFY,
+                Appeal::STATUS_NOTFOUND,
+                Appeal::STATUS_EXPIRE,
+                Appeal::STATUS_DECLINE,
+                Appeal::STATUS_ACCEPT,
+                Appeal::STATUS_INVALID,
+            ])->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->whereNotIn('id',$blacklist)-get();
 
         return $query;
     }
