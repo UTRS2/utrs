@@ -40,7 +40,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             }
         }
         $query = Appeal::where('wiki_id', 3)
-            ->whereNotIn('status', Appeal::ACTIVE_APPEAL_ONLY)->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->whereNotIn('id',$blacklist)-get();
+            ->whereNotIn('status', Appeal::ACTIVE_APPEAL_ONLY)->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->whereNotIn('id',$blacklist)->get();
 
         return $query;
     }
