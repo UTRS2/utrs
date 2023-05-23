@@ -32,6 +32,15 @@ class Appeal extends Model
         self::STATUS_VERIFY,
     ];
 
+    const ACTIVE_APPEAL_ONLY = [
+        self::STATUS_VERIFY,
+        self::STATUS_NOTFOUND,
+        self::STATUS_EXPIRE,
+        self::STATUS_DECLINE,
+        self::STATUS_ACCEPT,
+        self::STATUS_INVALID,
+    ];
+
     const ALL_STATUSES = [
         self::STATUS_OPEN,
         self::STATUS_VERIFY,

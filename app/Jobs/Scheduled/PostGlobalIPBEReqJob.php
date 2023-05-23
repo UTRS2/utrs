@@ -28,14 +28,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
         */
 
         $query = Appeal::where('wiki_id', 3)
-            ->whereNotIn('status', [
-                Appeal::STATUS_VERIFY,
-                Appeal::STATUS_NOTFOUND,
-                Appeal::STATUS_EXPIRE,
-                Appeal::STATUS_DECLINE,
-                Appeal::STATUS_ACCEPT,
-                Appeal::STATUS_INVALID,
-            ])->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->get();
+            ->whereNotIn('status', Appeal::ACTIVE_APPEAL_ONLY)->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->get();
         
         $blacklist = array();
         foreach ($query as $appeal) {
@@ -47,14 +40,7 @@ class PostGlobalIPBEReqJob implements ShouldQueue
             }
         }
         $query = Appeal::where('wiki_id', 3)
-            ->whereNotIn('status', [
-                Appeal::STATUS_VERIFY,
-                Appeal::STATUS_NOTFOUND,
-                Appeal::STATUS_EXPIRE,
-                Appeal::STATUS_DECLINE,
-                Appeal::STATUS_ACCEPT,
-                Appeal::STATUS_INVALID,
-            ])->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->whereNotIn('id',$blacklist)-get();
+            ->whereNotIn('status', Appeal::ACTIVE_APPEAL_ONLY)->where('blocktype',2)->where('user_verified',1)->whereNull('handlingadmin')->whereNotIn('id',$blacklist)-get();
 
         return $query;
     }
