@@ -34,7 +34,6 @@ class PostGlobalIPBEReqJob implements ShouldQueue
         foreach ($query as $appeal) {
             foreach ($appeal->comments()->get() as $comment) {
                 if ($comment->user_id == 3823 && $comment->reason == "posted IPBE request onwiki") {
-                    print_r($comment->model_id);
                     array_push($blacklist,$comment->model_id);
                 }
             }
