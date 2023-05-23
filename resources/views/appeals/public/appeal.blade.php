@@ -47,7 +47,7 @@
                     {{ Form::open(['url' => route('public.appeal.modify')]) }}
                     {{ Form::token() }}
                     {{ Form::hidden('appealkey', $appeal->appealsecretkey) }}
-                    {{ Form::submit(__('appeals.not-found-button'), ['class' => 'btn btn-success']) }}
+                    {{ Form::button(__('appeals.not-found-button'), ['class' => 'btn btn-success','type'=>'submit']) }}
                     {{ Form::close() }}
                 @endif
             </div>

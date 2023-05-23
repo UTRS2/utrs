@@ -113,7 +113,7 @@ function displayTransfer() {
                                             {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
                                         </div>
 
-                                        {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-success']) }}
+                                        {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
                                     {{ Form::close() }}
                                 @endif
                             @endif
@@ -248,7 +248,7 @@ function displayTransfer() {
                                                         {{ Form::label('wiki', 'Transfer this to:') }}<br />
                                                         {{ Form::select('wiki', $wikis, ['class' => 'form-control']) }}
                                                         <br /><br />
-                                                        {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-success']) }}
+                                                        {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -483,7 +483,7 @@ function displayTransfer() {
                                     {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
                                 </div>
 
-                                {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-success']) }}
+                                {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
                             {{ Form::close() }}
                         </div>
                     </div>
@@ -512,7 +512,7 @@ function displayTransfer() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    {{ Form::submit(__('appeals.cu.submit'), ['class' => 'btn btn-primary']) }}
+                    {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-primary','type'=>'submit']) }}
                 </div>
                 {{ Form::close() }}
             </div>
