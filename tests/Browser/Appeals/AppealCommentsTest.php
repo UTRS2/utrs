@@ -67,7 +67,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertDontSee($targetTemplateTextStart)
                 ->assertSee($targetTemplate->name)
                 ->assertDontSee($nonActiveTemplate->name)
-                ->waitForText($targetTemplate,5)
+                ->waitForText($targetTemplate->name,5)
                 ->press($targetTemplate->name)
                 ->assertSee($targetTemplateTextStart)
                 ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
