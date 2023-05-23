@@ -31,12 +31,11 @@ class PostGlobalIPBEReqJob implements ShouldQueue
                 Appeal::STATUS_ACCEPT,
                 Appeal::STATUS_INVALID,
             ])
-            ->where('blockreason','RLIKE', '(O|o)pen prox')
             ->where('user_verified',1)
             ->whereNull('handlingAdmin')
             ->leftJoin('log_entries', function ($join) {
                 $join->on('log_entries.model_id','=','appeals.id')
-                    ->where('log_entries.reason','RLIKE','posted IPBE request onwiki')
+                    ->whereNot('log_entries.reason','RLIKE','posted IPBE request onwiki')
                     ->where('log_entries.user_id',3823);
             })
             ->select('appeals.*')
