@@ -88,7 +88,7 @@ class UpdateWikiAppealListJob implements ShouldQueue
                 )
                 . "\n| " . $appeal->submitted
                 . "\n| " . $appeal->status
-                . "\n| [[File:" . $image . "|20px]]';
+                . "\n| [[File:" . $image . "|20px]]";
         })
             ->join("\n");
 
