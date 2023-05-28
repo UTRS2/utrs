@@ -296,7 +296,7 @@ class AppealController extends Controller
         elseif ($appeal->user_verified==1)  {
             $title = 'UTRS appeal response';
             $baseURL = route('home');
-            switch (variable) {
+            switch ($appeal->status) {
                  case Appeal::STATUS_ACCEPT:
                      $textStatus = "has been accepted";
                      break;
