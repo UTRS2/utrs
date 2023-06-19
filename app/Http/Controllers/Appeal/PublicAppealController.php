@@ -52,8 +52,11 @@ class PublicAppealController extends Controller
         ]);
 
         if ($data['blocktype'] == 0) {
+            if (strpos($data['appealfor'],"/")>0) {
+                $data['appealfor'] = explode("/",$data['appealfor'])[0];
+            }
             $request->validate([
-                'appealfor' => 'ip',
+                $data['appealfor'] => 'ip',
             ]);
         }
 
