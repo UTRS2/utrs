@@ -51,6 +51,12 @@ class PublicAppealController extends Controller
             'hiddenip'   => 'nullable|ip'
         ]);
 
+        if ($data['blocktype'] == 0) {
+            $data = $request->validate([
+                'appealfor' => 'ip',
+            ]);
+        }
+
         // back compat, at least for now
         $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
 
