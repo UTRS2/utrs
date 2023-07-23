@@ -95,9 +95,10 @@ class Appeal extends Model
     public function scopeOpenOrRecent(Builder $query)
     {
         return $query->where(function (Builder $query) {
+                $number = strval(rand(-1.5, -2.5));
                 return $query
                     ->whereNotIn('status', [ Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_INVALID ])
-                    ->orWhere('submitted', '>=', now()->modify('-2 days'));
+                    ->orWhere('submitted', '>=', now()->modify($number.' days'));
             });
     }
 

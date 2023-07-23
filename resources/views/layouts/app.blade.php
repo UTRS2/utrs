@@ -43,9 +43,6 @@
                             @can('viewAny', App\Models\User::class)
                                 <a class="dropdown-item" href="{{ route('admin.users.list') }}">{{__('generic.admin-tools.users')}}</a>
                             @endcan
-                            @can('viewAny', App\Models\Sitenotice::class)
-                                <a class="dropdown-item disabled" href="{{ route('admin.sitenotices.list') }}">{{__('generic.admin-tools.sitenotice')}}</a>
-                            @endcan
                         </div>
                     </li>
                 @endcanany
@@ -109,7 +106,7 @@
     <footer class="mt-4">
         <hr/>
         <p>
-            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs/issues">report bugs</a>
+            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs/issues">report bugs</a>.
         </p>
     </footer>
 </div>

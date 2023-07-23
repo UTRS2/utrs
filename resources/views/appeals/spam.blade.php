@@ -7,7 +7,7 @@
     <div class="col-md-10">
         <div class="alert alert-danger" role="alert">
             <p>
-                {{__('appeals.spam')}}
+                {{__('appeals.spam')}} utrs-admins@googlegroups.com
             </p>
         </div>
         <br>

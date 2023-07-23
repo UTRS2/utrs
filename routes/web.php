@@ -78,8 +78,6 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/admin/bans/{ban}', 'Admin\BanController@show')->name('admin.bans.view');
     Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
 
-    Route::get('/admin/sitenotices', 'AdminController@listsitenotices')->name('admin.sitenotices.list');
-
     Route::get('/admin/templates', 'Admin\TemplateController@index')->name('admin.templates.list');
     Route::get('/admin/templates/create', 'Admin\TemplateController@new');
     Route::post('/admin/templates/create', 'Admin\TemplateController@create');
