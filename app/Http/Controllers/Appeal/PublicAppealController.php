@@ -24,46 +24,12 @@
             ]);
         }
 
-        // back compat, at least for now
-        $data['wiki'] = Wiki::where('id', $data['wiki_id'])->firstOrFail()->database_name;
-
-        //If blocktype == 0 and appealfor not IP/range
-        if ($data['blocktype']==0 && !(IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
-            return Redirect::back()->withErrors(['msg'=>'That is not a valid IP address, please try again.'])->withInput();
-        }
-
-        if ($data['blocktype']!=0 && (IPUtils::isIp($data['appealfor']) || IPUtils::isIpRange($data['appealfor']))) {
-            return Redirect::back()->withErrors(['msg'=>'You need to enter a username, not an IP address, please try again.'])->withInput();
-        }
-        
-        if (($data['blocktype']==2 || $data['blocktype']==1) && !self::checkValidUser($data['appealfor'],$data['wiki'])) {
-            return Redirect::back()->withErrors(['msg'=>'You need to enter a valid username, please try again.'])->withInput();
+        // br a valid username, please try again.'])->withInput();
         }
 
         if ($data['blocktype']==2 && (!isset($data['hiddenip'])||$data['hiddenip']===NULL)) {
             return Redirect::back()->withErrors(['msg'=>'No underlying IP address provided, please try again.'])->withInput();
-
-        }
-
-        if ($data['blocktype']==2 && (!isset($data['hiddenip'])||$data['hiddenip']==NULL)) {
-            if (!(IPUtils::isIp($data['hiddenip']) || IPUtils::isIpRange($data['hiddenip']))) {
-                return Redirect::back()->withErrors(['msg'=>'The underlying IP is not an IP address, please try again.'])->withInput();
-            }
-        }
-
-        
-
-        
-
-        $key = hash('sha512', $ip . $ua . $lang . (microtime() . rand()));
-        $data['appealsecretkey'] = $key;
-        $data['status'] = Appeal::STATUS_VERIFY;
-        $data['appealfor'] = trim($data['appealfor']);
-
-        $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
-                return $query
-                    ->where('appealfor', $request->input('appealfor'))
-                    ->orWhereHas('privateData', function (Builder $privateDataQuery) use ($request) {
+rivateDataQuery) use ($request) {
                         return $privateDataQuery->where('ipaddress', $request->ip());
                     });
             })
@@ -79,53 +45,7 @@
             $data['appealfor'],
         ]);
 
-        $ban = Ban::whereIn('target', $banTargets)
-            ->wikiIdOrGlobal($data['wiki_id'])
-            ->active()
-            ->first();
-
-        if ($ban) {
-            return response()
-                ->view('appeals.ban', [ 'expire' => $ban->formattedExpiry, 'id' => $ban->id, 'reason' => $ban->reason ])
-                ->setStatusCode(403);
-        }
-
-        if ($request->has('test_do_not_actually_save_anything')) {
-            return response('Test: not actually saving anything');
-        }
-
-        /** @var Appeal $appeal */
-        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
-            $appeal = Appeal::create($data);
-
-            Privatedata::create([
-                'appeal_id' => $appeal->id,
-                'ipaddress' => $ip,
-                'useragent' => $ua,
-                'language'  => $lang,
-            ]);
-
-            LogEntry::create([
-                'user_id'    => -1,
-                'model_id'   => $appeal->id,
-                'model_type' => Appeal::class,
-                'action'     => 'create',
-                'ip'         => $ip,
-                'ua'         => $ua . ' ' . $lang,
-            ]);
-
-            GetBlockDetailsJob::dispatchNow($appeal);
-
-            return $appeal;
-        });
-
-        return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey ]);
-    }
-
-    public function view(Request $request)
-    {
-        $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
-        $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
+           ,str_replace('https://','',env('APP_URL')));
         if($weborigin != $envappurl) {
             abort(403);
         }
@@ -136,14 +56,6 @@
             return response()->view('appeals.public.wrongkey', [], 404);
         }
 
-        if ($appeal->status == Appeal::STATUS_INVALID) {
-            return response()->view('appeals.public.oversight', [], 403);
-        }
-
-        $appeal->loadMissing('comments.userObject');
-
-        return view('appeals.public.appeal', [ 'id' => $appeal->id, 'appeal' => $appeal, ]);
-    }
 
     public function addComment(Request $request)
     {
@@ -162,16 +74,6 @@
         $lang = $request->header('Accept-Language');
         $reason = $request->input('comment');
 
-        LogEntry::create([
-            'user_id'    => -1,
-            'model_id'   => $appeal->id,
-            'model_type' => Appeal::class,
-            'action'     => 'responded',
-            'reason'     => $reason,
-            'ip'         => $ip,
-            'ua'         => $ua . ' ' . $lang,
-            'protected'  => LogEntry::LOG_PROTECTION_NONE,
-        ]);
 
         if ($appeal->status === Appeal::STATUS_AWAITING_REPLY) {
             $appeal->update([
@@ -191,30 +93,7 @@
         return view('appeals.public.verify', [ 'appeal' => $appeal ]);
     }
 
-    public function verifyAccountOwnership(Request $request, Appeal $appeal)
-    {
-        abort_unless((strlen($appeal->verify_token) > 0 && strlen($appeal->appealsecretkey) > 0), 400, "This appeal can't be verified");
-
-        $request->validate([
-            'verify_token' => [ 'required', new SecretEqualsRule($appeal->verify_token) ],
-            'secret_key'   => [ 'required', new SecretEqualsRule($appeal->appealsecretkey) ],
-        ]);
-
-        $appeal->update([
-            'verify_token'  => null,
-            'user_verified' => true,
-        ]);
-
-        $ua = $request->userAgent();
-        $ip = $request->ip();
-        $lang = $request->header('Accept-Language');
-
-        LogEntry::create([
-            'user_id'    => 0,
-            'model_id'   => $appeal->id,
-            'model_type' => Appeal::class,
-            'action'     => 'account verified',
-            'ip'         => $ip,
+    for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltasfor yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas
             'ua'         => $ua . ' ' . $lang,
         ]);
 
