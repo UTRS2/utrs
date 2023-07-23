@@ -191,13 +191,6 @@ class PublicAppealController extends Controller
         $appealkey = $request->input('appealsecretkey');
         $appeal = Appeal::where('appealsecretkey', $appealkey)->firstOrFail();
 
-        //get the number of comments made to appeal in the last 24 hours, and make sure it's less than 3 AND get the number of comments made to appeal by user -1 on appeal
-        $commentssperday = $appeal->comments()->where('timestamp', '>=', now()->subDays(1))->where('user_id',-1)->where('action','responded')->count();
-        $commentsperappeal = $appeal->comments()->where('user_id',-1)->where('action','responded')->count();
-        if ($commentssperday >= 3 || $commentsperappeal >= 15) {
-            return response()->view('appeals.public.toomanycomments', [], 403);
-        }
-
         abort_if($appeal->status === Appeal::STATUS_ACCEPT || $appeal->status === Appeal::STATUS_DECLINE || $appeal->status === Appeal::STATUS_EXPIRE || $appeal->status === Appeal::STATUS_INVALID, 400, "Appeal is closed");
 
         $ua = $request->userAgent();
