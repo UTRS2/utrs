@@ -4,6 +4,7 @@ return [
     'closed-notice' => 'This appeal is closed. No further changes can be made to it.',
     'no-action' => 'You are not permitted to perform any actions on this appeal.',
     'spam'      => 'It has been detected that you or someone else may be trying to spam our system with appeals. Please wait until your previous appeal is closed, or if it is already closed, please try again about 2 days later. If you are applying for an unblock of an IP address, this could mean that an appeal has already been submitted for your IP. In this case, please try again later or contact us to help clarify the issue. Email:',
+    'comment-spam' => 'You have reached the maximum number of comments you can make in a 24 hour period or on this appeal. Please try again later or contact us to help clarify the issue. Email:',
 
     'not-found-text'      => 'We were not able to locate your block. Please click the button below to correct the information in your appeal.',
     'not-found-link-text' => 'click here',
