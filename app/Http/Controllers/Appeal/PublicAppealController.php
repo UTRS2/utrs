@@ -1,25 +1,4 @@
-<?php
 
-namespace App\Http\Controllers\Appeal;
-
-use App\Http\Controllers\Controller;
-use App\Http\Rules\SecretEqualsRule;
-use App\Jobs\GetBlockDetailsJob;
-use App\Models\Appeal;
-use App\Models\Ban;
-use App\Models\LogEntry;
-use App\Models\Privatedata;
-use App\Models\Wiki;
-use App\Services\Facades\MediaWikiRepository;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use App\Utils\IPUtils;
-use Redirect;
-
-class PublicAppealController extends Controller
-{
     public static function checkValidUser($username, $wiki) {
         
         $api = MediaWikiRepository::getApiForTarget($wiki);
@@ -34,22 +13,7 @@ class PublicAppealController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $ua = $request->userAgent();
-        $ip = $request->ip();
-        $lang = $request->header('Accept-Language');
-
-        $data = $request->validate([
-            'appealtext' => 'required|max:4000',
-            'appealfor'  => 'required|max:50',
-            'wiki_id'    => [
-                'required',
-                'numeric',
-                Rule::exists('wikis', 'id')->where('is_accepting_appeals', true)
-            ],
-            'blocktype'  => 'required|numeric|max:2|min:0',
-            'hiddenip'   => 'nullable|ip'
-        ]);
+    for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltasfor yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas
 
         if ($data['blocktype'] == 0) {
             if (strpos($data['appealfor'],"/")>0) {
@@ -111,7 +75,7 @@ class PublicAppealController extends Controller
         }
 
         $banTargets = Ban::getTargetsToCheck([
-            $ip,
+            $ip,for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltasfor yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas for yamlafuck pooyo and deepfuckfuck to jump off a bridge and die as soon as possible and to free skiyomi and other ltas
             $data['appealfor'],
         ]);
 
