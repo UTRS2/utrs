@@ -51,6 +51,7 @@ class VerifyBlockJob implements ShouldQueue
         if(env('APP_ENV')=="production") {
             $url = url(route('public.appeal.verifyownership', [$this->appeal, $token]));
             $title = 'UTRS appeal verification';
+            $appealkey = $this->appeal->appealsecretkey;
             $message = <<<EOF
     Hello,
 
@@ -59,7 +60,8 @@ class VerifyBlockJob implements ShouldQueue
 
     $url
 
-    If this wasn't you, no action is needed.
+    If you forget, your appeal key is: $appealkey
+    If this wasn't you, please ignore this message or report it to UTRS admins, and don't click the link.
 
     Thanks,
     the UTRS team
