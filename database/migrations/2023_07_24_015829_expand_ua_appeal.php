@@ -15,7 +15,7 @@ class ExpandUaAppeal extends Migration
     {
         // change useragent column in privatedatas table to varchar(1000)
         Schema::table('privatedatas', function (Blueprint $table) {
-            $table->string('useragent', 1000)->change();
+            $table->string('useragent', 3000)->change();
         });
     }
 
