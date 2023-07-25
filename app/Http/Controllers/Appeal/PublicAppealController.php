@@ -39,38 +39,48 @@ class PublicAppealController extends Controller
         $ip = $request->ip();
         $lang = $request->header('Accept-Language');
 
-        // store the client hints in a variable
-        if($request->header('Sec-CH-UA-Full-Version-List')!== NULL) {
-            $clientHints['browser'] = str_replace("\"","",explode(", ",$request->header('Sec-CH-UA-Full-Version-List'))[2]);
-            $clientHints['browser'] = str_replace(";v=","/",$clientHints['browser']);
-        }
-        $clientHints['phone'] = str_replace("\"","",$request->header('Sec-CH-UA-Mobile')== "?1" ? 'true' : 'false');
-        $clientHints['platform'] = str_replace("\"","",$request->header('Sec-CH-UA-Platform'));
-        $clientHints['platform-version'] = str_replace("\"","",$request->header('Sec-CH-UA-Platform-Version'));
-        if (explode(".",$clientHints['platform-version'])[0]>=13 && $clientHints['platform']=='Windows') {
-            $clientHints['platform-version'] = '11';
-        } elseif ($clientHints['platform']=='Windows') {
-            $clientHints['platform-version'] = '10 or lower';
-        }
-        $clientHints['architecture'] = str_replace("\"","",$request->header('Sec-CH-UA-Arch'));
-        $clientHints['device-model'] = str_replace("\"","",$request->header('Sec-CH-UA-Model'));
-        $clientHints['bits'] = str_replace("\"","",$request->header('Sec-CH-UA-Bitness'));
-        $clientHints['resolution'] = $request->header('Sec-CH-Viewport-Width').'x'.$request->header('Sec-CH-Viewport-Height');
-        if ($request->header('device-memory')==8) {
-            $clientHints['memory'] = '8GB+';
-        } else {
-            $clientHints['memory'] = $request->header('device-memory')."GB";
-        }
-        if ($clientHints['platform']=="Windows"||$clientHints['platform']=="Linux") {
-            $clientHintsString = $clientHints['platform'] . " " . $clientHints['platform-version'] . " " . $clientHints['architecture'] . "-Arch " . $clientHints['bits'] . "-bit " . $clientHints['resolution'] . " " . $clientHints['memory'].' RAM '. $clientHints['browser'];
-        } elseif ($clientHints['platform']=="Android") {
-            $clientHintsString = $clientHints['platform'] . " " . $clientHints['platform-version'] . " " . $clientHints['device-model'] . " " . $clientHints['bits'] . "-bit " . $clientHints['resolution'] . " " . $clientHints['memory'].' RAM '. $clientHints['browser'];
-        } else {
-            $clientHintsString = NULL;
-        }
-        //$clientHints['ua'] = $request->header('Sec-CH-UA');
-        if(isset($clientHintsString)) {
-            $ua = $ua . ' || CHS: ' . $clientHintsString;
+        try {
+            // store the client hints in a variable
+            if($request->header('Sec-CH-UA-Full-Version-List')!== NULL) {
+                $clientHints['browser'] = str_replace("\"","",explode(", ",$request->header('Sec-CH-UA-Full-Version-List'))[2]);
+                $clientHints['browser'] = str_replace(";v=","/",$clientHints['browser']);
+            }
+            $clientHints['phone'] = str_replace("\"","",$request->header('Sec-CH-UA-Mobile')== "?1" ? 'true' : 'false');
+            $clientHints['platform'] = str_replace("\"","",$request->header('Sec-CH-UA-Platform'));
+            $clientHints['platform-version'] = str_replace("\"","",$request->header('Sec-CH-UA-Platform-Version'));
+            if (explode(".",$clientHints['platform-version'])[0]>=13 && $clientHints['platform']=='Windows') {
+                $clientHints['platform-version'] = '11';
+            } elseif ($clientHints['platform']=='Windows') {
+                $clientHints['platform-version'] = '10 or lower';
+            }
+            $clientHints['architecture'] = str_replace("\"","",$request->header('Sec-CH-UA-Arch'));
+            $clientHints['device-model'] = str_replace("\"","",$request->header('Sec-CH-UA-Model'));
+            $clientHints['bits'] = str_replace("\"","",$request->header('Sec-CH-UA-Bitness'));
+            $clientHints['resolution'] = $request->header('Sec-CH-Viewport-Width').'x'.$request->header('Sec-CH-Viewport-Height');
+            if ($request->header('device-memory')==8) {
+                $clientHints['memory'] = '8GB+';
+            } else {
+                $clientHints['memory'] = $request->header('device-memory')."GB";
+            }
+            if ($clientHints['platform']=="Windows"||$clientHints['platform']=="Linux") {
+                $clientHintsString = $clientHints['platform'] . " " . $clientHints['platform-version'] . " " . $clientHints['architecture'] . "-Arch " . $clientHints['bits'] . "-bit " . $clientHints['resolution'] . " " . $clientHints['memory'].' RAM '. $clientHints['browser'];
+            } elseif ($clientHints['platform']=="Android") {
+                $clientHintsString = $clientHints['platform'] . " " . $clientHints['platform-version'] . " " . $clientHints['device-model'] . " " . $clientHints['bits'] . "-bit " . $clientHints['resolution'] . " " . $clientHints['memory'].' RAM '. $clientHints['browser'];
+            } else {
+                $clientHintsString = NULL;
+            }
+            //$clientHints['ua'] = $request->header('Sec-CH-UA');
+            if(isset($clientHintsString)) {
+                $ua = $ua . ' || CHS: ' . $clientHintsString;
+            }
+        } catch (\Exception $e) {
+            // iterate through the client hints and add them to the user agent string if they exist
+            $ua = $ua . ' || Raw CHS: ';
+            foreach ($clientHints as $key => $value) {
+                if ($value !== false) {
+                    $ua = $ua . $key . ': ' . $value . ', ';
+                }
+            }
         }
 
         $data = $request->validate([
