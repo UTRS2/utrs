@@ -75,7 +75,7 @@ class PublicAppealController extends Controller
             }
         } catch (\Exception $e) {
             // iterate through the client hints and add them to the user agent string if they exist
-            if (isset($clientHints) {
+            if (isset($clientHints)) {
                 $ua = $ua . ' || Raw CHS: ';
                 foreach ($clientHints as $key => $value) {
                     if ($value !== false) {
