@@ -50,9 +50,11 @@ function displayTransfer() {
                                 @elseif($info->user_verified == -1)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
                                 <i>This appeal will not be able to be verified.</i>
+                                <br /><b style="color:red">This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
                                 @elseif(!$info->blocktype == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
-                                <i>{{__('appeals.verify.not-verified')}}</i>
+                                <i>{{__('appeals.verify.not-verified')}}</i> 
+                                <br /><b style="color:red">This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
                                 @endif
                                 <br/>{{__('appeals.appeal-types.title')}}: 
                                 @if($info->blocktype==0)
