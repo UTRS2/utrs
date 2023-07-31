@@ -26,9 +26,6 @@ class ExpandUaAppeal extends Migration
      */
     public function down()
     {
-        // change useragent column in privatedatas table to text
-        Schema::table('privatedatas', function (Blueprint $table) {
-            $table->text('useragent')->change();
-        });
+        // do nothing so that database destruction on tests will work
     }
 }
