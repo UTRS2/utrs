@@ -21,11 +21,12 @@ class StatsController extends Controller
         $date = Carbon::now()->subDays(90);
         $en_perday = \Lava::DataTable();
         $en_perday->addDateColumn('Date')
-            ->addNumberColumn('Appeals');
+            ->addNumberColumn('Appeals')
+            ->setDateTimeFormat('Y-m-d');
         for ($i = 0; $i < 90; $i++) {
             $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
-            $date = $date->addDays(1);
         }
+
         \Lava::ColumnChart('enwiki_daystat', $en_perday, [
             'title' => 'Per day appeals in the last 90 days - enwiki',
             'legend' => [
@@ -35,6 +36,9 @@ class StatsController extends Controller
             'height' => 500,
             'width' => 1000,
         ]);
+        //filter the column chart date range to only the last 90 days
+
+
         
         $en_data = \Lava::DataTable();
         $en_data = $en_data->addStringColumn('enwiki_appstat')
