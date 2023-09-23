@@ -24,7 +24,8 @@ class StatsController extends Controller
             ->addRow(['Total appeals in time period', $enwiki->count()])
             ->addRow(['Accepted', $enwiki->where('status', Appeal::STATUS_ACCEPT)->count()])
             ->addRow(['Declined', $enwiki->where('status', Appeal::STATUS_DECLINE)->count()])
-            ->addRow(['Expired', $enwiki->where('status', Appeal::STATUS_EXPIRE)->count()]);
+            ->addRow(['Expired', $enwiki->where('status', Appeal::STATUS_EXPIRE)->count()])
+            ->addRow(['Still under review', $enwiki->where('status', Appeal::STATUS_OPEN)->count()]);
 
         \Lava::BarChart('enwiki_appstat', $en_data, [
             'title' => 'Appeals in the last 90 days - enwiki',
@@ -43,7 +44,8 @@ class StatsController extends Controller
             ->addRow(['Total appeals in time period', $global->count()])
             ->addRow(['Accepted', $global->where('status', Appeal::STATUS_ACCEPT)->count()])
             ->addRow(['Declined', $global->where('status', Appeal::STATUS_DECLINE)->count()])
-            ->addRow(['Expired', $global->where('status', Appeal::STATUS_EXPIRE)->count()]);
+            ->addRow(['Expired', $global->where('status', Appeal::STATUS_EXPIRE)->count()])
+            ->addRow(['Still under review', $global->where('status', Appeal::STATUS_OPEN)->count()]);
 
         \Lava::BarChart('global_appstat', $g_data, [
             'title' => 'Appeals in the last 90 days - Global',
