@@ -17,6 +17,24 @@ class StatsController extends Controller
     public function display_appeals_chart()
     {
         $enwiki = Appeal::whereTime('submitted', '>',Carbon::now()->subDays(90))->where('wiki_id',1)->get();
+
+        $date = Carbon::now()->subDays(90);
+        $en_perday = \Lava::DataTable();
+        $en_perday->addDateColumn('Date')
+            ->addNumberColumn('Appeals');
+        for ($i = 0; $i < 90; $i++) {
+            $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
+            $date = $date->addDays(1);
+        }
+        \Lava::ColumnChart('enwiki_daystat', $en_perday, [
+            'title' => 'Per day appeals in the last 90 days - enwiki',
+            'legend' => [
+                'position' => 'none'
+            ],
+            'colors' => ['#0000FF'],
+            'height' => 500,
+            'width' => 1000,
+        ]);
         
         $en_data = \Lava::DataTable();
         $en_data = $en_data->addStringColumn('enwiki_appstat')
