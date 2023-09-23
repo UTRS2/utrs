@@ -10,5 +10,5 @@
 @columnchart('global_daystat', 'global_day_div')
 @barchart('enwiki_appstat', 'en_div')
 @barchart('global_appstat', 'meta_div')
-@columnchart('en_admincount', 'en_blockadmin_div')
+@barchart('en_admincount', 'en_blockadmin_div')
 @endsection

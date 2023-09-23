@@ -114,7 +114,7 @@ class StatsController extends Controller
         foreach ($admins as $admin => $count) {
             $en_blockadmin->addRow([$admin, $count]);
         }
-        \Lava::ColumnChart('en_admincount', $en_blockadmin, [
+        \Lava::BarChart('en_admincount', $en_blockadmin, [
             'title' => 'Number of appeals per blocking admin - enwiki',
             'legend' => [
                 'position' => 'none'
