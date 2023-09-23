@@ -113,7 +113,7 @@ class StatsController extends Controller
         }
         //go through $admins and remove any with a count of less than 10
         foreach ($admins as $admin => $count) {
-            if ($count < 10) {
+            if ($count < 15) {
                 unset($admins[$admin]);
             }
         }
@@ -123,7 +123,7 @@ class StatsController extends Controller
             $en_blockadmin->addRow([$admin, $count]);
         }
         \Lava::BarChart('en_admincount', $en_blockadmin, [
-            'title' => 'Number of requests per block admin if over 10 appeals in last 90 days - enwiki',
+            'title' => 'Number of requests per block admin if over 15 appeals in last 90 days - enwiki',
             'legend' => [
                 'position' => 'none'
             ],
