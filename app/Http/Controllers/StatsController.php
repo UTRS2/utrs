@@ -99,7 +99,7 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
-        return view('stats.appeals',['dates'=>$dates]);
+        return view('stats.appeals');
 
     }
 }
