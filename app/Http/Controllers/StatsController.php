@@ -23,7 +23,6 @@ class StatsController extends Controller
         $en_perday->addDateColumn('Date')
             ->addNumberColumn('Appeals')
             ->setDateTimeFormat('Y-m-d');
-        $dates = [];
         for ($i = 0; $i < 90; $i++) {
             $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('blockfound',1)->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
             
@@ -79,6 +78,27 @@ class StatsController extends Controller
             'height' => 500,
             'width' => 1000,
         ]);
+
+        $date = Carbon::now()->subDays(90);
+        $en_perday = \Lava::DataTable();
+        $en_perday->addDateColumn('Date')
+            ->addNumberColumn('Appeals')
+            ->setDateTimeFormat('Y-m-d');
+        for ($i = 0; $i < 90; $i++) {
+            $en_perday->addRow([$date->format('Y-m-d'), $global->where('blockfound',1)->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
+            
+        }
+
+        \Lava::ColumnChart('global_daystat', $en_perday, [
+            'title' => 'Per days appeals in the last 90 days where the block was found - global',
+            'legend' => [
+                'position' => 'none'
+            ],
+            'colors' => ['#0000FF'],
+            'height' => 500,
+            'width' => 1000,
+        ]);
+
         return view('stats.appeals',['dates'=>$dates]);
 
     }
