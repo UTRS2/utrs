@@ -18,17 +18,17 @@ class StatsController extends Controller
     {
         $enwiki = Appeal::whereTime('submitted', '>',Carbon::now()->subDays(90))->where('wiki_id',1)->get();
 
-        $date = Carbon::now()->subDays(90);
+        $date = Carbon::now()->subWeeks(12);
         $en_perday = \Lava::DataTable();
         $en_perday->addDateColumn('Date')
             ->addNumberColumn('Appeals')
             ->setDateTimeFormat('Y-m-d');
-        for ($i = 0; $i < 90; $i++) {
-            $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
+        for ($i = 0; $i < 12; $i++) {
+            $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('submitted', '>', $date)->where('submitted', '<', $date->addWeeks(1))->count()]);
         }
 
-        \Lava::ColumnChart('enwiki_daystat', $en_perday, [
-            'title' => 'Per day appeals in the last 90 days - enwiki',
+        \Lava::ColumnChart('enwiki_weekstat', $en_perday, [
+            'title' => 'Per week appeals in the last 12 weeks - enwiki',
             'legend' => [
                 'position' => 'none'
             ],
