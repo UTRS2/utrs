@@ -16,6 +16,7 @@
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.7.0",
+        "khill/lavacharts": "^3.1",
         "laravel/framework": "^8.15",
         "laravel/slack-notification-channel": "^2.3",
         "laravel/socialite": "^5.1",
