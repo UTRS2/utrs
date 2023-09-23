@@ -132,6 +132,53 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
+        $date = Carbon::now()->subDays(90);
+        $en_blockreason = \Lava::DataTable();
+        $en_blockreason->addStringColumn('Reason')
+            ->addNumberColumn('Number of times a reason was used');
+        $reasons = [];
+        $reasons['other'] = 0;
+        foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
+            //if reason has wikimarkup for a template, get the template name, and count them
+            if (preg_match('/\{\{([^\}]+)\}\}/', $appeal->blockreason, $matches)) {
+                if (!isset($reasons[$matches[1]])) {
+                    $reasons[$matches[1]] = 1;
+                } else {
+                    $reasons[$matches[1]] = $reasons[$matches[1]] + 1;
+                }
+            } else {
+                //if reason doesn't have wikimarkup for a template, take anything before ":" and count them, otherwise ignore it
+                if (preg_match('/([^:]+):/', $appeal->blockreason, $matches)) {
+                    if (!isset($reasons[$matches[1]])) {
+                        $reasons[$matches[1]] = 1;
+                    } else {
+                        $reasons[$matches[1]] = $reasons[$matches[1]] + 1;
+                    }
+                } else {
+                    $reasons['other'] = $reasons['other'] + 1;
+                }
+            }
+        }
+        //go through $reasons and remove any with a count of less than 10 and sort by count
+        foreach ($reasons as $reason => $count) {
+            if ($count < 10) {
+                unset($reasons[$reason]);
+            }
+        }
+        arsort($reasons);
+        foreach ($reasons as $reason => $count) {
+            $en_blockreason->addRow([$reason, $count]);
+        }
+        \Lava::BarChart('en_blockreason', $en_blockreason, [
+            'title' => 'Number of requests per block reason if over 10 appeals in last 90 days - enwiki',
+            'legend' => [
+                'position' => 'none'
+            ],
+            'colors' => ['#0000FF'],
+            'height' => 1500,
+            'width' => 1000,
+        ]);
+
         return view('stats.appeals');
 
     }
