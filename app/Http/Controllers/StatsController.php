@@ -117,17 +117,19 @@ class StatsController extends Controller
                 unset($admins[$admin]);
             }
         }
+        //sort the array by the number of times they are blocking admins
+        arsort($admins);
         foreach ($admins as $admin => $count) {
             $en_blockadmin->addRow([$admin, $count]);
         }
         \Lava::BarChart('en_admincount', $en_blockadmin, [
-            'title' => 'Number of appeals per blocking admin - enwiki',
+            'title' => 'Number of requests per block admin if over 10 appeals in last 90 days - enwiki',
             'legend' => [
                 'position' => 'none'
             ],
             'colors' => ['#0000FF'],
             'height' => 500,
-            'width' => 1000,
+            'width' => 3000,
         ]);
 
         return view('stats.appeals');
