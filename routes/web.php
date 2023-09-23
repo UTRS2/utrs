@@ -30,6 +30,7 @@ Route::middleware('set.locale')->group(function () {
             ->middleware('torblock');
 
         Route::post('/appeal/view', 'Appeal\PublicAppealController@view')->name('public.appeal.view');
+        Route::post('/appealmap/view', 'Appeal\PublicAppealController@appealmap')->name('public.appeal.map');
         Route::post('/appeal/comment', 'Appeal\PublicAppealController@addComment')->name('public.appeal.comment');
 
         Route::post('/appeal/modify', 'Appeal\PublicAppealModifyController@showForm')->name('public.appeal.modify');
@@ -39,6 +40,7 @@ Route::middleware('set.locale')->group(function () {
         Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
     });
 
+    Route::get('/appeal/map/{id}', 'AppealController@map')->name('appeal.map');
     Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
 
     Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
@@ -89,4 +91,16 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
     Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
     Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
+
+    Route::get('/statistics', 'StatsController@display_appeals_chart')->name('stats.appeals.chart');
+
+    Route::view('/test', 'appeals.appealmap', ['appealmap' => [
+        ['text'=>'Appeal Submitted', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'sent','active'=>"yes",'appealid'=>2],
+        ['text'=>'Appeal Assigned', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'assigned','active'=>"yes"],
+        ['text'=>'Appeal Reviewed & Declined', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'reviewed','active'=>"error"],
+        ['text'=>'Appeal Re-submitted', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'sent','active'=>"yes",'appealid'=>2],
+        ['text'=>'Appeal Assigned', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'assigned','active'=>"yes"],
+        ['text'=>'Appeal Reviewed & Declined', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'reviewed','active'=>"error"],
+        ['text'=>'User banned from making further appeals', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'banned','active'=>"error"],
+        ]]);
 });

@@ -20,7 +20,7 @@
                     <tbody>
                     <tr>
                         <th>{{ __('appeals.details-status') }}</th>
-                        <td>{{ $appeal->status }}</td>
+                        <td>#{{$appeal->id}} - {{ $appeal->status }}</td>
                     </tr>
                     <tr>
                         <th>{{ __('appeals.details-block-admin') }}</th>

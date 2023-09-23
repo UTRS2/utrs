@@ -8,6 +8,7 @@
         {{ config('app.name') }}
     </title>
     <link rel="stylesheet" href="{{ url(mix('css/app.css')) }}">
+    <style>@yield('css')</style>
     <script src="{{ url(mix('js/app.js')) }}"></script>
     <script type="text/javascript">@yield('scripts')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>

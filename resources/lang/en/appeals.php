@@ -53,7 +53,7 @@ return [
     'send-reply-button'  => 'Send a reply to the user',
     'not-handling-admin' => 'You are not the handling admin.',
 
-    'details-status'         => 'Appeal status',
+    'details-status'         => 'Appeal number & status',
     'details-block-admin'    => 'Blocking administrator',
     'details-block-reason'   => 'Block reason',
     'details-submitted'      => 'Time submitted',
