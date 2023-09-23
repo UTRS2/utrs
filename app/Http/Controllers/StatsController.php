@@ -16,15 +16,17 @@ class StatsController extends Controller
 
     public function display_appeals_chart()
     {
-        $enwiki = Appeal::whereTime('submitted', '>',Carbon::now()->subDays(90))->where('wiki_id',1)->get();
+        $enwiki = Appeal::whereDate('submitted', '>',Carbon::now()->subDays(90))->where('wiki_id',1)->get();
 
-        $date = Carbon::now()->subWeeks(12);
+        $date = Carbon::now()->subDays(84);
         $en_perday = \Lava::DataTable();
         $en_perday->addDateColumn('Date')
             ->addNumberColumn('Appeals')
             ->setDateTimeFormat('Y-m-d');
+        $dates = [];
         for ($i = 0; $i < 12; $i++) {
             $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('submitted', '>', $date)->where('submitted', '<', $date->addWeeks(1))->count()]);
+            
         }
 
         \Lava::ColumnChart('enwiki_weekstat', $en_perday, [
@@ -36,7 +38,6 @@ class StatsController extends Controller
             'height' => 500,
             'width' => 1000,
         ]);
-        //filter the column chart date range to only the last 90 days
 
 
         
@@ -59,7 +60,7 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
-        $global = Appeal::whereTime('submitted', '>',Carbon::now()->subDays(90))->where('wiki_id',3)->get();
+        $global = Appeal::whereDate('submitted', '>',Carbon::now()->subDays(90))->where('wiki_id',3)->get();
         $g_data = \Lava::DataTable();
         $g_data = $g_data->addStringColumn('global_appstat')
             ->addNumberColumn('Number of appeals')
@@ -78,6 +79,7 @@ class StatsController extends Controller
             'height' => 500,
             'width' => 1000,
         ]);
-        return view('stats.appeals');
+        return view('stats.appeals',['dates'=>$dates]);
+
     }
 }
