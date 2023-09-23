@@ -105,10 +105,10 @@ class StatsController extends Controller
             ->addNumberColumn('Number of times they are blocking admins');
         $admins = [];
         foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
-            if (!isset($admins[$appeal->blockadmin])) {
-                $admins[$appeal->blockadmin] = 1;
+            if (!isset($admins[$appeal->blockingadmin])) {
+                $admins[$appeal->blockingadmin] = 1;
             } else {
-                $admins[$appeal->blockadmin] = $admins[$appeal->blockadmin] + 1;
+                $admins[$appeal->blockingadmin] = $admins[$appeal->blockingadmin] + 1;
             }
         }
         foreach ($admins as $admin => $count) {
