@@ -25,12 +25,12 @@ class StatsController extends Controller
             ->setDateTimeFormat('Y-m-d');
         $dates = [];
         for ($i = 0; $i < 90; $i++) {
-            $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
+            $en_perday->addRow([$date->format('Y-m-d'), $enwiki->where('blockfound',1)->where('submitted', '>', $date)->where('submitted', '<', $date->addDays(1))->count()]);
             
         }
 
         \Lava::ColumnChart('enwiki_daystat', $en_perday, [
-            'title' => 'Per days appeals in the last 90 days - enwiki',
+            'title' => 'Per days appeals in the last 90 days where the block was found - enwiki',
             'legend' => [
                 'position' => 'none'
             ],
