@@ -99,6 +99,31 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
+        $date = Carbon::now()->subDays(90);
+        $en_blockadmin = \Lava::DataTable();
+        $en_blockadmin->addStringColumn('Administrator')
+            ->addNumberColumn('Number of times they are blocking admins');
+        $admins = [];
+        foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
+            if (!isset($admins[$appeal->blockadmin])) {
+                $admins[$appeal->blockadmin] = 1;
+            } else {
+                $admins[$appeal->blockadmin] = $admins[$appeal->blockadmin] + 1;
+            }
+        }
+        foreach ($admins as $admin => $count) {
+            $en_blockadmin->addRow([$admin, $count]);
+        }
+        \Lava::ColumnChart('en_admincount', $en_blockadmin, [
+            'title' => 'Number of appeals per blocking admin - enwiki',
+            'legend' => [
+                'position' => 'none'
+            ],
+            'colors' => ['#0000FF'],
+            'height' => 500,
+            'width' => 1000,
+        ]);
+
         return view('stats.appeals');
 
     }
