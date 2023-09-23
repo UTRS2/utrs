@@ -111,6 +111,12 @@ class StatsController extends Controller
                 $admins[$appeal->blockingadmin] = $admins[$appeal->blockingadmin] + 1;
             }
         }
+        //go through $admins and remove any with a count of less than 10
+        foreach ($admins as $admin => $count) {
+            if ($count < 10) {
+                unset($admins[$admin]);
+            }
+        }
         foreach ($admins as $admin => $count) {
             $en_blockadmin->addRow([$admin, $count]);
         }
