@@ -132,15 +132,16 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
-        $date = Carbon::now()->subDays(365);
         $en_blockreason = \Lava::DataTable();
         $en_blockreason->addStringColumn('Reason')
             ->addNumberColumn('Number of times a reason was used');
         $reasons = [];
         $other = 0;
-        foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
+        //make $appeal->blockreason lower case
+        $blockreason = strtolower($appeal->blockreason);
+        foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(365)) as $appeal) {
             //if reason has wikimarkup for a template, get the template name, and count them
-            if (preg_match('/\{\{.*\}\}/', $appeal->blockreason, $matches)) {
+            if (preg_match('/\{\{.*\}\}/', $blockreason, $matches)) {
                 //if "|" is in the template, then only use the text before the pipe
                 if (preg_match('/\|/', $matches[0], $matchesnew)) {
                     $reason = explode('|', $matchesnew[0])[0].'}}';
@@ -152,7 +153,7 @@ class StatsController extends Controller
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
-                if (preg_match('/\[\[(WP|Wikipedia)\:.*\]\]/', $appeal->blockreason, $matches)) {
+                if (preg_match('/\[\[(WP|Wikipedia)\:.*\]\]/', $blockreason, $matches)) {
                     $link = $matches[0];
                     //split the match by "]]" and get the first part
                     $link = explode(']]', $link)[0];
