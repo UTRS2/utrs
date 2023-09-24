@@ -137,7 +137,7 @@ class StatsController extends Controller
         $en_blockreason->addStringColumn('Reason')
             ->addNumberColumn('Number of times a reason was used');
         $reasons = [];
-        $reasons['Other'] = 0;
+        $reasons["Other"] = 0;
         foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
             //if reason has wikimarkup for a template, get the template name, and count them
             if (preg_match('/\{\{([^\}]+)\}\}/', $appeal->blockreason, $matches)) {
