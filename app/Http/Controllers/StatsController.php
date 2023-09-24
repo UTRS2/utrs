@@ -161,10 +161,14 @@ class StatsController extends Controller
                     if (preg_match('/prox/', $blockreason, $matches)) {
                         $blockreason = 'open proxy';
                     }
-                    if (!isset($reasons[$blockreason])) {
-                        $reasons[$blockreason] = 1;
-                    } else {
+                    if (isset($reasons[$blockreason])) {
                         $reasons[$blockreason] = $reasons[$blockreason] + 1;
+                    }
+                    elseif ($reasons[$blockreason] == null) {
+                        dd($appeal->reason);
+                        $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
+                    } else {
+                        $reasons[$blockreason] = 1;
                     }
                 } else {
                     $link = null;
@@ -186,6 +190,10 @@ class StatsController extends Controller
                         }
                         if (isset($reasons[$blockreason])) {
                             $reasons[$blockreason] = $reasons[$blockreason] + 1;
+                        }
+                        elseif ($reasons[$blockreason] == null) {
+                            dd($appeal->reason);
+                            $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                         } else {
                             $reasons[$blockreason] = 1;
                         }
@@ -202,6 +210,10 @@ class StatsController extends Controller
                             }
                             if (isset($reasons[$blockreason])) {
                                 $reasons[$blockreason] = $reasons[$blockreason] + 1;
+                            }
+                            elseif ($reasons[$blockreason] == null) {
+                                dd($appeal->reason);
+                                $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                             } else {
                                 $reasons[$blockreason] = 1;
                             }
