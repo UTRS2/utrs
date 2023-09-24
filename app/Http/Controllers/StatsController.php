@@ -157,6 +157,10 @@ class StatsController extends Controller
                     if (isset(explode('}}', $blockreason)[0])) {
                         $blockreason = explode('}}', $blockreason)[0].'}}';
                     }
+                    //if block reason contains "prox", then set it to "open proxy"
+                    if (preg_match('/prox/', $blockreason, $matches)) {
+                        $blockreason = 'open proxy';
+                    }
                     if (!isset($reasons[$blockreason])) {
                         $reasons[$blockreason] = 1;
                     } else {
@@ -175,6 +179,10 @@ class StatsController extends Controller
                         if (preg_match('/\|/', $link, $matches)) {
                             $blockreason = explode('|', $link)[1];
                         }
+                        //if block reason contains "prox", then set it to "open proxy"
+                        if (preg_match('/prox/', $blockreason, $matches)) {
+                            $blockreason = 'open proxy';
+                        }
                         if (isset($reasons[$blockreason])) {
                             $reasons[$blockreason] = $reasons[$blockreason] + 1;
                         } else {
@@ -186,6 +194,10 @@ class StatsController extends Controller
                             //if there is a ":" in the block reason, then only use the text before the ":"
                             if (preg_match('/:/', $blockreason, $matches)) {
                                 $blockreason = explode(':', $blockreason)[0];
+                            }
+                            //if block reason contains "prox", then set it to "open proxy"
+                            if (preg_match('/prox/', $blockreason, $matches)) {
+                                $blockreason = 'open proxy';
                             }
                             if (isset($reasons[$blockreason])) {
                                 $reasons[$blockreason] = $reasons[$blockreason] + 1;
