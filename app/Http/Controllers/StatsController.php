@@ -141,6 +141,10 @@ class StatsController extends Controller
         foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
             //if reason has wikimarkup for a template, get the template name, and count them
             if (preg_match('/\{\{.*\}\}/', $appeal->blockreason, $matches)) {
+                //if "|" is in the template, then only use the text before the pipe
+                if (preg_match('/\|/', $matches[0], $matches)) {
+                    $matches[0] = explode('|', $matches[0])[0].'}}';
+                }
                 if (!isset($reasons[$matches[0]])) {
                     $reasons[$matches[0]] = 1;
                 } else {
