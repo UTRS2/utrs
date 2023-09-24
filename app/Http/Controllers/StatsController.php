@@ -162,7 +162,7 @@ class StatsController extends Controller
                         $blockreason = 'open proxy';
                     }
                     if ($blockreason == null) {
-                        dd($appeal->reason);
+                        dd($appeal->blockreason);
                         $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                     }
                     elseif (isset($reasons[$blockreason])) {
@@ -189,7 +189,7 @@ class StatsController extends Controller
                             $blockreason = 'open proxy';
                         }
                         if ($blockreason == null) {
-                            dd($appeal->reason);
+                            dd($appeal->blockreason);
                             $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                         }
                         elseif (isset($reasons[$blockreason])) {
@@ -209,7 +209,7 @@ class StatsController extends Controller
                                 $blockreason = 'open proxy';
                             }
                             if ($blockreason == null) {
-                                dd($appeal->reason);
+                                dd($appeal->blockreason);
                                 $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                             }
                             elseif (isset($reasons[$blockreason])) {
