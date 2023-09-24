@@ -137,7 +137,7 @@ class StatsController extends Controller
             ->addNumberColumn('Number of times a reason was used');
         $reasons = [];
         $other = 0;
-        foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(365)) as $appeal) {
+        foreach ($enwiki as $appeal) {
             //make $appeal->blockreason lower case
             $blockreason = strtolower($appeal->blockreason);
             //if reason has wikimarkup for a template, get the template name, and count them
@@ -180,11 +180,11 @@ class StatsController extends Controller
             }
         }
         //go through $reasons and remove any with a count of less than 10 and sort by count
-        /*foreach ($reasons as $reason => $count) {
+        foreach ($reasons as $reason => $count) {
             if ($count < 10) {
                 unset($reasons[$reason]);
             }
-        }*/
+        }
         arsort($reasons);
         foreach ($reasons as $reason => $count) {
             $en_blockreason->addRow([$reason, $count]);
