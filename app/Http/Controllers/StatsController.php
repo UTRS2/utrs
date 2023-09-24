@@ -146,7 +146,7 @@ class StatsController extends Controller
                 if (preg_match('/\|/', $matches[0], $matchesnew)) {
                     $reason = explode('|', $matchesnew[0])[0].'}}';
                 }
-                if (!isset($reasons[$matches[0]])) {
+                if (!isset($reasons[$reason])) {
                     $reasons[$reason] = 1;
                 } else {
                     $reasons[$reason] = $reasons[$reason] + 1;
