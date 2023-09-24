@@ -1,16 +1,50 @@
 @extends('layouts.app')
 @section('title', 'Statistics - Appeals')
 @section('content')
-<div id="enwiki_day_div"></div>
-<div id="global_day_div"></div>
-<div id="en_div"></div>
-<div id="meta_div"></div>
-<div id="en_blockadmin_div"></div>
-<div id="en_blockreason_div"></div>
-@columnchart('enwiki_daystat', 'enwiki_day_div')
-@columnchart('global_daystat', 'global_day_div')
-@barchart('enwiki_appstat', 'en_div')
-@barchart('global_appstat', 'meta_div')
-@barchart('en_admincount', 'en_blockadmin_div')
-@barchart('en_blockreason', 'en_blockreason_div')
+<div class="btn-group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Change chart
+    </button>
+    <div class="dropdown-menu">
+      @foreach($chartlinks as $key=>$link)
+        <a class="dropdown-item" href="{{ $link }}">{{ $key }}</a>
+      @endforeach
+    </div>
+</div>
+<div class="btn-group">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Change time
+    </button>
+    <div class="dropdown-menu">
+      @foreach($timelinks as $key=>$link)
+        <a class="dropdown-item" href="{{ $link }}">{{ $key }}</a>
+      @endforeach
+    </div>
+</div>
+<div class="btn-group">
+    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Change wiki
+    </button>
+    <div class="dropdown-menu">
+      @foreach($wikilinks as $key=>$link)
+        <a class="dropdown-item" href="{{ $link }}">{{ $key }}</a>
+      @endforeach
+    </div>
+</div>
+@if($chart == 'apppd')
+    <div id="day_div"></div>
+    @columnchart('perday', 'day_div')
+@endif
+@if($chart == 'blkadm')
+    <div id="blockadmin_div"></div>
+    @barchart('admincount', 'blockadmin_div')
+@endif    
+@if($chart == 'blkreason')
+    <div id="blockreason_div"></div>
+    @barchart('blockreason', 'blockreason_div')
+@endif
+@if($chart == 'appstate')
+    <div id="blocktime_div"></div>
+    @barchart('appstate', 'blocktime_div')
+@endif
 @endsection

@@ -92,7 +92,8 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/oauth/callback', 'Auth\\OauthLoginController@callback');
     Route::get('/logout', 'Auth\\OauthLoginController@logout')->name('logout');
 
-    Route::get('/statistics', 'StatsController@display_appeals_chart')->name('stats.appeals.chart');
+    Route::get('/statistics/{name}/{wiki}/{length}', 'StatsController@display_appeals_chart')->name('stats.named');
+    Route::get('/statistics', 'StatsController@display_appeals_chart')->name('stats.overall');
 
     Route::view('/test', 'appeals.appealmap', ['appealmap' => [
         ['text'=>'Appeal Submitted', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'sent','active'=>"yes",'appealid'=>2],
