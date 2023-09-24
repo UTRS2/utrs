@@ -90,7 +90,7 @@ class StatsController extends Controller
                 ->addRow(['Expired', $dbdata->where('status', Appeal::STATUS_EXPIRE)->count()])
                 ->addRow(['Still under review', $dbdata->where('status', Appeal::STATUS_OPEN)->count()]);
 
-            \Lava::BarChart('appstat', $chart_data, [
+            \Lava::BarChart('appstate', $chart_data, [
                 'title' => 'Appeals in the last '.$numericDay.' days - Global',
                 'legend' => [
                     'position' => 'none'
@@ -164,7 +164,6 @@ class StatsController extends Controller
                         $blockreason = 'open proxy';
                     }
                     if ($blockreason == null) {
-                        dd($appeal);
                         $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                     }
                     elseif (isset($reasons[$blockreason])) {
@@ -191,7 +190,6 @@ class StatsController extends Controller
                             $blockreason = 'open proxy';
                         }
                         if ($blockreason == null) {
-                            dd($appeal);
                             $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                         }
                         elseif (isset($reasons[$blockreason])) {
@@ -211,7 +209,6 @@ class StatsController extends Controller
                                 $blockreason = 'open proxy';
                             }
                             if ($blockreason == null) {
-                                dd($appeal);
                                 $reasons["Other uncatigorizable"] = $reasons[$blockreason] + 1;
                             }
                             elseif (isset($reasons[$blockreason])) {
@@ -252,10 +249,10 @@ class StatsController extends Controller
         }
 
         $chartlinks = [
-            'apppd' => '/statistics/apppd/'.$requestedWiki.'/'.$requestedLength,
-            'blkadm' => '/statistics/blkadm/'.$requestedWiki.'/'.$requestedLength,
-            'blkreason' => '/statistics/blkreason/'.$requestedWiki.'/'.$requestedLength,
-            'appstate' => '/statistics/appstate/'.$requestedWiki.'/'.$requestedLength,
+            'Appeals per day' => '/statistics/apppd/'.$requestedWiki.'/'.$requestedLength,
+            'Blocking admins' => '/statistics/blkadm/'.$requestedWiki.'/'.$requestedLength,
+            'Block reasons' => '/statistics/blkreason/'.$requestedWiki.'/'.$requestedLength,
+            'Appeals per state' => '/statistics/appstate/'.$requestedWiki.'/'.$requestedLength,
         ];
         $timelinks = [
             '7d' => '/statistics/'.$requestedChart.'/'.$requestedWiki.'/7d',
