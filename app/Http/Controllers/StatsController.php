@@ -126,7 +126,7 @@ class StatsController extends Controller
                 $chart_data->addRow([$admin, $count]);
             }
             \Lava::BarChart('admincount', $chart_data, [
-                'title' => 'Number of requests per block admin if over 15 appeals in last '.$numericDay.' days - enwiki',
+                'title' => 'Number of requests per block admin if over 15 appeals in last '.$numericDay.' days - '.$requestedWiki,
                 'legend' => [
                     'position' => 'none'
                 ],
@@ -161,7 +161,7 @@ class StatsController extends Controller
                     }
                 } else {
                     //if there is a wikilink store it in a variable named $link
-                    if (preg_match('/\[\[(wp|wikipedia)\:.*\]\]/', $blockreason, $matches)) {
+                    if (preg_match('/\[\[(:|)(wp|wikipedia|m)\:.*\]\]/', $blockreason, $matches)) {
                         $link = $matches[0];
                         //split the match by "]]" and get the first part
                         $link = explode(']]', $link)[0];
@@ -178,6 +178,18 @@ class StatsController extends Controller
                             $reasons[$blockreason] = 1;
                         }
                     } else {
+                        //if requested wiki is global, then still add the reason to the array
+                        if ($requestedWiki == 'global') {
+                            //if there is a ":" in the block reason, then only use the text before the ":"
+                            if (preg_match('/:/', $blockreason, $matches)) {
+                                $blockreason = explode(':', $blockreason)[0];
+                            }
+                            if (isset($reasons[$blockreason])) {
+                                $reasons[$blockreason] = $reasons[$blockreason] + 1;
+                            } else {
+                                $reasons[$blockreason] = 1;
+                            }
+                        }
                         //if there is no wikilink or template, then just add it to the other category
                         $other = $other + 1;
                     }
@@ -195,7 +207,7 @@ class StatsController extends Controller
                 $chart_data->addRow([$reason, $count]);
             }
             \Lava::BarChart('blockreason', $chart_data, [
-                'title' => 'Number of requests per block reason if over 10 appeals in last '.$numericDay.' days - enwiki',
+                'title' => 'Number of requests per block reason if over 10 appeals in last '.$numericDay.' days - '.$requestedWiki,
                 'legend' => [
                     'position' => 'none'
                 ],
@@ -224,7 +236,7 @@ class StatsController extends Controller
             'all' => '/statistics/'.$requestedChart.'/all/'.$requestedLength,
         ];
 
-        return view('stats.appeals', ['chart'=>$requestedChart, 'chartlinks'=>$chartlinks, 'timelinks'=>$timelinks, 'wikilinks'=>$wikilinks]);
+        return view('stats.appeals', ['chart'=>$requestedChart, 'wiki'=>$requestedWiki, 'chartlinks'=>$chartlinks, 'timelinks'=>$timelinks, 'wikilinks'=>$wikilinks]);
 
     }
 }
