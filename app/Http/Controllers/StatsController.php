@@ -156,7 +156,7 @@ class StatsController extends Controller
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
-                if (preg_match('/\[\[(WP|Wikipedia)\:.*\]\]/', $blockreason, $matches)) {
+                if (preg_match('/\[\[(wp|wikipedia)\:.*\]\]/', $blockreason, $matches)) {
                     $link = $matches[0];
                     //split the match by "]]" and get the first part
                     $link = explode(']]', $link)[0];
