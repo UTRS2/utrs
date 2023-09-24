@@ -142,13 +142,13 @@ class StatsController extends Controller
             //if reason has wikimarkup for a template, get the template name, and count them
             if (preg_match('/\{\{([^\}]+)\}\}/', $appeal->blockreason, $matches)) {
                 if (!isset($reasons[$matches[1]])) {
-                    $reasons[$matches[1]] = 1;
+                    $reasons["{{".$matches[1]."}}"] = 1;
                 } else {
-                    $reasons[$matches[1]] = $reasons[$matches[1]] + 1;
+                    $reasons["{{".$matches[1]."}}"] = $reasons[$matches[1]] + 1;
                 }
             } else {
-                //if reason doesn't have wikimarkup for a template, take anything before ":" and count them, otherwise ignore it
-                if (preg_match('/([^:]+):/', $appeal->blockreason, $matches)) {
+                //if reason doesn't have wikimarkup for a template, take anything before the last ":" and count them, otherwise ignore it
+                if (preg_match('/(.+):/', $appeal->blockreason, $matches)) {
                     if (!isset($reasons[$matches[1]])) {
                         $reasons[$matches[1]] = 1;
                     } else {
