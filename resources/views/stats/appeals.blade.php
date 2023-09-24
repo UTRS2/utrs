@@ -9,7 +9,7 @@
 <div id="en_blockreason_div"></div>
 Number of appeals with other reasons: {{ $other }}<br />
 @foreach($reasons as $reason)
-{{ $reason->reason }}: {{ $reason->count }}<br />
+{{ $reason }}<br />
 @endforeach
 @columnchart('enwiki_daystat', 'enwiki_day_div')
 @columnchart('global_daystat', 'global_day_div')
