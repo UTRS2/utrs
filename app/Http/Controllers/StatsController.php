@@ -147,13 +147,15 @@ class StatsController extends Controller
                     $reasons["{{".$matches[1]."}}"] = $reasons[$matches[1]] + 1;
                 }
             } else {
-                //if there is a wikilink then make a special if statement for it
+                //if there is a wikilink store it in a variable named $link
                 if (preg_match('/\[\[([^\]]+)\]\]/', $appeal->blockreason, $matches)) {
-                    //assign matches[1] to a variable so it can be used in the if statement
-                    $reason = $matches[1];
+                    $link = $matches[0];
+                }
+                //if $link is set
+                if (isset($link)) {
                     //if the wikilink has a pipe, then only use the text after the pipe
                     if (preg_match('/\|/', $reason, $matches)) {
-                        $reason = explode('|', $reason)[1];
+                        $reason = explode('|', $link)[1];
                     }
                     if (!isset($reasons[$reason])) {
                         $reasons[$reason] = 1;
