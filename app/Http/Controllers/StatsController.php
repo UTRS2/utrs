@@ -158,7 +158,7 @@ class StatsController extends Controller
                     if (!isset($reasons[$reason])) {
                         $reasons[$reason] = 1;
                     } else {
-                        $reasons['other'] = $reasons[$matches[1]] + 1;
+                        $reasons['other'] = $reasons['other'] + 1;
                     }
                 } else {
                     //if there is no wikilink or template, then just add it to the other category
