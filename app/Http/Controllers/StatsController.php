@@ -195,8 +195,8 @@ class StatsController extends Controller
                 'position' => 'none'
             ],
             'colors' => ['#0000FF'],
-            'height' => 1500,
-            'width' => 1000,
+            'height' => 1700,
+            'width' => 1300,
         ]);
 
         return view('stats.appeals', ['other'=>$other,'reasons'=>$reasons]);
