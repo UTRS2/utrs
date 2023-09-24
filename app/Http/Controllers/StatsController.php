@@ -137,7 +137,7 @@ class StatsController extends Controller
         $en_blockreason->addStringColumn('Reason')
             ->addNumberColumn('Number of times a reason was used');
         $reasons = [];
-        $reasons['other'] = 0;
+        $reasons['Other'] = 0;
         foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
             //if reason has wikimarkup for a template, get the template name, and count them
             if (preg_match('/\{\{([^\}]+)\}\}/', $appeal->blockreason, $matches)) {
@@ -155,10 +155,10 @@ class StatsController extends Controller
                     if (preg_match('/\|/', $reason, $matches)) {
                         $reason = explode('|', $reason)[1];
                     }
-                    if (!isset($reasons[$matches[1]])) {
-                        $reasons["[[".$matches[1]."]]"] = 1;
+                    if (!isset($reasons[$reason])) {
+                        $reasons[$reason] = 1;
                     } else {
-                        $reasons["[[".$matches[1]."]]"] = $reasons[$matches[1]] + 1;
+                        $reasons["Other"] = $reasons[$matches[1]] + 1;
                     }
                 } else {
                     //if there is no wikilink or template, then just add it to the other category
