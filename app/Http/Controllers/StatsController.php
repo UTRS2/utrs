@@ -132,7 +132,7 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
-        $date = Carbon::now()->subDays(90);
+        $date = Carbon::now()->subDays(365);
         $en_blockreason = \Lava::DataTable();
         $en_blockreason->addStringColumn('Reason')
             ->addNumberColumn('Number of times a reason was used');
@@ -152,7 +152,7 @@ class StatsController extends Controller
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
-                if (preg_match('/\[\[.*\]\]/', $appeal->blockreason, $matches)) {
+                if (preg_match('/\[\[(WP|Wikipedia)\:.*\]\]/', $appeal->blockreason, $matches)) {
                     $link = $matches[0];
                     //split the match by "]]" and get the first part
                     $link = explode(']]', $link)[0];
