@@ -147,15 +147,21 @@ class StatsController extends Controller
                     $reasons["{{".$matches[1]."}}"] = $reasons[$matches[1]] + 1;
                 }
             } else {
-                //if reason doesn't have wikimarkup for a template, take anything before the last ":" and count them, otherwise ignore it
-                if (preg_match('/(.+):/', $appeal->blockreason, $matches)) {
-                    if (!isset($reasons[$matches[1]])) {
-                        $reasons[$matches[1]] = 1;
+                //if reason doesn't have wikimarkup for a template, take anything before the last ":", outside of a wikilink, and count them, otherwise ignore it
+                if (preg_match('/\[\[([^\]]+)\]\]/', $appeal->blockreason, $matches)) {
+                    $reason = substr($matches[1], strrpos($matches[1], ':') + 1);
+                    if (!isset($reasons[$reason])) {
+                        $reasons[$reason] = 1;
                     } else {
-                        $reasons[$matches[1]] = $reasons[$matches[1]] + 1;
+                        $reasons[$reason] = $reasons[$reason] + 1;
                     }
                 } else {
-                    $reasons['other'] = $reasons['other'] + 1;
+                    $reason = substr($appeal->blockreason, strrpos($appeal->blockreason, ':') + 1);
+                    if (!isset($reasons[$reason])) {
+                        $reasons[$reason] = 1;
+                    } else {
+                        $reasons[$reason] = $reasons[$reason] + 1;
+                    }
                 }
             }
         }
