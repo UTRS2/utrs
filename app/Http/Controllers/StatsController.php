@@ -140,7 +140,7 @@ class StatsController extends Controller
         $reasons['other'] = 0;
         foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
             //if reason has wikimarkup for a template, get the template name, and count them
-            if (preg_match('/\{\{([^\}]+)\}\}/', $appeal->blockreason, $matches)) {
+            if (preg_match('/\{\{.*\}\}/', $appeal->blockreason, $matches)) {
                 if (!isset($reasons[$matches[1]])) {
                     $reasons["{{".$matches[1]."}}"] = 1;
                 } else {
@@ -148,7 +148,7 @@ class StatsController extends Controller
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
-                if (preg_match('/\[\[([^\]]+)\]\]/', $appeal->blockreason, $matches)) {
+                if (preg_match('/\[\[.*\]\]/', $appeal->blockreason, $matches)) {
                     $link = $matches[0];
                 }
                 //if $link is set
