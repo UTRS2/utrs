@@ -199,14 +199,18 @@ class StatsController extends Controller
                             if (preg_match('/prox/', $blockreason, $matches)) {
                                 $blockreason = 'open proxy';
                             }
+                            else {
+                                dd($blockreason);
+                            }
                             if (isset($reasons[$blockreason])) {
                                 $reasons[$blockreason] = $reasons[$blockreason] + 1;
                             } else {
                                 $reasons[$blockreason] = 1;
                             }
+                        } else {
+                            //if there is no wikilink or template, then just add it to the other category
+                            $other = $other + 1;
                         }
-                        //if there is no wikilink or template, then just add it to the other category
-                        $other = $other + 1;
                     }
                     
                 }
