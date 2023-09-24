@@ -102,12 +102,13 @@ class StatsController extends Controller
         }
 
         if ($requestedChart == 'blkadm') {
-            $date = Carbon::now()->subDays(90);
+            $date = Carbon::now()->subDays($numericDay);
             $chart_data = \Lava::DataTable();
             $chart_data->addStringColumn('Administrator')
                 ->addNumberColumn('Number of times they are blocking admins');
             $admins = [];
-            foreach ($dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(90)) as $appeal) {
+            $dbdata = $dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays($numericDay));
+            foreach ($dbdata as $appeal) {
                 if (!isset($admins[$appeal->blockingadmin])) {
                     $admins[$appeal->blockingadmin] = 1;
                 } else {
@@ -145,6 +146,7 @@ class StatsController extends Controller
                 ->addNumberColumn('Number of times a reason was used in the last '.$numericDay.' days');
             $reasons = [];
             $other = 0;
+            $dbdata = $dbdata->where('blockfound',1);
             foreach ($dbdata as $appeal) {
                 //make $appeal->blockreason lower case
                 $blockreason = strtolower($appeal->blockreason);
