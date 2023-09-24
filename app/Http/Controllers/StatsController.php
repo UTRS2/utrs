@@ -144,7 +144,7 @@ class StatsController extends Controller
                 if (!isset($reasons[$matches[0]])) {
                     $reasons[$matches[0]] = 1;
                 } else {
-                    $reasons[$matches[0]] = $reasons[$matches[1]] + 1;
+                    $reasons[$matches[0]] = $reasons[$matches[0]] + 1;
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
