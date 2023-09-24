@@ -158,7 +158,12 @@ class StatsController extends Controller
                         $reason = explode('|', $link)[1];
                     }
                     if (!isset($reasons[$reason])) {
-                        $reasons[$reason] = 1;
+                        //if the reason is not set to $reasons, then set it to 1
+                        if(isset($reasons[$reason])) {
+                            $reasons[$reason] = $reasons[$reason] + 1;
+                        } else {
+                            $reasons[$reason] = 1;
+                        }
                     } else {
                         $reasons['other'] = $reasons['other'] + 1;
                     }
