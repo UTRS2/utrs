@@ -175,11 +175,11 @@ class StatsController extends Controller
             }
         }
         //go through $reasons and remove any with a count of less than 10 and sort by count
-        foreach ($reasons as $reason => $count) {
+        /*foreach ($reasons as $reason => $count) {
             if ($count < 10) {
                 unset($reasons[$reason]);
             }
-        }
+        }*/
         arsort($reasons);
         foreach ($reasons as $reason => $count) {
             $en_blockreason->addRow([$reason, $count]);
