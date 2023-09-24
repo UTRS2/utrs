@@ -145,6 +145,7 @@ class StatsController extends Controller
                 ->addNumberColumn('Number of times a reason was used in the last '.$numericDay.' days');
             $reasons = [];
             $other = 0;
+            dd($dbdata);
             foreach ($dbdata as $appeal) {
                 //make $appeal->blockreason lower case
                 $blockreason = strtolower($appeal->blockreason);
