@@ -200,7 +200,7 @@ class StatsController extends Controller
             'width' => 1000,
         ]);
 
-        return view('stats.appeals', ['other'=>$other]);
+        return view('stats.appeals', ['other'=>$other,'reasons'=>$reasons]);
 
     }
 }
