@@ -164,14 +164,9 @@ class StatsController extends Controller
                         $reason = explode('|', $link)[1];
                     }
                     if (!isset($reasons[$reason])) {
-                        //if the reason is not set to $reasons, then set it to 1
-                        if(isset($reasons[$reason])) {
-                            $reasons[$reason] = $reasons[$reason] + 1;
-                        } else {
-                            $reasons[$reason] = 1;
-                        }
+                        $reasons[$reason] = $reasons[$reason] + 1;
                     } else {
-                        $other = $other + 1;
+                        $reasons[$reason] = 1;
                     }
                 } else {
                     //if there is no wikilink or template, then just add it to the other category
