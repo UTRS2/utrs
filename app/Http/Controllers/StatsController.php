@@ -144,12 +144,12 @@ class StatsController extends Controller
             if (preg_match('/\{\{.*\}\}/', $blockreason, $matches)) {
                 //if "|" is in the template, then only use the text before the pipe
                 if (preg_match('/\|/', $matches[0], $matchesnew)) {
-                    $reason = explode('|', $matchesnew[0])[0].'}}';
+                    $blockreason = explode('|', $matchesnew[0])[0].'}}';
                 }
-                if (!isset($reasons[$reason])) {
-                    $reasons[$reason] = 1;
+                if (!isset($reasons[$blockreason])) {
+                    $reasons[$blockreason] = 1;
                 } else {
-                    $reasons[$reason] = $reasons[$reason] + 1;
+                    $reasons[$blockreason] = $reasons[$blockreason] + 1;
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
@@ -162,12 +162,12 @@ class StatsController extends Controller
                 if (isset($link)) {
                     //if the wikilink has a pipe, then only use the text after the pipe
                     if (preg_match('/\|/', $link, $matches)) {
-                        $reason = explode('|', $link)[1];
+                        $blockreason = explode('|', $link)[1];
                     }
-                    if (isset($reasons[$reason])) {
-                        $reasons[$reason] = $reasons[$reason] + 1;
+                    if (isset($reasons[$blockreason])) {
+                        $reasons[$blockreason] = $reasons[$blockreason] + 1;
                     } else {
-                        $reasons[$reason] = 1;
+                        $reasons[$blockreason] = 1;
                     }
                 } else {
                     //if there is no wikilink or template, then just add it to the other category
