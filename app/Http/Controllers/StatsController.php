@@ -116,7 +116,10 @@ class StatsController extends Controller
             }
             //go through $admins and remove any with a count of less than 10
             foreach ($admins as $admin => $count) {
-                if ($count < 15) {
+                if ($count < 15 && $requestedWiki != 'global') {
+                    unset($admins[$admin]);
+                }
+                elseif ($count < 2 && $requestedWiki == 'global') {
                     unset($admins[$admin]);
                 }
             }
@@ -198,7 +201,10 @@ class StatsController extends Controller
             }
             //go through $reasons and remove any with a count of less than 10 and sort by count
             foreach ($reasons as $reason => $count) {
-                if ($count < 10) {
+                if ($count < 10 && $requestedWiki != 'global') {
+                    unset($reasons[$reason]);
+                }
+                elseif ($count < 5 && $requestedWiki == 'global') {
                     unset($reasons[$reason]);
                 }
             }
