@@ -137,9 +137,9 @@ class StatsController extends Controller
             ->addNumberColumn('Number of times a reason was used');
         $reasons = [];
         $other = 0;
-        //make $appeal->blockreason lower case
-        $blockreason = strtolower($appeal->blockreason);
         foreach ($enwiki->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays(365)) as $appeal) {
+            //make $appeal->blockreason lower case
+            $blockreason = strtolower($appeal->blockreason);
             //if reason has wikimarkup for a template, get the template name, and count them
             if (preg_match('/\{\{.*\}\}/', $blockreason, $matches)) {
                 //if "|" is in the template, then only use the text before the pipe
