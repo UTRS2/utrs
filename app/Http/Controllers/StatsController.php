@@ -142,14 +142,16 @@ class StatsController extends Controller
             //if reason has wikimarkup for a template, get the template name, and count them
             if (preg_match('/\{\{.*\}\}/', $appeal->blockreason, $matches)) {
                 if (!isset($reasons[$matches[0]])) {
-                    $reasons["{{".$matches[0]."}}"] = 1;
+                    $reasons[$matches[0]] = 1;
                 } else {
-                    $reasons["{{".$matches[0]."}}"] = $reasons[$matches[1]] + 1;
+                    $reasons[$matches[0]] = $reasons[$matches[1]] + 1;
                 }
             } else {
                 //if there is a wikilink store it in a variable named $link
                 if (preg_match('/\[\[.*\]\]/', $appeal->blockreason, $matches)) {
                     $link = $matches[0];
+                    //split the match by "]]" and get the first part
+                    $link = explode(']]', $link)[0];
                 }
                 //if $link is set
                 if (isset($link)) {
