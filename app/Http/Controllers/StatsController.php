@@ -147,22 +147,24 @@ class StatsController extends Controller
                     $reasons["{{".$matches[1]."}}"] = $reasons[$matches[1]] + 1;
                 }
             } else {
-                //if reason doesn't have wikimarkup for a template, take anything before the last ":", outside of a wikilink, and count them, otherwise ignore it
+                //if there is a wikilink then make a special if statement for it
                 if (preg_match('/\[\[([^\]]+)\]\]/', $appeal->blockreason, $matches)) {
-                    $reason = substr($matches[1], strrpos($matches[1], ':') + 1);
-                    if (!isset($reasons[$reason])) {
-                        $reasons[$reason] = 1;
+                    //assign matches[1] to a variable so it can be used in the if statement
+                    $reason = $matches[1];
+                    //if the wikilink has a pipe, then only use the text after the pipe
+                    if (preg_match('/\|/', $reason, $matches)) {
+                        $reason = explode('|', $reason)[1];
+                    }
+                    if (!isset($reasons[$matches[1]])) {
+                        $reasons["[[".$matches[1]."]]"] = 1;
                     } else {
-                        $reasons[$reason] = $reasons[$reason] + 1;
+                        $reasons["[[".$matches[1]."]]"] = $reasons[$matches[1]] + 1;
                     }
                 } else {
-                    $reason = substr($appeal->blockreason, strrpos($appeal->blockreason, ':') + 1);
-                    if (!isset($reasons[$reason])) {
-                        $reasons[$reason] = 1;
-                    } else {
-                        $reasons[$reason] = $reasons[$reason] + 1;
-                    }
+                    //if there is no wikilink or template, then just add it to the other category
+                    $reasons['other'] = $reasons['other'] + 1;
                 }
+                
             }
         }
         //go through $reasons and remove any with a count of less than 10 and sort by count
