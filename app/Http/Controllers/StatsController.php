@@ -140,7 +140,7 @@ class StatsController extends Controller
             ]);
         }
 
-        if ($requestedChart == 'blkreason') {
+        if ($requestedChart == 'blkreason' && $requestedWiki != 'all') {
             $chart_data = \Lava::DataTable();
             $chart_data->addStringColumn('Reason')
                 ->addNumberColumn('Number of times a reason was used in the last '.$numericDay.' days');
