@@ -154,7 +154,7 @@ class StatsController extends Controller
                 //if $link is set
                 if (isset($link)) {
                     //if the wikilink has a pipe, then only use the text after the pipe
-                    if (preg_match('/\|/', $reason, $matches)) {
+                    if (preg_match('/\|/', $link, $matches)) {
                         $reason = explode('|', $link)[1];
                     }
                     if (!isset($reasons[$reason])) {
