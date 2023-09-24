@@ -145,7 +145,6 @@ class StatsController extends Controller
                 ->addNumberColumn('Number of times a reason was used in the last '.$numericDay.' days');
             $reasons = [];
             $other = 0;
-            dd($dbdata);
             foreach ($dbdata as $appeal) {
                 //make $appeal->blockreason lower case
                 $blockreason = strtolower($appeal->blockreason);
@@ -168,6 +167,7 @@ class StatsController extends Controller
                         $reasons[$blockreason] = $reasons[$blockreason] + 1;
                     }
                 } else {
+                    $link = null;
                     //if there is a wikilink store it in a variable named $link
                     if (preg_match('/\[\[(:|)(wp|wikipedia|m)\:.*\]\]/', $blockreason, $matches)) {
                         $link = $matches[0];
@@ -175,7 +175,7 @@ class StatsController extends Controller
                         $link = explode(']]', $link)[0];
                     }
                     //if $link is set
-                    if (isset($link)) {
+                    if ($link!=null) {
                         //if the wikilink has a pipe, then only use the text after the pipe
                         if (preg_match('/\|/', $link, $matches)) {
                             $blockreason = explode('|', $link)[1];
@@ -199,9 +199,6 @@ class StatsController extends Controller
                             //if block reason contains "prox", then set it to "open proxy"
                             if (preg_match('/prox/', $blockreason, $matches)) {
                                 $blockreason = 'open proxy';
-                            }
-                            else {
-                                dd($blockreason);
                             }
                             if (isset($reasons[$blockreason])) {
                                 $reasons[$blockreason] = $reasons[$blockreason] + 1;
