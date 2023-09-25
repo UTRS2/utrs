@@ -265,14 +265,9 @@ class StatsController extends Controller
                 ->addNumberColumn('Number of appeals handled');
             $admins = [];
             $admindb = [];
-            $dbdata = $dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays($numericDay))->where('status', '!=', Appeal::STATUS_OPEN);
+            $dbdata = $dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays($numericDay))->where('status', '!=', Appeal::STATUS_OPEN)->where('status', '!=', Appeal::STATUS_EXPIRE);
             foreach ($dbdata as $appeal) {
                 if($appeal->handlingadmin == null) {
-                    if (!isset($admins['Unhandled'])) {
-                        $admins['Unhandled'] = 1;
-                    } else {
-                        $admins['Unhandled'] = $admins['Unhandled'] + 1;
-                    }
                     continue;
                 }
                 $admin_id = $appeal->handlingadmin;
