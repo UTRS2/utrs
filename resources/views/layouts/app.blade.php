@@ -47,6 +47,11 @@
                         </div>
                     </li>
                 @endcanany
+                @can('viewAny', App\Models\Appeal::class)
+                    <li class="nav-item">
+                        <a href="{{ route('stats.overall') }}" class="nav-link">Statistics</a>
+                    </li>
+                @endcan
                 @can('viewAny', \App\Models\Wiki::class)
                     <li class="nav-item">
                         <a href="{{ route('wiki.list') }}" class="nav-link">{{__('generic.support-wiki')}}</a>

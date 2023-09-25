@@ -54,4 +54,8 @@
     <div id="blocktime_div"></div>
     @barchart('appstate', 'blocktime_div')
 @endif
+@if($chart == 'hanadm')
+    <div id="admhandle_div"></div>
+    @barchart('admhandle', 'admhandle_div')
+@endif
 @endsection

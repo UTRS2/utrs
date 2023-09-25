@@ -11,6 +11,14 @@ class StatsController extends Controller
 {
     public function display_appeals_chart(Request $request)
     {
+        //check if user has permissions on any wiki, and if not, present 403
+        if (auth()->user() == null) {
+            return abort(403, 'User not logged in');
+        }
+        //check if authed, and if not, present 403
+        if (!auth()->user()->can('viewAny')) {
+            return abort(403, 'User does not have permission to view any appeals');
+        }
         $requestedChart = $request->name;
         $requestedWiki = $request->wiki;
         $requestedLength = $request->length;
@@ -29,8 +37,9 @@ class StatsController extends Controller
         $acceptedChartNames = [
             'apppd'/*appeals per day*/,
             'blkadm'/*blocking admin*/,
-            'blkreason', /*block reason*/
-            'appstate'/*appeal state*/
+            'blkreason' /*block reason*/,
+            'appstate'/*appeal state*/,
+            'hanadm'/*handled by admin*/,
         ];
         if (!in_array($requestedChart, $acceptedChartNames)) {
             return abort(404);
@@ -248,11 +257,52 @@ class StatsController extends Controller
             ]);
         }
 
+        if ($requestedChart == 'hanadm') {
+            $date = Carbon::now()->subDays($numericDay);
+            $chart_data = \Lava::DataTable();
+            $chart_data->addStringColumn('Administrator')
+                ->addNumberColumn('Number of appeals handled');
+            $admins = [];
+            $dbdata = $dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays($numericDay));
+            foreach ($dbdata as $appeal) {
+                $admin = $appeal->handlingadmin;
+                if (!isset($admins[$admin])) {
+                    $admins[$admin] = 1;
+                } else {
+                    $admins[$admin] = $admins[$admin] + 1;
+                }
+            }
+            //go through $admins and remove any with a count of less than 10
+            foreach ($admins as $admin => $count) {
+                if ($count < 10 && $requestedWiki != 'global') {
+                    unset($admins[$admin]);
+                }
+                elseif ($count < 5 && $requestedWiki == 'global') {
+                    unset($admins[$admin]);
+                }
+            }
+            //sort the array by the number of times they are blocking admins
+            arsort($admins);
+            foreach ($admins as $admin => $count) {
+                $chart_data->addRow([$admin, $count]);
+            }
+            \Lava::BarChart('admhandle', $chart_data, [
+                'title' => 'Number of appeals handled (>5) for last '.$numericDay.' days - '.$requestedWiki,
+                'legend' => [
+                    'position' => 'none'
+                ],
+                'colors' => ['#0000FF'],
+                'height' => 1500,
+                'width' => 1000,
+            ]);
+        }
+
         $chartlinks = [
             'Appeals per day' => '/statistics/apppd/'.$requestedWiki.'/'.$requestedLength,
             'Blocking admins' => '/statistics/blkadm/'.$requestedWiki.'/'.$requestedLength,
             'Block reasons' => '/statistics/blkreason/'.$requestedWiki.'/'.$requestedLength,
             'Appeals per state' => '/statistics/appstate/'.$requestedWiki.'/'.$requestedLength,
+            'Handled by admins' => '/statistics/hanadm/'.$requestedWiki.'/'.$requestedLength,
         ];
         $timelinks = [
             '7d' => '/statistics/'.$requestedChart.'/'.$requestedWiki.'/7d',
