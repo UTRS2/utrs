@@ -101,7 +101,7 @@ class StatsController extends Controller
                 ->addRow(['Still under review', $dbdata->where('status', Appeal::STATUS_OPEN)->count()]);
 
             \Lava::BarChart('appstate', $chart_data, [
-                'title' => 'Appeals in the last '.$numericDay.' days - Global',
+                'title' => 'Appeals in the last '.$numericDay.' days - '.$requestedWiki,
                 'legend' => [
                     'position' => 'none'
                 ],
