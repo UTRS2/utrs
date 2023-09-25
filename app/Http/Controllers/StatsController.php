@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Appeal;
+use App\Models\User;
 use Carbon\Carbon;
 use Khill\Lavacharts\Laravel\LavachartsFacade as Lava;
 
@@ -127,10 +128,10 @@ class StatsController extends Controller
             //go through $admins and remove any with a count of less than 10
             foreach ($admins as $admin => $count) {
                 if ($count < 15 && $requestedWiki != 'global') {
-                    unset($admins[$admin]);
+                    unset($admins[User::findOrFail($admin)->name]);
                 }
                 elseif ($count < 2 && $requestedWiki == 'global') {
-                    unset($admins[$admin]);
+                    unset($admins[User::findOrFail($admin)->name]);
                 }
             }
             //sort the array by the number of times they are blocking admins
@@ -263,9 +264,24 @@ class StatsController extends Controller
             $chart_data->addStringColumn('Administrator')
                 ->addNumberColumn('Number of appeals handled');
             $admins = [];
+            $admindb = [];
             $dbdata = $dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays($numericDay));
             foreach ($dbdata as $appeal) {
-                $admin = $appeal->handlingadmin;
+                if($appeal->handlingadmin == null) {
+                    if (!isset($admins['Unhandled'])) {
+                        $admins['Unhandled'] = 1;
+                    } else {
+                        $admins['Unhandled'] = $admins['Unhandled'] + 1;
+                    }
+                    continue;
+                }
+                $admin_id = $appeal->handlingadmin;
+                if (in_array($admin_id, $admindb)) {
+                    $admin = $admindb[$admin_id];
+                } else {
+                    $admin = User::findOrFail($admin_id)->username;
+                    $admindb[$admin_id] = $admin;
+                }
                 if (!isset($admins[$admin])) {
                     $admins[$admin] = 1;
                 } else {
@@ -321,3 +337,4 @@ class StatsController extends Controller
 
     }
 }
+
