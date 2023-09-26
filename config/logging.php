@@ -36,13 +36,21 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily','slack'],
+            'channels' => ['daily','discord'],
         ],
 
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => 'debug',
+        ],
+
+        'discord' => [
+            'driver' => 'custom',
+            'via'    => MarvinLabs\DiscordLogger\Logger::class,
+            'level'  => 'debug',
+            'url'    => env('LOG_DISCORD_WEBHOOK_URL'),
+            'ignore_exceptions' => env('LOG_DISCORD_IGNORE_EXCEPTIONS', false),
         ],
 
         'daily' => [
