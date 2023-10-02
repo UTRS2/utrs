@@ -50,50 +50,50 @@
     </div>
 
     @can('update', $ban)
-        {{ Form::open(['url' => route('admin.bans.update', $ban)]) }}
-        {{ Form::token() }}
+        {{ html()->form('POST', route('admin.bans.update', $ban))->open() }}
+        {{ html()->token() }}
         <div class="card mb-4">
             <h5 class="card-header">Modify ban options</h5>
             <div class="card-body">
                 <div class="form-group mb-4">
                     Active
                     <div class="custom-control custom-radio">
-                        {{ Form::radio('is_active', 0, old('is_active', $ban->is_active) == 0, ['class' => 'custom-control-input', 'id' => 'is_active-0']) }} {{ Form::label('is_active-0', 'Ban has no effect', ['class' => 'custom-control-label']) }}
+                        {{ html()->radio('is_active', old('is_active', $ban->is_active) == 0, 0)->class('custom-control-input')->id('is_active-0') }} {{ html()->label('Ban has no effect', 'is_active-0')->class('custom-control-label') }}
                     </div>
 
                     <div class="custom-control custom-radio">
-                        {{ Form::radio('is_active', 1, old('is_active', $ban->is_active) == 1, ['class' => 'custom-control-input', 'id' => 'is_active-1']) }} {{ Form::label('is_active-1', 'Ban is active', ['class' => 'custom-control-label']) }}
+                        {{ html()->radio('is_active', old('is_active', $ban->is_active) == 1, 1)->class('custom-control-input')->id('is_active-1') }} {{ html()->label('Ban is active', 'is_active-1')->class('custom-control-label') }}
                     </div>
                 </div>
 
                 @if(sizeof($wikis) > 1)
                     <div class="form-group">
-                        {{ Form::label('wiki_id', 'Wiki') }}
-                        {{ Form::select('wiki_id', $wikis, old('wiki_id', $ban->wiki_id), ['class' => 'form-control']) }}
+                        {{ html()->label('Wiki', 'wiki_id') }}
+                        {{ html()->select('wiki_id', $wikis, old('wiki_id', $ban->wiki_id))->class('form-control') }}
                     </div>
                 @else
-                    {{ Form::hidden('wiki_id', array_keys($wikis)[0]) }}
+                    {{ html()->hidden('wiki_id', array_keys($wikis)[0]) }}
                 @endif
 
                 <div class="form-group mb-4">
-                    {{ Form::label('reason', 'Ban reason') }}
-                    {{ Form::text('reason', old('reason', $ban->reason), ['class' => 'form-control']) }}
+                    {{ html()->label('Ban reason', 'reason') }}
+                    {{ html()->text('reason', old('reason', $ban->reason))->class('form-control') }}
                     <p class="small">
                         This will be shown to the user.
                     </p>
                 </div>
 
                 <div class="form-group mb-4">
-                    {{ Form::label('expiry', 'Expiration') }}
-                    {{ Form::text('expiry', old('expiry', $formOldExpiry), ['class' => 'form-control']) }}
+                    {{ html()->label('Expiration', 'expiry') }}
+                    {{ html()->text('expiry', old('expiry', $formOldExpiry))->class('form-control') }}
                     <p class="small">
                         Leave empty or as 'indefinite' for a permanent ban.
                     </p>
                 </div>
 
                 <div class="form-group mb-4">
-                    {{ Form::label('update_reason', 'Reason for changes') }}
-                    {{ Form::input('text', 'update_reason', old('update_reason'), ['class' => 'form-control' . ($errors->has('update_reason') ? ' is-invalid' : '')]) }}
+                    {{ html()->label('Reason for changes', 'update_reason') }}
+                    {{ html()->input('text', 'update_reason', old('update_reason'), ['class' => 'form-control' . ($errors->has('update_reason') ? ' is-invalid' : '')]) }}
 
                     @error('update_reason')
                     <span class="invalid-feedback" role="alert">
@@ -107,17 +107,17 @@
                     <div class="form-group mb-2">
                         Ban target visibility
                         <div class="custom-control custom-radio">
-                            {{ Form::radio('is_protected', 0, old('is_protected', $ban->is_protected) == 0, ['class' => 'custom-control-input', 'id' => 'is_protected-0']) }} {{ Form::label('is_protected-0', 'Ban target is visible to all users who can view ban list', ['class' => 'custom-control-label']) }}
+                            {{ html()->radio('is_protected', old('is_protected', $ban->is_protected) == 0, 0)->class('custom-control-input')->id('is_protected-0') }} {{ html()->label('Ban target is visible to all users who can view ban list', 'is_protected-0')->class('custom-control-label') }}
                         </div>
 
                         <div class="custom-control custom-radio">
-                            {{ Form::radio('is_protected', 1, old('is_protected', $ban->is_protected) == 1, ['class' => 'custom-control-input', 'id' => 'is_protected-1']) }} {{ Form::label('is_protected-1', 'Ban target is oversighted', ['class' => 'custom-control-label']) }}
+                            {{ html()->radio('is_protected', old('is_protected', $ban->is_protected) == 1, 1)->class('custom-control-input')->id('is_protected-1') }} {{ html()->label('Ban target is oversighted', 'is_protected-1')->class('custom-control-label') }}
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
-                        {{ Form::label('os_reason', 'Visibility change reason') }}
-                        {{ Form::text('os_reason', old('os_reason'), ['class' => 'form-control']) }}
+                        {{ html()->label('Visibility change reason', 'os_reason') }}
+                        {{ html()->text('os_reason', old('os_reason'))->class('form-control') }}
                         <p class="small">
                             Reason for restricting the ban target visibility to oversighters only. This can only be seen
                             by functionaries.
@@ -126,10 +126,10 @@
                 @endcan
 
                 <hr/>
-                {{ Form::submit('Save', ['class' => 'btn btn-primary']) }}
+                {{ html()->submit('Save')->class('btn btn-primary') }}
             </div>
         </div>
-        {{ Form::close() }}
+        {{ html()->form()->close() }}
     @endcan
 
     @component('components.logs', ['logs' => $ban->logs])

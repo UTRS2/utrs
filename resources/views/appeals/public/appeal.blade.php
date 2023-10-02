@@ -44,11 +44,11 @@
                 </table>
 
                 @if($appeal->status == Appeal::STATUS_NOTFOUND)
-                    {{ Form::open(['url' => route('public.appeal.modify')]) }}
-                    {{ Form::token() }}
-                    {{ Form::hidden('appealkey', $appeal->appealsecretkey) }}
-                    {{ Form::button(__('appeals.not-found-button'), ['class' => 'btn btn-success','type'=>'submit']) }}
-                    {{ Form::close() }}
+                    {{ html()->form('POST', route('public.appeal.modify'))->open() }}
+                    {{ html()->token() }}
+                    {{ html()->hidden('appealkey', $appeal->appealsecretkey) }}
+                    {{ html()->submit(__('appeals.not-found-button'))->class('btn btn-success') }}
+                    {{ html()->form()->close() }}
                 @endif
             </div>
         </div>
@@ -168,14 +168,14 @@
         <h5 class="card-header">{{ __('appeals.section-headers.add-comment') }}</h5>
         <div class="card-body">
             @if(!in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_INVALID]))
-                {{ Form::open(array('url' => route('public.appeal.comment'))) }}
-                {{ Form::hidden('appealsecretkey', $appeal->appealsecretkey) }}
+                {{ html()->form('POST', route('public.appeal.comment'))->open() }}
+                {{ html()->hidden('appealsecretkey', $appeal->appealsecretkey) }}
                 <div class="form-group">
-                    {{ Form::label('comment', __('appeals.comment-input-text')) }}
-                    {{ Form::textarea('comment', old('comment'), ['rows' => 4, 'class' => 'form-control']) }}
+                    {{ html()->label(__('appeals.comment-input-text'), 'comment') }}
+                    {{ html()->textarea('comment', old('comment'))->rows(4)->class('form-control') }}
                 </div>
                 <button type="submit" class="btn btn-success">{{ __('generic.submit') }}</button>
-                {{ Form::close() }}
+                {{ html()->form()->close() }}
             @else
                 <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
             @endif

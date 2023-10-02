@@ -97,16 +97,16 @@ function displayTransfer() {
                                     
                                     <br /><br />
                                         <h5 class="card-title">{{__('appeals.comments.leave')}}</h5>
-                                        {{ Form::open(['url' => route('appeal.action.comment', $info)]) }}
-                                            {{ Form::token() }}
+                                        {{ html()->form('POST', route('appeal.action.comment', $info))->open() }}
+                                            {{ html()->token() }}
 
                                             <div class="form-group">
-                                                {{ Form::label('comment', __('appeals.comments.add')) }}
-                                                {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
+                                                {{ html()->label(__('appeals.comments.add'), 'comment') }}
+                                                {{ html()->textarea('comment', old('comment'))->class('form-control') }}
                                             </div>
 
-                                            {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-                                        {{ Form::close() }}
+                                            {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
+                                        {{ html()->form()->close() }}
                                 @endcan
                         </div>
                         <div class="col-md-6">
@@ -227,8 +227,8 @@ function displayTransfer() {
 
                                             <div style="display: none;" id="transfer">
                                                 <br />
-                                                {{ Form::open(['url' => route('appeal.transfer', [$info])]) }}
-                                                    {{ Form::token() }}
+                                                {{ html()->form('POST', route('appeal.transfer', [$info]))->open() }}
+                                                    {{ html()->token() }}
                                                     <div class="form-group">
                                                         <div class="card">
                                                             <div class="card-header">
@@ -236,16 +236,16 @@ function displayTransfer() {
                                                             </div>
                                                             <div class="card-body">
                                                                 <p class="card-text">
-                                                        {{ Form::label('wiki', 'Transfer this to:') }}<br />
-                                                        {{ Form::select('wiki', $wikis, ['class' => 'form-control']) }}
+                                                        {{ html()->label('Transfer this to:', 'wiki') }}<br />
+                                                        {{ html()->select('wiki', $wikis, ['class' => 'form-control']) }}
                                                         <br /><br />
-                                                        {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
+                                                        {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     
-                                                {{ Form::close() }}
+                                                {{ html()->form()->close() }}
                                             </div>
                                             @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
                                                 <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
@@ -281,16 +281,16 @@ function displayTransfer() {
                                                     <div class="alert alert-danger" role="alert">
                                                         {{__('appeals.cu.no-request')}}
                                                     </div>
-                                                    {{ Form::open(['url' => route('appeal.action.viewcheckuser', $info)]) }}
-                                                        {{ Form::token() }}
+                                                    {{ html()->form('POST', route('appeal.action.viewcheckuser', $info))->open() }}
+                                                        {{ html()->token() }}
 
                                                         <div class="form-group">
-                                                            {{ Form::label('reason', __('appeals.cu.reason')) }}
-                                                            {{ Form::textarea('reason', old('reason'), ['class' => 'form-control','rows'=>3]) }}
+                                                            {{ html()->label(__('appeals.cu.reason'), 'reason') }}
+                                                            {{ html()->textarea('reason', old('reason'))->class('form-control')->rows(3) }}
                                                         </div>
 
-                                                        {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-                                                    {{ Form::close() }}
+                                                        {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
+                                                    {{ html()->form()->close() }}
                                                 @endif
                                             @endif
                                             <br /><br />
@@ -481,20 +481,20 @@ function displayTransfer() {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                {{ Form::open(['url' => route('appeal.action.requestcheckuser', $info)]) }}
-                {{ Form::token() }}
+                {{ html()->form('POST', route('appeal.action.requestcheckuser', $info))->open() }}
+                {{ html()->token() }}
                 <div class="modal-body">
 
                     <div class="form-group mb-4">
-                        {{ Form::label('cu_reason', __('appeals.cu.review-req')) }}
-                        {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
+                        {{ html()->label(__('appeals.cu.review-req'), 'cu_reason') }}
+                        {{ html()->input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-primary','type'=>'submit']) }}
+                    {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-primary') }}
                 </div>
-                {{ Form::close() }}
+                {{ html()->form()->close() }}
             </div>
         </div>
     </div>

@@ -8,38 +8,34 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "~7.3|^8.0",
+        "php": "^8",
         "ext-json": "*",
-        "addwiki/mediawiki-api": "^2.8",
-        "addwiki/mediawiki-api-base": "^2.8",
-        "doctrine/dbal": "^3.1",
-        "fideloper/proxy": "^4.0",
-        "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.7.0",
+        "doctrine/dbal": "^3.7",
+        "guzzlehttp/guzzle": "^7",
         "khill/lavacharts": "^3.1",
-        "laravel/framework": "^8.15",
-        "laravel/slack-notification-channel": "^2.3",
-        "laravel/socialite": "^5.1",
-        "laravel/tinker": "^2.5",
-        "laravelcollective/html": "^6.2",
-        "league/commonmark": "^1.3",
-        "spatie/laravel-backup": "^6.10",
-        "taavi/laravel-socialite-mediawiki": "^1.3",
-        "taavi/laravel-torblock": "^1.1",
+        "laravel/framework": "^10",
+        "laravel/socialite": "^5",
+        "laravel/tinker": "^2",
+        "league/commonmark": "^2",
+        "marvinlabs/laravel-discord-logger": "^1.4",
+        "spatie/laravel-backup": "^8",
+        "taavi/laravel-socialite-mediawiki": "^1.6",
+        "taavi/laravel-torblock": "^2",
         "tio/laravel": "^1.23",
-        "wikimedia/ip-utils": "^3.0"
+        "wikimedia/ip-utils": "^4|^5",
+        "spatie/laravel-html": "^3.2"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.5",
-        "barryvdh/laravel-ide-helper": "^2.7",
-        "facade/ignition": "^2.5.2",
-        "fakerphp/faker": "^1.12",
-        "laravel/dusk": "^6.25.2",
-        "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^5.1.0",
+        "barryvdh/laravel-debugbar": "^3.9",
+        "barryvdh/laravel-ide-helper": "^2.13",
+        "spatie/laravel-ignition": "^2.3",
+        "fakerphp/faker": "^1.23",
+        "laravel/dusk": "^7",
+        "mockery/mockery": "^1.5",
+        "nunomaduro/collision": "^7.9",
         "php-parallel-lint/php-console-highlighter": "^1.0.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",
-        "phpunit/phpunit": "^9.6",
+        "phpunit/phpunit": "^10.3",
         "taavi/faker-acceptlanguage": "^1.0"
     },
     "config": {
@@ -58,7 +54,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
-   },
+    },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"

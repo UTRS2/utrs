@@ -21,7 +21,7 @@
         </div>
     @endif
 
-    {{ Form::open(['url' => route('admin.users.update', $user)]) }}
+    {{ html()->form('POST', route('admin.users.update', $user))->open() }}
     <div class="card mb-4">
         <h5 class="card-header">User details</h5>
         <div class="card-body">
@@ -81,8 +81,7 @@
                             @php $oldValue = $permission && $permission->$permNode; @endphp
                             <td>
                                 @can('updatePermission', [$user, $wiki, $permNode])
-                                    {{ Form::checkbox('permission[' . $wiki . '][' . $permNode . ']', 1,
-                                        old('permission.' . $wiki . '.' . $permNode, $oldValue)) }}
+                                    {{ html()->checkbox('permission[' . $wiki . '][' . $permNode . ']', old('permission.' . $wiki . '.' . $permNode, $oldValue), 1) }}
                                 @else
                                     {{ $oldValue ? 'Yes' : '-' }}
                                 @endcan
@@ -101,7 +100,7 @@
             <div class="card-body">
                 <div class="form-group">
                     <div class="custom-control custom-checkbox">
-                        {{ Form::checkbox('refresh_from_wiki', 1, old('refresh_from_wiki') === 1, ['class' => 'custom-control-input', 'id' => 'refresh_from_wiki']) }} {{ Form::label('refresh_from_wiki', 'Reload permissions from attached wikis', ['class' => 'custom-control-label']) }}
+                        {{ html()->checkbox('refresh_from_wiki', old('refresh_from_wiki') === 1, 1)->class('custom-control-input')->id('refresh_from_wiki') }} {{ html()->label('Reload permissions from attached wikis', 'refresh_from_wiki')->class('custom-control-label') }}
                     </div>
                 </div>
             </div>
@@ -112,8 +111,8 @@
             <h5 class="card-header">Save changes</h5>
             <div class="card-body">
                 <div class="form-group">
-                    {{ Form::label('reason', 'Reason') }}
-                    {{ Form::input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
+                    {{ html()->label('Reason', 'reason') }}
+                    {{ html()->input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
 
                     @error('reason')
                         <span class="invalid-feedback" role="alert">
@@ -122,12 +121,12 @@
                     @enderror
                 </div>
 
-                {{ Form::submit('Save', ['class' => 'btn btn-primary']) }}
+                {{ html()->submit('Save')->class('btn btn-primary') }}
             </div>
         </div>
     @endcan
 
     @component('components.logs', ['logs' => $user->logs])
     @endcomponent
-    {{ Form::close() }}
+    {{ html()->form()->close() }}
 @endsection

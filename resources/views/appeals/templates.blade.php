@@ -31,14 +31,14 @@
 
                 <hr/>
 
-                {{ Form::open(['url' => route('appeal.template.submit', [$appeal, $template])]) }}
+                {{ html()->form('POST', route('appeal.template.submit', [$appeal, $template]))->open() }}
                 <div class="form-group">
-                    {{ Form::label("status-" . $template->id, 'Change appeal status to:') }}
-                    {{ Form::select('status', $appeal->getValidStatusChanges(), old('status', $template->default_status), ['class' => 'form-control', 'id' => "status-" . $template->id]) }}
+                    {{ html()->label('Change appeal status to:', "status-" . $template->id) }}
+                    {{ html()->select('status', $appeal->getValidStatusChanges(), old('status', $template->default_status))->class('form-control')->id("status-" . $template->id) }}
                 </div>
 
                 <button type="submit" class="btn btn-success">Submit</button>
-                {{ Form::close() }}
+                {{ html()->form()->close() }}
             </div>
         </div>
     @endforeach

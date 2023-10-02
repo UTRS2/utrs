@@ -46,14 +46,14 @@
                     <a href="/appeal/{{$appeal['appealid']}}"><button type="submit" class="btn btn-primary">Review this appeal</button></a>
                 @endauth
                 @guest
-                  {{ Form::open(['url' => $route]) }}  
-                  {{ Form::token() }}
-                  {{ Form::hidden('appealkey', $appealkey) }}
-                  {{ Form::hidden('id', $appeal['appealid']) }}
+                  {{ html()->form('POST', $route)->open() }}  
+                  {{ html()->token() }}
+                  {{ html()->hidden('appealkey', $appealkey) }}
+                  {{ html()->hidden('id', $appeal['appealid']) }}
                   @if($appeal['icon'] !="stop")
                   <button type="submit" class="btn btn-primary">Review this appeal</button>
                   @endif
-                  {{ Form::close() }}
+                  {{ html()->form()->close() }}
                 @endguest
                 @endif
             </div>
