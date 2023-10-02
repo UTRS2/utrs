@@ -47,7 +47,6 @@ class UpdateWikiAppealListJob implements ShouldQueue
         }
 
         $data = '{| align="center" class="wikitable sortable" style="align: center; float:center; font-size: 90%; text-align:center" cellspacing="0" cellpadding="1" valign="middle"'
-            . "\n! Appeal Number"
             . "\n! Block Type"
             . "\n! Appellant"
             . "\n! Filed on"
@@ -80,7 +79,6 @@ class UpdateWikiAppealListJob implements ShouldQueue
                 $blocktype = "IP address";
             }
             return  "|-\n"
-                . "| [" . url(route('appeal.view', $appeal)) . ' #' . $appeal->id . "] \n| "
                 . "| ". $blocktype . " \n| "
                 . (str_starts_with($appeal->appealfor, '#')
                     ? '[{{fullurl:Special:BlockList|wpTarget=' . urlencode($appeal->appealfor) . '}} Block ID ' . $appeal->appealfor . ']'
