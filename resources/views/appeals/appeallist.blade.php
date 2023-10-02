@@ -26,7 +26,7 @@
                 {{ html()->form('GET', route('appeal.search.quick'))->open() }}
                 {{ html()->label(__('generic.search-text'), 'search') }}
                 <div class="input-group">
-                    {{ html()->search('search', old('search'))->class($errors->has('search') ? 'form-control is-invalid' : 'form-control') }}
+                    {{ html()->input('search', 'search', old('search'))->class($errors->has('search') ? 'form-control is-invalid' : 'form-control') }}
                     <div class="input-group-append">
                         {{ html()->submit(__('generic.quick-search'))->class('btn btn-primary') }}
                     </div>
