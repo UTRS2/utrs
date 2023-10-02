@@ -12,11 +12,11 @@
             <center>{{ __('appeals.key.your-key-is') }}<br>
                 <h2>{{ $hash }}</h2></center>
             <br/>
-            {{ Form::open(['url' => route('public.appeal.view')]) }}
-            {{ Form::token() }}
-            {{ Form::hidden('appealkey', $hash) }}
-            {{ Form::submit(__('appeals.key.view-appeal-details'), ['class' => 'btn btn-primary']) }}
-            {{ Form::close() }}
+            {{ html()->form('POST', route('public.appeal.view'))->open() }}
+            {{ html()->token() }}
+            {{ html()->hidden('appealkey', $hash) }}
+            {{ html()->submit(__('appeals.key.view-appeal-details'))->class('btn btn-primary') }}
+            {{ html()->form()->close() }}
         </div>
     </div>
 @endsection

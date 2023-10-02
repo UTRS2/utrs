@@ -10,11 +10,11 @@
         <p>
             Your request to change the data on your appeal has completed.
 
-            {{ Form::open(['url' => route('public.appeal.view')]) }}
-            {{ Form::token() }}
-            {{ Form::hidden('appealkey', $appealkey) }}
-            {{ Form::button(__('appeals.key.view-appeal-details'), ['class' => 'btn btn-primary','type'=>'submit']) }}
-            {{ Form::close() }}
+            {{ html()->form('POST', route('public.appeal.view'))->open() }}
+            {{ html()->token() }}
+            {{ html()->hidden('appealkey', $appealkey) }}
+            {{ html()->submit(__('appeals.key.view-appeal-details'))->class('btn btn-primary') }}
+            {{ html()->form()->close() }}
         </p>
     </div>
 @endsection

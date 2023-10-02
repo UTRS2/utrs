@@ -42,19 +42,19 @@
             @component('components.errors')
             @endcomponent
 
-            {{ Form::open(['url' => route('public.appeal.store')]) }}
-            {{ Form::token() }}
+            {{ html()->form('POST', route('public.appeal.store'))->open() }}
+            {{ html()->token() }}
 
             <h5>About you</h5>
             <div class="form-group mb-4">
-                {{ Form::label('wiki_id', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'custom-select']) }}
+                {{ html()->label(__('appeals.forms.block-wiki'), 'wiki_id') }}<br>
+                {{ html()->select('wiki_id', $wikis, old('wiki_id'))->class('custom-select') }}
             </div>
-            {{ Form::hidden('blocktype', 0) }}
+            {{ html()->hidden('blocktype', 0) }}
 
             <div class="form-group mb-4">
-                {{ Form::label('appealfor', __('appeals.forms.block-ip')) }}
-                {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
+                {{ html()->label(__('appeals.forms.block-ip'), 'appealfor') }}
+                {{ html()->text('appealfor', old('appealfor'))->class('form-control') }}
                 <noscript>
                     <div class="alert alert-warning" role="alert">The following button will not work as you don't have javascript enabled.</div>
                 </noscript>
@@ -70,12 +70,12 @@
             </div>
 
             <div class="form-group mb-4">
-                {{ Form::label('appealtext', __('appeals.forms.question-why')) }}
-                {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
+                {{ html()->label(__('appeals.forms.question-why'), 'appealtext') }}
+                {{ html()->textarea('appealtext', old('appealtext'))->class('form-control h-25') }}
             </div>
 
-            {{ Form::button(__('generic.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-            {{ Form::close() }}
+            {{ html()->submit(__('generic.submit'))->class('btn btn-success') }}
+            {{ html()->form()->close() }}
         </div>
     </div>
 @endsection
