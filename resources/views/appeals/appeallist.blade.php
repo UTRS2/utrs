@@ -53,7 +53,7 @@
     <div class="card mt-4">
         <h5 class="card-header">{{ $type }}</h5>
         <div class="card-body">
-            @component('components.appeal-table', ['appeals' => $appeals[$type]])
+            @component('components.appeal-table', ['appeals' => $appeals[$type], 'mainPaginate' => $mainPaginate])
             @endcomponent
         </div>
     </div>

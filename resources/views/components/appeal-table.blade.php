@@ -50,7 +50,8 @@
         @endforeach
     </tbody>
 </table>
-
+@if($mainPaginate)
 <div class="d-flex justify-content-center">
     {{ $appeals->links() }}
 </div>
+@endif

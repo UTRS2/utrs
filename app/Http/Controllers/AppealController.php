@@ -167,19 +167,22 @@ class AppealController extends Controller
 
         $appeals[$appealtypes['all']] = $appeal->whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
             $query->whereNotIn('status', $basicStatuses);
-        })->orWhere(function ($query) use ($isCUAnyWiki) {
-            if ($isCUAnyWiki) {
-                $query->where('status',Appeal::STATUS_CHECKUSER);
-            }
         })
-        ->sortable()->paginate(10);
+        ->sortable();
+        $mainPaginate = $appeals[$appealtypes['all']]->count() > 49;
+        if($appeals[$appealtypes['all']]->count() > 49) {
+            $appeals[$appealtypes['all']] = $appeals[$appealtypes['all']]->paginate(25);
+        }
+        else {
+            $appeals[$appealtypes['all']] = $appeals[$appealtypes['all']]->get();
+        }
 
         if($isDeveloper) {
             $appeals[$appealtypes['developer']] = $appeal->whereIn('status',$developerStatuses)
-            ->sortable()->paginate(3);
+            ->sortable()->paginate(20);
         }
         
-        return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty()]);
+        return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty(), 'mainPaginate' => $mainPaginate]);
     }
 
     public function map(Request $request,$id) {
