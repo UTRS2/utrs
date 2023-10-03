@@ -11,6 +11,7 @@ use App\Models\LogEntry;
 use App\Models\Privatedata;
 use App\Models\Wiki;
 use App\Models\User;
+use App\Models\EmailBan;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -95,7 +96,8 @@ class PublicAppealController extends Controller
                 Rule::exists('wikis', 'id')->where('is_accepting_appeals', true)
             ],
             'blocktype'  => 'required|numeric|max:2|min:0',
-            'hiddenip'   => 'nullable|ip'
+            'hiddenip'   => 'nullable|ip',
+            'email'     => 'nullable|email',
         ]);
 
         if ($data['blocktype'] == 0) {
@@ -177,6 +179,28 @@ class PublicAppealController extends Controller
             return response('Test: not actually saving anything');
         }
 
+        //check if email is banned and if so, return with errors to the form page
+        $email = $request->input('email');
+        $emailbans = EmailBan::where('email', '=', $email)->first();
+        if (!is_null($emailbans)) {
+            if ($emailbans->appealbanned) {
+                return Redirect::back()->withErrors(['msg'=>'Your email address has been banned from making appeals. If you believe this is a mistake, please contact a tool administrator.'])->withInput();
+            }
+            //if the email was used in the last 36 hours, return with errors to the form page
+            $lastused = strtotime($emailbans->lastused);
+            $now = strtotime(now());
+            $diff = $now - $lastused;
+            $hours = $diff / ( 60 * 60 );
+            if ($hours < 36) {
+                return Redirect::back()->withErrors(['msg'=>'Your email address has been used to file an appeal recently. Please make sure your recent appeal has been closed before filing another. If it has, you will need to take time to reflect on the response of the administrator before reappealing.'])->withInput();
+            }
+        }
+        //if the email used in the request has an appeal that is open, return with errors to the form page
+        $emailActive = Appeal::where('email', '=', $email)->whereIn('status', Appeal::ACTIVE_APPEAL_STATUSES)->get();
+        if (count($emailActive)>0) {
+            return Redirect::back()->withErrors(['msg'=>'Your email address has an open appeal. Please wait for that appeal to close before submitting another appeal.'])->withInput();
+        }
+
         /** @var Appeal $appeal */
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
             $appeal = Appeal::create($data);
@@ -201,6 +225,22 @@ class PublicAppealController extends Controller
 
             return $appeal;
         });
+
+        $emailkey = hash('sha512', $email . (microtime() . rand()));
+        //if email exists in the database, update the last used time, otherwise create a new entry
+        
+        if (!is_null($emailbans)) {
+            $emailbans->lastused = now();
+            $emailbans->linkedappeals[] = $appeal->id;
+            $emailbans->save();
+        } else {
+            EmailBan::create([
+                'email' => $email,
+                'uid' => $emailkey,
+                'linkedappeals' => [$appeal->id],
+                'lastused' => now(),
+            ]);
+        }
 
         return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey ]);
     }

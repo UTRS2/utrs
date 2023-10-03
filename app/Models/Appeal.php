@@ -7,10 +7,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use RuntimeException;
 use Illuminate\Database\Eloquent\Model;
+use Kyslik\ColumnSortable\Sortable;
 
 class Appeal extends Model
 {
     use HasFactory;
+    use Sortable;
+
+    const ACTIVE_APPEAL_STATUSES = [
+        self::STATUS_OPEN,
+        self::STATUS_VERIFY,
+        self::STATUS_AWAITING_REPLY,
+        self::STATUS_ADMIN,
+        self::STATUS_CHECKUSER,
+        self::STATUS_NOTFOUND,
+    ];
 
     const REPLY_STATUS_CHANGE_OPTIONS = [
         self::STATUS_OPEN           => self::STATUS_OPEN,
@@ -90,8 +101,17 @@ class Appeal extends Model
         'submitted',
     ];
 
-    // scopes
+    // attributes
+    public $sortableAs = ['id',
+                        'appealfor',
+                        'blocktype',
+                        'status',
+                        'blockingadmin',
+                        'blockreason',
+                        'submitted',
+                    ];
 
+    // scopes
     public function scopeOpenOrRecent(Builder $query)
     {
         return $query->where(function (Builder $query) {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Ban;
 use App\Models\LogEntry;
 use App\Models\User;
+use App\Models\EmailBan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
@@ -263,5 +264,36 @@ class BanController extends Controller
         }
 
         return $wikis;
+    }
+
+    public function banEmail(string $code)
+    {
+        return view('admin.bans.emailban', [
+            'code' => $code,
+        ]);
+    }
+
+    public function banEmailSubmit(Request $request)
+    {
+        //validate that 
+        $this->validate($request, [
+            'uid' => 'required|string',
+        ]);
+
+        //find the email and set the ban
+        $email = EmailBan::where('email', $address)->firstOrFail();
+        //set the appealban to match the value from the request
+        $email->appealbanned = $request->input('appealbanned', false);
+        //set the accountban to match the value from the request
+        $email->accountbanned = $request->input('accountbanned', false);
+
+
+        $ban->addLog(
+            new RequestLogContext($request),
+            'email ban modified',
+            'Appeal: '.$request->input('appealbanned', false) . ' Account: ' . $request->input('accountbanned', false)
+        );
+
+        return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
     }
 }
