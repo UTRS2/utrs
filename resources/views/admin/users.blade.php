@@ -24,17 +24,20 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($rowcontents as $rowcontent)
+                @foreach($users as $user)
                     <tr>
-                        @foreach($rowcontent as $field)
-                            <td style="vertical-align: middle;">{!! $field !!}</td>
-                        @endforeach
+                        <td style="vertical-align: middle;">{{ $user->id }}</td>
+                        <td style="vertical-align: middle;">{{ $user->username }}</td>
+                        <td style="vertical-align: middle;">{{ $user->email ?? 'None'}}</td>
+                        <td style="vertical-align: middle;">{{ $user->last_permission_check_at }}</td>
+                        <td style="vertical-align: middle;">{{ $user->mediawiki_id }}</td>
+
                     </tr>
                 @endforeach
                 </tbody>
             </table>
             <div class="d-flex justify-content-center">
-                {{ $rowcontents->links() }}
+                {{ $users->links() }}
             </div>
         </div>
     </div>
