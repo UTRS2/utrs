@@ -17,11 +17,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Traits\ProxycheckTrait;
 use App\Utils\IPUtils;
 use Redirect;
 
 class PublicAppealController extends Controller
 {
+    use ProxycheckTrait;
     public static function checkValidUser($username, $wiki) {
         
         $api = MediaWikiRepository::getApiForTarget($wiki);
@@ -100,6 +102,9 @@ class PublicAppealController extends Controller
             'email'     => 'nullable|email',
         ]);
 
+        //call the proxycheck laravel trait to check if the IP is a proxy
+        $data['proxy'] = $this->proxycheck($ip);
+
         if ($data['blocktype'] == 0) {
             if (strpos($data['appealfor'],"/")>0) {
                 $data['appealfor'] = explode("/",$data['appealfor'])[0];
@@ -135,10 +140,6 @@ class PublicAppealController extends Controller
                 return Redirect::back()->withErrors(['msg'=>'The underlying IP is not an IP address, please try again.'])->withInput();
             }
         }
-
-        
-
-        
 
         $key = hash('sha512', $ip . $ua . $lang . (microtime() . rand()));
         $data['appealsecretkey'] = $key;
@@ -197,7 +198,7 @@ class PublicAppealController extends Controller
         }
         //if the email used in the request has an appeal that is open, return with errors to the form page
         $emailActive = Appeal::where('email', '=', $email)->whereIn('status', Appeal::ACTIVE_APPEAL_STATUSES)->get();
-        if (count($emailActive)>0) {
+        if (!is_null($email) && count($emailActive)>0) {
             return Redirect::back()->withErrors(['msg'=>'Your email address has an open appeal. Please wait for that appeal to close before submitting another appeal.'])->withInput();
         }
 
@@ -221,7 +222,7 @@ class PublicAppealController extends Controller
                 'ua'         => $ua . ' ' . $lang,
             ]);
 
-            GetBlockDetailsJob::dispatchNow($appeal);
+            GetBlockDetailsJob::dispatchSync($appeal);
 
             return $appeal;
         });
@@ -233,7 +234,7 @@ class PublicAppealController extends Controller
             $emailbans->lastused = now();
             $emailbans->linkedappeals[] = $appeal->id;
             $emailbans->save();
-        } else {
+        } elseif (!is_null($email)) {
             EmailBan::create([
                 'email' => $email,
                 'uid' => $emailkey,

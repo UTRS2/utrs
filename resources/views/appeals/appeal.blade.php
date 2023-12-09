@@ -47,6 +47,13 @@ function displayTransfer() {
                             <h4 class="card-title">{{__('appeals.appeal-title',['name'=>$info->appealfor])}}</h4>
                             <p class="card-text">
                                 {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
+                                @if($info->proxy == 0)
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                <i>This appeal is unlikely to have come from a proxy or VPN.</i>
+                                @else
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                <i>This appeal very likely came from a proxy or a VPN.</i>
+                                @endif
                                 @if($info->user_verified == 1)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
                                 <i>{{__('appeals.verify.verified')}}</i>

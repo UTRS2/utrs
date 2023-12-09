@@ -23,31 +23,14 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
         $allusers = User::paginate(50);
 
-        $tableheaders = ['ID', 'Username', 'Email', 'CentralAuth ID', 'Last Permissions Check'];
+        $tableheaders = ['ID', 'Username', 'Email', 'Last Permissions Check', 'CentralAuth ID'];
         $rowcontents = [];
 
-        /*foreach ($allusers as $user) {
-            $allperms = Permission::where('user_id',$user->id)->get();
-            $activePerms = sizeof($allperms) > 0;
-            if(!$activePerms) {continue;}
-            $canAdmin = false;
-            foreach($allperms as $perm) {
-                if(
-                    $perm->oversight ||
-                    $perm->checkuser ||
-                    $perm->steward ||
-                    $perm->staff ||
-                    $perm->developer ||
-                    $perm->tooladmin ||
-                    $perm->admin
-                ) {
-                    $canAdmin = true;
-                }
-            }
-            if (!$canAdmin) {continue;}
-            $idbutton = '<a href="' . route('admin.users.view', $user) . '"><button type="button" class="btn btn-primary">' . $user->id . '</button></a>';
-            $rowcontents[$user->id] = [$idbutton, htmlspecialchars($user->username), $user->mediawiki_id ?? '(not known)', $user->last_permission_check_at];
-        }*/
+        //if user is tooladmin, set $canAdmin to true
+        $canAdmin = false;
+        if (auth()->user()->can('update', User::class)) {
+            $canAdmin = true;
+        }
 
         return view('admin.users', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'users' => $allusers]);
     }

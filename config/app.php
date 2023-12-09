@@ -231,6 +231,7 @@ return [
         'MediaWikiRepository' => App\Services\Facades\MediaWikiRepository::class,
         'Version' => App\Services\Facades\Version::class,
         'Lava' => Khill\Lavacharts\Laravel\LavachartsFacade::class,
+        'Proxycheck' => \proxycheck\proxycheck::class,
 
     ],
 
