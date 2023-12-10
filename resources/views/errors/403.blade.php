@@ -3,11 +3,11 @@
 @section('content')
     @if(Auth::check() && !Auth::user()->last_permission_check_at)
         <div class="alert alert-warning" role="alert">
-            <b>403 Forbidden:</b> {{ $exception->getMessage() ?: 'You do not have access to view this page or perform this action.' }}
+            <h4 class="alert-heading">403 Forbidden: {{ $exception->getMessage() ?: 'You do not have access to view this page or perform this action.' }}</h4>
 
-            <h4 class="alert-heading">Your user roles have not been loaded yet.</h4>
+            <b>Your user roles may not have not been loaded yet.</b>
             <p>
-                This should not take too long. It's very possible that they have already been loaded by the time this page was loaded.
+                This should not take too long.
             </p>
 
             <p>

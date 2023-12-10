@@ -22,7 +22,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"> <!-- left nav -->
             @auth
-                @can('viewAny', App\Models\Appeal::class)
+                @canany(['viewAny','stewardClerk'], App\Models\Appeal::class)
                     <li class="nav-item">
                         <a href="{{ route('appeal.list') }}" class="nav-link">{{__('generic.open-appeals')}}</a>
                     </li>
