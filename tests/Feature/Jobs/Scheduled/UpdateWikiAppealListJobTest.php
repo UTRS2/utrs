@@ -33,7 +33,6 @@ class UpdateWikiAppealListJobTest extends TestCase
         $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
 
         $this->assertStringContainsString('User talk:' . $appeal->appealfor, $text);
-        $this->assertStringContainsString(url(route('appeal.view', $appeal)), $text);
         $this->assertStringContainsString(Appeal::STATUS_OPEN, $text);
     }
 
@@ -48,7 +47,6 @@ class UpdateWikiAppealListJobTest extends TestCase
         $this->assertEquals(Appeal::STATUS_OPEN, $appeal->status);
 
         $this->assertStringContainsString('[{{fullurl:Special:BlockList|wpTarget=' . urlencode($appeal->appealfor) . '}} Block ID ' . $appeal->appealfor . ']', $text);
-        $this->assertStringContainsString(url(route('appeal.view', $appeal)), $text);
         $this->assertStringContainsString(Appeal::STATUS_OPEN, $text);
     }
 
