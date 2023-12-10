@@ -72,6 +72,7 @@ class UserPolicy
         $permissionsNeeded = [
             'developer' => ['developer'], // only developers can assign developer permissions
             'tooladmin' => ['tooladmin', 'developer'], // tooladmins can make other people to tooladmins,
+            'stew_clerk' => ['developer', 'steward'], // stewards & devs can make other people stew clerks
         ];
 
         if (!Arr::exists($permissionsNeeded, $permission)) {

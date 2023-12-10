@@ -11,7 +11,7 @@ jobs:
       matrix:
         php-versions:
           - 7.3 # current production
-          - 8.0 # target, https://github.com/UTRS2/utrs/issues/375
+          - 8.2 # target, https://github.com/UTRS2/utrs/issues/375
     services:
       mysql:
         image: mariadb:10.5

@@ -36,6 +36,16 @@ class AppealPolicy
         $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($appeal->wiki)
             ->getRequiredGroupsForAction('appeal_view');
 
+        // Allow steward clerks to view appeals from wikiid 3
+        if ($appeal->wiki_id === 3 && $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'stew_clerk') 
+        // if 'prox' is in the block reason, allow steward clerks to view the appeal
+        && strpos(strtolower($appeal->blockreason), 'prox') == true) {
+            return true;
+        }
+        if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'stew_clerk')){
+            return $this->deny('You can not view appeals that are not proxy related.');
+        }
+
         if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, $neededPermissions)) {
             return $this->deny('Viewing ' . $appeal->wiki . ' appeals is restricted to users in the following groups: ' . implode(', ', $neededPermissions));
         }
@@ -84,12 +94,32 @@ class AppealPolicy
 
         $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($appeal->wiki)
             ->getRequiredGroupsForAction('appeal_handle');
-
+        
+        // Allow steward clerks to change appeals from wikiid 3
+        if ($appeal->wiki_id === 3 && $user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'stew_clerk') 
+        // if 'prox' is in the block reason, allow steward clerks to view the appeal
+        && strpos(strtolower($appeal->blockreason), 'prox') == true) {
+            return true;
+        }
+        if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'stew_clerk')){
+            return $this->deny('You can not change appeals that are not proxy related.');
+        }
         if (!$user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, $neededPermissions)) {
             return $this->deny('You can not take actions on this appeal.');
         }
 
         return true;
+    }
+
+    /**
+     * Determine whether the user has steward clerk permissions.
+     *
+     * @param User $user
+     * @return mixed
+     */
+
+    public function stewardClerk(User $user) {
+        return $user->hasAnySpecifiedPermsOnAnyWiki(['stew_clerk']);
     }
 
     /**

@@ -142,6 +142,7 @@ class AppealController extends Controller
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
         $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
+        $isStewClerk = $user->hasAnySpecifiedPermsOnAnyWiki('stew_clerk');
 
         $wikis = collect(MediaWikiRepository::getSupportedTargets());
 
@@ -149,6 +150,9 @@ class AppealController extends Controller
         if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['global'], ['steward', 'staff'])) {
             $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
+                    if($user->hasAnySpecifiedLocalOrGlobalPerms($wiki, ['stew_clerk'])) {
+                        return true;
+                    }
                     $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($wiki)
                         ->getRequiredGroupsForAction('appeal_view');
                     return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, $neededPermissions);
@@ -165,31 +169,56 @@ class AppealController extends Controller
         $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
         $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
 
-        $appeals[$appealtypes['assigned']] = Appeal::whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
-            $query->whereNotIn('status', $basicStatuses)
-            ->where('handlingadmin',Auth::id());
-        })->orWhere(function ($query) use ($isCUAnyWiki) {
-            if ($isCUAnyWiki) {
-                $query->where('status',Appeal::STATUS_CHECKUSER);
-            }
-        })
-            ->get();
-        $appeals[$appealtypes['unassigned']] = Appeal::whereIn('wiki', $wikis)
-            ->whereNotIn('status', $basicStatuses)
-            ->where(function ($query) {
-            $query->whereNull('handlingadmin');
-        })->get();
-        $appeals[$appealtypes['reserved']] = Appeal::whereIn('wiki', $wikis)
-            ->whereNotIn('status', $basicStatuses)
-            ->where(function ($query) use ($isCUAnyWiki) {
-                if ($isCUAnyWiki) {
-                    $query->where('handlingadmin','!=',Auth::id());
-                }
-                else {
-                    $query->where('handlingadmin','!=',Auth::id())
-                        ->orWhere('status',Appeal::STATUS_CHECKUSER);   
-                }
-            })->get();
+        $appeals[$appealtypes['assigned']] = 
+            Appeal::whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
+                $query->whereNotIn('status', $basicStatuses)
+                    ->where('handlingadmin',Auth::id());
+                })->orWhere(function ($query) use ($isCUAnyWiki) {
+                    if ($isCUAnyWiki) {
+                        $query->where('status',Appeal::STATUS_CHECKUSER);
+                    }
+                    
+                })
+                ->where(function ($query) use ($isStewClerk) {
+                    if ($isStewClerk) {
+                        //if the block reason contains 'prox', allow steward clerks to view the appeal
+                        $query->where('handlingadmin',Auth::id())
+                            ->where('blockreason','like','%prox%')
+                            ->where('wiki_id',3);
+                    }
+                })
+                ->get();
+        $appeals[$appealtypes['unassigned']] = 
+            Appeal::whereIn('wiki', $wikis)
+                ->whereNotIn('status', $basicStatuses)
+                ->where(function ($query) use($isStewClerk) {
+                    if($isStewClerk) {
+                        $query->whereNull('handlingadmin')
+                            ->where('blockreason','like','%prox%');
+                    }
+                    else {
+                        $query->whereNull('handlingadmin');
+                    }
+                    
+                })->get();
+        $appeals[$appealtypes['reserved']] = 
+            Appeal::whereIn('wiki', $wikis)
+                ->whereNotIn('status', $basicStatuses)
+                ->where(function ($query) use ($isCUAnyWiki, $isStewClerk) {
+                    if ($isCUAnyWiki) {
+                        $query->where('handlingadmin','!=',Auth::id());
+                    }
+                    elseif ($isStewClerk) {
+                        //if the block reason contains 'prox', allow steward clerks to view the appeal
+                        $query->where('handlingadmin','!=',Auth::id())
+                            ->where('blockreason','like','%prox%')
+                            ->where('wiki_id',3);
+                    }
+                    else {
+                        $query->where('handlingadmin','!=',Auth::id())
+                            ->orWhere('status',Appeal::STATUS_CHECKUSER);   
+                    }
+                })->get();
         if($isDeveloper) {
             $appeals[$appealtypes['developer']] = Appeal::whereIn('status',$developerStatuses)
             ->get();

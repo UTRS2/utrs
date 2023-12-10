@@ -58,6 +58,7 @@
                         <th>CheckUser</th>
                         <th>Oversight</th>
                         <th>Steward</th>
+                        <th>Steward Clerk</th>
                         <th>WMF Staff</th>
                         <th>UTRS Developer</th>
                         <th>Tool admin</th>
