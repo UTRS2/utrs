@@ -27,3 +27,4 @@ _ide_helper_models.php
 resources/lang/vendor/*
 !resources/lang/vendor/torblock
 app/Traits/ProxycheckTrait.php
+python/config.py

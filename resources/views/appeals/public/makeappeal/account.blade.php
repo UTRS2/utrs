@@ -61,8 +61,8 @@
                 </div>
             </div>
             <div class="form-group mb-4">
-                {{ Form::label('email', __('appeals.forms.email')) }}
-                {{ Form::text('email', old('email'), ['class' => 'form-control']) }}
+                {{ html()->label(__('appeals.forms.email'), 'email') }}
+                {{ html()->text('email', old('email'))->class('form-control') }}
             </div>
 
             <noscript>

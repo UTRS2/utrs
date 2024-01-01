@@ -38,6 +38,10 @@ Route::middleware('set.locale')->group(function () {
 
         Route::get('/appeal/verify/{appeal}/{token}', 'Appeal\PublicAppealController@showVerifyOwnershipForm')->name('public.appeal.verifyownership');
         Route::post('/appeal/verify/{appeal}', 'Appeal\PublicAppealController@verifyAccountOwnership')->name('public.appeal.verifyownership.submit');
+
+        Route::post('/appeal/checkstatus', 'Appeal\PublicAppealController@checkStatus')->name('public.appeal.checkstatus');
+
+        Route::post('/appeal/submitproxyquestion', 'Appeal\PublicAppealController@submitProxyQuestion')->name('public.appeal.proxyreason');
     });
 
     Route::get('/appeal/map/{id}', 'AppealController@map')->name('appeal.map');

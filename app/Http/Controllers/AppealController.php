@@ -158,7 +158,6 @@ class AppealController extends Controller
 
         $appealtypes = [
             'all'=>'Active appeals',
-            'developer'=>'Developer',
         ];
         if($isDeveloper) { $appealtypes['developer']=__('appeals.appeal-types.developer'); }
 
@@ -331,7 +330,7 @@ class AppealController extends Controller
                             
                         }
                         else {
-                            $appealmap[] = ['text'=>'Not mapped - '.$linecomment['action'] . ' - ' . $linecomment['reason'], 'time'=>'INVALID', 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>'Not mapped - '.$linecomment['action'] . ' - ' . $linecomment['reason'], 'time'=>'INVALID', 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid,'matchAppealID'=>0];
                         }
                     }
                 }

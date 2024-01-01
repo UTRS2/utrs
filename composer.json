@@ -22,6 +22,7 @@
         "proxycheck/proxycheck-php": "^0.2.2",
         "spatie/laravel-backup": "^8",
         "spatie/laravel-html": "^3.2",
+        "spatie/laravel-mailcoach-mailer": "^1.0",
         "taavi/laravel-socialite-mediawiki": "^1.6",
         "taavi/laravel-torblock": "^2",
         "tio/laravel": "^1.23",

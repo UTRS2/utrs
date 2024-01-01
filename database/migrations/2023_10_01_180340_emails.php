@@ -20,7 +20,7 @@ class Emails extends Migration
             $table->id();
             $table->string('email');
             $table->string('uid');
-            $table->json('linkedappeals')->nullable();
+            $table->string('linkedappeals')->nullable();
             $table->boolean('appealbanned')->default(false);
             $table->boolean('accountbanned')->default(false);
             $table->dateTime('lastused')->nullable();
