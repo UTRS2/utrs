@@ -42,7 +42,7 @@ class AppealPolicy
         && strpos(strtolower($appeal->blockreason), 'prox') == true) {
             return true;
         }
-        if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'stew_clerk')){
+        if ($user->hasAnySpecifiedLocalOrGlobalPerms($appeal->wiki, 'stew_clerk') && $appeal->wiki_id === 3){
             return $this->deny('You can not view appeals that are not proxy related.');
         }
 
