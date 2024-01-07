@@ -20,6 +20,8 @@ use Illuminate\Validation\Rule;
 use App\Traits\ProxycheckTrait;
 use App\Utils\IPUtils;
 use Redirect;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyAccount;
 
 class PublicAppealController extends Controller
 {
@@ -234,13 +236,27 @@ class PublicAppealController extends Controller
             $emailbans->linkedappeals[] = $linkedappeals . ',' . $appeal->id;
             $emailbans->save();
         } elseif (!is_null($email)) {
-            EmailBan::create([
+            $emailBanEntry = EmailBan::create([
                 'email' => $email,
                 'uid' => $emailkey,
                 'linkedappeals' => $appeal->id,
                 'lastused' => now(),
             ]);
         }
+
+        //if appeal is for an IP, send an email to the email address provided using the VerifyAccount mailable
+        if ($data['blocktype']==0) {
+            $email = $appeal->email;
+            if (!is_null($email)) {
+                if (!is_null($email)) {
+                    Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->appealsecretkey])));
+                } else {
+                    //return with errors to the form page
+                    return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
+                }
+            }
+        }
+
         $askproxy = FALSE; 
         if ($data['proxy'] && $data['blocktype']==0) {
             //if the IP is a proxy and the blocktype is IP, this will be given the chance to be diverted to ACC
