@@ -9,6 +9,12 @@
             </a>
         </div>
     @endcan
+    
+    @if(isset($setemail) && $verifiedemail === true)
+        <div class="alert alert-success" role="alert">
+            Email address updated successfully.
+        </div>
+    @endif
 
     @if(sizeof($errors)>0)
         <div class="alert alert-danger" role="alert">
@@ -47,7 +53,33 @@
             </table>
         </div>
     </div>
+    @if($setemail)
+    <div class="card mb-4">
+        <h5 class="card-header">Email address</h5>
+        <div class="card-body">
+            <div class="form-group">
+                {{ html()->label('Email address', 'email') }}<br />
+                {{ html()->textarea('email', $user->email, old('email'))->class('form-control h-1') }}<br />
 
+                <!-- checkboxes for email preferences -->
+                {{ html()->label('Email preferences', 'email_preferences') }}<br />
+                <div class="custom-control custom-checkbox">
+                    {{ html()->checkbox('appeal_notifications', old('appeal_notifications') === 1, 1)->checked(old('appeal_notifications', $user->appeal_notifications))->class('custom-control-input')->id('appeal_notifications') }} {{ html()->label('Notify me when there is a response to an appeal', 'appeal_notifications')->class('custom-control-label') }}
+                </div>
+                <div class="custom-control custom-checkbox">
+                    {{ html()->checkbox('weekly_appeal_list', old('weekly_appeal_list') === 1, 1)->checked(old('weekly_appeal_list', $user->weekly_appeal_list))->class('custom-control-input')->id('weekly_appeal_list') }} {{ html()->label('Send me a weekly list of appeals where I am the blocking admin', 'weekly_appeal_list')->class('custom-control-label') }}
+                </div>
+
+                @error('email')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+
+        </div>
+    </div>
+    @endif
     <div class="card mb-4">
         <h5 class="card-header">Permissions</h5>
         <div class="card-body">
@@ -111,8 +143,8 @@
             <h5 class="card-header">Save changes</h5>
             <div class="card-body">
                 <div class="form-group">
-                    {{ html()->label('Reason', 'reason') }}
-                    {{ html()->input('text', 'reason', old('reason'), ['class' => 'form-control']) }}
+                    {{ html()->label('Reason', 'reason') }} <br />
+                    {{ html()->textarea('reason', NULL, old('reason'))->class('form-control h-1') }}
 
                     @error('reason')
                         <span class="invalid-feedback" role="alert">

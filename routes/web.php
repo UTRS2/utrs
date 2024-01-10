@@ -77,6 +77,7 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/admin/users', 'Admin\UserController@index')->name('admin.users.list');
     Route::get('/admin/users/{user}', 'Admin\UserController@show')->name('admin.users.view');
     Route::post('/admin/users/{user}', 'Admin\UserController@update')->name('admin.users.update');
+    Route::get('/admin/users/{user}/confirmemail/{token}', 'Admin\UserController@confirmEmail')->name('admin.users.confirmemail');
 
     Route::get('/admin/bans', 'Admin\BanController@index')->name('admin.bans.list');
     Route::get('/admin/bans/create', 'Admin\BanController@new')->name('admin.bans.new');

@@ -11,29 +11,30 @@ use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 use Spatie\MailcoachMailer\Concerns\UsesMailcoachMail;
 
-class VerifyAccount extends Mailable
+class VerifyAdminAccount extends Mailable
 {
     use Queueable, SerializesModels, UsesMailcoachMail;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($email, $url)
+    public function __construct($email, $url, $username)
     {
         $this->email = $email;
         $this->url = $url;
+        $this->username = $username;
+
     }
 
     public function build()
     {
         $this
-        ->mailcoachMail('Appeal pending', ['email' => $this->email, 'verify-url' => $this->url]);
+        ->mailcoachMail('Verify Admin', ['email' => $this->email, 'verify-url' => $this->url, 'username' => $this->username]);
     }
 
     /**
      * Get the message envelope.
      */
-
     public function envelope(): Envelope
     {
         return new Envelope(

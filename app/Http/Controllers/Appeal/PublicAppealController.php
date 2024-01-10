@@ -22,6 +22,7 @@ use App\Utils\IPUtils;
 use Redirect;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyAccount;
+use Illuminate\Support\Str;
 
 class PublicAppealController extends Controller
 {
@@ -56,7 +57,7 @@ class PublicAppealController extends Controller
             $clientHints['platform-version'] = str_replace("\"","",$request->header('Sec-CH-UA-Platform-Version'));
             if (explode(".",$clientHints['platform-version'])[0]>=13 && $clientHints['platform']=='Windows') {
                 $clientHints['platform-version'] = '11';
-            } elseif ($clientHints['platform']=='Windows') {
+            } elseif($clientHints['platform']=='Windows') {
                 $clientHints['platform-version'] = '10 or lower';
             }
             $clientHints['architecture'] = str_replace("\"","",$request->header('Sec-CH-UA-Arch'));
@@ -70,7 +71,7 @@ class PublicAppealController extends Controller
             }
             if ($clientHints['platform']=="Windows"||$clientHints['platform']=="Linux") {
                 $clientHintsString = $clientHints['platform'] . " " . $clientHints['platform-version'] . " " . $clientHints['architecture'] . "-Arch " . $clientHints['bits'] . "-bit " . $clientHints['resolution'] . " " . $clientHints['memory'].' RAM '. $clientHints['browser'];
-            } elseif ($clientHints['platform']=="Android") {
+            } elseif($clientHints['platform']=="Android") {
                 $clientHintsString = $clientHints['platform'] . " " . $clientHints['platform-version'] . " " . $clientHints['device-model'] . " " . $clientHints['bits'] . "-bit " . $clientHints['resolution'] . " " . $clientHints['memory'].' RAM '. $clientHints['browser'];
             } else {
                 $clientHintsString = NULL;
@@ -143,6 +144,7 @@ class PublicAppealController extends Controller
         $data['appealsecretkey'] = $key;
         $data['status'] = Appeal::STATUS_VERIFY;
         $data['appealfor'] = trim($data['appealfor']);
+        $data['verify_token'] = Str::random(32);
 
         $recentAppealExists = Appeal::where(function (Builder $query) use ($request) {
                 return $query
@@ -200,6 +202,34 @@ class PublicAppealController extends Controller
             return Redirect::back()->withErrors(['msg'=>'Your email address has an open appeal. Please wait for that appeal to close before submitting another appeal.'])->withInput();
         }
 
+        $emailkey = hash('sha512', $email . (microtime() . rand()));
+        //if email exists in the database, update the last used time, otherwise create a new entry
+        
+        if (!is_null($emailbans)) {
+            $emailbans->lastused = now();
+            $linkedappeals = $emailbans->linkedappeals;
+            $emailbans->linkedappeals[] = $linkedappeals . ',' . $appeal->id;
+            $emailbans->save();
+        } elseif(!is_null($email)) {
+            $emailBanEntry = EmailBan::create([
+                'email' => $email,
+                'uid' => $emailkey,
+                'linkedappeals' => $appeal->id,
+                'lastused' => now(),
+            ]);
+        }
+
+        //if appeal is for an IP, send an email to the email address provided using the VerifyAccount mailable
+        if ($data['blocktype']==0) {
+            $email = $appeal->email;
+            if (!is_null($email)) {
+                Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
+            } else {
+                //return with errors to the form page
+                return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
+            }
+        }
+
         /** @var Appeal $appeal */
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
             $appeal = Appeal::create($data);
@@ -227,36 +257,6 @@ class PublicAppealController extends Controller
             return $appeal;
         });
 
-        $emailkey = hash('sha512', $email . (microtime() . rand()));
-        //if email exists in the database, update the last used time, otherwise create a new entry
-        
-        if (!is_null($emailbans)) {
-            $emailbans->lastused = now();
-            $linkedappeals = $emailbans->linkedappeals;
-            $emailbans->linkedappeals[] = $linkedappeals . ',' . $appeal->id;
-            $emailbans->save();
-        } elseif (!is_null($email)) {
-            $emailBanEntry = EmailBan::create([
-                'email' => $email,
-                'uid' => $emailkey,
-                'linkedappeals' => $appeal->id,
-                'lastused' => now(),
-            ]);
-        }
-
-        //if appeal is for an IP, send an email to the email address provided using the VerifyAccount mailable
-        if ($data['blocktype']==0) {
-            $email = $appeal->email;
-            if (!is_null($email)) {
-                if (!is_null($email)) {
-                    Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->appealsecretkey])));
-                } else {
-                    //return with errors to the form page
-                    return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
-                }
-            }
-        }
-
         $askproxy = FALSE; 
         if ($data['proxy'] && $data['blocktype']==0) {
             //if the IP is a proxy and the blocktype is IP, this will be given the chance to be diverted to ACC
@@ -264,7 +264,7 @@ class PublicAppealController extends Controller
             //if they decline, the appeal will continue as normal           
             return view('appeals.public.makeappeal.divertacc', [ 'hash' => $appeal->appealsecretkey ]);
         }
-        elseif ($data['proxy'] && $data['blocktype']!=0) {
+        elseif($data['proxy'] && $data['blocktype']!=0) {
             $askproxy = TRUE;            
         }
         return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey, 'processed' => FALSE, 'askproxy' => $askproxy ]);
@@ -366,38 +366,38 @@ class PublicAppealController extends Controller
                         if ($linecomment['action'] == 'create') {
                             $appealmap[] = ['text'=>'Appeal Submitted #'.$appealid, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'reserve') {
+                        elseif($linecomment['action'] == 'reserve') {
                             $appealmap[] = ['text'=>'Appeal assigned to an administrator', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'assigned','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'verify') {
+                        elseif($linecomment['action'] == 'verify') {
                             $appealmap[] = ['text'=>'Appeal Verified', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'verified','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'comment' || $linecomment['action'] == 'checkuser') {
+                        elseif($linecomment['action'] == 'comment' || $linecomment['action'] == 'checkuser') {
                             //we are ignoring internal comments
                         }
-                        elseif ($linecomment['action'] == 'responded') {
+                        elseif($linecomment['action'] == 'responded') {
                             $appealmap[] = ['text'=>'The administrator responded with:', 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'release') {
+                        elseif($linecomment['action'] == 'release') {
                             $appealmap[] = ['text'=>'Your appeal has been returned to the queue for a new administrator to review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 're-open') {
+                        elseif($linecomment['action'] == 're-open') {
                             $appealmap[] = ['text'=>'Your appeal has been reopened or returned for an administrator to review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'transfered appeal to another wiki') {
+                        elseif($linecomment['action'] == 'transfered appeal to another wiki') {
                             $appealmap[] = ['text'=>'Your appeal has been transferred to another wiki for review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'transfer','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'sent for CheckUser review') {
+                        elseif($linecomment['action'] == 'sent for CheckUser review') {
                             $appealmap[] = ['text'=>'Your appeal has been sent to a checkuser for review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'sent for tool administrator review') {
+                        elseif($linecomment['action'] == 'sent for tool administrator review') {
                             $appealmap[] = ['text'=>'Your appeal has been sent to a tool administrator for review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
                         }
-                        elseif ($linecomment['action'] == 'account verified') {
+                        elseif($linecomment['action'] == 'account verified') {
                             $appealmap[] = ['text'=>'You confirmed your identity to appeal #'.$appealid, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'check','active'=>"yes",'appealid'=>$appealid];
                         }
                         //if linecomment action contains "set status as" then based on the remainder of the string, set an appealmap entry
-                        elseif (strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {
+                        elseif(strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {
                             if (strpos($linecomment['action'], 'closed as') !== false) {$status = strtoupper(str_replace('closed as ','',$linecomment['action']));}
                             if (strpos($linecomment['action'], 'set status as') !== false) {$status = str_replace('set status as ','',$linecomment['action']);}
                             if (strpos($linecomment['action'], 'closed - ') !== false) {$status = strtoupper(str_replace('closed - ','',$linecomment['action']));}
@@ -408,31 +408,31 @@ class PublicAppealController extends Controller
                                 $active = "yes";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
-                            elseif ($status == 'DECLINE') {
+                            elseif($status == 'DECLINE') {
                                 $text = 'The administrator declined your appeal';
                                 $icon = 'decline';
                                 $active = "error";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
-                            elseif ($status == 'EXPIRE') {
+                            elseif($status == 'EXPIRE') {
                                 $text = 'Your appeal has been closed due to inactivity';
                                 $icon = 'time';
                                 $active = "error";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
-                            elseif ($status == 'ACCEPT') {
+                            elseif($status == 'ACCEPT') {
                                 $text = 'Your appeal has been granted';
                                 $icon = 'check';
                                 $active = "yes";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
-                            elseif ($status == 'INVALID') {
+                            elseif($status == 'INVALID') {
                                 $text = 'Your appeal has been closed without review';
                                 $icon = 'decline';
                                 $active = "error";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
-                            elseif ($status == 'SKIP') {
+                            elseif($status == 'SKIP') {
                                 //do nothing
                             }
                             else {

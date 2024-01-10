@@ -55,12 +55,20 @@ function displayTransfer() {
                                 <i>This appeal very likely came from a proxy or a VPN.</i>
                                 @endif
                                 @if($info->user_verified == 1)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
-                                <i>{{__('appeals.verify.verified')}}</i>
+                                    @if($info->blocktype == 0)
+                                    <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                    <i>{{__('appeals.verify.notableverified')}}This appeal will not be able to be verified.</i>
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <i>{{__('appeals.verify.ip-emailverified')}}The appeal has an email address which has been verified.</i>
+                                    <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                    @else
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <i>{{__('appeals.verify.verified')}}</i>
+                                    @endif
                                 @elseif($info->user_verified == -1)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
-                                <i>This appeal will not be able to be verified.</i>
-                                <br /><b style="color:red">This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                <i>{{__('appeals.verify.notableverified')}}This appeal will not be able to be verified.</i>
+                                <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
                                 @elseif(!$info->blocktype == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i> 
