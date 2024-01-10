@@ -15,7 +15,7 @@ return new class extends Migration
         // one for the admin email but has to be unique, one for the admin email verified boolean, and one for the admin email verified token
         // also add two boolean columns: one for if the user wants to recieve notifications for appeal updates, the other for a weekly list of appeals that they are the blocking admin for
         Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
             $table->boolean('email_verified')->default(false);
             $table->string('email_verified_token')->nullable();
             $table->boolean('appeal_notifications')->default(false);
