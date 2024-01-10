@@ -150,6 +150,7 @@ class AppealController extends Controller
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
         $isCUAnyWiki = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('checkuser');
+        $isStewClerk = $user->hasAnySpecifiedPermsOnAnyWiki('stew_clerk');
 
         $wikis = collect(MediaWikiRepository::getSupportedTargets());
 
@@ -157,6 +158,9 @@ class AppealController extends Controller
         if (!$isDeveloper && !$user->hasAnySpecifiedLocalOrGlobalPerms(['global'], ['steward', 'staff'])) {
             $wikis = $wikis
                 ->filter(function ($wiki) use ($user) {
+                    if($user->hasAnySpecifiedLocalOrGlobalPerms($wiki, ['stew_clerk'])) {
+                        return true;
+                    }
                     $neededPermissions = MediaWikiRepository::getWikiPermissionHandler($wiki)
                         ->getRequiredGroupsForAction('appeal_view');
                     return $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, $neededPermissions);
