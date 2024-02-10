@@ -44,12 +44,15 @@
                             @can('viewAny', App\Models\User::class)
                                 <a class="dropdown-item" href="{{ route('admin.users.list') }}">{{__('generic.admin-tools.users')}}</a>
                             @endcan
+                            @can('private', App\Models\LogEntry::class)
+                                <a class="dropdown-item" href="{{ route('admin.logs.list') }}">{{__('generic.admin-tools.logs')}}</a>
+                            @endcan
                         </div>
                     </li>
                 @endcanany
                 @can('viewAny', App\Models\Appeal::class)
                     <li class="nav-item">
-                        <a href="{{ route('stats.overall') }}" class="nav-link">Statistics</a>
+                        <a href="{{ route('stats.overall') }}" class="nav-link">{{__('generic.statistics')}}</a>
                     </li>
                 @endcan
                 @can('viewAny', \App\Models\Wiki::class)
@@ -87,6 +90,10 @@
                     <a class="dropdown-item" href="/changelang/es">Español</a>
                     <a class="dropdown-item" href="/changelang/pt-BR">Português (Brasil)</a>
                     <a class="dropdown-item" href="/changelang/pt-PT">Português</a>
+                    @env(['local','dev'])
+                        <a class="dropdown-item" href="/changelang/qqq">Template Description</a>
+                        <a class="dropdown-item" href="/changelang/qqz">Template Name</a>
+                    @endenv
                 </div>
             </li>
         </ul>
@@ -112,7 +119,7 @@
     <footer class="mt-4">
         <hr/>
         <p>
-            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs/issues">report bugs</a>.
+            Unblock Ticket Request System{!! Version::getVersion() !!}, <a href="https://github.com/utrs2/utrs/issues">{{__('generic.reportbugs')}}</a>.
         </p>
     </footer>
 </div>

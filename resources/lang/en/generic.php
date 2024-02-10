@@ -37,4 +37,6 @@ return [
     'quick-search'	=> 'Quick search',
     'advanced-search' => 'Advanced search',
     'on'			=> 'on',
+    'translate-with' => 'Translate with',
+    'translated-by-deepl' => 'Translated by DeepL',
 ];

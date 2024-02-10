@@ -12,6 +12,7 @@ use App\Models\Privatedata;
 use App\Models\Template;
 use App\Models\User;
 use App\Models\Ban;
+use App\Models\Translation;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
@@ -54,7 +55,27 @@ class AppealController extends Controller
             /** @var User $user */
             $user = Auth::user();
 
+            $translateIDs = [];
+            // check if the appealtext has a translation in the users default language under log id 0
+            $translation = Translation::where('language', $user->default_translation_language)->where('log_entries_id', 0)->first();
+            if ($translation) {
+                $info->appealtext = $translation->translation;
+                $translateIDs[] = 0;
+            }
+
             $logs = $info->comments;
+            $i=0;
+            // review each comment and check if there is a translation for it, and if so, load it instead based on the users default language
+            foreach ($logs as $log) {
+                $translation = $log->translations()->where('language', $user->default_translation_language)->first();
+                if (isset($translation->translation)) {
+                    if ($translation->translation != null) {
+                        $logs[$i]->reason = $translation->translation;
+                        $translateIDs[] = $log->id;
+                    }
+                }
+                $i=$i+1;
+            }
 
             $cudata = Privatedata::where('appeal_id', '=', $id)->get()->first();
 
@@ -104,6 +125,7 @@ class AppealController extends Controller
                 'previousAppeals' => $previousAppeals,
                 'urlname' => $urlname,
                 'wikis' => $newwikis,
+                'translateIDs' => $translateIDs,
             ]);
         }
 
@@ -254,77 +276,77 @@ class AppealController extends Controller
             $appealmap=[];
             //iterate through $fullappealcomments and each comment to the appeal it belongs to
             foreach ($fullappealcomments as $appealid => $appealcomments) {
-                //if the appeal is not verified, then add a note to the appealmap
+                //if the appeal is not verified, then add a note to the map
                 if ($appeals[$count]->user_verified != 1) {
                     $appealmap[] = ['text'=>'Appeal #'.$appeals[$count]['id'].' is not yet verified and can not be viewed', 'time'=>'INVALID', 'icon'=>'stop','active'=>"error",'appealid'=>$appealid];
                 } else {
                     foreach ($appealcomments as $linecomment) {
                         $appealkey = Appeal::findOrFail($appealid)->appealsecretkey;
                         if ($linecomment['action'] == 'create') {
-                            $appealmap[] = ['text'=>'Appeal Submitted #'.$appealid, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.submitted',['id' =>$appealid]), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'reserve') {
-                            $appealmap[] = ['text'=>'Appeal Assigned to an Administrator', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'assigned','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.assigned'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'assigned','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'verify') {
-                            $appealmap[] = ['text'=>'Appeal Verified', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'verified','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.verified'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'verified','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'comment') {
                             //we are ignoring internal comments
                         }
                         elseif($linecomment['action'] == 'responded') {
-                            $appealmap[] = ['text'=>'The administrator responded with:', 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.respond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'release') {
-                            $appealmap[] = ['text'=>'The appeal has been returned to the queue for a new administrator to review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.released'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 're-open') {
-                            $appealmap[] = ['text'=>'The appeal has been reopened or returned for administrator to review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.reopen'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'transfered appeal to another wiki') {
-                            $appealmap[] = ['text'=>'The appeal has been transferred to another wiki for review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'transfer','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.transfer'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'transfer','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'sent for CheckUser review') {
-                            $appealmap[] = ['text'=>'The appeal has been sent to a checkuser for review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.checkuser'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'sent for tool administrator review') {
-                            $appealmap[] = ['text'=>'The appeal has been sent to a tool administrator for review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.admin'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'account verified') {
-                            $appealmap[] = ['text'=>'The appeal has been verified', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'check','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.verifiedaccount'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'check','active'=>"yes",'appealid'=>$appealid];
                         }
-                        //if linecomment action contains "set status as" then based on the remainder of the string, set an appealmap entry
+                        //if linecomment action contains "set status as" then based on the remainder of the string, set an map entry
                         elseif(strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {
                             if (strpos($linecomment['action'], 'closed as') !== false) {$status = strtoupper(str_replace('closed as ','',$linecomment['action']));}
                             if (strpos($linecomment['action'], 'set status as') !== false) {$status = str_replace('set status as ','',$linecomment['action']);}
                             if (strpos($linecomment['action'], 'closed - ') !== false) {$status = strtoupper(str_replace('closed - ','',$linecomment['action']));}
                             //run through appeal statuses and make $text human readable
                             if ($status == 'AWAITING_REPLY') {
-                                $text = 'The administrator requested a reply from you';
+                                $text = __('appeals.map.awaitreply');
                                 $icon = 'paper';
                                 $active = "yes";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
                             elseif($status == 'DECLINE') {
-                                $text = 'The administrator declined your appeal';
+                                $text = __('appeals.map.declined');
                                 $icon = 'decline';
                                 $active = "error";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
                             elseif($status == 'EXPIRE') {
-                                $text = 'Your appeal has been closed due to inactivity';
+                                $text = __('appeals.map.expired');
                                 $icon = 'time';
                                 $active = "error";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
                             elseif($status == 'ACCEPT') {
-                                $text = 'Your appeal has been granted';
+                                $text = __('appeals.map.accepted');
                                 $icon = 'check';
                                 $active = "yes";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
                             }
                             elseif($status == 'INVALID') {
-                                $text = 'Your appeal has been closed without review';
+                                $text = __('appeals.map.invalid');
                                 $icon = 'decline';
                                 $active = "error";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
@@ -333,7 +355,7 @@ class AppealController extends Controller
                                 //do nothing
                             }
                             else {
-                                $text = 'Unhandled status: ' . $status;
+                                $text = __('appeals.map.unhandled', $status);
                                 $icon = 'x';
                                 $active = "no";
                                 $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];

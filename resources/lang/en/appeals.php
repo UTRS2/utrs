@@ -66,6 +66,9 @@ return [
     'comment-input-text' => 'Add a comment to this appeal:',
 
     'verify' => [
+        'negativeaction' => 'This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.',
+        'ip-emailverified' => 'The appeal has an email address which has been verified.',
+        'notableverified' => 'This appeal will not be able to be verified.',
         'verified' => 'This appeal has been verified to the account on the wiki.',
         'not-verified' => 'This appeal has not been or will not be verified to the account on the wiki.',
     ],
@@ -90,6 +93,9 @@ return [
         'return'    => 'Return to tool users',
         'reverify'  => 'Reverify appeal',
         'advance-search' => 'Advanced search',
+        'transfer'  => 'Transfer to another wiki',
+        'transfer-to' => 'Transfer this to',
+        'cancel'    => 'Cancel',
 
     ],
 
@@ -103,6 +109,9 @@ return [
         'submit-title'  => 'Submit to CheckUser review',
         'user-ip'       => 'User inputted IP',
         'under-ip'      => 'This appeal has an underlying IP that may be blocked. You may need to consult a CheckUser.',
+        'ip-address'    => 'IP address: :ip',
+        'user-agent'    => 'User agent: :ua',
+        'browser-lang'  => 'Browser language: :lang',
     ],
     
     'nav' => [
@@ -114,6 +123,8 @@ return [
         'content'     => 'Appeal content',
         'comments'    => 'Admin comments',
         'add-comment' => 'Add a comment',
+        'actions'     => 'Actions',
+        'status'      => 'Appeal status',
     ],
 
     'status-texts' => [
@@ -181,4 +192,38 @@ return [
         'title' => 'Your appeal key appears to be wrong.',
         'text' => 'No appeals could be located using that appeal key. Please check again.',
     ],
+
+    'proxy' => [
+        'unlikelyproxy' => 'This appeal is unlikely to have come from a proxy or VPN.',
+        'likelyproxy'   => 'This appeal is likely to have come from a proxy or VPN.',
+    ],
+
+    'map' => [
+        'reviewappeal' => 'Review this appeal',
+        'submitted' => 'Appeal submitted #:id',
+        'assigned' => 'Appeal assigned to an administrator',
+        'verified' => 'Appeal verified to an email',
+        'respond' => 'The administrator responded with:',
+        'released' => 'The appeal has been returned to the queue for a new administrator to review',
+        'reopen' => 'The appeal has been reopened or returned for administrator to review',
+        'transfer' => 'The appeal has been transferred to another wiki for review',
+        'checkuser' => 'The appeal has been sent to a checkuser for review',
+        'admin' => 'The appeal has been sent to a tool administrator for review',
+        'verifiedaccount' => 'The appeal has been verified to an account',
+        'awaitreply' => 'The administrator requested a reply from you',
+        'declined' => 'The administrator declined your appeal',
+        'expired' => 'Your appeal has been closed due to inactivity',
+        'accepted' => 'Your appeal has been granted',
+        'invalid' => 'Your appeal has been closed without review',
+        'unhandled' => 'Unhandled status: :status',
+        'switch-appeal-map' => 'Switch to appeal map',
+    ],
+
+    'template' => [
+        'alert' => 'On this screen, you will see a list of templates to choose from in responding to a user. To use a template,
+        click it\'s name.',
+        'return-appeal' => 'Return to appeal',
+        'reply-custom' => 'Reply with a custom message',
+        'greeting' => 'Hello :name,',
+    ]
 ];

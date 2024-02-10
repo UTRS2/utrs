@@ -55,4 +55,9 @@ class LogEntry extends Model
             ? $this->model->wiki
             : null;
     }
+
+    public function translations()
+    {
+        return $this->hasMany(Translation::class, 'log_entries_id');
+    }
 }

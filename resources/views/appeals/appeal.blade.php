@@ -16,7 +16,7 @@ function displayTransfer() {
                 {{__('appeals.nav.back-appeal-list')}}
             </a>
             <a href="/appeal/map/{{$id}}" class="btn btn-info">
-                Switch to Appeal Map
+                {{__('appeals.map.switch-appeal-map')}}
             </a>
         </div>
 
@@ -29,7 +29,6 @@ function displayTransfer() {
 
         @if(sizeof($errors)>0)
             <div class="alert alert-danger" role="alert">
-                The following errors occured:
                 <ul>
                     @foreach ($errors->all() as $message)
                         <li>{{ $message }}</li>
@@ -49,30 +48,30 @@ function displayTransfer() {
                                 {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
                                 @if($info->proxy == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
-                                <i>This appeal is unlikely to have come from a proxy or VPN.</i>
+                                <i>{{__('appeals.proxy.unlikelyproxy')}}</i>
                                 @else
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
-                                <i>This appeal very likely came from a proxy or a VPN.</i>
+                                <i>{{__('appeals.proxy.likelyproxy')}}</i>
                                 @endif
                                 @if($info->user_verified == 1)
                                     @if($info->blocktype == 0)
                                     <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
-                                    <i>{{__('appeals.verify.notableverified')}}This appeal will not be able to be verified.</i>
+                                    <i>{{__('appeals.verify.notableverified')}}</i>
                                     <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
-                                    <i>{{__('appeals.verify.ip-emailverified')}}The appeal has an email address which has been verified.</i>
-                                    <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                    <i>{{__('appeals.verify.ip-emailverified')}}</i>
+                                    <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                     @else
                                     <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
                                     <i>{{__('appeals.verify.verified')}}</i>
                                     @endif
                                 @elseif($info->user_verified == -1)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
-                                <i>{{__('appeals.verify.notableverified')}}This appeal will not be able to be verified.</i>
-                                <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                <i>{{__('appeals.verify.notableverified')}}</i>
+                                <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @elseif(!$info->blocktype == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i> 
-                                <br /><b style="color:red">This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @endif
                                 <br/>{{__('appeals.appeal-types.title')}}: 
                                 @if($info->blocktype==0)
@@ -103,10 +102,19 @@ function displayTransfer() {
                                 @endcomponent
 
                                 <br /><br />
-                                <h5 class="card-title">Appeal content</h5>
+                                <h5 class="card-title">{{__('appeals.section-headers.content')}}</h5>
                                 <b>{{__('appeals.content-question-why')}}</b>
                                 <p>{{ $info->appealtext }}</p>
-                                
+                                @if(in_array(0,$translateIDs))
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                @else
+                                <a href="{{ route('translate.activate', ['appeal_id' => $info->id, 'log_id' => 0])}}">
+                                    <div style="height: 55px; display: flex; align-items: center;">
+                                        <div style="font-size: 20px; font-family: 'Courier New', monospace; text-align: center;">{{__('generic.translate-with')}}</div>&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
+                                    </div>
+                                </a>
+                                @endif
+
                                 @can('update', $info)
                                     <br /><br />
                                     
@@ -128,7 +136,7 @@ function displayTransfer() {
                             <div class="row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-11">
-                                    <h5 class="card-title">Actions</h5>
+                                    <h5 class="card-title">{{__('appeals.section-headers.actions')}}</h5>
                                     @can('update', $info)
                                         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE || $info->status === Appeal::STATUS_INVALID)
                                             @if($perms['functionary'])
@@ -238,7 +246,7 @@ function displayTransfer() {
                                                 @endif
                                             @endif
                                         
-                                            <button class="btn btn-info" onclick="displayTransfer()" id="transferbutton">Transfer to another wiki</button>
+                                            <button class="btn btn-info" onclick="displayTransfer()" id="transferbutton">{{__('appeals.links.transfer')}}</button>
 
                                             <div style="display: none;" id="transfer">
                                                 <br />
@@ -247,11 +255,11 @@ function displayTransfer() {
                                                     <div class="form-group">
                                                         <div class="card">
                                                             <div class="card-header">
-                                                                Transfer to another wiki
+                                                                {{__('appeals.links.transfer')}}
                                                             </div>
                                                             <div class="card-body">
                                                                 <p class="card-text">
-                                                        {{ html()->label('Transfer this to:', 'wiki') }}<br />
+                                                        {{ html()->label(__('appeals.links.transfer-to').':', 'wiki') }}<br />
                                                         {{ html()->select('wiki', $wikis, ['class' => 'form-control']) }}
                                                         <br /><br />
                                                         {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
@@ -282,12 +290,12 @@ function displayTransfer() {
                                                 @endif
                                                 @if($checkuserdone && !is_null($cudata))
                                                     <br/>
-                                                    IP address: {{$cudata->ipaddress}}<br/>
+                                                    {{__('appeals.cu.ip-address',['ip'=>$cudata->ipaddress])}}<br/>
                                                     @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                                     @endcomponent
                                                     <br/>
-                                                    Useragent: {{$cudata->useragent}}<br/>
-                                                    Browser Language: {{$cudata->language}}
+                                                    {{__('appeals.cu.user-agent',['ua'=>$cudata->useragent])}}<br/>
+                                                    {{__('appeals.cu.browser-lang',['lang'=>$cudata->language])}}
                                                 @elseif(is_null($cudata))
                                                     <div class="alert alert-danger" role="alert">
                                                         {{__('appeals.cu.data-expire')}}
@@ -309,7 +317,7 @@ function displayTransfer() {
                                                 @endif
                                             @endif
                                             <br /><br />
-                                            <h5 class="card-title">Appeal status</h5>
+                                            <h5 class="card-title">{{__('appeals.section-headers.status')}}</h5>
                                             @if($info->status === Appeal::STATUS_ACCEPT)
                                                 <center>{{__('appeals.status-texts.ACCEPT')}}<br/>
                                             <br/><img
@@ -396,6 +404,7 @@ function displayTransfer() {
                     <th scope="col">{{ __('generic.logs-user') }}</th>
                     <th scope="col">{{ __('generic.logs-time') }}</th>
                     <th scope="col">{{ __('generic.logs-action') }}</th>
+                    <th scope="col">{{ __('generic.translate-link') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -443,38 +452,23 @@ function displayTransfer() {
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
-                                    <td>{{__('appeals.comments.restricted')}}</td>
-                                    @else
-                                        @if($comment->comment !== null)
-                                            <td>{{ $comment->comment }}</td>
-                                        @else
-                                            <td>{{ $comment->reason }}</td>
-                                        @endif
-                                    @endif
-                                @endif
-                            @else
-                                @if($comment->user_id == 0)
-                                    <td><i>{{__('appeals.comments.system')}}</i></td>
-                                @elseif($comment->user_id === -1)
-                                    <td><i>{{ $info->appealfor }}</i></td>
-                                @else
-                                    @if($perms['tooladmin'])
-                                        <td><i><a href="{{ route('admin.users.view', $comment->user) }}" class="text-light">{{ $comment->user->username }}</a></i></td>
-                                    @else
-                                        <td><i>{{ $comment->user->username }}</i></td>
-                                    @endif
-                                @endif
-                                <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>{{__('appeals.comments.restricted')}}</i></td>
                                 @else
-                                    @if($comment->comment !== null)
-                                        <td>{{ $comment->comment }}</td>
-                                    @else
-                                        <td>{{ $comment->reason }}</td>
-                                    @endif
+                                    <td>{{ $comment->reason }}</td>
                                 @endif
                             @endif
+                            <td>
+                                @if($comment->action === 'responded' && $comment->reason !== null)
+                                    @if(in_array($comment->id,$translateIDs))
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                    @else
+                                    <a href="{{ route('translate.activate', ['appeal' => $info->id, 'logid' => $comment->id])}}" style="color: white">
+                                        {{__('generic.translate-with')}} &nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
+                                    </a>
+                                    @endif
+                                @endif
+                            </td>
+                        @endif
                         </tr>
                         @endforeach
                 </tbody>
@@ -506,7 +500,7 @@ function displayTransfer() {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('appeal.links.cancel')}}</button>
                     {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-primary') }}
                 </div>
                 {{ html()->form()->close() }}

@@ -10,6 +10,7 @@
     "require": {
         "php": "^8",
         "ext-json": "*",
+        "deeplcom/deepl-php": "^1.6",
         "doctrine/dbal": "^3.7",
         "guzzlehttp/guzzle": "^7",
         "khill/lavacharts": "^3.1",
@@ -44,7 +45,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "laravel": {

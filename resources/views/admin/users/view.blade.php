@@ -53,6 +53,20 @@
             </table>
         </div>
     </div>
+    <div class="card mb-4">
+        <h5 class="card-header">Default Language</h5>
+        <div class="card-body">
+            <div class="form-group">
+                {{ html()->label('Default Language', 'default_translation_language') }}<br />
+                {{ html()->select('default_translation_language', $languages, $langid, old('default_translation_language'))->class('form-control') }}<br />
+                @error('default_translation_language')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+        </div>
+    </div>
     @if($setemail)
     <div class="card mb-4">
         <h5 class="card-header">Email address</h5>

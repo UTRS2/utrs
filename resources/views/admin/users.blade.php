@@ -26,7 +26,13 @@
                 <tbody>
                 @foreach($users as $user)
                     <tr>
-                        <td style="vertical-align: middle;">{{ $user->id }}</td>
+                        <td>
+                        @if ($admin)
+                            <a href="{{ route('admin.users.update', $user->id) }}" class="btn btn-primary">{{ $user->id }}</a>
+                        @else
+                            {{ $user->id }}
+                        @endif
+                        </td>
                         <td style="vertical-align: middle;">{{ $user->username }}</td>
                         <td style="vertical-align: middle;">{{ $user->email ?? 'None'}}</td>
                         <td style="vertical-align: middle;">{{ $user->last_permission_check_at }}</td>

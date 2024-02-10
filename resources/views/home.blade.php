@@ -15,7 +15,7 @@
             </div>
             <div class="card-footer">
                 <div>
-                    <a href="{{ route('public.appeal.create.account') }}" class="btn btn-primary">{{ __('home.appeal-block-button') }}</a>
+                    <a href={{ route('public.appeal.create.account') }} class="btn btn-primary">{{ __('home.appeal-block-button') }}</a>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
             </div>
             <div class="card-footer">
                 <div>
-                    <a href="{{ route('public.appeal.create.ip') }}" class="btn btn-primary">{{ __('home.appeal-ip-button') }}</a>
+                    <a href={{ route('public.appeal.create.ip') }} class="btn btn-primary">{{ __('home.appeal-ip-button') }}</a>
                 </div>
             </div>
         </div>
@@ -40,10 +40,10 @@
             <div class="card-footer">
                 <div>
                     @auth
-                        <a href="{{ route('appeal.list') }}" class="btn btn-primary">{{ __('home.admin-button') }}</a>
+                        <a href={{ route('appeal.list') }} class="btn btn-primary">{{ __('home.admin-button') }}</a>
                     @endauth
                     @guest
-                        <a href="{{ route('login') }}" class="btn btn-primary">{{ __('home.login-button') }}</a>
+                        <a href={{ route('login') }} class="btn btn-primary">{{ __('home.login-button') }}</a>
                     @endguest
                 </div>
             </div>

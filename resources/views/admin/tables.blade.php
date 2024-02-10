@@ -24,6 +24,7 @@
                 </tr>
                 </thead>
                 <tbody>
+                
                 @foreach($rowcontents as $rowcontent)
                     <tr>
                         @foreach($rowcontent as $field)

@@ -36,7 +36,7 @@ class UserController extends Controller
             $canAdmin = true;
         }
 
-        return view('admin.users', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'users' => $allusers]);
+        return view('admin.users', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'users' => $allusers, 'admin' => $canAdmin]);
     }
 
     /**
@@ -56,7 +56,13 @@ class UserController extends Controller
             $setemail = true;
         }
 
-        return view('admin.users.view', ['user' => $user, 'setemail' => $setemail, 'verifiedemail' => false]);
+        // pull the env deepl languages, split into an array, and check if the input language is in the array
+        $languages = env('DEEPL_LANGUAGE_CODES');
+        $languages = explode(',', $languages);
+        // convert the id of the language to the language code
+        $langid = array_search($user->default_translation_language, $languages);
+
+        return view('admin.users.view', ['user' => $user, 'setemail' => $setemail, 'verifiedemail' => false, 'languages' => $languages, 'langid' => $langid]);
     }
 
     // function for confirming the user's email
@@ -91,6 +97,7 @@ class UserController extends Controller
                 'email' => 'email',
                 'weekly_appeal_list' => 'in:0,1',
                 'appeal_notifications' => 'in:0,1',
+                'default_translation_language' => 'nullable|string',
             ]);
 
             //update the preferences without logging
@@ -162,6 +169,22 @@ class UserController extends Controller
 
                     $allChanges[] = $wiki . ': ' .implode(', ', $updateDetails);
                 }
+            }
+
+            // pull the env deepl languages, split into an array, and check if the input language is in the array
+            $languages = env('DEEPL_LANGUAGE_CODES');
+            $languages = explode(',', $languages);
+            // convert the id of the language to the language code
+            $langname = $languages[$request->input('default_translation_language')];
+
+            // update the user's default_translation_language if changed and log
+            if ($user->default_translation_language !== $request->input('default_translation_language')) {
+                if (!in_array($langname, $languages)) {
+                    return redirect()->route('admin.users.view', ['user' => $user])->withErrors(['default_translation_language' => 'The default translation language is not valid.']);
+                }
+                $allChanges[] = 'default translation language: ' . $langname;
+                $user->default_translation_language = $langname;
+                $user->saveOrFail();
             }
 
             if (!empty($allChanges)) {

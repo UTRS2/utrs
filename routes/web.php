@@ -93,6 +93,9 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/admin/templates/{template}', 'Admin\TemplateController@show')->name('admin.templates.edit');
     Route::post('/admin/templates/{template}', 'Admin\TemplateController@update')->name('admin.templates.update');
 
+    Route::get('/admin/logs/{include}', 'Admin\LogListController@index')->name('admin.logs.list2');
+    Route::get('/admin/logs', 'Admin\LogListController@index')->name('admin.logs.list');
+
     Route::get('/wikis/list', 'WikiController@index')->name('wiki.list');
 
     Route::get('/oauth', 'Auth\\OauthLoginController@login')->name('login');
@@ -101,6 +104,8 @@ Route::middleware('set.locale')->group(function () {
 
     Route::get('/statistics/{name}/{wiki}/{length}', 'StatsController@display_appeals_chart')->name('stats.named');
     Route::get('/statistics', 'StatsController@display_appeals_chart')->name('stats.overall');
+
+    Route::get('/translate/activate/{appeal}/{logid}', 'TranslateController@activate')->name('translate.activate');
 
     Route::view('/test', 'appeals.appealmap', ['appealmap' => [
         ['text'=>'Appeal Submitted', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'sent','active'=>"yes",'appealid'=>2],
