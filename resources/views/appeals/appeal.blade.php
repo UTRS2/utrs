@@ -409,6 +409,9 @@ function displayTransfer() {
                 </thead>
                 <tbody>
                 @foreach($comments as $comment)
+                    @if($comment->action === 'translate')
+                        <!-- Skip translation log entries -->
+                    @else
                     <tr class="{{ $comment->action === 'comment' ? 'bg-success' : ($comment->action === 'responded' ? 'bg-primary' : '') }}">
                         @if(is_null($comment['commentUser']))
                             @if($comment->action !== "comment" && $comment->action !== "responded")
@@ -458,7 +461,7 @@ function displayTransfer() {
                                 @endif
                             @endif
                             <td>
-                                @if($comment->action === 'responded' && $comment->reason !== null)
+                                @if($comment->action === 'responded' && $comment->reason !== null && $comment->user_id === -1)
                                     @if(in_array($comment->id,$translateIDs))
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                     @else
@@ -470,7 +473,8 @@ function displayTransfer() {
                             </td>
                         @endif
                         </tr>
-                        @endforeach
+                    @endif
+                @endforeach
                 </tbody>
             </table>
                 <i>{{__('appeals.comment-color-text')}}</i>

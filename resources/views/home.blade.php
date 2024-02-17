@@ -1,11 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="alert alert-warning" role="alert">
-        <b>{{ __('home.noemail-header') }}</b><br/>
-        {{ __('home.noemail-text') }}
-    </div>
-
     <div class="card-group justify-content-center">
         <div class="card bg-light mb-3 text-center">
             <div class="card-header">{{ __('home.appeal-block-header') }}</div>
@@ -62,10 +57,41 @@
 
                 <div>
                     <button type="submit" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
-                    {{-- <a href="#" class="btn btn-danger">Forgot Appeal Key</a> --}}
+                    <a href="#" class="btn btn-danger">Forgot Appeal Key</a>
                 </div>
                 {{ html()->form()->close() }}
             </div>
+        </div>
+    </div>
+
+    <div class="card-group justify-content-center">
+        <div class="card mb-5 text-center">
+            {{ html()->form('POST', route('public.appeal.map'))->open() }}
+            <div class="card-body">
+                <h5 class="card-title">{{__('auth.auth-needed-screen.key-title')}}</h5>
+                {{ html()->label(__('auth.auth-needed-screen.key-text'), 'hash') }}
+                <p class="card-text">{{ html()->text('appealkey')->class('form-control w-100')->placeholder(__('auth.auth-needed-screen.key-placeholder')) }}</p>
+            </div>
+            <div class="card-footer">
+                <div>
+                    <button type="submit" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
+                </div>
+            </div>
+            {{ html()->form()->close() }}
+        </div>
+        <div class="card bg-light mb-5 text-center">
+            {{ html()->form('POST', route('appealkey.reset'))->open() }}
+            <div class="card-body">
+                <h5 class="card-title">{{__('auth.email.key-title')}}</h5>
+                {{ html()->label(__('auth.email.key-text'), 'hash') }}
+                <p class="card-text">{{ html()->text('email')->class('form-control w-100')->placeholder('joe@domain.email') }}</p>
+            </div>
+            <div class="card-footer">
+                <div>
+                    <button type="submit" class="btn btn-danger">{{ __('auth.email.submit-text') }}</button>
+                </div>
+            </div>
+            {{ html()->form()->close() }}
         </div>
     </div>
 @endsection

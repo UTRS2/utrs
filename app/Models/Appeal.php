@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use RuntimeException;
 use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
+use App\Models\Wiki;
 
 class Appeal extends Model
 {
@@ -223,5 +224,17 @@ class Appeal extends Model
         }
 
         return $reason;
+    }
+
+    // get the wiki entry for the appeal
+    public function getWikiEntry()
+    {
+        return Wiki::where('id', $this->wiki_id)->first();
+    }
+
+    // get the default language for the wiki
+    public function getWikiDefaultLanguage()
+    {
+        return Wiki::where('id', $this->wiki_id)->first()->default_language;
     }
 }

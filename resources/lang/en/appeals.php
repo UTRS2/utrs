@@ -217,6 +217,7 @@ return [
         'invalid' => 'Your appeal has been closed without review',
         'unhandled' => 'Unhandled status: :status',
         'switch-appeal-map' => 'Switch to appeal map',
+        'userrespond' => 'The user responded with:',
     ],
 
     'template' => [

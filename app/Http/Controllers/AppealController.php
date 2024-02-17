@@ -277,7 +277,8 @@ class AppealController extends Controller
             //iterate through $fullappealcomments and each comment to the appeal it belongs to
             foreach ($fullappealcomments as $appealid => $appealcomments) {
                 //if the appeal is not verified, then add a note to the map
-                if ($appeals[$count]->user_verified != 1) {
+                //also if the appeal is the same as the one we are viewing, then move to the else
+                if ($appeals[$count]->user_verified != 1 && $appealid != $id) {
                     $appealmap[] = ['text'=>'Appeal #'.$appeals[$count]['id'].' is not yet verified and can not be viewed', 'time'=>'INVALID', 'icon'=>'stop','active'=>"error",'appealid'=>$appealid];
                 } else {
                     foreach ($appealcomments as $linecomment) {
@@ -294,8 +295,14 @@ class AppealController extends Controller
                         elseif($linecomment['action'] == 'comment') {
                             //we are ignoring internal comments
                         }
+                        elseif($linecomment['action'] == 'translate') {
+                            //we are ignoring internal comments
+                        }
+                        elseif($linecomment['action'] == 'responded' && $linecomment['user'] != "SYSTEM") {
+                            $appealmap[] = ['text'=>__('appeals.map.respond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"no",'appealid'=>$appealid];
+                        }
                         elseif($linecomment['action'] == 'responded') {
-                            $appealmap[] = ['text'=>__('appeals.map.respond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.userrespond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'release') {
                             $appealmap[] = ['text'=>__('appeals.map.released'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];

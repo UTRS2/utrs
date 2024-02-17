@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Appeal;
 use App\Models\Translation;
 use App\Models\LogEntry;
+use App\Models\Wiki;
 
 class TranslateController extends Controller
 {
@@ -18,6 +19,11 @@ class TranslateController extends Controller
         // if no appeal, return 404
         if ($appeal == null) {
             abort(404, 'Appeal not found');
+        }
+
+        // check if the wiki is accepting translations
+        if (!Wiki::findOrFail($appeal->wiki_id)->accepting_translations) {
+            abort(403, 'This wiki is not accepting translations');
         }
 
         // if log id from request is null, set it to 0
@@ -50,6 +56,11 @@ class TranslateController extends Controller
         else {
             $translateString = $appeal->appealtext;
         }
+
+        // if the user indicated in the log is not -1 (Appealing user), then 403 deny the translation
+        if ($logEntry->user_id != -1) {
+            abort(403, 'You cannot translate log entries that are not from the end user');
+        }
         
         // ensure the appeal doesn't already have a translation in the language based on the log id
         // if one exists, return to the appeal without a message
@@ -75,6 +86,16 @@ class TranslateController extends Controller
         $translation->language = $requestlang;
         $translation->translation = $result->text;
         $translation->save();
+
+        // create a log entry for the translation
+        $log = new LogEntry();
+        $log->action = 'translate';
+        $log->user_id = Auth::user()->id;
+        $log->model_type = Appeal::class;
+        $log->model_id = $appeal->id;
+        $log->protected = LogEntry::LOG_PROTECTION_NONE;
+        $log->reason = 'Translate log ID #'.$logEntry->id.' to ' . $requestlang;
+        $log->save();
 
         // return to the appeal
         return redirect()->route('appeal.view', ['id' => $appeal->id]);

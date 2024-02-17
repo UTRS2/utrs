@@ -47,6 +47,9 @@
                             @can('private', App\Models\LogEntry::class)
                                 <a class="dropdown-item" href="{{ route('admin.logs.list') }}">{{__('generic.admin-tools.logs')}}</a>
                             @endcan
+                            @can('viewAny', App\Models\Ban::class)
+                                <a class="dropdown-item" href="{{ route('admin.emailban.list') }}">{{__('generic.admin-tools.emailbans')}}</a>
+                            @endcan
                         </div>
                     </li>
                 @endcanany
@@ -70,8 +73,8 @@
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
-                        <a class="dropdown-item" href="{{ route('admin.users.view', Auth::user()) }}">My account</a>
-                        <a class="dropdown-item" href="{{ route('logout') }}">Log out</a>
+                        <a class="dropdown-item" href="{{ route('admin.users.view', Auth::user()) }}">{{ __('generic.my-account') }}</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}">{{ __('generic.logout') }}</a>
                     </div>
                 </li>
             @else
@@ -112,6 +115,11 @@
     @if(session()->has('error'))
         <div class="alert alert-danger">
             {{ session('error') }}
+        </div>
+    @endif
+    @if(session()->has('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
     @endif
     @yield('content')

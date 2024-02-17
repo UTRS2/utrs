@@ -39,5 +39,20 @@ return [
             'change-reason' => 'Visibility change reason',
         ],
 
+    ],
+
+    'templates' => [
+        'title' => 'Templates',
+        'id' => 'ID',
+        'name' => 'Name of template',
+    ],
+
+    'users' => [
+        'title' => 'All Users',
+        'id' => 'User ID',
+        'name' => 'Username',
+        'email' => 'Email',
+        'perms' => 'Last Permissions Update',
+        'ca-id' => 'CentralAuth ID',
     ]
 ];

@@ -42,6 +42,9 @@ Route::middleware('set.locale')->group(function () {
         Route::post('/appeal/checkstatus', 'Appeal\PublicAppealController@checkStatus')->name('public.appeal.checkstatus');
 
         Route::post('/appeal/submitproxyquestion', 'Appeal\PublicAppealController@submitProxyQuestion')->name('public.appeal.proxyreason');
+
+        Route::post('/appeal/recoverkey', 'AppealKeyController@sendAppealKeyReminder')->name('appealkey.reset');
+        Route::get('/emailban', 'EmailBanController@showForm')->name('email.ban');
     });
 
     Route::get('/appeal/map/{id}', 'AppealController@map')->name('appeal.map');
@@ -86,6 +89,12 @@ Route::middleware('set.locale')->group(function () {
     Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
     Route::get('/admin/emailban/{code}', 'Admin\BanController@banEmail')->name('admin.bans.emailban');
     Route::post('/admin/emailban/{code}', 'Admin\BanController@banEmailSubmit')->name('admin.bans.emailban.submit');
+    Route::get('/admin/emailban', 'Admin\EmailBanController@index')->name('admin.emailban.list');
+    Route::post('/admin/emailban/appeal/{emailid}', 'Admin\EmailBanController@appeal')->name('admin.emailban.appealban');
+    Route::post('/admin/emailban/account/{emailid}', 'Admin\EmailBanController@account')->name('admin.emailban.accountban');
+    Route::get('/admin/emailban/appealreason/{emailid}', 'Admin\EmailBanController@appealreason')->name('admin.emailban.appealreason');
+    Route::get('/admin/emailban/accountreason/{emailid}', 'Admin\EmailBanController@accountreason')->name('admin.emailban.accountreason');
+
 
     Route::get('/admin/templates', 'Admin\TemplateController@index')->name('admin.templates.list');
     Route::get('/admin/templates/create', 'Admin\TemplateController@new');
@@ -107,13 +116,8 @@ Route::middleware('set.locale')->group(function () {
 
     Route::get('/translate/activate/{appeal}/{logid}', 'TranslateController@activate')->name('translate.activate');
 
-    Route::view('/test', 'appeals.appealmap', ['appealmap' => [
-        ['text'=>'Appeal Submitted', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'sent','active'=>"yes",'appealid'=>2],
-        ['text'=>'Appeal Assigned', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'assigned','active'=>"yes"],
-        ['text'=>'Appeal Reviewed & Declined', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'reviewed','active'=>"error"],
-        ['text'=>'Appeal Re-submitted', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'sent','active'=>"yes",'appealid'=>2],
-        ['text'=>'Appeal Assigned', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'assigned','active'=>"yes"],
-        ['text'=>'Appeal Reviewed & Declined', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'reviewed','active'=>"error"],
-        ['text'=>'User banned from making further appeals', 'time'=>'2023-09-09 11:34 UTC', 'icon'=>'banned','active'=>"error"],
-        ]]);
+    Route::get('/test', function () {
+        $appealkeyemail = new App\Mail\AppealKey('980HRF392980HRF39218GRF93712G9F7379FG1D792G9217G8982G', 'joe@null');
+        return $appealkeyemail;
+    });
 });

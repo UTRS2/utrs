@@ -39,4 +39,7 @@ return [
     'on'			=> 'on',
     'translate-with' => 'Translate with',
     'translated-by-deepl' => 'Translated by DeepL',
+
+    'logout'		=> 'Logout',
+    'my-account'    => 'My Account',
 ];

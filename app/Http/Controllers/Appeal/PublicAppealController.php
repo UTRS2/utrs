@@ -180,8 +180,13 @@ class PublicAppealController extends Controller
             return response('Test: not actually saving anything');
         }
 
-        //check if email is banned and if so, return with errors to the form page
         $email = $request->input('email');
+        // check if the email domain is in the prohibited domain list in the env file, if so, return with errors to the form page
+        if (!is_null($email) && in_array(explode('@', $email)[1], explode(',', env('PROHIBITED_EMAIL_DOMAINS')))) {
+            return Redirect::back()->withErrors(['msg'=>'The email domain you used is not allowed to be used for appeals.'])->withInput();
+        }
+
+        //check if email is banned and if so, return with errors to the form page
         $emailbans = EmailBan::where('email', '=', $email)->first();
         if (!is_null($emailbans)) {
             if ($emailbans->appealbanned) {
@@ -218,12 +223,20 @@ class PublicAppealController extends Controller
                 'lastused' => now(),
             ]);
         }
+        $wikiemailBanEntry = EmailBan::create([
+            'email' => $data['appealfor'].'@wiki',
+            'uid' => $emailkey,
+            'linkedappeals' => $appeal->id,
+            'lastused' => now(),
+        ]);
 
         //if appeal is for an IP, send an email to the email address provided using the VerifyAccount mailable
         if ($data['blocktype']==0) {
             $email = $appeal->email;
             if (!is_null($email)) {
                 Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
+                $emailBanEntry->lastemail = now();
+                $emailBanEntry->save();
             } else {
                 //return with errors to the form page
                 return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
@@ -327,11 +340,10 @@ class PublicAppealController extends Controller
         $appeals = Appeal::where('appealfor', '=', $appeal->appealfor)
             ->where('wiki_id', '=', $appeal->wiki_id)
             ->where('status', '!=', Appeal::STATUS_INVALID)
-            ->where('blocktype','!=',0)
             ->get();
 
         $allappealcomments = [];
-        
+
         //for each appeal, get the comments
         foreach ($appeals as $activeappeal) {
             $activeappeal->loadMissing('comments.userObject');
@@ -357,8 +369,8 @@ class PublicAppealController extends Controller
         $appealmap=[];
         //iterate through $fullappealcomments and each comment to the appeal it belongs to
         foreach ($fullappealcomments as $appealid => $appealcomments) {
-            if ($appeal->user_verified == 1 || $appealid == $matchAppealID) {
-                if ($appeals[$count]->user_verified != 1) {
+            if ($appeals[$count]->user_verified == 1 || $appealid == $matchAppealID) {
+                if ($appeals[$count]->user_verified != 1 && $appealid != $matchAppealID) {
                     $appealmap[] = ['text'=>'Appeal #'.$appeals[$count]['id'].' is not yet verified and can not be viewed', 'time'=>'INVALID', 'icon'=>'stop','active'=>"error",'appealid'=>$appealid];
                 } else {
                     foreach ($appealcomments as $linecomment) {
@@ -375,8 +387,14 @@ class PublicAppealController extends Controller
                         elseif($linecomment['action'] == 'comment' || $linecomment['action'] == 'checkuser') {
                             //we are ignoring internal comments
                         }
+                        elseif($linecomment['action'] == 'translate') {
+                            //we are ignoring internal comments
+                        }
+                        elseif($linecomment['action'] == 'responded' && $linecomment['user'] != "SYSTEM") {
+                            $appealmap[] = ['text'=>__('appeals.map.respond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"no",'appealid'=>$appealid];
+                        }
                         elseif($linecomment['action'] == 'responded') {
-                            $appealmap[] = ['text'=>'The administrator responded with:', 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
+                            $appealmap[] = ['text'=>__('appeals.map.userrespond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
                         }
                         elseif($linecomment['action'] == 'release') {
                             $appealmap[] = ['text'=>'Your appeal has been returned to the queue for a new administrator to review', 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];

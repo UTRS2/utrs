@@ -27,7 +27,12 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
         $allusers = User::paginate(50);
 
-        $tableheaders = ['ID', 'Username', 'Email', 'Last Permissions Check', 'CentralAuth ID'];
+        $tableheaders = [
+            __('admin.users.id'), 
+            __('admin.users.name'), 
+            __('admin.users.email'), 
+            __('admin.users.perms'), 
+            __('admin.users.ca-id')];
         $rowcontents = [];
 
         //if user is tooladmin, set $canAdmin to true
@@ -36,7 +41,7 @@ class UserController extends Controller
             $canAdmin = true;
         }
 
-        return view('admin.users', ['title' => 'All Users', 'tableheaders' => $tableheaders, 'users' => $allusers, 'admin' => $canAdmin]);
+        return view('admin.users', ['title' => __('admin.users.title'), 'tableheaders' => $tableheaders, 'users' => $allusers, 'admin' => $canAdmin]);
     }
 
     /**
