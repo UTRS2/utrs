@@ -56,7 +56,7 @@ class BanViewSuppressTest extends TestCase
         }
     }
 
-    public function provideTooladmin(): array
+    public static function provideTooladmin(): array
     {
         return [
             'Local oversighter can view suppressed' => [ 'enwiki', [ 'enwiki' ], true ],
