@@ -25,6 +25,7 @@
                 </thead>
                 <tbody>
                 @foreach($bans as $ban)
+                    {{$ban->wiki()->first()}}
                     @if(in_array($ban->wiki()->first()->id,$allowed))
                     <tr>
                         <td style="vertical-align: middle;">
