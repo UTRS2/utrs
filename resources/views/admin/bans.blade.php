@@ -25,7 +25,7 @@
                 </thead>
                 <tbody>
                 @foreach($bans as $ban)
-                    @if(in_array($ban->wiki->id,$allowed))
+                    @if(in_array($ban->wiki()->id,$allowed))
                     <tr>
                         <td style="vertical-align: middle;">
                             @if ($admin)
