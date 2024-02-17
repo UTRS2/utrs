@@ -47,7 +47,7 @@ class BanViewSuppressTest extends TestCase
 
         $page = $this->actingAs($user)
             ->get(route('admin.bans.view', $ban))
-            ->assertSee(__('admin.bans.all'));
+            ->assertSee('Ban details');
 
         if ($expectedResult) {
             $page->assertSee('Definitely suppressed ban target');
