@@ -28,7 +28,7 @@ class RemoveAppealPrivateDataJob implements ShouldQueue
                 Appeal::STATUS_EXPIRE,
                 Appeal::STATUS_INVALID,
             ])
-            ->whereDoesntHave('comments', function (Builder $query, $timeline) {
+            ->whereDoesntHave('comments', function (Builder $query) use ($timeline) {
                 $query->where('timestamp', '>=', now()->modify($timeline));
             });
     }
