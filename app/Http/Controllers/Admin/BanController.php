@@ -83,7 +83,10 @@ class BanController extends Controller
             }
         }
 
-        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowed' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser]);
+        // define createlink as the route to create a new ban
+        $createlink = route('admin.bans.new');
+
+        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowed' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser, 'createlink' => $createlink]);
     }
 
     public function new(Request $request)

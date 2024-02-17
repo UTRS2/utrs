@@ -38,6 +38,7 @@ return [
             'oversight' => 'Ban target is oversighted',
             'change-reason' => 'Visibility change reason',
         ],
+        'permanent' => 'Indefinite',
 
     ],
 

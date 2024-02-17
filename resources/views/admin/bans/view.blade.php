@@ -105,7 +105,7 @@
                 @can('oversight', $ban)
                     <hr/>
                     <div class="form-group mb-2">
-                        {{__('admin.bans.visibility')}}
+                        {{__('admin.bans.visibility.title')}}
                         <div class="custom-control custom-radio">
                             {{ html()->radio('is_protected', old('is_protected', $ban->is_protected) == 0, 0)->class('custom-control-input')->id('is_protected-0') }} {{ html()->label(__('admin.bans.visibility.admins'), 'is_protected-0')->class('custom-control-label') }}
                         </div>
