@@ -108,7 +108,7 @@ function displayTransfer() {
                                 @if(in_array(0,$translateIDs))
                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                 @else
-                                <a href="{{ route('translate.activate', ['appeal_id' => $info->id, 'logid' => 0])}}">
+                                <a href="{{ route('translate.activate', ['appeal' => $info, 'logid' => 0])}}">
                                     <div style="height: 55px; display: flex; align-items: center;">
                                         <div style="font-size: 20px; font-family: 'Courier New', monospace; text-align: center;">{{__('generic.translate-with')}}</div>&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
                                     </div>
