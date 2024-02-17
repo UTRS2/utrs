@@ -31,7 +31,7 @@ class Ban extends Model
 
     public function wiki()
     {
-        return $this->belongsTo(Wiki::class)->first();
+        return $this->belongsTo(Wiki::class);
     }
 
     // convert the wiki id into a wiki name
