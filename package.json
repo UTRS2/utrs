@@ -13,7 +13,11 @@
     "watch-poll": "mix watch -- --watch-options-poll=1000",
     "hot": "mix watch --hot",
     "prod": "npm run production",
-    "production": "mix --production"
+    "production": "mix --production",
+    "test": [
+      "Composer\\Config::disableProcessTimeout();", 
+      "phpunit"
+    ]
   },
   "repository": {
     "type": "git",
