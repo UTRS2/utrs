@@ -53,13 +53,11 @@ class BanController extends Controller
             __('admin.bans.id'), 
             __('admin.bans.target'), 
             __('admin.bans.expires'), 
-            __('admin.bans.reason') 
+            __('admin.bans.reason'),
+            "Wiki"
         ];
-        if ($wikis->count() > ($canSeeGlobal ? 0 : 1)) {
-            $tableheaders[] = 'Wiki';
-        }
         
-        $admin = $user->hasAnySpecifiedPermsOnAnyWiki(['tooladmin', 'steward', 'staff', 'developer']);
+        $admin = $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer']);
 
         //dependent on if the user is a checkuser on any wiki, mark the $checkuser variable
         $checkuser = false;
@@ -78,7 +76,7 @@ class BanController extends Controller
             //otherwise, add the wikis that the user has permissions on to the allowed wikis array
             foreach ($user->permissions as $permission) {
                 if ($permission->hasAnySpecifiedPerms(['tooladmin'])) {
-                    $allowedwikis[] = $permission->wiki_id;
+                    $allowedwikis[] = Wiki::where('database_name',$permission->wiki)->first()->id;
                 }
             }
         }
