@@ -65,7 +65,7 @@ jobs:
       - name: Build assets
         run: npm run production
       - name: Run tests
-        run: composer test
+        run: composer -vvv test
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Start chromedriver
