@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class BanController extends Controller
 {
@@ -77,6 +78,7 @@ class BanController extends Controller
             foreach ($user->permissions as $permission) {
                 if ($permission->hasAnySpecifiedPerms(['tooladmin'])) {
                     $allowedwikis[] = Wiki::where('database_name',$permission->wiki)->first()->id;
+                    $admin = true;
                 }
             }
         }
@@ -137,7 +139,7 @@ class BanController extends Controller
 
     public function show(Request $request, Ban $ban)
     {
-        $this->authorize('view', $ban);
+        $this->authorize('view', [Auth::user(),$ban]);
 
         $target = $request->user()->can('viewName', $ban) ? $ban->target : __('admin.bans.ban-target-removed');
         $targetHtml = $request->user()->can('viewName', $ban)
