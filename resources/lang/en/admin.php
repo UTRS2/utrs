@@ -39,6 +39,8 @@ return [
             'change-reason' => 'Visibility change reason',
         ],
         'permanent' => 'Indefinite',
+        'active' => 'Enabled',
+        'inactive' => 'Disabled',
 
     ],
 
