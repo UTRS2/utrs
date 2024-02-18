@@ -15,13 +15,14 @@
 </head>
 <body> {{-- classes potentially purged by purgecss that should still be kept: modal-open modal-backdrop fade show --}}
 <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
+    <div class="container-fluid">
     <a class="navbar-brand" href="/">{{ config('app.name') }}</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto"> <!-- left nav -->
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav me-auto"> <!-- left nav -->
             @auth
                 @canany(['viewAny','stewardClerk'], App\Models\Appeal::class)
                     <li class="nav-item">
@@ -30,27 +31,27 @@
                 @endcan
                 @canany('viewAny', [App\Models\User::class, App\Models\Ban::class, App\Models\Template::class])
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="adminNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminNavbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{__('generic.tool-admin')}}
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="adminNavbarDropdown">
+                        <ul class="dropdown-menu" aria-labelledby="adminNavbarDropdown">
                             @can('viewAny', App\Models\Ban::class)
-                                <a class="dropdown-item" href="{{ route('admin.bans.list') }}">{{__('generic.admin-tools.bans')}}</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.bans.list') }}">{{__('generic.admin-tools.bans')}}</a></li>
                             @endcan
                             @can('viewAny', App\Models\Template::class)
-                                <a class="dropdown-item" href="{{ route('admin.templates.list') }}">{{__('generic.admin-tools.template')}}</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.templates.list') }}">{{__('generic.admin-tools.template')}}</a></li>
                             @endcan
                             @can('viewAny', App\Models\User::class)
-                                <a class="dropdown-item" href="{{ route('admin.users.list') }}">{{__('generic.admin-tools.users')}}</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.users.list') }}">{{__('generic.admin-tools.users')}}</a></li>
                             @endcan
                             @can('private', App\Models\LogEntry::class)
-                                <a class="dropdown-item" href="{{ route('admin.logs.list') }}">{{__('generic.admin-tools.logs')}}</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.logs.list') }}">{{__('generic.admin-tools.logs')}}</a></li>
                             @endcan
                             @can('viewAny', App\Models\Ban::class)
-                                <a class="dropdown-item" href="{{ route('admin.emailban.list') }}">{{__('generic.admin-tools.emailbans')}}</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.emailban.list') }}">{{__('generic.admin-tools.emailbans')}}</a></li>
                             @endcan
-                        </div>
+                        </ul>
                     </li>
                 @endcanany
                 @can('viewAny', App\Models\Appeal::class)
@@ -63,19 +64,17 @@
                         <a href="{{ route('wiki.list') }}" class="nav-link">{{__('generic.support-wiki')}}</a>
                     </li>
                 @endcan
-            @endauth
-        </ul>
-        <ul class="navbar-nav"> <!-- right nav -->
-            @auth
+            </ul>
+            <ul class="navbar-nav ms-auto"> <!-- right nav -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ Auth::user()->username }}
                     </a>
 
-                    <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
-                        <a class="dropdown-item" href="{{ route('admin.users.view', Auth::user()) }}">{{ __('generic.my-account') }}</a>
-                        <a class="dropdown-item" href="{{ route('logout') }}">{{ __('generic.logout') }}</a>
-                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userNavbarDropdown">
+                        <li><a class="dropdown-item" href="{{ route('admin.users.view', Auth::user()) }}">{{ __('generic.my-account') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('logout') }}">{{ __('generic.logout') }}</a></li>
+                    </ul>
                 </li>
             @else
                 <li class="nav-item">
@@ -84,22 +83,23 @@
                     </a>
                 </li>
             @endauth
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('generic.language')}}: {{App::getLocale()}}</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-bs-container="body" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('generic.language')}}: {{App::getLocale()}}</a>
 
-                <div class="dropdown-menu dropdown-menu-right ml-auto" aria-labelledby="userNavbarDropdown">
-                    <a class="dropdown-item" href="/changelang/en">English</a>
-                    <a class="dropdown-item" href="/changelang/fr">Français</a>
-                    <a class="dropdown-item" href="/changelang/es">Español</a>
-                    <a class="dropdown-item" href="/changelang/pt-BR">Português (Brasil)</a>
-                    <a class="dropdown-item" href="/changelang/pt-PT">Português</a>
-                    @env(['local','dev'])
-                        <a class="dropdown-item" href="/changelang/qqq">Template Description</a>
-                        <a class="dropdown-item" href="/changelang/qqz">Template Name</a>
-                    @endenv
-                </div>
-            </li>
-        </ul>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userNavbarDropdown2">
+                        <li><a class="dropdown-item" href="/changelang/en">English</a></li>
+                        <li><a class="dropdown-item" href="/changelang/fr">Français</a></li>
+                        <li><a class="dropdown-item" href="/changelang/es">Español</a></li>
+                        <li><a class="dropdown-item" href="/changelang/pt-BR">Português (Brasil)</a></li>
+                        <li><a class="dropdown-item" href="/changelang/pt-PT">Português</a></li>
+                        @env(['local','dev'])
+                            <li><a class="dropdown-item" href="/changelang/qqq">Template Description</a></li>
+                            <li><a class="dropdown-item" href="/changelang/qqz">Template Name</a></li>
+                        @endenv
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 @env(['local','dev'])
