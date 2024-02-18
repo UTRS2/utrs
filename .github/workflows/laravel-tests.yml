@@ -64,8 +64,12 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Build assets
         run: npm run production
+      - name: Pre-run tests with verbose output
+        run: php${{ matrix.php }} vendor/bin/phpunit --verbose
+        env:
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Run tests
-        run: composer -vvv test
+        run: composer test
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Start chromedriver
