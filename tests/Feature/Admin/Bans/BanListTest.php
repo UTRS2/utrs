@@ -82,7 +82,7 @@ class BanListTest extends TestCase
             ->assertSee('Indefinite')
             ->assertSee('2030-01-01 10:00:00')
             ->assertDontSee('Ban on another wiki')
-            ->assertDontSee('Ban affecting all wikis');
+            ->assertSee('Ban affecting all wikis');
     }
 
     public function test_oversighter_can_view_oversighted_bans()
