@@ -7,7 +7,7 @@
     </div>
     <div class="mt-2 mb-4">
         <a href="/appeal/{{ $appeal->id }}" class="btn btn-danger">{{__('appeals.template.return-appeal')}}</a>
-        <a href="{{ route('appeals.customresponse', $appeal) }}" class="btn btn-info">{{__('appeals.template.reply-custom')}}</a>
+        <a href="{{ route('appeal.customresponse', $appeal) }}" class="btn btn-info">{{__('appeals.template.reply-custom')}}</a>
     </div>
 
     @foreach($templates as $template)

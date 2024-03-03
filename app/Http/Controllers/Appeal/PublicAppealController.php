@@ -231,7 +231,6 @@ class PublicAppealController extends Controller
 
         //if appeal is for an IP, send an email to the email address provided using the VerifyAccount mailable
         if ($data['blocktype']==0) {
-            $email = $appeal->email;
             if (!is_null($email)) {
                 Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
                 $emailBanEntry->lastemail = now();
