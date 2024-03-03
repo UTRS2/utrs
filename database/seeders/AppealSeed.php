@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Appeal;
 use App\Models\Privatedata;
 use App\Models\User;
+use App\Models\LogEntry;
 use Illuminate\Database\Seeder;
 
 class AppealSeed extends Seeder

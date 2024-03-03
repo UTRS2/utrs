@@ -27,7 +27,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->press(__('appeals.appealmap.reviewappeal'))
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
-                ->press('Submit')
+                ->press(__('generic.submit'))
                 ->press('View appeal details')
                 ->assertSee('This is an example comment')
                 ->assertSee(Appeal::STATUS_OPEN)
@@ -72,8 +72,8 @@ class AppealCommentsTest extends DuskTestCase
                 ->press($targetTemplate->name)
                 ->assertSee($targetTemplateTextStart)
                 ->select('#status-' . $targetTemplate->id, Appeal::STATUS_AWAITING_REPLY)
-                ->waitForText('Submit',5)
-                ->press('Submit')
+                ->waitForText(__('generic.submit'),5)
+                ->press(__('generic.submit'))
                 ->assertSee(__('appeals.status.AWAITING_REPLY'))
                 ->assertDontSee(__('appeals.details-status').': '.__('appeals.status.OPEN'))
                 ->assertSee($targetTemplateTextStart);
@@ -100,8 +100,8 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertSee('On this screen, you will see a list of templates to choose from in responding to a user')
                 ->clickLink('Reply custom text')
                 ->type('custom', 'Go away.')
-                ->waitForText('Submit',5)
-                ->press('Submit')
+                ->waitForText(__('generic.submit'),5)
+                ->press(__('generic.submit'))
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee('set status as ');
         });
