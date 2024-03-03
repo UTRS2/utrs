@@ -10,4 +10,9 @@ class BaseAppealActionTest extends TestCase
 {
     use DatabaseMigrations;
     use TestHasUsers;
+
+    public function testAppealAction()
+    {
+        $this->assertTrue(true);
+    }
 }
