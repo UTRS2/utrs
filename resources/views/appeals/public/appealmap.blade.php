@@ -44,7 +44,7 @@
                   @if($appeal['icon'] == 'sent' || $appeal['icon'] == "stop")
                   @auth
                       @if($isdev)
-                        <a href="/appeal/{{$appeal['appealid']}}"><button type="submit" class="btn btn-primary">{{__('appeal.appealmap.reviewappeal')}}</button></a>
+                        <a href="/appeal/{{$appeal['appealid']}}"><button type="submit" class="btn btn-primary">{{__('appeals.appealmap.reviewappeal')}}</button></a>
                       @endif
                   @endauth
                   @guest
@@ -53,7 +53,7 @@
                     {{ html()->hidden('appealkey', $appealkey) }}
                     {{ html()->hidden('id', $appeal['appealid']) }}
                     @if(($matchAppealID != 0 && $matchAppealID == $appeal['appealid']) || $appeal['icon'] !="stop")
-                    <button type="submit" class="btn btn-primary">{{__('appeal.appealmap.reviewappeal')}}</button>
+                    <button type="submit" class="btn btn-primary">{{__('appeals.appealmap.reviewappeal')}}</button>
                     @endif
                     {{ html()->form()->close() }}
                   @endguest

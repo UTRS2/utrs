@@ -209,24 +209,23 @@ class PublicAppealController extends Controller
 
         $emailkey = hash('sha512', $email . (microtime() . rand()));
         //if email exists in the database, update the last used time, otherwise create a new entry
-        
+        $emailBanEntry = NULL;
         if (!is_null($emailbans)) {
             $emailbans->lastused = now();
             $linkedappeals = $emailbans->linkedappeals;
-            $emailbans->linkedappeals[] = $linkedappeals . ',' . $appeal->id;
             $emailbans->save();
+            
         } elseif(!is_null($email)) {
             $emailBanEntry = EmailBan::create([
                 'email' => $email,
                 'uid' => $emailkey,
-                'linkedappeals' => $appeal->id,
                 'lastused' => now(),
             ]);
         }
-        $wikiemailBanEntry = EmailBan::create([
+        $wikiemailBanEntry = EmailBan::firstOrCreate([
             'email' => $data['appealfor'].'@wiki',
             'uid' => $emailkey,
-            'linkedappeals' => $appeal->id,
+            
             'lastused' => now(),
         ]);
 
@@ -244,7 +243,7 @@ class PublicAppealController extends Controller
         }
 
         /** @var Appeal $appeal */
-        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
+        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $email) {
             $appeal = Appeal::create($data);
 
             Privatedata::create([
@@ -262,6 +261,16 @@ class PublicAppealController extends Controller
                 'ip'         => $ip,
                 'ua'         => $ua . ' ' . $lang,
             ]);
+
+            //now that we have the appeal id we need to add it to the emailban entry
+            if (!is_null($emailbans)) {
+                $linkedappeals = $emailbans->linkedappeals;
+                $emailbans->linkedappeals[] = $linkedappeals . ',' . $appeal->id;
+                $emailbans->save();
+            } elseif(!is_null($email)) {
+                $emailBanEntry->linkedappeals = $emailBanEntry->linkedappeals . ',' . $appeal->id;
+                $emailBanEntry->save();
+            }
 
             //No longer supported - repo is unsupported
             //Now handled via python script
