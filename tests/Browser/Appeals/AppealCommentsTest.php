@@ -24,7 +24,7 @@ class AppealCommentsTest extends DuskTestCase
             $browser->visit('/changelang/en')
                 ->visit('/')->type('appealkey',$appeal->appealsecretkey)
                 ->press('View my appeal')
-                ->press(__('appeals.template.return-appeal'))
+                ->press(__('appeals.appealmap.review-appeal'))
                 ->assertSee(Appeal::STATUS_AWAITING_REPLY)
                 ->type('comment', 'This is an example comment')
                 ->press(__('generic.submit'))
