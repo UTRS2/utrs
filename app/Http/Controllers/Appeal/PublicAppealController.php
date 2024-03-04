@@ -181,6 +181,10 @@ class PublicAppealController extends Controller
         }
 
         $email = $request->input('email');
+        // check if the email is null, if so, return with errors to the form page
+        if (is_null($email)) {
+            return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal'])->withInput();
+        }
         // check if the email domain is in the prohibited domain list in the env file, if so, return with errors to the form page
         if (!is_null($email) && in_array(explode('@', $email)[1], explode(',', env('PROHIBITED_EMAIL_DOMAINS')))) {
             return Redirect::back()->withErrors(['msg'=>'The email domain you used is not allowed to be used for appeals.'])->withInput();
@@ -249,13 +253,10 @@ class PublicAppealController extends Controller
                 'ua'         => $ua . ' ' . $lang,
             ]);
 
-            if (!is_null($email)) {
+            if (env('APP_ENV') == 'production') {
                 Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
                 $emailBanEntry->lastemail = now();
                 $emailBanEntry->save();
-            } else {
-                //return with errors to the form page
-                return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
             }
 
             //now that we have the appeal id we need to add it to the emailban entry
@@ -271,7 +272,6 @@ class PublicAppealController extends Controller
             //No longer supported - repo is unsupported
             //Now handled via python script
             //GetBlockDetailsJob::dispatchSync($appeal);
-
             return $appeal;
         });
 
@@ -285,7 +285,8 @@ class PublicAppealController extends Controller
         elseif($data['proxy'] && $data['blocktype']!=0) {
             $askproxy = TRUE;            
         }
-        return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey, 'processed' => FALSE, 'askproxy' => $askproxy ]);
+
+        return view('appeals.public.makeappeal.hash', [ 'appealsecretkey' => $appeal->appealsecretkey, 'processed' => FALSE, 'askproxy' => $askproxy ]);
     }
 
     public function submitProxyReason(Request $request) {
