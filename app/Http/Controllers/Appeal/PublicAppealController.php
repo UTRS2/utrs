@@ -201,13 +201,13 @@ class PublicAppealController extends Controller
             $now = strtotime(now());
             $diff = $now - $lastused;
             $hours = $diff / ( 60 * 60 );
-            if ($hours < 36) {
+            if ($hours < 36 && env('APP_SPAM_FILTER', true) == true) {
                 return Redirect::back()->withErrors(['msg'=>'Your email address has been used to file an appeal recently. Please make sure your recent appeal has been closed before filing another. If it has, you will need to take time to reflect on the response of the administrator before reappealing.'])->withInput();
             }
         }
         //if the email used in the request has an appeal that is open, return with errors to the form page
         $emailActive = Appeal::where('email', '=', $email)->whereIn('status', Appeal::ACTIVE_APPEAL_STATUSES)->get();
-        if (!is_null($email) && count($emailActive)>0) {
+        if (!is_null($email) && count($emailActive)>0 && env('APP_SPAM_FILTER', true) == true) {
             return Redirect::back()->withErrors(['msg'=>'Your email address has an open appeal. Please wait for that appeal to close before submitting another appeal.'])->withInput();
         }
 
@@ -259,21 +259,22 @@ class PublicAppealController extends Controller
                 $emailBanEntry->save();
             }
 
-            //now that we have the appeal id we need to add it to the emailban entry
-            if (!is_null($emailbans)) {
-                $linkedappeals = $emailbans->linkedappeals;
-                $emailbans->linkedappeals[] = $linkedappeals . ',' . $appeal->id;
-                $emailbans->save();
-            } elseif(!is_null($email)) {
-                $emailBanEntry->linkedappeals = $emailBanEntry->linkedappeals . ',' . $appeal->id;
-                $emailBanEntry->save();
-            }
-
             //No longer supported - repo is unsupported
             //Now handled via python script
             //GetBlockDetailsJob::dispatchSync($appeal);
+            
             return $appeal;
         });
+
+        //now that we have the appeal id we need to add it to the emailban entry
+        if (!is_null($emailbans)) {
+            $linkedappeals = $emailbans->linkedappeals;
+            $emailbans->linkedappeals = $linkedappeals . ',' . $appeal->id;
+            $emailbans->save();
+        } else {
+            $emailBanEntry->linkedappeals = $emailBanEntry->linkedappeals . ',' . $appeal->id;
+            $emailBanEntry->save();
+        }
 
         $askproxy = FALSE; 
         if ($data['proxy'] && $data['blocktype']==0) {
@@ -286,7 +287,7 @@ class PublicAppealController extends Controller
             $askproxy = TRUE;            
         }
 
-        return view('appeals.public.makeappeal.hash', [ 'appealsecretkey' => $appeal->appealsecretkey, 'processed' => FALSE, 'askproxy' => $askproxy ]);
+        return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey, 'processed' => FALSE, 'askproxy' => $askproxy ]);
     }
 
     public function submitProxyReason(Request $request) {
