@@ -36,8 +36,8 @@ class AppealPublicActionsTest extends DuskTestCase
 
             $browser->visit('/changelang/en')
                 ->visit('/')->type('appealkey',$appeal->appealsecretkey)
-                ->waitForText('View my appeal',5)
-                ->clickLink('View my appeal')
+                ->assertSee('View my appeal')
+                ->click('View my appeal')
                 ->assertSee('Appeal for "' . $appeal->appealfor . '"')
                 ->assertSee(Appeal::STATUS_NOTFOUND)
                 ->assertDontSee('Add a comment to this appeal')

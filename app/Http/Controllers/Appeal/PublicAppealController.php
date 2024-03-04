@@ -229,18 +229,6 @@ class PublicAppealController extends Controller
             'lastused' => now(),
         ]);
 
-        //if appeal is for an IP, send an email to the email address provided using the VerifyAccount mailable
-        if ($data['blocktype']==0) {
-            if (!is_null($email)) {
-                Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
-                $emailBanEntry->lastemail = now();
-                $emailBanEntry->save();
-            } else {
-                //return with errors to the form page
-                return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
-            }
-        }
-
         /** @var Appeal $appeal */
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $email) {
             $appeal = Appeal::create($data);
@@ -260,6 +248,15 @@ class PublicAppealController extends Controller
                 'ip'         => $ip,
                 'ua'         => $ua . ' ' . $lang,
             ]);
+
+            if (!is_null($email)) {
+                Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
+                $emailBanEntry->lastemail = now();
+                $emailBanEntry->save();
+            } else {
+                //return with errors to the form page
+                return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal an IP address'])->withInput();
+            }
 
             //now that we have the appeal id we need to add it to the emailban entry
             if (!is_null($emailbans)) {
