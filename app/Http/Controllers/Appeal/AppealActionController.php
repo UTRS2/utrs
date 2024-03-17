@@ -77,6 +77,26 @@ class AppealActionController extends Controller
         return redirect()->route('appeal.view', [ $appeal ]);
     }
 
+    // send to acc
+    public function sendToACC(Request $request, Appeal $appeal)
+    {
+        return $this->doAction(
+            $request,
+            $appeal,
+            'sent to ACC',
+            function (Appeal $appeal) {
+                $appeal->sendToACC();
+                $appeal->status = Appeal::STATUS_ACC;
+                $appeal->save();
+            },
+            function (Appeal $appeal) {
+                return $appeal->status === Appeal::STATUS_ACC
+                    ? 'This appeal is already waiting for ACC review.'
+                    : true;
+            }
+        );
+    }
+
     public function reserve(Request $request, Appeal $appeal)
     {
         return $this->doAction(

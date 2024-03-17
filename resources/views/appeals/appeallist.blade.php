@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('content')
+    @if($noemail)
+        <div class="alert alert-danger" role="alert">
+            {{__('generic.no-email')}}
+        </div>
+    @endif
     @if($tooladmin)
         <div class="card">
             <h5 class="card-header">{{__('generic.admin-tools.title')}}</h5>
@@ -23,12 +28,12 @@
         <div class="card mt-2 mb-4">
             <h5 class="card-header">{{__('generic.list-headers.search-appeals')}}</h5>
             <div class="card-body">
-                {{ Form::open(['url' => route('appeal.search.quick'), 'method' => 'GET']) }}
-                {{ Form::label('search', __('generic.search-text')) }}
+                {{ html()->form('GET', route('appeal.search.quick'))->open() }}
+                {{ html()->label(__('generic.search-text'), 'search') }}
                 <div class="input-group">
-                    {{ Form::search('search', old('search'), ['class' => $errors->has('search') ? 'form-control is-invalid' : 'form-control']) }}
+                    {{ html()->input('search', 'search', old('search'))->class($errors->has('search') ? 'form-control is-invalid' : 'form-control') }}
                     <div class="input-group-append">
-                        {{ Form::submit(__('generic.quick-search'), ['class' => 'btn btn-primary']) }}
+                        {{ html()->submit(__('generic.quick-search'))->class('btn btn-primary') }}
                     </div>
 
                     @if($errors->has('search'))
@@ -38,7 +43,7 @@
                     @endif
                 </div>
 
-                {{ Form::close() }}
+                {{ html()->form()->close() }}
 
                 <div class="mt-2">
                     <a href="{{ route('appeal.search.advanced') }}" class="btn btn-secondary">
@@ -53,7 +58,7 @@
     <div class="card mt-4">
         <h5 class="card-header">{{ $type }}</h5>
         <div class="card-body">
-            @component('components.appeal-table', ['appeals' => $appeals[$type]])
+            @component('components.appeal-table', ['appeals' => $appeals[$type], 'mainPaginate' => $mainPaginate])
             @endcomponent
         </div>
     </div>

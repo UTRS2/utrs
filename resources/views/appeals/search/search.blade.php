@@ -12,7 +12,7 @@
     @endcomponent
 
     <form>
-        {{ Form::hidden('dosearch', 1) }}{{-- so we know if the form has been opened for the first time or if it's been filled --}}
+        {{ html()->hidden('dosearch', 1) }}{{-- so we know if the form has been opened for the first time or if it's been filled --}}
 
         <div class="card">
             <div class="card-header">
@@ -26,8 +26,8 @@
                     <h5>Appeal wiki</h5>
                     @foreach($wikiInputs as $key => $value)
                         <div class="custom-control custom-checkbox">
-                            {{ Form::checkbox('wiki_' . $key, '1', $value, ['class' => 'custom-control-input', 'id' => 'wiki_' . $key]) }}
-                            {{ Form::label('wiki_' . $key, $key, ['class' => 'custom-control-label']) }}
+                            {{ html()->checkbox('wiki_' . $key, $value, '1')->class('custom-control-input')->id('wiki_' . $key) }}
+                            {{ html()->label($key, 'wiki_' . $key)->class('custom-control-label') }}
                         </div>
                     @endforeach
                 </div>
@@ -36,8 +36,8 @@
                     <h5>Appeal status</h5>
                     @foreach($statusInputs as $key => $value)
                         <div class="custom-control custom-checkbox">
-                            {{ Form::checkbox('status_' . $key, '1', $value, ['class' => 'custom-control-input', 'id' => 'status_' . $key]) }}
-                            {{ Form::label('status_' . $key, $key, ['class' => 'custom-control-label']) }}
+                            {{ html()->checkbox('status_' . $key, $value, '1')->class('custom-control-input')->id('status_' . $key) }}
+                            {{ html()->label($key, 'status_' . $key)->class('custom-control-label') }}
                         </div>
                     @endforeach
                 </div>
@@ -46,8 +46,8 @@
                     <h5>Appellant</h5>
 
                     <div class="form-group mb-2">
-                        {{ Form::label('appealfor', 'Appeal for') }}
-                        {{ Form::text('appealfor', Request::input('appealfor'), ['class' => 'form-control']) }}
+                        {{ html()->label('Appeal for', 'appealfor') }}
+                        {{ html()->text('appealfor', Request::input('appealfor'))->class('form-control') }}
                         <p class="small">
                             MySQL <code>LIKE</code> wildcards are supported.
                         </p>
@@ -56,8 +56,8 @@
                     <span>Block type</span>
                     @foreach($blockTypeInputs as $key => $value)
                         <div class="custom-control custom-checkbox">
-                            {{ Form::checkbox('blocktype_' . $key, '1', $value, ['class' => 'custom-control-input', 'id' => 'blocktype_' . $key]) }}
-                            {{ Form::label('blocktype_' . $key, $blockTypeNames[$key], ['class' => 'custom-control-label']) }}
+                            {{ html()->checkbox('blocktype_' . $key, $value, '1')->class('custom-control-input')->id('blocktype_' . $key) }}
+                            {{ html()->label($blockTypeNames[$key], 'blocktype_' . $key)->class('custom-control-label') }}
                         </div>
                     @endforeach
                 </div>
@@ -66,18 +66,18 @@
                     <h5>Administrators involved</h5>
 
                     <div class="form-group mb-2">
-                        {{ Form::label('blockingadmin', 'Blocking administrator') }}
-                        {{ Form::text('blockingadmin', Request::input('blockingadmin'), ['class' => 'form-control']) }}
+                        {{ html()->label('Blocking administrator', 'blockingadmin') }}
+                        {{ html()->text('blockingadmin', Request::input('blockingadmin'))->class('form-control') }}
                     </div>
 
                     <div class="form-group">
-                        {{ Form::label('handlingadmin', 'Handling administrator') }}
-                        {{ Form::text('handlingadmin', Request::input('handlingadmin'), ['class' => 'form-control']) }}
+                        {{ html()->label('Handling administrator', 'handlingadmin') }}
+                        {{ html()->text('handlingadmin', Request::input('handlingadmin'))->class('form-control') }}
                     </div>
 
                     <div class="custom-control custom-checkbox">
-                        {{ Form::checkbox('handlingadmin_none', '1', Request::input('handlingadmin_none'), ['class' => 'custom-control-input', 'id' => 'handlingadmin_none']) }}
-                        {{ Form::label('handlingadmin_none', 'No handling administrator', ['class' => 'custom-control-label']) }}
+                        {{ html()->checkbox('handlingadmin_none', Request::input('handlingadmin_none'), '1')->class('custom-control-input')->id('handlingadmin_none') }}
+                        {{ html()->label('No handling administrator', 'handlingadmin_none')->class('custom-control-label') }}
                     </div>
                 </div>
             </div>
