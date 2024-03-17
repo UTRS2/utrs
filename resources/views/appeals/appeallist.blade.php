@@ -2,7 +2,7 @@
 @section('content')
     @if($noemail)
         <div class="alert alert-danger" role="alert">
-            {{__('generic.no-email')}}There is no email on file for you. You will not be able to recieve notifications of updates on appeals you are handling.
+            {{__('generic.no-email')}}
         </div>
     @endif
     @if($tooladmin)

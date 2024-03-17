@@ -36,6 +36,7 @@ class Appeal extends Model
         self::STATUS_ACCEPT         => self::STATUS_ACCEPT,
         self::STATUS_DECLINE        => self::STATUS_DECLINE,
         self::STATUS_EXPIRE         => self::STATUS_EXPIRE,
+        self::STATUS_ACC            => self::STATUS_ACC,
     ];
 
     const REGULAR_NO_VIEW_STATUS = [
@@ -64,6 +65,8 @@ class Appeal extends Model
         self::STATUS_ACCEPT,
         self::STATUS_DECLINE,
         self::STATUS_EXPIRE,
+        self::STATUS_ACC,
+
     ];
 
     const STATUS_OPEN = 'OPEN';
@@ -81,6 +84,7 @@ class Appeal extends Model
     const STATUS_ACCEPT = 'ACCEPT';
     const STATUS_DECLINE = 'DECLINE';
     const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
+    const STATUS_ACC = 'ACC'; // appeal is being handled by ACC
 
     const BLOCKTYPE_IP = 0;
     const BLOCKTYPE_ACCOUNT = 1;
@@ -236,5 +240,11 @@ class Appeal extends Model
     public function getWikiDefaultLanguage()
     {
         return Wiki::where('id', $this->wiki_id)->first()->default_language;
+    }
+
+    // get the acc entry for the appeal
+    public function getACC()
+    {
+        return Acc::where('appeal_id', $this->id)->first();
     }
 }

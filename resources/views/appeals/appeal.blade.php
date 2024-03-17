@@ -274,7 +274,13 @@ function displayTransfer() {
                                                 <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
                                                     {{__('appeals.send-reply-button')}}
                                                 </a>
+                                                @if ($info->status !== Appeal::STATUS_ACC)
+                                                <a href="{{ route('appeal.sendtoacc', $info) }}" class="btn btn-info">
+                                                    {{__('appeals.send-acc')}}
+                                                </a>
+                                                @endif
                                             @else
+                                                <br /><br />
                                                 <div class="alert alert-danger" role="alert">
                                                     {{__('appeals.not-handling-admin')}}
                                                 </div>

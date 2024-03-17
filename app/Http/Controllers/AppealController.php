@@ -13,6 +13,7 @@ use App\Models\Template;
 use App\Models\User;
 use App\Models\Ban;
 use App\Models\Translation;
+use App\Models\Acc;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
@@ -568,5 +569,20 @@ class AppealController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    //send to acc
+    public function sendToACC(Request $request, Appeal $appeal)
+    {
+        $this->authorize('update', $appeal);
+
+        // if acc already exists, return to previous page with an error
+        if (Acc::where('appeal_id', $appeal->id)->exists()) {
+            return redirect()->back()->with('error', 'This appeal has already been sent to ACC.');
+        }
+        
+        Acc::sendToACC($appeal);
+
+        return redirect()->route('appeal.view', $appeal);
     }
 }

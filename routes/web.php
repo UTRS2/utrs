@@ -44,7 +44,7 @@ Route::middleware('set.locale')->group(function () {
         Route::post('/appeal/submitproxyquestion', 'Appeal\PublicAppealController@submitProxyQuestion')->name('public.appeal.proxyreason');
 
         Route::post('/appeal/recoverkey', 'AppealKeyController@sendAppealKeyReminder')->name('appealkey.reset');
-        Route::get('/emailban', 'EmailBanController@showForm')->name('email.ban');
+        Route::get('/emailban', 'Admin\EmailBanController@showForm')->name('email.ban');
     });
 
     Route::get('/appeal/map/{id}', 'AppealController@map')->name('appeal.map');
@@ -74,6 +74,8 @@ Route::middleware('set.locale')->group(function () {
 
     Route::get('/appeal/custom/{appeal}', 'AppealController@respondCustom')->name('appeal.customresponse');
     Route::post('/appeal/custom/{appeal}', 'AppealController@respond')->name('appeal.customresponse.submit');
+
+    Route::get('/appeal/acc/{appeal}', 'AppealController@sendToACC')->name('appeal.sendtoacc');
 
     Route::get('/publicappeal', 'Appeal\PublicAppealController@redirectLegacy');
 
