@@ -15,7 +15,7 @@
     "prod": "npm run production",
     "production": "mix --production",
     "test": [
-      "Composer\\Config::disableProcessTimeout();", 
+      "Composer\\Config::disableProcessTimeout();",
       "phpunit"
     ]
   },
@@ -30,7 +30,6 @@
     "bootstrap": "^5.2.3",
     "cross-env": "^7.0.3",
     "jquery": "^3.7.1",
-    "laravel-mix": "^6.0.49",
     "laravel-mix-purgecss": "^6.0.0",
     "lodash": "^4.17.21",
     "popper.js": "^1.16.1",
@@ -40,6 +39,7 @@
     "vue-template-compiler": "^2.7.16"
   },
   "devDependencies": {
+    "laravel-mix": "^6.0.49",
     "webpack-cli": "^5.1.4"
   }
 }
