@@ -51,6 +51,9 @@
                             @can('viewAny', App\Models\Ban::class)
                                 <li><a class="dropdown-item" href="{{ route('admin.emailban.list') }}">{{__('generic.admin-tools.emailbans')}}</a></li>
                             @endcan
+                            @can('viewAny', App\Models\Apikey::class)
+                                <li><a class="dropdown-item" href="{{ route('apikey.list') }}">{{__('generic.admin-tools.api-key-list-link')}}</a></li>
+                            @endcan
                         </ul>
                     </li>
                 @endcanany

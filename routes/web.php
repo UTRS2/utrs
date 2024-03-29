@@ -118,8 +118,14 @@ Route::middleware('set.locale')->group(function () {
 
     Route::get('/translate/activate/{appeal}/{logid}', 'TranslateController@activate')->name('translate.activate');
 
+    Route::get('/admin/apikeys', 'ApiController@apiList')->name('apikey.list');
+    Route::post('/admin/apikeys/create', 'ApiController@create')->name('apikey.create');
+    Route::post('/admin/apikeys/revoke/{apikey}', 'ApiController@revoke')->name('apikey.revoke');
+    Route::post('/admin/apikeys/activate/{apikey}', 'ApiController@activate')->name('apikey.activate');
+    Route::post('/admin/apikeys/regenerate/{apikey}', 'ApiController@regenerate')->name('apikey.regenerate');
+
     Route::get('/test', function () {
-        $appealkeyemail = new App\Mail\AppealKey('980HRF392980HRF39218GRF93712G9F7379FG1D792G9217G8982G', 'joe@null');
-        return $appealkeyemail;
+        $email = new App\Mail\Acc('https://accounts.wmflabs.org/randomkey', 'joe@null');
+        return $email;
     });
 });

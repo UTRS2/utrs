@@ -79,7 +79,7 @@ class Acc extends Model
             }
             elseif ($log->user_id === -1) {
                 return [
-                    'username' => NULL,
+                    'username' => $appeal->appealfor,
                     'reason' => $log->reason
                 ];
             } else {
@@ -126,34 +126,61 @@ class Acc extends Model
 
         // if acc is on in an environment variable, send the data to the ACC API
         if (env('ACC_ON')) {
+            // get the first API key that is active, the expiry is not in the past, and has the permission 'acc' and if there is not one throw an exception
+            $apikey = Apikey::where('permission', 'acc')->where('expiry', '>', now())->where('active', TRUE)->firstOrFail();
+            $contentkey = hash_hmac('sha384',$json,$apikey->key);
+
             $client = new \GuzzleHttp\Client();
             $response = $client->request('POST', env('ACC_API_URL'), [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Cache-Control' => 'no-store',
-                    'Authorization' => 'Bearer ' . env('ACC_API_KEY'),
+                    'Authorization' => 'Bearer ' . $contentkey,
                     'X-ACC-API-Version' => '1'
                 ],
                 'body' => $json
             ]);
             $response = json_decode($response->getBody());
-            if ($response->status === 'success') {
-                $appeal->status = Appeal::STATUS_ACC;
-                $appeal->save();
-                // create an acc object
-                $acc = new Acc();
-                // set the appeal_id to the id of the appeal
-                $acc->appeal_id = $appeal->id;
-                // get the token from the response
-                $acc->token = $response->token;
-                // set the status to what the response status is
-                $acc->status = $response->status;
-                // store the acc_id from the response
-                $acc->acc_id = $response->accId;
-                // save the acc object
-                $acc->save();
+            if ($response->status === 'OK') {
+                if ($response->token == $contentkey) {
+                    $appeal->status = Appeal::STATUS_ACC;
+                    $appeal->save();
+                    // create an acc object
+                    $acc = new Acc();
+                    // set the appeal_id to the id of the appeal
+                    $acc->appeal_id = $appeal->id;
+                    // get the token from the response
+                    $acc->token = $response->token;
+                    // set the status to what the response status is
+                    $acc->status = $response->status;
+                    // store the url from the response
+                    $acc->url = $response->url;
+                    // save the acc object
+                    $acc->save();
+
+                    // send email to the user about creating an account
+                    
+                } else {
+                    // log an error under a protected functionary data message
+                    $log = new Log();
+                    $log->model_id = $appeal->id;
+                    $log->action = 'comment';
+                    $log->reason = 'ACC Transfer API failure: The return key did not match what was expected. The data was abandoned.';
+                    $log->protected = True;
+                    $log->ip = '192.168.1.1';
+                    $log->ua = 'UTRS System';
+                    $log->save();
+                }
+            } else {
+                $log = new Log();
+                $log->model_id = $appeal->id;
+                $log->action = 'comment';
+                $log->reason = 'ACC Transfer API failure: '.$response->error;
+                $log->protected = True;
+                $log->ip = '192.168.1.1';
+                $log->ua = 'UTRS System';
+                $log->save();
             }
-            return TRUE;
         } else {
             $appeal->status = Appeal::STATUS_ACC;
             $appeal->save();

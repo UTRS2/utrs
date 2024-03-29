@@ -247,4 +247,5 @@ class Appeal extends Model
     {
         return Acc::where('appeal_id', $this->id)->first();
     }
+
 }
