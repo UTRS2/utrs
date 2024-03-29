@@ -43,15 +43,15 @@ class StatsController extends Controller
             'hanadm'/*handled by admin*/,
         ];
         if (!in_array($requestedChart, $acceptedChartNames)) {
-            return abort(404);
+            return abort(404, 'Chart not found');
         }
         $acceptedWikiNames = ['enwiki', 'global', 'all'];
         if (!in_array($requestedWiki, $acceptedWikiNames)) {
-            return abort(404);
+            return abort(404, 'Wiki not found');
         }
         $acceptedLengths = ['7d', '30d', '90d', '180d', '365d'];
         if (!in_array($requestedLength, $acceptedLengths)) {
-            return abort(404);
+            return abort(404, 'Length not found');
         }
         $numericDay = (int) explode('d', $requestedLength)[0];
 
