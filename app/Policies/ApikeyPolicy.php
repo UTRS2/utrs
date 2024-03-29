@@ -4,8 +4,10 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class Apikey
+class ApikeyPolicy
 {
+    use HandlesAuthorization;
+
     public function viewAny(User $user): bool
     {
         // is apiadmin or developer

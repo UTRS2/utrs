@@ -157,6 +157,36 @@ class AppealController extends Controller
         throw (new ModelNotFoundException)->setModel(Appeal::class, $id);
     }
 
+    public function devappeallist(Appeal $appeal)
+    {
+        // if user is not a developer, return 403
+        abort_unless(Auth::check(), 403, 'No logged in user');
+        abort_unless(Auth::user()->hasAnySpecifiedLocalOrGlobalPerms([], 'developer'), 403, 'You are not a developer');
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->email == NULL) {
+            $noemail = true;
+        }
+        else {
+            $noemail = false;
+        }
+
+        $wikis = collect(MediaWikiRepository::getSupportedTargets());
+
+        $appealtypes = [
+            'developer'=>__('appeals.appeal-types.developer'),
+        ];
+
+        $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
+        $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
+
+        $appeals[$appealtypes['developer']] = $appeal->whereIn('status',$developerStatuses)->sortable()->paginate(20);
+        $mainPaginate = $appeals[$appealtypes['developer']]->count() > 49;
+        
+        return view('appeals.devappeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => True, 'noWikis' => $wikis->isEmpty(), 'mainPaginate' => $mainPaginate, 'noemail' => $noemail]);
+    }
+
     public function appeallist(Appeal $appeal)
     {
         abort_unless(Auth::check(), 403, 'No logged in user');
@@ -193,7 +223,6 @@ class AppealController extends Controller
         $appealtypes = [
             'all'=>'Active appeals',
         ];
-        if($isDeveloper) { $appealtypes['developer']=__('appeals.appeal-types.developer'); }
 
         $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
         $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
@@ -208,11 +237,6 @@ class AppealController extends Controller
         }
         else {
             $appeals[$appealtypes['all']] = $appeals[$appealtypes['all']]->get();
-        }
-
-        if($isDeveloper) {
-            $appeals[$appealtypes['developer']] = $appeal->whereIn('status',$developerStatuses)
-            ->sortable()->paginate(20);
         }
         
         return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty(), 'mainPaginate' => $mainPaginate, 'noemail' => $noemail]);

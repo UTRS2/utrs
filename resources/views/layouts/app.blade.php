@@ -36,6 +36,10 @@
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="adminNavbarDropdown">
+                            @can('performDeveloperActions', App\Models\Appeal::class)
+                                <li><a class="dropdown-item" href="{{ route('appeal.emailpreview') }}">{{__('generic.admin-tools.email-previews')}}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('appeal.list.dev') }}">{{__('generic.admin-tools.dev-appeals')}}</a></li>
+                            @endcan
                             @can('viewAny', App\Models\Ban::class)
                                 <li><a class="dropdown-item" href="{{ route('admin.bans.list') }}">{{__('generic.admin-tools.bans')}}</a></li>
                             @endcan

@@ -44,13 +44,18 @@ Route::middleware('set.locale')->group(function () {
         Route::post('/appeal/submitproxyquestion', 'Appeal\PublicAppealController@submitProxyQuestion')->name('public.appeal.proxyreason');
 
         Route::post('/appeal/recoverkey', 'AppealKeyController@sendAppealKeyReminder')->name('appealkey.reset');
-        Route::get('/emailban', 'Admin\EmailBanController@showForm')->name('email.ban');
+        Route::get('/emailban/{method}/{token}', 'Appeal\PublicEmailBanController@showForm')->name('email.ban');
+        Route::post('/emailban/{method}/{token}', 'Appeal\PublicEmailBanController@submit')->name('email.ban.submit');
     });
 
     Route::get('/appeal/map/{id}', 'AppealController@map')->name('appeal.map');
     Route::get('/appeal/{id}', 'AppealController@appeal')->name('appeal.view');
 
     Route::get('/review', 'AppealController@appeallist')->name('appeal.list');
+    Route::get('/devreview', 'AppealController@devappeallist')->name('appeal.list.dev');
+
+    Route::get('/emailpreview', 'EmailPreviewController@preview')->name('appeal.emailpreview');
+    Route::get('/emailpreview/{email}', 'EmailPreviewController@previewEmail')->name('appeal.emailpreview.view');
 
     Route::get('/search/quick', 'Appeal\AppealQuickSearchController@search')->name('appeal.search.quick');
     Route::get('/search', 'Appeal\AppealAdvancedSearchController@search')->name('appeal.search.advanced');
