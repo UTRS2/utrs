@@ -99,7 +99,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->waitForText('Reserve',5)
                 ->press('Reserve')
                 ->waitForText(__('appeals.send-reply-button'),5)
-                ->click(__('appeals.send-reply-button'))
+                ->press(__('appeals.send-reply-button'))
                 //error above
                 ->waitForText(__('appeals.templates.alert'),5)
                 ->assertSee(__('appeals.templates.alert'))

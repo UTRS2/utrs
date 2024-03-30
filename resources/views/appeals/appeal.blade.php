@@ -12,12 +12,12 @@ function displayTransfer() {
 @section('content')
     <div class="container">
         <div class="mb-1">
-            <a href="{{ route('appeal.list') }}" class="btn btn-primary">
+            <a href="{{ route('appeal.list') }}"><button class="btn btn-primary">
                 {{__('appeals.nav.back-appeal-list')}}
-            </a>
-            <a href="/appeal/map/{{$id}}" class="btn btn-info">
+            </button></a>
+            <a href="/appeal/map/{{$id}}"><button class="btn btn-info">
                 {{__('appeals.map.switch-appeal-map')}}
-            </a>
+            </button></a>
         </div>
 
         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
@@ -271,13 +271,13 @@ function displayTransfer() {
                                                 {{ html()->form()->close() }}
                                             </div>
                                             @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
-                                                <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
+                                                <a href="{{ route('appeal.template', $info) }}"><button class="btn btn-info">
                                                     {{__('appeals.send-reply-button')}}
-                                                </a>
+                                                </button></a>
                                                 @if ($info->status !== Appeal::STATUS_ACC)
-                                                <a href="{{ route('appeal.sendtoacc', $info) }}" class="btn btn-info">
+                                                <a href="{{ route('appeal.sendtoacc', $info) }}"><button class="btn btn-info">
                                                     {{__('appeals.send-acc')}}
-                                                </a>
+                                                </button></a>
                                                 @endif
                                             @else
                                                 <br /><br />
