@@ -78,6 +78,7 @@
   "appeals.appeal-types.developer": "Developer access appeals",
   "appeals.send-reply-header": "Send a templated reply",
   "appeals.send-reply-button": "Send a reply to the user",
+  "appeals.send-acc": "Transfer to ACC",
   "appeals.not-handling-admin": "You are not the handling admin.",
   "appeals.details-status": "Appeal number & status",
   "appeals.details-block-admin": "Blocking administrator",
