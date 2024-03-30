@@ -34,7 +34,7 @@ class AppealCreateTest extends DuskTestCase
                 ->click('[for=blocktype-1]')
                 ->type('appealtext', 'I did not do anything wrong! The admin is corrupt and if I\'m not unblocked, [hidden per WP:NLT]!')
                 ->type('email', 'test@example.com')
-                ->waitForText('Submit',5)
+                ->waitForText('Submit',2)
                 ->press('Submit')
                 ->assertSee('Your appeal is being processed');
         });
