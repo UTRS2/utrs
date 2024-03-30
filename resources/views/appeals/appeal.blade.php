@@ -43,7 +43,7 @@ function displayTransfer() {
                 <div>
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">{{__('appeals.appeal-title',['name'=>$info->appealfor])}}</h4>
+                            <h4 class="card-title">{{__('appeals.appeal-title').$info->appealfor}}</h4>
                             <p class="card-text">
                                 {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
                                 @if($info->proxy == 0)
@@ -296,12 +296,12 @@ function displayTransfer() {
                                                 @endif
                                                 @if($checkuserdone && !is_null($cudata))
                                                     <br/>
-                                                    {{__('appeals.cu.ip-address',['ip'=>$cudata->ipaddress])}}<br/>
+                                                    {{__('appeals.cu.ip-address').' '.$cudata->ipaddress}}<br/>
                                                     @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                                     @endcomponent
                                                     <br/>
-                                                    {{__('appeals.cu.user-agent',['ua'=>$cudata->useragent])}}<br/>
-                                                    {{__('appeals.cu.browser-lang',['lang'=>$cudata->language])}}
+                                                    {{__('appeals.cu.user-agent').' '.$cudata->useragent}}<br/>
+                                                    {{__('appeals.cu.browser-lang').' '.$cudata->language}}
                                                 @elseif(is_null($cudata))
                                                     <div class="alert alert-danger" role="alert">
                                                         {{__('appeals.cu.data-expire')}}
