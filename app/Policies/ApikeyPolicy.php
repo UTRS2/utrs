@@ -13,18 +13,18 @@ class ApikeyPolicy
     public function viewAny(User $user): bool
     {
         // is apiadmin or developer
-        return $user->hasPermission('apiadmin') || $user->hasPermission('developer');
+        return $user->hasAnySpecifiedPermsOnAnyWiki('apiadmin') || $user->hasAnySpecifiedPermsOnAnyWiki('developer');
     }
 
     public function create(User $user): bool
     {
         // is apiadmin or developer
-        return $user->hasPermission('apiadmin') || $user->hasPermission('developer');
+        return $user->hasAnySpecifiedPermsOnAnyWiki('apiadmin') || $user->hasAnySpecifiedPermsOnAnyWiki('developer');
     }
 
     public function revoke(User $user): bool
     {
         // is apiadmin or developer
-        return $user->hasPermission('apiadmin') || $user->hasPermission('developer');
+        return $user->hasAnySpecifiedPermsOnAnyWiki('apiadmin') || $user->hasAnySpecifiedPermsOnAnyWiki('developer');
     }
 }
