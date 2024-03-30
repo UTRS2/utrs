@@ -20,7 +20,12 @@ class EmailBan extends Model
     // set the 'linkedappeals' attribute to return the linked appeals with a many-to-one relationship  
     public function linkedappeals()
     {
-        return $this->hasMany(Appeal::class, 'id', 'linkedappeals');
+        // if the linkedappeals attribute is not null, return the linked appeals
+        if ($this->linkedappeals != null) {
+            return Appeal::where('id', $this->linkedappeals)->get();
+        } else {
+            return null;
+        }
     }
 
     // convert any attribute to a human readable format from a datetime
