@@ -271,7 +271,7 @@ function displayTransfer() {
                                                 {{ html()->form()->close() }}
                                             </div>
                                             @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
-                                                <a href="{{ route('appeal.template', $info) }}"><button class="btn btn-info" id="send-reply-button">
+                                                <a href="{{ route('appeal.template', $info) }}"><button class="btn btn-info" dusk="send-reply-button">
                                                     {{__('appeals.send-reply-button')}}
                                                 </button></a>
                                                 @if ($info->status !== Appeal::STATUS_ACC)

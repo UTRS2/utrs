@@ -54,7 +54,7 @@
             </div>
             <div class="card-footer">
                 <div>
-                    <button type="submit" id="view-my-appeal" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
+                    <button type="submit" dusk="view-my-appeal" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
                 </div>
             </div>
             {{ html()->form()->close() }}

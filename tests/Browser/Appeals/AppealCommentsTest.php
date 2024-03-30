@@ -64,7 +64,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->waitForText('Reserve',2)
                 ->press('Reserve')
                 ->waitForText('Send a reply to the user',2)
-                ->press('@send-reply-button')
+                ->click('@send-reply-button')
                 ->assertSee(__('appeals.templates.alert'))
                 ->assertDontSee($targetTemplateTextStart)
                 ->assertSee($targetTemplate->name)
