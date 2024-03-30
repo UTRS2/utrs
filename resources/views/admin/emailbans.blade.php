@@ -28,7 +28,7 @@
                             <tr>
                                 <td>{{ $emailBan->email }}</td>
                                 <td>
-                                    @if($emailBan->linkedappeals()->count() > 0)
+                                    @if($emailBan->linkedappeals() != NULL || sizeOf($emailBan->linkedappeals()) > 0)
                                         @foreach($emailBan->linkedappeals()->get() as $appeal)
                                             <a href="{{ route('appeal.view', $appeal) }}">Appeal #{{ $appeal->id }}</a><br />
                                         @endforeach

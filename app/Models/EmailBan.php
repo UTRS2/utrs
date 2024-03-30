@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Appeal;
+use App\Models\LogEntry;
+use App\Models\User;
 
 class EmailBan extends Model
 {
@@ -15,7 +18,6 @@ class EmailBan extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guarded = ['id'];
-    protected $with = ['linkedappeals'];
 
     // set the 'linkedappeals' attribute to return the linked appeals with a many-to-one relationship  
     public function linkedappeals()
@@ -24,7 +26,7 @@ class EmailBan extends Model
         if ($this->linkedappeals != null && $this->linkedappeals != '') {
             return Appeal::where('id', $this->linkedappeals)->get();
         } else {
-            return null;
+            return [];
         }
     }
 
