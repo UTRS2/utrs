@@ -6,9 +6,6 @@ function displayTransfer() {
     document.getElementById('transfer').style.display = "block";
     document.getElementById('transferbutton').style.display = "none";
 }
-function sendToURL(url) {
-    window.location.href(url);
-}
 @endsection
 
 @section('title', 'Appeal #' . $id)
@@ -274,9 +271,9 @@ function sendToURL(url) {
                                                 {{ html()->form()->close() }}
                                             </div>
                                             @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
-                                                <button class="btn btn-info" onclick="sendToURL({{ route('appeal.template', $info) }})">
+                                                <a href="{{ route('appeal.template', $info) }}"><button class="btn btn-info">
                                                     {{__('appeals.send-reply-button')}}
-                                                </button>
+                                                </button></a>
                                                 @if ($info->status !== Appeal::STATUS_ACC)
                                                 <a href="{{ route('appeal.sendtoacc', $info) }}"><button class="btn btn-info">
                                                     {{__('appeals.send-acc')}}

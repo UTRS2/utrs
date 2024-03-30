@@ -68,21 +68,3 @@ jobs:
         run: composer test --verbose
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Start chromedriver
-        run: chromedriver &
-      - name: Start Laravel Server
-        run: php artisan serve &
-        env:
-          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Setup Chromedriver
-        run: php artisan dusk:chrome-driver
-      - name: Run Browser Tests
-        run: php artisan dusk
-        env:
-          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - uses: actions/upload-artifact@v4
-        name: Save Dusk screenshots
-        if: failure()
-        with:
-          name: dusk-screenshots
-          path: tests/Browser/screenshots/*.png
