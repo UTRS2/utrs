@@ -21,7 +21,7 @@ class EmailBan extends Model
     public function linkedappeals()
     {
         // if the linkedappeals attribute is not null, return the linked appeals
-        if ($this->linkedappeals != null) {
+        if ($this->linkedappeals != null && $this->linkedappeals != '') {
             return Appeal::where('id', $this->linkedappeals)->get();
         } else {
             return null;

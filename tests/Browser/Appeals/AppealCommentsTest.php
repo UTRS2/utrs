@@ -63,6 +63,7 @@ class AppealCommentsTest extends DuskTestCase
                 ->assertDontSee($targetTemplateTextStart)
                 ->waitForText('Reserve',5)
                 ->press('Reserve')
+                ->waitForText('Send a reply to the user',5)
                 ->press('Send a reply to the user')
                 ->assertSee(__('appeals.templates.alert'))
                 ->assertDontSee($targetTemplateTextStart)
@@ -98,7 +99,8 @@ class AppealCommentsTest extends DuskTestCase
                 ->waitForText('Reserve',5)
                 ->press('Reserve')
                 ->waitForText(__('appeals.send-reply-button'),5)
-                ->press(__('appeals.send-reply-button'))
+                ->click(__('appeals.send-reply-button'))
+                //error above
                 ->waitForText(__('appeals.templates.alert'),5)
                 ->assertSee(__('appeals.templates.alert'))
                 ->press('Reply custom text')
