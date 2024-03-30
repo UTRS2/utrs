@@ -13,9 +13,9 @@
     <tr>
     <td class="pad" style="padding-bottom:5px;padding-left:30px;padding-right:10px;">
     <div style="color:#555555;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:120%;text-align:left;mso-line-height-alt:16.8px;">
-    <p style="margin: 0; word-break: break-word;"><span><span>{{__('emails.acc.text')}}</span></span></p>
+    <p style="margin: 0; word-break: break-word;"><span><span>{{__('emails.verifyemail.text')." ".$email}}</span></span></p>
     <br />
-    <p style="margin: 0; word-break: break-word;"><a href="{{$url}}" style="text-decoration:none;display:inline-block;color:#000000;background-color:#F8D995;border-radius:3px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:20px;padding-right:20px;font-size:12px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 24px;">{{__('emails.acc-continue-button')}}<br/></span></span></div></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></p>
+    <p style="margin: 0; word-break: break-word;"><a href="{{$url}}" style="text-decoration:none;display:inline-block;color:#000000;background-color:#F8D995;border-radius:3px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:20px;padding-right:20px;font-size:12px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 24px;">{{__('emails.verify-email-button')}}<br/></span></span></div></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></p>
     @component('components.stop-spam', ['stopUrl' => $stopUrl])
     @endcomponent
     </div>

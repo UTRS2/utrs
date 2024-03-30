@@ -1,4 +1,15 @@
 @extends('layouts.app')
+@section('scripts')
+            $(document).ready(function() {
+                $('a[data-toggle="modal"]').click(function() {
+                    var target = $(this).attr('data-target');
+                    $(target).modal('show');
+                });
+                $('.close').click(function() {
+                    $(this).closest('.modal').modal('hide');
+                });
+            });
+@endsection
 @section('content')
     <div class="container" style="max-width: none!important">
         <div class="row">
@@ -13,10 +24,6 @@
                                 <th>Action</th>
                                 <th style="width: 30%">Reason</th>
                                 <th>Log Time</th>
-                                @if($cu)
-                                <th>IP</th>
-                                <th style="width: 30%; word-wrap:break-word">UA</th>
-                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -26,7 +33,9 @@
                                 @else
                                 <tr>
                                 @endif
-                                    <td>{{ $log->id }}</td>
+                                    <!-- clickable button with the log id that brings up a modal with the ip and ua -->
+                                    <td><a href="#" data-toggle="modal" data-target="#log{{ $log->id }}"><button class="btn btn-primary">{{ $log->id }}</button></a></td>
+                                    
                                     @if($log->user_id === 0)
                                         <td>System</td>
                                     @elseif ($log->user_id === -1)
@@ -48,10 +57,6 @@
                                     <td>{{ $log->action }}</td>
                                     <td>{{ $log->reason }}</td>
                                     <td>{{ $log->timestamp }}</td>
-                                    @if($cu)
-                                    <td>{{ $log->ip }}</td>
-                                    <td>{{ $log->ua }}</td>
-                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -59,6 +64,33 @@
                     <div class="d-flex justify-content-center">
                         {{ $logs->links() }}
                     </div>
+                    @foreach($logs as $log)
+                        <div class="modal fade bd-example-modal-lg" id="log{{ $log->id }}" tabindex="-1" role="dialog" aria-labelledby="log{{ $log->id }}Label" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="display: flex; justify-content: space-between;">
+                                        <h5 class="modal-title" id="log{{ $log->id }}Label">Log ID: {{ $log->id }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <!-- vertical table with the ip and ua -->
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>IP</th>
+                                                <td>{{ $log->ip }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>User Agent</th>
+                                                <td>{{ $log->ua }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 @else
                     <p>No logs found</p>
                 @endif

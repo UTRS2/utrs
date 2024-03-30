@@ -141,6 +141,24 @@
 <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
 <div class="spacer_block block-1" style="height:30px;line-height:30px;font-size:1px;"> </div>
 @yield('content')
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; background-color: #EDEDED; width: 615.00px; margin: 0 auto;" width="615.00">
+<tbody>
+<tr>
+<td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
+<table border="0" cellpadding="30" cellspacing="0" class="paragraph_block block-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;" width="100%">
+<tr>
+<td class="pad">
+<div style="color:#555555;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:180%;text-align:left;mso-line-height-alt:25.2px;">
+<p style="margin: 0; word-break: break-word;"><span>{{__('emails.footer.salutation')}}</span></p>
+<p style="margin: 0; word-break: break-word;"><strong>{{__('emails.footer.name-developers')}}</strong></p>
+</div>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 </tbody>

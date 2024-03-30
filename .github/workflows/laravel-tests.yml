@@ -27,11 +27,11 @@ jobs:
         with:
           extensions: zip, mbstring, dom, fileinfo, mysql
           php-version: ${{ matrix.php-versions }}
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Copy env file
         run: cp .env.ci .env
       - name: Cache Composer dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         env:
           cache-name: cache-composer-dependencies
         with:
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
             ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Cache NPM dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-dependencies
         with:
@@ -80,7 +80,7 @@ jobs:
         run: php artisan dusk
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         name: Save Dusk screenshots
         if: failure()
         with:

@@ -40,6 +40,9 @@ class EmailPreviewController extends Controller
         if ($email == 'appealkey') {
             return view('emails.' . $email, ['appealkey' => '123456789123456789123456789123456789123456789123456789', 'stopUrl' => $stopUrl]);
         }
+        if ($email == 'verifyemail' || $email == 'verifyadminemail') {
+            return view('emails.' . $email, ['url' => 'https://utrs.fake/verifyemail', 'stopUrl' => $stopUrl, 'email' => 'rubbish@nothing.com']);
+        }
         return view('emails.' . $email, );
     }
 }
