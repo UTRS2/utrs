@@ -21,9 +21,9 @@ class EmailPreviewController extends Controller
         return view('admin.emailspreview', ['emails' => $emails]);
     }
 
-    public function previewEmail($email) {
+    public function previewEmail($email, Request $request) {
         // if the xff ip address from the header is within RFC1918
-        dd(request()->server('HTTP_X_FORWARDED_FOR'));
+        dd($request->ip());
         if (!filter_var(request()->server('HTTP_X_FORWARDED_FOR'), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
             // if user is not a developer, return 403
             abort_unless(Auth::check(), 403, 'No logged in user');
