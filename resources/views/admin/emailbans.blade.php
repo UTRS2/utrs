@@ -28,9 +28,11 @@
                             <tr>
                                 <td>{{ $emailBan->email }}</td>
                                 <td>
-                                    @if($emailBan->linkedappeals() != NULL || sizeOf($emailBan->linkedappeals()) > 0)
-                                        @foreach($emailBan->linkedappeals()->get() as $appeal)
-                                            <a href="{{ route('appeal.view', $appeal) }}">Appeal #{{ $appeal->id }}</a><br />
+                                    @if($emailBan->getlinkedappeals() != NULL || sizeOf($emailBan->getlinkedappeals()) > 0)
+                                        @foreach(explode(",",$emailBan->linkedappeals) as $id)
+                                            @if($id != "")
+                                                <a href="{{ route('appeal.view', $id) }}">Appeal #{{ $id }}</a><br />
+                                            @endif
                                         @endforeach
                                     @else
                                         No linked appeals

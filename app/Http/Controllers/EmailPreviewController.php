@@ -22,9 +22,12 @@ class EmailPreviewController extends Controller
     }
 
     public function previewEmail($email) {
-        // if user is not a developer, return 403
-        abort_unless(Auth::check(), 403, 'No logged in user');
-        abort_unless(Auth::user()->hasAnySpecifiedLocalOrGlobalPerms([], 'developer'), 403, 'You are not a developer');
+        // if the ip address from the header is within RFC1918
+        if (!filter_var(request()->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            // if user is not a developer, return 403
+            abort_unless(Auth::check(), 403, 'No logged in user');
+            abort_unless(Auth::user()->hasAnySpecifiedLocalOrGlobalPerms([], 'developer'), 403, 'You are not a developer');
+        }
 
         // if the email is:
             // - not in the emails directory, return a 404
@@ -44,5 +47,18 @@ class EmailPreviewController extends Controller
             return view('emails.' . $email, ['url' => 'https://utrs.fake/verifyemail', 'stopUrl' => $stopUrl, 'email' => 'rubbish@nothing.com']);
         }
         return view('emails.' . $email, );
+    }
+
+    public function getSubjectLine($email) {
+        if ($email == 'acc') {
+            return __('emails.subject.acc');
+        }
+        if ($email == 'appealkey') {
+            return __('emails.subject.appealkey');
+        }
+        if ($email == 'verifyemail' || $email == 'verifyadminemail') {
+            return __('emails.subject.verifyemail');
+        }
+
     }
 }

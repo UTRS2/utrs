@@ -7,6 +7,7 @@ use App\Models\Appeal;
 use App\Models\User;
 use Carbon\Carbon;
 use Khill\Lavacharts\Laravel\LavachartsFacade as Lava;
+use Illuminate\Support\Facades\DB;
 
 class StatsController extends Controller
 {
@@ -64,9 +65,9 @@ class StatsController extends Controller
         }
         //if no wiki id is set, then get all appeals in the time period
         if ($wiki_id == null) {
-            $dbdata = Appeal::whereDate('submitted', '>',Carbon::now()->subDays($numericDay))->get();
+            $dbdata = Appeal::where('submitted', '>',Carbon::now()->subDays($numericDay))->get();
         } else {
-            $dbdata = Appeal::whereDate('submitted', '>',Carbon::now()->subDays($numericDay))->where('wiki_id',$wiki_id)->get();
+            $dbdata = Appeal::where('submitted', '>',Carbon::now()->subDays($numericDay))->where('wiki_id',$wiki_id)->get();
         }
         if($requestedChart == 'apppd') {
             $date = Carbon::now()->subDays($numericDay);
@@ -117,7 +118,7 @@ class StatsController extends Controller
             $chart_data->addStringColumn('Administrator')
                 ->addNumberColumn('Number of times they are blocking admins');
             $admins = [];
-            $dbdata = $dbdata->where('blockfound',1)->where('submitted', '>',Carbon::now()->subDays($numericDay));
+            $dbdata = $dbdata->where('blockfound',1);
             foreach ($dbdata as $appeal) {
                 if (!isset($admins[$appeal->blockingadmin])) {
                     $admins[$appeal->blockingadmin] = 1;
@@ -127,11 +128,14 @@ class StatsController extends Controller
             }
             //go through $admins and remove any with a count of less than 10
             foreach ($admins as $admin => $count) {
-                if ($count < 15 && $requestedWiki != 'global') {
-                    unset($admins[User::findOrFail($admin)->name]);
-                }
-                elseif ($count < 2 && $requestedWiki == 'global') {
-                    unset($admins[User::findOrFail($admin)->name]);
+                // if in production
+                if (app()->environment('production')) {
+                    if ($count < 15 && $requestedWiki != 'global') {
+                        unset($admins[User::findOrFail($admin)->name]);
+                    }
+                    elseif ($count < 2 && $requestedWiki == 'global') {
+                        unset($admins[User::findOrFail($admin)->name]);
+                    }
                 }
             }
             //sort the array by the number of times they are blocking admins

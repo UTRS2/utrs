@@ -12,6 +12,7 @@ use App\Models\Privatedata;
 use App\Models\Wiki;
 use App\Models\User;
 use App\Models\EmailBan;
+use App\Models\PythonJob;
 //use App\Services\Facades\MediaWikiRepository; --Remove - repo is unsupported
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -226,12 +227,14 @@ class PublicAppealController extends Controller
                 'lastused' => now(),
             ]);
         }
-        $wikiemailBanEntry = EmailBan::firstOrCreate([
-            'email' => $data['appealfor'].'@wiki',
-            'uid' => $emailkey,
-            
-            'lastused' => now(),
-        ]);
+        if ($data['blocktype']!==0) {
+            $wikiemailBanEntry = EmailBan::firstOrCreate([
+                'email' => $data['appealfor'].'@wiki',
+                'uid' => $emailkey,
+                
+                'lastused' => now(),
+            ]);
+        }
 
         /** @var Appeal $appeal */
         $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $email) {
@@ -254,7 +257,18 @@ class PublicAppealController extends Controller
             ]);
 
             if (env('APP_ENV') == 'production') {
-                Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
+                if ($appeal->blocktype == 0) {
+                    Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
+                    $emailBanEntry->lastemail = now();
+                    $emailBanEntry->save();
+                } else {
+                    //create a python job to send a wiki email
+                    $pythonjob = PythonJob::create([
+                        'appeal_id' => $appeal->id,
+                        'request_name' => 'send_wiki_email',
+                        'status' => 'pending',
+                    ]);
+                }
                 $emailBanEntry->lastemail = now();
                 $emailBanEntry->save();
             }
@@ -301,7 +315,7 @@ class PublicAppealController extends Controller
         } else {
             $processed = TRUE;
         }
-        return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey, 'processed' => $processed, 'askproxy' => FALSE ]);
+        return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey, 'processed' => $processed, 'askproxy' => True ]);
     }
 
     public function checkStatus(Request $request) {
@@ -317,8 +331,10 @@ class PublicAppealController extends Controller
         
         if ($appeal->status == Appeal::STATUS_VERIFY) {
             return response()->json(['processed'=>FALSE, 'status'=>'success']);
+        } elseif ($appeal->status == Appeal::STATUS_NOTFOUND) {
+            return response()->json(['processed'=>TRUE, 'notfound'=>TRUE, 'status'=>'success']);
         } else {
-            return response()->json(['processed'=>TRUE, 'status'=>'success']);
+            return response()->json(['processed'=>TRUE, 'notfound'=>FALSE, 'status'=>'success']);
         }
 
     }
@@ -420,6 +436,9 @@ class PublicAppealController extends Controller
                         }
                         elseif($linecomment['action'] == 'account verified') {
                             $appealmap[] = ['text'=>'You confirmed your identity to appeal #'.$appealid, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'check','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'changed block information') {
+                            $appealmap[] = ['text'=>__('appeals.map.blockchange'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'pencil','active'=>"yes",'appealid'=>$appealid];
                         }
                         //if linecomment action contains "set status as" then based on the remainder of the string, set an appealmap entry
                         elseif(strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {

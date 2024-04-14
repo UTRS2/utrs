@@ -41,7 +41,7 @@ Route::middleware('set.locale')->group(function () {
 
         Route::post('/appeal/checkstatus', 'Appeal\PublicAppealController@checkStatus')->name('public.appeal.checkstatus');
 
-        Route::post('/appeal/submitproxyquestion', 'Appeal\PublicAppealController@submitProxyQuestion')->name('public.appeal.proxyreason');
+        Route::post('/appeal/submitproxyquestion', 'Appeal\PublicAppealController@submitProxyReason')->name('public.appeal.proxyreason');
 
         Route::post('/appeal/recoverkey', 'AppealKeyController@sendAppealKeyReminder')->name('appealkey.reset');
         Route::get('/emailban/{method}/{token}', 'Appeal\PublicEmailBanController@showForm')->name('email.ban');

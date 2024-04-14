@@ -20,11 +20,11 @@ class EmailBan extends Model
     protected $guarded = ['id'];
 
     // set the 'linkedappeals' attribute to return the linked appeals with a many-to-one relationship  
-    public function linkedappeals()
+    public function getlinkedappeals()
     {
         // if the linkedappeals attribute is not null, return the linked appeals
         if (isset($this->linkedappeals)) {
-            return Appeal::where('id', $this->linkedappeals)->get();
+            return Appeal::where('id', $this->linkedappeals);
         } else {
             return [];
         }

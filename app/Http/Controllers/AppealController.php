@@ -347,6 +347,9 @@ class AppealController extends Controller
                         elseif($linecomment['action'] == 'account verified') {
                             $appealmap[] = ['text'=>__('appeals.map.verifiedaccount'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'check','active'=>"yes",'appealid'=>$appealid];
                         }
+                        elseif($linecomment['action'] == 'changed block information') {
+                            $appealmap[] = ['text'=>__('appeals.map.blockchange'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'pencil','active'=>"yes",'appealid'=>$appealid];
+                        }
                         //if linecomment action contains "set status as" then based on the remainder of the string, set an map entry
                         elseif(strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {
                             if (strpos($linecomment['action'], 'closed as') !== false) {$status = strtoupper(str_replace('closed as ','',$linecomment['action']));}
