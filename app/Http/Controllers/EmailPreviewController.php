@@ -22,8 +22,8 @@ class EmailPreviewController extends Controller
     }
 
     public function previewEmail($email) {
-        // if the ip address from the header is within RFC1918
-        if (!filter_var(request()->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+        // if the xff ip address from the header is within RFC1918
+        if (!filter_var(request()->server('HTTP_X_FORWARDED_FOR'), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
             // if user is not a developer, return 403
             abort_unless(Auth::check(), 403, 'No logged in user');
             abort_unless(Auth::user()->hasAnySpecifiedLocalOrGlobalPerms([], 'developer'), 403, 'You are not a developer');
