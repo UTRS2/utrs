@@ -209,7 +209,7 @@ class PublicAppealController extends Controller
         $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
         $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
         if($weborigin != $envappurl) {
-            abort(403, "Header mismatch - ".$envappurl." vs ".$weborigin);
+            abort(403, "Header mismatch - ".env('APP_URL'));
         }
         $appealkey = $request->input('appealkey');
         $appeal = Appeal::where('appealsecretkey', '=', $appealkey)->first();
