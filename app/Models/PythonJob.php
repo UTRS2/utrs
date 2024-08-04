@@ -21,6 +21,9 @@ class PythonJob extends Model
         'submitted_at' => 'datetime',
     ];
 
+    // no timestamps
+    public $timestamps = false;
+
     public function appeal()
     {
         return $this->belongsTo(Appeal::class, 'appeal_id', 'id');

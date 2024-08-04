@@ -237,7 +237,7 @@ class PublicAppealController extends Controller
         }
 
         /** @var Appeal $appeal */
-        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $email) {
+        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $wikiemailBanEntry, $email) {
             $appeal = Appeal::create($data);
 
             Privatedata::create([
@@ -256,7 +256,7 @@ class PublicAppealController extends Controller
                 'ua'         => $ua . ' ' . $lang,
             ]);
 
-            if (env('APP_ENV') == 'production') {
+            if (env('APP_ENV') == 'production' || env('APP_EMAIL_ON', FALSE) == TRUE) {
                 if ($appeal->blocktype == 0) {
                     Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
                     $emailBanEntry->lastemail = now();
@@ -268,9 +268,10 @@ class PublicAppealController extends Controller
                         'request_name' => 'send_wiki_email',
                         'status' => 'pending',
                     ]);
+                    $wikiemailBanEntry->lastemail = now();
+                    $wikiemailBanEntry->save();
                 }
-                $emailBanEntry->lastemail = now();
-                $emailBanEntry->save();
+                
             }
 
             //No longer supported - repo is unsupported

@@ -55,6 +55,9 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/devreview', 'AppealController@devappeallist')->name('appeal.list.dev');
 
     Route::get('/emailpreview', 'EmailPreviewController@preview')->name('appeal.emailpreview');
+    Route::get('/emailpreview/subject/{email}', 'EmailPreviewController@getSubjectLine')->name('appeal.emailpreview.subject');
+    Route::get('/emailpreview/raw/{email}', 'EmailPreviewController@getRaw')->name('appeal.emailpreview.raw');
+    Route::get('/emailpreview/{email}/{id}', 'EmailPreviewController@previewEmailByID')->name('appeal.emailpreview.viewbyid');
     Route::get('/emailpreview/{email}', 'EmailPreviewController@previewEmail')->name('appeal.emailpreview.view');
 
     Route::get('/search/quick', 'Appeal\AppealQuickSearchController@search')->name('appeal.search.quick');

@@ -248,4 +248,16 @@ class Appeal extends Model
         return Acc::where('appeal_id', $this->id)->first();
     }
 
+    // get emailban entry for the appeal
+    public function getEmailBan()
+    {
+        return EmailBan::where('email', $this->email)->first();
+    }
+
+    // get the emailban token for the appeal
+    public function getEmailBanToken()
+    {
+        return EmailBan::where('email', $this->email)->first()->uid;
+    }
+
 }
