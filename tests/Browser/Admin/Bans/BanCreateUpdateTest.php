@@ -33,16 +33,16 @@ class BanCreateUpdateTest extends DuskTestCase
                 ->type('target', 'UTRS banned user')
                 ->type('reason', 'UTRS public ban reason')
                 ->type('comment', 'UTRS private ban comment')
-                ->press('Submit')
-                ->waitForText('Ban details',5)
-                ->waitForText('UTRS banned user',5)
-                ->waitForText('indefinite',5)
-                ->waitForText('English Wikipedia',5)
-                ->waitForText('Action: created, Reason: UTRS private ban comment',5)
+                ->press(__('generic.submit'))
+                ->waitForText(__('admin.bans.edit.details'),2)
+                ->waitForText('UTRS banned user',2)
+                ->waitForText(__('admin.bans.indefinite'),2)
+                ->waitForText('English Wikipedia',2)
+                ->waitForText('Action: created, Reason: UTRS private ban comment',2)
                 ->type('reason', 'Another reason.')
                 ->click('[for=is_active-0]')
-                ->press('Save')
-                ->waitForText('unbanned',5);
+                ->press(__('generic.submit'))
+                ->waitForText(__('admin.bans.unbanned'),2);
         });
     }
 }

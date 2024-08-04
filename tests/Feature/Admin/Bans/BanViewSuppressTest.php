@@ -46,8 +46,8 @@ class BanViewSuppressTest extends TestCase
         ]);
 
         $page = $this->actingAs($user)
-            ->get(route('admin.bans.view', [$ban]))
-            ->assertSee('Ban details');
+            ->get(route('admin.bans.view', $ban))
+            ->assertSee('Ban Details');
 
         if ($expectedResult) {
             $page->assertSee('Definitely suppressed ban target');
@@ -56,7 +56,7 @@ class BanViewSuppressTest extends TestCase
         }
     }
 
-    public function provideTooladmin(): array
+    public static function provideTooladmin(): array
     {
         return [
             'Local oversighter can view suppressed' => [ 'enwiki', [ 'enwiki' ], true ],

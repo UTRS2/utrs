@@ -12,9 +12,12 @@ function displayTransfer() {
 @section('content')
     <div class="container">
         <div class="mb-1">
-            <a href="{{ route('appeal.list') }}" class="btn btn-primary">
+            <a href="{{ route('appeal.list') }}"><button class="btn btn-primary">
                 {{__('appeals.nav.back-appeal-list')}}
-            </a>
+            </button></a>
+            <a href="/appeal/map/{{$id}}"><button class="btn btn-info">
+                {{__('appeals.map.switch-appeal-map')}}
+            </button></a>
         </div>
 
         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE)
@@ -26,7 +29,6 @@ function displayTransfer() {
 
         @if(sizeof($errors)>0)
             <div class="alert alert-danger" role="alert">
-                The following errors occured:
                 <ul>
                     @foreach ($errors->all() as $message)
                         <li>{{ $message }}</li>
@@ -40,21 +42,36 @@ function displayTransfer() {
             <div class="card-body">
                 <div>
                     <div class="row">
-                        <div class="col-md-5">
-                            <h4 class="card-title">{{__('appeals.appeal-title',['name'=>$info->appealfor])}}</h4>
+                        <div class="col-md-6">
+                            <h4 class="card-title">{{__('appeals.appeal-title').$info->appealfor}}</h4>
                             <p class="card-text">
                                 {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
-                                @if($info->user_verified == 1)
+                                @if($info->proxy == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
-                                <i>{{__('appeals.verify.verified')}}</i>
+                                <i>{{__('appeals.proxy.unlikelyproxy')}}</i>
+                                @else
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                <i>{{__('appeals.proxy.likelyproxy')}}</i>
+                                @endif
+                                @if($info->user_verified == 1)
+                                    @if($info->blocktype == 0)
+                                    <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                    <i>{{__('appeals.verify.notableverified')}}</i>
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <i>{{__('appeals.verify.ip-emailverified')}}</i>
+                                    <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
+                                    @else
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <i>{{__('appeals.verify.verified')}}</i>
+                                    @endif
                                 @elseif($info->user_verified == -1)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
-                                <i>This appeal will not be able to be verified.</i>
-                                <br /><b style="color:red">This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                <i>{{__('appeals.verify.notableverified')}}</i>
+                                <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @elseif(!$info->blocktype == 0)
                                 <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i> 
-                                <br /><b style="color:red">This appeal has not been verified to match the user on wiki. Do not take any negative action towards the user based on this appeal without having a CheckUser review.</b>
+                                <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @endif
                                 <br/>{{__('appeals.appeal-types.title')}}: 
                                 @if($info->blocktype==0)
@@ -83,48 +100,43 @@ function displayTransfer() {
 
                                 @component('components.user-action-buttons', ['target' => $urlname, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
                                 @endcomponent
-                                @if($perms['checkuser'])
-                                <br/><br/>
-                                <h5 class="card-title">{{__('appeals.cu.title')}}</h5>
-                                @if($info->hiddenip!=NULL)
-                                <b style="color:red">{{__('appeals.cu.user-ip')}}: {{$info->hiddenip}}</b><br/>
-                                @component('components.user-action-buttons', ['target' => $info->hiddenip, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
-                                @endcomponent
-                                @endif
-                                @if($checkuserdone && !is_null($cudata))
-                                    <br/>
-                                    IP address: {{$cudata->ipaddress}}<br/>
-                                    @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
-                                    @endcomponent
-                                    <br/>
-                                    Useragent: {{$cudata->useragent}}<br/>
-                                    Browser Language: {{$cudata->language}}
-                                @elseif(is_null($cudata))
-                                    <div class="alert alert-danger" role="alert">
-                                        {{__('appeals.cu.data-expire')}}
-                                    </div>
+
+                                <br /><br />
+                                <h5 class="card-title">{{__('appeals.section-headers.content')}}</h5>
+                                <b>{{__('appeals.content-question-why')}}</b>
+                                <p>{{ $info->appealtext }}</p>
+                                @if(in_array(0,$translateIDs))
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                 @else
-                                    <div class="alert alert-danger" role="alert">
-                                        {{__('appeals.cu.no-request')}}
+                                <a href="{{ route('translate.activate', ['appeal' => $info, 'logid' => 0])}}">
+                                    <div style="height: 55px; display: flex; align-items: center;">
+                                        <div style="font-size: 20px; font-family: 'Courier New', monospace; text-align: center;">{{__('generic.translate-with')}}</div>&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
                                     </div>
-                                    {{ Form::open(['url' => route('appeal.action.viewcheckuser', $info)]) }}
-                                        {{ Form::token() }}
-
-                                        <div class="form-group">
-                                            {{ Form::label('reason', __('appeals.cu.reason')) }}
-                                            {{ Form::textarea('reason', old('reason'), ['class' => 'form-control']) }}
-                                        </div>
-
-                                        {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-                                    {{ Form::close() }}
+                                </a>
                                 @endif
-                            @endif
+
+                                @can('update', $info)
+                                    <br /><br />
+                                    
+                                    <br /><br />
+                                        <h5 class="card-title">{{__('appeals.comments.leave')}}</h5>
+                                        {{ html()->form('POST', route('appeal.action.comment', $info))->open() }}
+                                            {{ html()->token() }}
+
+                                            <div class="form-group">
+                                                {{ html()->label(__('appeals.comments.add'), 'comment') }}
+                                                {{ html()->textarea('comment', old('comment'))->class('form-control') }}
+                                            </div>
+
+                                            {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
+                                        {{ html()->form()->close() }}
+                                @endcan
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <div class="row">
-                                <div class="col-md-4"></div>
-                                <div class="col-md-8">
-                                    <h5 class="card-title">Actions</h5>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-11">
+                                    <h5 class="card-title">{{__('appeals.section-headers.actions')}}</h5>
                                     @can('update', $info)
                                         @if($info->status === Appeal::STATUS_ACCEPT || $info->status === Appeal::STATUS_DECLINE || $info->status === Appeal::STATUS_EXPIRE || $info->status === Appeal::STATUS_INVALID)
                                             @if($perms['functionary'])
@@ -234,30 +246,148 @@ function displayTransfer() {
                                                 @endif
                                             @endif
                                         
-                                            <button class="btn btn-info" onclick="displayTransfer()" id="transferbutton">Transfer to another wiki</button>
+                                            <button class="btn btn-info" onclick="displayTransfer()" id="transferbutton">{{__('appeals.links.transfer')}}</button>
 
                                             <div style="display: none;" id="transfer">
                                                 <br />
-                                                {{ Form::open(['url' => route('appeal.transfer', [$info])]) }}
-                                                    {{ Form::token() }}
+                                                {{ html()->form('POST', route('appeal.transfer', [$info]))->open() }}
+                                                    {{ html()->token() }}
                                                     <div class="form-group">
                                                         <div class="card">
                                                             <div class="card-header">
-                                                                Transfer to another wiki
+                                                                {{__('appeals.links.transfer')}}
                                                             </div>
                                                             <div class="card-body">
                                                                 <p class="card-text">
-                                                        {{ Form::label('wiki', 'Transfer this to:') }}<br />
-                                                        {{ Form::select('wiki', $wikis, ['class' => 'form-control']) }}
+                                                        {{ html()->label(__('appeals.links.transfer-to').':', 'wiki') }}<br />
+                                                        {{ html()->select('wiki', $wikis, ['class' => 'form-control']) }}
                                                         <br /><br />
-                                                        {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
+                                                        {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     
-                                                {{ Form::close() }}
+                                                {{ html()->form()->close() }}
                                             </div>
+                                            @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
+                                                <a href="{{ route('appeal.template', $info) }}"><button class="btn btn-info">
+                                                    {{__('appeals.send-reply-button')}}
+                                                </button></a>
+                                                @if ($info->status !== Appeal::STATUS_ACC)
+                                                <a href="{{ route('appeal.sendtoacc', $info) }}"><button class="btn btn-info">
+                                                    {{__('appeals.send-acc')}}
+                                                </button></a>
+                                                @endif
+                                            @else
+                                                <br /><br />
+                                                <div class="alert alert-danger" role="alert">
+                                                    {{__('appeals.not-handling-admin')}}
+                                                </div>
+                                            @endif
+
+                                            @if($perms['checkuser'])
+                                            <br/><br/>
+                                            <h5 class="card-title">{{__('appeals.cu.title')}}</h5>
+                                                @if($info->hiddenip!=NULL)
+                                                <b style="color:red">{{__('appeals.cu.user-ip')}}: {{$info->hiddenip}}</b><br/>
+                                                @component('components.user-action-buttons', ['target' => $info->hiddenip, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
+                                                @endcomponent
+                                                @endif
+                                                @if($checkuserdone && !is_null($cudata))
+                                                    <br/>
+                                                    {{__('appeals.cu.ip-address').' '.$cudata->ipaddress}}<br/>
+                                                    @component('components.user-action-buttons', ['target' => $cudata->ipaddress, 'baseUrl' => \App\Services\Facades\MediaWikiRepository::getTargetProperty($info->wiki, 'url_base'), 'canUnblock' => $perms['admin']])
+                                                    @endcomponent
+                                                    <br/>
+                                                    {{__('appeals.cu.user-agent').' '.$cudata->useragent}}<br/>
+                                                    {{__('appeals.cu.browser-lang').' '.$cudata->language}}
+                                                @elseif(is_null($cudata))
+                                                    <div class="alert alert-danger" role="alert">
+                                                        {{__('appeals.cu.data-expire')}}
+                                                    </div>
+                                                @else
+                                                    <div class="alert alert-danger" role="alert">
+                                                        {{__('appeals.cu.no-request')}}
+                                                    </div>
+                                                    {{ html()->form('POST', route('appeal.action.viewcheckuser', $info))->open() }}
+                                                        {{ html()->token() }}
+
+                                                        <div class="form-group">
+                                                            {{ html()->label(__('appeals.cu.reason'), 'reason') }}
+                                                            {{ html()->textarea('reason', old('reason'))->class('form-control')->rows(3) }}
+                                                        </div>
+
+                                                        {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-success') }}
+                                                    {{ html()->form()->close() }}
+                                                @endif
+                                            @endif
+                                            <br /><br />
+                                            <h5 class="card-title">{{__('appeals.section-headers.status')}}</h5>
+                                            @if($info->status === Appeal::STATUS_ACCEPT)
+                                                <center>{{__('appeals.status-texts.ACCEPT')}}<br/>
+                                            <br/><img
+                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
+                                                    class="img-fluid"></center>
+                                            @elseif($info->status === Appeal::STATUS_EXPIRE)
+                                                <center>{{__('appeals.status-texts.EXPIRE')}}<br/>
+                                                    <br/><img
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
+                                                            class="img-fluid"></center>
+                                            @elseif($info->status === Appeal::STATUS_DECLINE)
+                                                <center>{{__('appeals.status-texts.DECLINE')}}<br/>
+                                                    <br/><img
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
+                                                            class="img-fluid"></center>
+                                            @else
+                                                <center>{{__('appeals.status-texts.default')}}<br/>
+                                                    <br/><img
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png"
+                                                            class="img-fluid"></center>
+                                            @endif    
+                                            {{--
+                                            @if($previousAppeals->isNotEmpty())
+                                                <table class="table table-dark">
+                                                <tr>
+                                                    <th>{{__('appeals.appeal-number')}}</th>
+                                                    <th>{{__('appeals.appeal-for')}}</th>
+                                                    <th>{{__('appeals.details-status')}}</th>
+                                                    <th>{{__('appeals.details-handling-admin')}}</th>
+                                                    <th>{{__('appeals.details-submitted')}}</th>
+                                                </tr>
+                        
+                                                @foreach($previousAppeals as $appeal)
+                                                    <tr class="{{ $appeal->status === Appeal::STATUS_ACCEPT ? 'bg-success' : (in_array($appeal->status, [Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE]) ? 'bg-danger' : '') }}">
+                                                        <td style="vertical-align: middle;">
+                                                            <a href="/appeal/{{ $appeal->id }}" class="btn btn-primary">
+                                                                #{{ $appeal->id }}
+                                                            </a>
+                                                        </td>
+                        
+                                                        <td style="vertical-align: middle;">
+                                                            {{ $appeal->appealfor }}
+                                                        </td>
+                        
+                                                        <td style="vertical-align: middle;">
+                                                            {{ $appeal->status }}
+                                                        </td>
+                        
+                                                        <td style="vertical-align: middle;">
+                                                            @if($appeal->handlingAdminObject)
+                                                                {{ $appeal->handlingAdminObject->username }}
+                                                            @else
+                                                                <i>{{__('appeals.appeal-none')}}</i>
+                                                            @endif
+                                                        </td>
+                        
+                                                        <td style="vertical-align: middle;">
+                                                            {{ $appeal->submitted }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </table>
+                                            @endif
+                                            --}}
                                         </div>
                                     @else
                                         <div class="alert alert-danger" role="alert">
@@ -270,101 +400,6 @@ function displayTransfer() {
                     </div>
                 </div>
             </div>
-        </div>
-
-        @if($previousAppeals->isNotEmpty())
-        <br />
-            <div class="card my-2">
-                <h4 class="card-header">
-                    {{__('appeals.header-previous-appeals')}}
-                </h4>
-
-                <div class="card-body">
-                    <table class="table table-dark">
-                        <tr>
-                            <th>{{__('appeals.appeal-number')}}</th>
-                            <th>{{__('appeals.appeal-for')}}</th>
-                            <th>{{__('appeals.details-status')}}</th>
-                            <th>{{__('appeals.details-handling-admin')}}</th>
-                            <th>{{__('appeals.details-submitted')}}</th>
-                        </tr>
-
-                        @foreach($previousAppeals as $appeal)
-                            <tr class="{{ $appeal->status === Appeal::STATUS_ACCEPT ? 'bg-success' : (in_array($appeal->status, [Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE]) ? 'bg-danger' : '') }}">
-                                <td style="vertical-align: middle;">
-                                    <a href="/appeal/{{ $appeal->id }}" class="btn btn-primary">
-                                        #{{ $appeal->id }}
-                                    </a>
-                                </td>
-
-                                <td style="vertical-align: middle;">
-                                    {{ $appeal->appealfor }}
-                                </td>
-
-                                <td style="vertical-align: middle;">
-                                    {{ $appeal->status }}
-                                </td>
-
-                                <td style="vertical-align: middle;">
-                                    @if($appeal->handlingAdminObject)
-                                        {{ $appeal->handlingAdminObject->username }}
-                                    @else
-                                        <i>{{__('appeals.appeal-none')}}</i>
-                                    @endif
-                                </td>
-
-                                <td style="vertical-align: middle;">
-                                    {{ $appeal->submitted }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </table>
-
-                    <div class="mt-2">
-                        <a href="{{ route('appeal.search.advanced', ['appealfor' => $appeal->appealfor]) }}" class="btn btn-info">{{__('appeals.links.advance-search')}}</a>
-                    </div>
-                </div>
-            </div>
-        @endif
-        <br />
-        <div class="card my-2">
-            <h4 class="card-header">{{__('appeals.section-headers.content')}}</h4>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <b>{{__('appeals.content-question-why')}}</b>
-                        <p>{{ $info->appealtext }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="row">
-                                <div class="col-12">
-                                    @if($info->status === Appeal::STATUS_ACCEPT)
-                                        <center>{{__('appeals.status-texts.ACCEPT')}}<br/>
-                                            <br/><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
-                                                    class="img-fluid"></center>
-                                    @elseif($info->status === Appeal::STATUS_EXPIRE)
-                                        <center>{{__('appeals.status-texts.EXPIRE')}}<br/>
-                                            <br/><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
-                                                    class="img-fluid"></center>
-                                    @elseif($info->status === Appeal::STATUS_DECLINE)
-                                        <center>{{__('appeals.status-texts.DECLINE')}}<br/>
-                                            <br/><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
-                                                    class="img-fluid"></center>
-                                    @else
-                                        <center>{{__('appeals.status-texts.default')}}<br/>
-                                            <br/><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png"
-                                                    class="img-fluid"></center>
-                                    @endif
-                                </div>
-                            </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <br />
         <div class="card my-2">
             <h4 class="card-header">{{__('appeals.section-headers.comments')}}</h4>
@@ -375,10 +410,14 @@ function displayTransfer() {
                     <th scope="col">{{ __('generic.logs-user') }}</th>
                     <th scope="col">{{ __('generic.logs-time') }}</th>
                     <th scope="col">{{ __('generic.logs-action') }}</th>
+                    <th scope="col">{{ __('generic.translate-link') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($comments as $comment)
+                    @if($comment->action === 'translate')
+                        <!-- Skip translation log entries -->
+                    @else
                     <tr class="{{ $comment->action === 'comment' ? 'bg-success' : ($comment->action === 'responded' ? 'bg-primary' : '') }}">
                         @if(is_null($comment['commentUser']))
                             @if($comment->action !== "comment" && $comment->action !== "responded")
@@ -422,74 +461,32 @@ function displayTransfer() {
                                 @endif
                                 <td>{{ $comment->timestamp }}</td>
                                 @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
-                                    <td>{{__('appeals.comments.restricted')}}</td>
-                                    @else
-                                        @if($comment->comment !== null)
-                                            <td>{{ $comment->comment }}</td>
-                                        @else
-                                            <td>{{ $comment->reason }}</td>
-                                        @endif
-                                    @endif
-                                @endif
-                            @else
-                                @if($comment->user_id == 0)
-                                    <td><i>{{__('appeals.comments.system')}}</i></td>
-                                @elseif($comment->user_id === -1)
-                                    <td><i>{{ $info->appealfor }}</i></td>
-                                @else
-                                    @if($perms['tooladmin'])
-                                        <td><i><a href="{{ route('admin.users.view', $comment->user) }}" class="text-light">{{ $comment->user->username }}</a></i></td>
-                                    @else
-                                        <td><i>{{ $comment->user->username }}</i></td>
-                                    @endif
-                                @endif
-                                <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected === LogEntry::LOG_PROTECTION_FUNCTIONARY && !$perms['functionary'])
                                     <td><i>{{__('appeals.comments.restricted')}}</i></td>
                                 @else
-                                    @if($comment->comment !== null)
-                                        <td>{{ $comment->comment }}</td>
-                                    @else
-                                        <td>{{ $comment->reason }}</td>
-                                    @endif
+                                    <td>{{ $comment->reason }}</td>
                                 @endif
                             @endif
+                            <td>
+                                @if($comment->action === 'responded' && $comment->reason !== null && $comment->user_id === -1)
+                                    @if(in_array($comment->id,$translateIDs))
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                    @else
+                                    <a href="{{ route('translate.activate', ['appeal' => $info->id, 'logid' => $comment->id])}}" style="color: white">
+                                        {{__('generic.translate-with')}} &nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
+                                    </a>
+                                    @endif
+                                @endif
+                            </td>
+                        @endif
                         </tr>
-                        @endforeach
+                    @endif
+                @endforeach
                 </tbody>
             </table>
                 <i>{{__('appeals.comment-color-text')}}</i>
                 <br/>
                 <br/>
-                @can('update', $info)
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="card-title">{{__('appeals.send-reply-header')}}</h5>
-                            @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
-                                <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
-                                    {{__('appeals.send-reply-button')}}
-                                </a>
-                            @else
-                                <div class="alert alert-danger" role="alert">
-                                    {{__('appeals.not-handling-admin')}}
-                                </div>
-                            @endif
-                        </div>
-                        <div class="col-md-6">
-                            <h5 class="card-title">{{__('appeals.comments.leave')}}</h5>
-                            {{ Form::open(['url' => route('appeal.action.comment', $info)]) }}
-                                {{ Form::token() }}
-
-                                <div class="form-group">
-                                    {{ Form::label('comment', __('appeals.comments.add')) }}
-                                    {{ Form::textarea('comment', old('comment'), ['class' => 'form-control']) }}
-                                </div>
-
-                                {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-                            {{ Form::close() }}
-                        </div>
-                    </div>
-                @endcan
+                
             </div>
         </div>
     </div>
@@ -503,20 +500,20 @@ function displayTransfer() {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                {{ Form::open(['url' => route('appeal.action.requestcheckuser', $info)]) }}
-                {{ Form::token() }}
+                {{ html()->form('POST', route('appeal.action.requestcheckuser', $info))->open() }}
+                {{ html()->token() }}
                 <div class="modal-body">
 
                     <div class="form-group mb-4">
-                        {{ Form::label('cu_reason', __('appeals.cu.review-req')) }}
-                        {{ Form::input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
+                        {{ html()->label(__('appeals.cu.review-req'), 'cu_reason') }}
+                        {{ html()->input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    {{ Form::button(__('appeals.cu.submit'), ['class' => 'btn btn-primary','type'=>'submit']) }}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('appeal.links.cancel')}}</button>
+                    {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-primary') }}
                 </div>
-                {{ Form::close() }}
+                {{ html()->form()->close() }}
             </div>
         </div>
     </div>

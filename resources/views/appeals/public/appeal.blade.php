@@ -20,7 +20,7 @@
                     <tbody>
                     <tr>
                         <th>{{ __('appeals.details-status') }}</th>
-                        <td>{{ $appeal->status }}</td>
+                        <td>#{{$appeal->id}} - {{ $appeal->status }}</td>
                     </tr>
                     <tr>
                         <th>{{ __('appeals.details-block-admin') }}</th>
@@ -44,11 +44,11 @@
                 </table>
 
                 @if($appeal->status == Appeal::STATUS_NOTFOUND)
-                    {{ Form::open(['url' => route('public.appeal.modify')]) }}
-                    {{ Form::token() }}
-                    {{ Form::hidden('appealkey', $appeal->appealsecretkey) }}
-                    {{ Form::button(__('appeals.not-found-button'), ['class' => 'btn btn-success','type'=>'submit']) }}
-                    {{ Form::close() }}
+                    {{ html()->form('POST', route('public.appeal.modify'))->open() }}
+                    {{ html()->token() }}
+                    {{ html()->hidden('appealkey', $appeal->appealsecretkey) }}
+                    {{ html()->submit(__('appeals.not-found-button'))->class('btn btn-success') }}
+                    {{ html()->form()->close() }}
                 @endif
             </div>
         </div>
@@ -60,7 +60,7 @@
             <div class="row">
                 <div class="col-md-9">
                     <b>{{ __('appeals.content-question-why') }}</b>
-                    <p>{{ $appeal->appealtext }}</p>
+                    <p class="appealtext">{{ $appeal->appealtext }}</p>
                 </div>
                 <div class="col-md-3">
                     @if($appeal->status === Appeal::STATUS_ACCEPT)
@@ -107,56 +107,58 @@
                 </thead>
                 <tbody>
                 @foreach($appeal->comments as $comment)
-                    @if($comment->action=="comment")
-                        <tr class="bg-success">
-                    @elseif($comment->action=="responded")
-                        <tr class="bg-primary">
-                    @else
-                        <tr>
-                            @endif
-                            @if($comment->action!=="comment" && $comment->action!=="responded")
-                                @if($comment->user_id==0)
-                                    <td><i>{{ __('generic.logs-system') }}</i></td>
-                                @elseif($comment->user_id === -1)
-                                    <td><i>{{ $appeal->appealfor }}</i></td>
-                                @else
-                                    <td><i>{{ $comment->user->username }}</i></td>
+                    @if($comment->action !== 'translate')
+                        @if($comment->action=="comment")
+                            <tr class="bg-success">
+                        @elseif($comment->action=="responded")
+                            <tr class="bg-primary">
+                        @else
+                            <tr>
                                 @endif
-                                <td><i>{{ $comment->timestamp }}</i></td>
-                                @if($comment->protected !== LogEntry::LOG_PROTECTION_NONE)
-                                    <td><i>{{ __('generic.logs-private') }}</i></td>
-                                @else
-                                    @if($comment->comment!==null)
-                                        <td><i>{{ $comment->comment }}</i></td>
+                                @if($comment->action!=="comment" && $comment->action!=="responded")
+                                    @if($comment->user_id==0)
+                                        <td><i>{{ __('generic.logs-system') }}</i></td>
+                                    @elseif($comment->user_id === -1)
+                                        <td><i>{{ $appeal->appealfor }}</i></td>
                                     @else
-                                        @if(!is_null($comment->reason))
-                                            <td><i>Action: {{ $comment->action }},
-                                                    Reason: {{ $comment->reason }}</i></td>
+                                        <td><i>{{ $comment->user->username }}</i></td>
+                                    @endif
+                                    <td><i>{{ $comment->timestamp }}</i></td>
+                                    @if($comment->protected !== LogEntry::LOG_PROTECTION_NONE)
+                                        <td><i>{{ __('generic.logs-private') }}</i></td>
+                                    @else
+                                        @if($comment->comment!==null)
+                                            <td><i>{{ $comment->comment }}</i></td>
                                         @else
-                                            <td><i>Action: {{ $comment->action }}</i></td>
+                                            @if(!is_null($comment->reason))
+                                                <td><i>Action: {{ $comment->action }},
+                                                        Reason: {{ $comment->reason }}</i></td>
+                                            @else
+                                                <td><i>Action: {{ $comment->action }}</i></td>
+                                            @endif
+                                        @endif
+                                    @endif
+                                @else
+                                    @if($comment->user_id==0)
+                                        <td><i>{{ __('generic.logs-system') }}</i></td>
+                                    @elseif($comment->user_id === -1)
+                                        <td><i>{{ $appeal->appealfor }}</i></td>
+                                    @else
+                                        <td><i>{{ $comment->user->username }}</i></td>
+                                    @endif
+                                    <td>{{ $comment->timestamp }}</td>
+                                    @if($comment->protected !== LogEntry::LOG_PROTECTION_NONE || $comment->action=="comment")
+                                        <td><i>{{ __('generic.logs-private') }}</i></td>
+                                    @else
+                                        @if($comment->comment!==null)
+                                            <td>{{ $comment->comment }}</td>
+                                        @else
+                                            <td>{{ $comment->reason }}</td>
                                         @endif
                                     @endif
                                 @endif
-                            @else
-                                @if($comment->user_id==0)
-                                    <td><i>{{ __('generic.logs-system') }}</i></td>
-                                @elseif($comment->user_id === -1)
-                                    <td><i>{{ $appeal->appealfor }}</i></td>
-                                @else
-                                    <td><i>{{ $comment->user->username }}</i></td>
-                                @endif
-                                <td>{{ $comment->timestamp }}</td>
-                                @if($comment->protected !== LogEntry::LOG_PROTECTION_NONE || $comment->action=="comment")
-                                    <td><i>{{ __('generic.logs-private') }}</i></td>
-                                @else
-                                    @if($comment->comment!==null)
-                                        <td>{{ $comment->comment }}</td>
-                                    @else
-                                        <td>{{ $comment->reason }}</td>
-                                    @endif
-                                @endif
-                            @endif
                         </tr>
+                    @endif
                     @endforeach
                 </tbody>
             </table>
@@ -168,14 +170,14 @@
         <h5 class="card-header">{{ __('appeals.section-headers.add-comment') }}</h5>
         <div class="card-body">
             @if(!in_array($appeal->status, [Appeal::STATUS_NOTFOUND, Appeal::STATUS_EXPIRE, Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_INVALID]))
-                {{ Form::open(array('url' => route('public.appeal.comment'))) }}
-                {{ Form::hidden('appealsecretkey', $appeal->appealsecretkey) }}
+                {{ html()->form('POST', route('public.appeal.comment'))->open() }}
+                {{ html()->hidden('appealsecretkey', $appeal->appealsecretkey) }}
                 <div class="form-group">
-                    {{ Form::label('comment', __('appeals.comment-input-text')) }}
-                    {{ Form::textarea('comment', old('comment'), ['rows' => 4, 'class' => 'form-control']) }}
+                    {{ html()->label(__('appeals.comment-input-text'), 'comment') }}
+                    {{ html()->textarea('comment', old('comment'))->rows(4)->class('form-control') }}
                 </div>
                 <button type="submit" class="btn btn-success">{{ __('generic.submit') }}</button>
-                {{ Form::close() }}
+                {{ html()->form()->close() }}
             @else
                 <div class="alert alert-danger" role="alert">{{ __('appeals.closed-notice') }}</div>
             @endif

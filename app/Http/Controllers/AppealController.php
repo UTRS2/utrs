@@ -11,6 +11,9 @@ use App\Models\Old\Olduser;
 use App\Models\Privatedata;
 use App\Models\Template;
 use App\Models\User;
+use App\Models\Ban;
+use App\Models\Translation;
+use App\Models\Acc;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,7 +56,27 @@ class AppealController extends Controller
             /** @var User $user */
             $user = Auth::user();
 
+            $translateIDs = [];
+            // check if the appealtext has a translation in the users default language under log id 0
+            $translation = Translation::where('language', $user->default_translation_language)->where('log_entries_id', 0)->first();
+            if ($translation) {
+                $info->appealtext = $translation->translation;
+                $translateIDs[] = 0;
+            }
+
             $logs = $info->comments;
+            $i=0;
+            // review each comment and check if there is a translation for it, and if so, load it instead based on the users default language
+            foreach ($logs as $log) {
+                $translation = $log->translations()->where('language', $user->default_translation_language)->first();
+                if (isset($translation->translation)) {
+                    if ($translation->translation != null) {
+                        $logs[$i]->reason = $translation->translation;
+                        $translateIDs[] = $log->id;
+                    }
+                }
+                $i=$i+1;
+            }
 
             $cudata = Privatedata::where('appeal_id', '=', $id)->get()->first();
 
@@ -103,6 +126,7 @@ class AppealController extends Controller
                 'previousAppeals' => $previousAppeals,
                 'urlname' => $urlname,
                 'wikis' => $newwikis,
+                'translateIDs' => $translateIDs,
             ]);
         }
 
@@ -133,11 +157,48 @@ class AppealController extends Controller
         throw (new ModelNotFoundException)->setModel(Appeal::class, $id);
     }
 
-    public function appeallist()
+    public function devappeallist(Appeal $appeal)
+    {
+        // if user is not a developer, return 403
+        abort_unless(Auth::check(), 403, 'No logged in user');
+        abort_unless(Auth::user()->hasAnySpecifiedLocalOrGlobalPerms([], 'developer'), 403, 'You are not a developer');
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->email == NULL) {
+            $noemail = true;
+        }
+        else {
+            $noemail = false;
+        }
+
+        $wikis = collect(MediaWikiRepository::getSupportedTargets());
+
+        $appealtypes = [
+            'developer'=>__('appeals.appeal-types.developer'),
+        ];
+
+        $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
+        $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
+
+        $appeals[$appealtypes['developer']] = $appeal->whereIn('status',$developerStatuses)->sortable()->paginate(20);
+        $mainPaginate = $appeals[$appealtypes['developer']]->count() > 49;
+        
+        return view('appeals.devappeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => True, 'noWikis' => $wikis->isEmpty(), 'mainPaginate' => $mainPaginate, 'noemail' => $noemail]);
+    }
+
+    public function appeallist(Appeal $appeal)
     {
         abort_unless(Auth::check(), 403, 'No logged in user');
         /** @var User $user */
         $user = Auth::user();
+
+        if ($user->email == NULL) {
+            $noemail = true;
+        }
+        else {
+            $noemail = false;
+        }
 
         $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
         $isTooladmin = $isDeveloper || $user->hasAnySpecifiedPermsOnAnyWiki('tooladmin');
@@ -160,71 +221,196 @@ class AppealController extends Controller
         }
 
         $appealtypes = [
-            'assigned'=>__('appeals.appeal-types.assigned-me'),
-            'unassigned'=>__('appeals.appeal-types.unassigned'),
-            'reserved'=>__('appeals.appeal-types.reserved'),
+            'all'=>'Active appeals',
         ];
-        if($isDeveloper) { $appealtypes['developer']=__('appeals.appeal-types.developer'); }
 
         $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
         $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
 
-        $appeals[$appealtypes['assigned']] = 
-            Appeal::whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
-                $query->whereNotIn('status', $basicStatuses)
-                    ->where('handlingadmin',Auth::id());
-                })->orWhere(function ($query) use ($isCUAnyWiki) {
-                    if ($isCUAnyWiki) {
-                        $query->where('status',Appeal::STATUS_CHECKUSER);
-                    }
-                    
-                })
-                ->where(function ($query) use ($isStewClerk) {
-                    if ($isStewClerk) {
-                        //if the block reason contains 'prox', allow steward clerks to view the appeal
-                        $query->where('handlingadmin',Auth::id())
-                            ->where('blockreason','like','%prox%')
-                            ->where('wiki_id',3);
-                    }
-                })
-                ->get();
-        $appeals[$appealtypes['unassigned']] = 
-            Appeal::whereIn('wiki', $wikis)
-                ->whereNotIn('status', $basicStatuses)
-                ->where(function ($query) use($isStewClerk) {
-                    if($isStewClerk) {
-                        $query->whereNull('handlingadmin')
-                            ->where('blockreason','like','%prox%');
-                    }
-                    else {
-                        $query->whereNull('handlingadmin');
-                    }
-                    
-                })->get();
-        $appeals[$appealtypes['reserved']] = 
-            Appeal::whereIn('wiki', $wikis)
-                ->whereNotIn('status', $basicStatuses)
-                ->where(function ($query) use ($isCUAnyWiki, $isStewClerk) {
-                    if ($isCUAnyWiki) {
-                        $query->where('handlingadmin','!=',Auth::id());
-                    }
-                    elseif ($isStewClerk) {
-                        //if the block reason contains 'prox', allow steward clerks to view the appeal
-                        $query->where('handlingadmin','!=',Auth::id())
-                            ->where('blockreason','like','%prox%')
-                            ->where('wiki_id',3);
-                    }
-                    else {
-                        $query->where('handlingadmin','!=',Auth::id())
-                            ->orWhere('status',Appeal::STATUS_CHECKUSER);   
-                    }
-                })->get();
-        if($isDeveloper) {
-            $appeals[$appealtypes['developer']] = Appeal::whereIn('status',$developerStatuses)
-            ->get();
+        $appeals[$appealtypes['all']] = $appeal->whereIn('wiki', $wikis)->where(function ($query) use ($basicStatuses) {
+            $query->whereNotIn('status', $basicStatuses);
+        })
+        ->sortable();
+        $mainPaginate = $appeals[$appealtypes['all']]->count() > 49;
+        if($appeals[$appealtypes['all']]->count() > 49) {
+            $appeals[$appealtypes['all']] = $appeals[$appealtypes['all']]->paginate(25);
         }
+        else {
+            $appeals[$appealtypes['all']] = $appeals[$appealtypes['all']]->get();
+        }
+        
+        return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty(), 'mainPaginate' => $mainPaginate, 'noemail' => $noemail]);
+    }
 
-        return view('appeals.appeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => $isTooladmin, 'noWikis' => $wikis->isEmpty()]);
+    public function map(Request $request,$id) {
+        if (!Auth::check()) {
+            if ($request->has('send_to_oauth')) {
+                // fancy tricks to set intended path as cookie, but without the GET param
+                $redirect = redirect();
+                $redirect->setIntendedUrl(app(UrlGenerator::class)->previous());
+                return $redirect->route('login');
+            }
+
+            return response()->view('appeals.public.needauth', [], 401);
+        }
+        else {
+            $appeal = Appeal::find($id);
+            $this->authorize('view', $appeal);
+            if (!$appeal) {
+                return abort('404');
+            }
+    
+            if ($appeal->status == Appeal::STATUS_INVALID) {
+                return response()->view('appeals.public.oversight', [], 403);
+            }
+    
+            //$appeal->loadMissing('comments.userObject');
+            $appeals = Appeal::where('appealfor', '=', $appeal->appealfor)
+                ->where('wiki_id', '=', $appeal->wiki_id)
+                ->where('status', '!=', Appeal::STATUS_INVALID)
+                ->get();
+    
+            $allappealcomments = [];
+            $allappealnumbers= [];
+
+            $activeBans= Ban::where('is_active',1)->where('target',$appeal->appealfor)->where('is_protected',0)->where('wiki_id',$appeal->wiki_id)->active()->first();
+
+            //for each appeal, get the comments
+            foreach ($appeals as $activeappeal) {
+                $activeappeal->loadMissing('comments.userObject');
+                //sperated by appeal, put the comments in an array
+                $allappealcomments[$activeappeal->id]['status'] = $activeappeal->status;
+                $allappealcomments[$activeappeal->id] = $activeappeal->comments;
+            }
+
+            $fullappealcomments = [];
+    
+            //go through $allappealcomments, evalute the comment by action, and put it in $fullappealcomments
+            foreach ($allappealcomments as $appealid => $appealcomments) {
+                foreach ($appealcomments as $comment) {
+                    $user = User::find($comment->user_id);
+                    //if the size of $user is 0, then note that it was the system that made the comment
+                    if($user == Null) {$user = "SYSTEM";}
+                    else {$user = $user->username;}
+    
+                    $fullappealcomments[$appealid][$comment->id] = ['id'=>$appealid,'action'=>$comment->action,'reason'=>$comment->reason,'timestamp'=>$comment->timestamp,'user'=>$user];
+                }
+            }
+            
+            $count = 0;
+            $appealmap=[];
+            //iterate through $fullappealcomments and each comment to the appeal it belongs to
+            foreach ($fullappealcomments as $appealid => $appealcomments) {
+                //if the appeal is not verified, then add a note to the map
+                //also if the appeal is the same as the one we are viewing, then move to the else
+                if ($appeals[$count]->user_verified != 1 && $appealid != $id) {
+                    $appealmap[] = ['text'=>'Appeal #'.$appeals[$count]['id'].' is not yet verified and can not be viewed', 'time'=>'INVALID', 'icon'=>'stop','active'=>"error",'appealid'=>$appealid];
+                } else {
+                    foreach ($appealcomments as $linecomment) {
+                        $appealkey = Appeal::findOrFail($appealid)->appealsecretkey;
+                        if ($linecomment['action'] == 'create') {
+                            $appealmap[] = ['text'=>__('appeals.map.submitted',['id' =>$appealid]), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'reserve') {
+                            $appealmap[] = ['text'=>__('appeals.map.assigned'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'assigned','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'verify') {
+                            $appealmap[] = ['text'=>__('appeals.map.verified'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'verified','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'comment') {
+                            //we are ignoring internal comments
+                        }
+                        elseif($linecomment['action'] == 'translate') {
+                            //we are ignoring internal comments
+                        }
+                        elseif($linecomment['action'] == 'responded' && $linecomment['user'] != "SYSTEM") {
+                            $appealmap[] = ['text'=>__('appeals.map.respond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"no",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'responded') {
+                            $appealmap[] = ['text'=>__('appeals.map.userrespond'), 'time'=>$linecomment['reason'], 'icon'=>'reply','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'release') {
+                            $appealmap[] = ['text'=>__('appeals.map.released'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 're-open') {
+                            $appealmap[] = ['text'=>__('appeals.map.reopen'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'wait','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'transfered appeal to another wiki') {
+                            $appealmap[] = ['text'=>__('appeals.map.transfer'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'transfer','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'sent for CheckUser review') {
+                            $appealmap[] = ['text'=>__('appeals.map.checkuser'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'sent for tool administrator review') {
+                            $appealmap[] = ['text'=>__('appeals.map.admin'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'queue','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'account verified') {
+                            $appealmap[] = ['text'=>__('appeals.map.verifiedaccount'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'check','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        elseif($linecomment['action'] == 'changed block information') {
+                            $appealmap[] = ['text'=>__('appeals.map.blockchange'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'pencil','active'=>"yes",'appealid'=>$appealid];
+                        }
+                        //if linecomment action contains "set status as" then based on the remainder of the string, set an map entry
+                        elseif(strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {
+                            if (strpos($linecomment['action'], 'closed as') !== false) {$status = strtoupper(str_replace('closed as ','',$linecomment['action']));}
+                            if (strpos($linecomment['action'], 'set status as') !== false) {$status = str_replace('set status as ','',$linecomment['action']);}
+                            if (strpos($linecomment['action'], 'closed - ') !== false) {$status = strtoupper(str_replace('closed - ','',$linecomment['action']));}
+                            //run through appeal statuses and make $text human readable
+                            if ($status == 'AWAITING_REPLY') {
+                                $text = __('appeals.map.awaitreply');
+                                $icon = 'paper';
+                                $active = "yes";
+                                $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
+                            }
+                            elseif($status == 'DECLINE') {
+                                $text = __('appeals.map.declined');
+                                $icon = 'decline';
+                                $active = "error";
+                                $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
+                            }
+                            elseif($status == 'EXPIRE') {
+                                $text = __('appeals.map.expired');
+                                $icon = 'time';
+                                $active = "error";
+                                $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
+                            }
+                            elseif($status == 'ACCEPT') {
+                                $text = __('appeals.map.accepted');
+                                $icon = 'check';
+                                $active = "yes";
+                                $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
+                            }
+                            elseif($status == 'INVALID') {
+                                $text = __('appeals.map.invalid');
+                                $icon = 'decline';
+                                $active = "error";
+                                $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
+                            }
+                            elseif($status == 'SKIP') {
+                                //do nothing
+                            }
+                            else {
+                                $text = __('appeals.map.unhandled', $status);
+                                $icon = 'x';
+                                $active = "no";
+                                $appealmap[] = ['text'=>$text, 'time'=>$linecomment['timestamp'], 'icon'=>$icon,'active'=>$active,'appealid'=>$appealid];
+                            }
+                            
+                        }
+                        else {
+                            $appealmap[] = ['text'=>'Not mapped - '.$linecomment['action'] . ' - ' . $linecomment['reason'], 'time'=>'INVALID', 'icon'=>'sent','active'=>"yes",'appealid'=>$appealid,'matchAppealID'=>0];
+                        }
+                    }
+                }
+                $count++;
+            }
+
+            $route = '/appeal/'.$request->input('id');
+            $appealkey = "";
+            $user = Auth::user();
+            $isDeveloper = $user->hasAnySpecifiedPermsOnAnyWiki('developer');
+            return view('appeals.public.appealmap', ['appealmap'=>$appealmap,'appealkey'=>$appealkey,'route'=>$route,'appealant'=>$appeal->appealfor,'isdev'=>$isDeveloper,'activeBans'=>$activeBans]);
+        }
     }
 
     public function checkuser(Appeal $appeal, Request $request)
@@ -322,7 +508,7 @@ class AppealController extends Controller
             $result = MediaWikiRepository::getApiForTarget($appeal->wiki)->getMediaWikiExtras()->sendEmail($appeal->getWikiEmailUsername(), $title, $message);
         }
 
-        elseif ($appeal->user_verified==1)  {
+        elseif($appeal->user_verified==1)  {
             $title = 'UTRS appeal response';
             $baseURL = route('home');
             switch ($appeal->status) {
@@ -410,5 +596,20 @@ class AppealController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    //send to acc
+    public function sendToACC(Request $request, Appeal $appeal)
+    {
+        $this->authorize('update', $appeal);
+
+        // if acc already exists, return to previous page with an error
+        if (Acc::where('appeal_id', $appeal->id)->exists()) {
+            return redirect()->back()->with('error', 'This appeal has already been sent to ACC.');
+        }
+        
+        Acc::sendToACC($appeal);
+
+        return redirect()->route('appeal.view', $appeal);
     }
 }

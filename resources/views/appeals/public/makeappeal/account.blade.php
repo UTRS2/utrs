@@ -39,39 +39,44 @@
             @component('components.errors')
             @endcomponent
 
-            {{ Form::open(['url' => route('public.appeal.store')]) }}
-            {{ Form::token() }}
+            {{ html()->form('POST', route('public.appeal.store'))->open() }}
+            {{ html()->token() }}
             <h5>{{ __('appeals.forms.about-you') }}</h5>
             <div class="form-group mb-4">
-                {{ Form::label('wiki_id', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'custom-select']) }}
+                {{ html()->label(__('appeals.forms.block-wiki'), 'wiki_id') }}<br>
+                {{ html()->select('wiki_id', $wikis, old('wiki_id'))->class('custom-select') }}
             </div>
             <div class="form-group mb-4">
-                {{ Form::label('appealfor', __('appeals.forms.block-username')) }}
-                {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
+                {{ html()->label(__('appeals.forms.block-username'), 'appealfor') }}
+                {{ html()->text('appealfor', old('appealfor'))->class('form-control') }}
             </div>
             <div class="form-group mb-4">
                 {{ __('appeals.forms.direct-question') }}
                 <div class="custom-control custom-radio">
-                    {{ Form::radio('blocktype', 1, old('blocktype') === 1, ['class' => 'custom-control-input', 'id' => 'blocktype-1','onclick'=>'hideHiddenIP()']) }} {{ Form::label('blocktype-1', __('appeals.forms.direct-yes'), ['class' => 'custom-control-label']) }}
+                    {{ html()->radio('blocktype', old('blocktype') === 1, 1)->class('custom-control-input')->id('blocktype-1')->attribute('onclick', 'hideHiddenIP()') }} {{ html()->label(__('appeals.forms.direct-yes'), 'blocktype-1')->class('custom-control-label') }}
                 </div>
 
                 <div class="custom-control custom-radio">
-                    {{ Form::radio('blocktype', 2, old('blocktype') === 2, ['class' => 'custom-control-input', 'id' => 'blocktype-2','onclick'=>'showHiddenIP()']) }} {{ Form::label('blocktype-2', __('appeals.forms.direct-no'), ['class' => 'custom-control-label']) }}
+                    {{ html()->radio('blocktype', old('blocktype') === 2, 2)->class('custom-control-input')->id('blocktype-2')->attribute('onclick', 'showHiddenIP()') }} {{ html()->label(__('appeals.forms.direct-no'), 'blocktype-2')->class('custom-control-label') }}
                 </div>
             </div>
 
             <noscript>
                 <div class="form-group mb-4" id="hiddenipdiv">
-                {{ Form::label('hiddenip', __('appeals.forms.hiddenip-question', ['option' => __('appeals.forms.direct-no')])) }}
-                {{ Form::text('hiddenip', old('hiddenip'), ['class' => 'form-control']) }}
+                {{ html()->label(__('appeals.forms.hiddenip-question', ['option' => __('appeals.forms.direct-no')]), 'hiddenip') }}
+                {{ html()->text('hiddenip', old('hiddenip'))->class('form-control') }}
                 </div>
             </noscript>
             <div class="form-group mb-4" id="hiddenipdiv" style = "display:none">
-                {{ Form::label('hiddenip', __('appeals.forms.hiddenip-question', ['option' => __('appeals.forms.direct-no')])) }}
-                {{ Form::text('hiddenip', old('hiddenip'), ['class' => 'form-control']) }}
+                {{ html()->label(__('appeals.forms.hiddenip-question', ['option' => __('appeals.forms.direct-no')]), 'hiddenip') }}
+                {{ html()->text('hiddenip', old('hiddenip'))->class('form-control') }}
                 <br /><div style="display: none" class="alert alert-success" role="alert" id="forhidden">This question has been answered automatically.</div>
                 <br /><button type="button" class="btn btn-info" onclick="getIP()">Don't know your IP? Get IP address automatically.</button>
+            </div>
+
+            <div class="form-group mb-4">
+                {{ html()->label(__('appeals.forms.email'), 'email') }}
+                {{ html()->text('email', old('email'))->class('form-control') }}
             </div>
 
             <h5>{{ __('appeals.forms.appeal-info') }}</h5>
@@ -82,12 +87,12 @@
             </div>
 
             <div class="form-group mb-4">
-                {{ Form::label('appealtext', __('appeals.forms.question-why')) }}
-                {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
+                {{ html()->label(__('appeals.forms.question-why'), 'appealtext') }}
+                {{ html()->textarea('appealtext', old('appealtext'))->class('form-control h-25') }}
             </div>
 
-            {{ Form::button(__('generic.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-            {{ Form::close() }}
+            {{ html()->submit(__('generic.submit'))->class('btn btn-success') }}
+            {{ html()->form()->close() }}
         </div>
     </div>
 @endsection

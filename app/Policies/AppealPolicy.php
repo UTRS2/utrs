@@ -123,6 +123,16 @@ class AppealPolicy
     }
 
     /**
+     * Determine if the user is a developer.
+     * 
+     * @param User $user
+     * @return mixed
+     */
+    public function isDeveloper(User $user) {
+        return $user->hasAnySpecifiedPermsOnAnyWiki(['developer']);
+    }
+
+    /**
      * Determine whether the user can take developer actions on this appeal.
      *
      * @param User $user

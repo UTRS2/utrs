@@ -51,7 +51,7 @@ class BanCreateSuppressTest extends TestCase
         $this->assertFalse(Ban::where('target', '192.0.2.15/32')->exists());
     }
 
-    public function provideTooladmin(): array
+    public static function provideTooladmin(): array
     {
         return [
             'Normal wiki' => [ ['enwiki'], ],
