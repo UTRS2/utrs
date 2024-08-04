@@ -36,7 +36,7 @@ class RealBlock implements Block
     public static function fromArray(array $blockData)
     {
         return new RealBlock(
-            $blockData['user'] ?? $blockData['address'],
+            $blockData['user'] ?? $blockData['target'],
             $blockData['by'],
             $blockData['reason'],
             $blockData['timestamp'],
