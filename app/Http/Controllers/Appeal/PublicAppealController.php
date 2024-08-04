@@ -345,7 +345,7 @@ class PublicAppealController extends Controller
         $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
         $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
         if($weborigin != $envappurl) {
-            abort(403);
+            abort(403, "Header mismatch");
         }
         $appealkey = $request->input('appealkey');
         $appeal = Appeal::where('appealsecretkey', '=', $appealkey)->first();
@@ -506,7 +506,7 @@ class PublicAppealController extends Controller
         $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
         $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
         if($weborigin != $envappurl) {
-            abort(403);
+            abort(403, "Header mismatch");
         }
         $appealkey = $request->input('appealkey');
         $appeal = Appeal::where('appealsecretkey', '=', $appealkey)->first();
@@ -529,7 +529,7 @@ class PublicAppealController extends Controller
         $weborigin = str_replace('http://','',str_replace('https://','',$request->header('origin')));
         $envappurl = str_replace('http://','',str_replace('https://','',env('APP_URL')));
         if($weborigin != $envappurl) {
-            abort(403);
+            abort(403, "Header mismatch");
         }
         $appealkey = $request->input('appealsecretkey');
         $appeal = Appeal::where('appealsecretkey', $appealkey)->firstOrFail();

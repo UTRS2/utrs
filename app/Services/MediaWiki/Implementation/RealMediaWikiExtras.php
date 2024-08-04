@@ -114,7 +114,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
                     [
                         'list' => 'globalblocks',
                         'bgip' => $target,
-                        'bkprop' => 'address|by|expiry|id|range|reason|timestamp',
+                        'bgprop' => 'address|by|expiry|id|range|reason|timestamp',
                     ]
                 ));
             } catch (Exception $e) {
