@@ -93,7 +93,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -175,6 +175,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
+        MarvinLabs\DiscordLogger\ServiceProvider::class,
 
     ],
 
