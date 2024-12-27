@@ -34,6 +34,12 @@ class Ban extends Model
         return $this->belongsTo(Wiki::class);
     }
 
+    // convert the wiki id into a wiki name
+    public function getWikiName()
+    {
+        return $this->wiki->database_name;
+    }
+
     public function scopeActive(Builder $query)
     {
         return $query

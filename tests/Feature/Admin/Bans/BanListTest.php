@@ -76,13 +76,13 @@ class BanListTest extends TestCase
             ->assertDontSee('403')
             ->assertSee('Visible ban')
             ->assertDontSee('Protected ban')
-            ->assertSee('ban target removed')
-            ->assertSee('unbanned')
-            ->assertSee('Add ban')
-            ->assertSee('indefinite')
+            ->assertSee('No permission to view target')
+            ->assertSee('Disabled')
+            ->assertSee('New Ban')
+            ->assertSee('Indefinite')
             ->assertSee('2030-01-01 10:00:00')
             ->assertDontSee('Ban on another wiki')
-            ->assertDontSee('Ban affecting all wikis');
+            ->assertSee('Ban affecting all wikis');
     }
 
     public function test_oversighter_can_view_oversighted_bans()

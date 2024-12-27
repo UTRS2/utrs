@@ -35,35 +35,9 @@ class TemplateController extends Controller
 
 		$templates = Template::with('wiki')
 			->whereIn('wiki_id', $wikis)
-			->get();
-
-		$tableheaders = ['ID', 'Name', 'Contents', 'Active'];
-		if ($wikis->count() > 1) {
-			$tableheaders[] = 'Wiki';
-		}
-
-		$rowcontents = [];
-
-		foreach ($templates as $template) {
-			$idbutton = '<a href="/admin/templates/' . $template->id . '" class="btn btn-primary">' . $template->id . '</a>';
-			$active = $template->active ? 'Yes' : 'No';
-
-			$rowcontents[$template->id] = [$idbutton, $template->name, htmlspecialchars($template->template), $active];
-
-			if ($wikis->count() > 1) {
-				$wikiName = $template->wiki->display_name . ' (' . $template->wiki->database_name . ')';
-				$rowcontents[$template->id][] = $wikiName;
-			}
-		}
-
-		return view('admin.tables', [
-			'title' => 'All Templates',
-			'tableheaders' => $tableheaders,
-			'rowcontents' => $rowcontents,
-			'new' => true,
-			'createlink' => '/admin/templates/create',
-			'createtext' => 'New template'
-		]);
+			->paginate(50);
+		
+		return view('admin.templates', ['templates' => $templates]);
 	}
 
 	public function new(Request $request)

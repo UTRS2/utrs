@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeed::class);
 
         $this->call(AppealSeed::class);
+        $this->call(LogEntrySeed::class);
         $this->call(TemplateSeed::class);
         $this->call(BanSeed::class);
     }

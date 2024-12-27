@@ -5,9 +5,12 @@ namespace App\Models;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LogEntry extends Model
 {
+    use HasFactory;
+    
     const LOG_PROTECTION_NONE = 0; // everyone
     const LOG_PROTECTION_ADMIN = 1; // anybody who can process the appeal, but not the user theirself
     const LOG_PROTECTION_FUNCTIONARY = 2; // functionaries only
@@ -54,5 +57,10 @@ class LogEntry extends Model
         return in_array($this->model->wiki, MediaWikiRepository::getSupportedTargets())
             ? $this->model->wiki
             : null;
+    }
+
+    public function translations()
+    {
+        return $this->hasMany(Translation::class, 'log_entries_id');
     }
 }

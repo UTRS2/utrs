@@ -37,4 +37,9 @@ class LogEntryPolicy
             ? $user->hasAnySpecifiedLocalOrGlobalPerms($wiki, $validPermissions)
             : $user->hasAnySpecifiedPermsOnAnyWiki($validPermissions);
     }
+
+    public function private(?User $user)
+    {
+        return $user && $user->hasAnySpecifiedLocalOrGlobalPerms([], 'developer');
+    }
 }

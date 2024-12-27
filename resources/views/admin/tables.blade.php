@@ -24,6 +24,7 @@
                 </tr>
                 </thead>
                 <tbody>
+                
                 @foreach($rowcontents as $rowcontent)
                     <tr>
                         @foreach($rowcontent as $field)
@@ -33,6 +34,9 @@
                 @endforeach
                 </tbody>
             </table>
+            <div class="d-flex justify-content-center">
+                {{ $rowcontents->links() }}
+            </div>
         </div>
     </div>
 @endsection

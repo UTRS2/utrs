@@ -7,10 +7,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use RuntimeException;
 use Illuminate\Database\Eloquent\Model;
+use Kyslik\ColumnSortable\Sortable;
+use App\Models\Wiki;
 
 class Appeal extends Model
 {
     use HasFactory;
+    use Sortable;
+
+    const ACTIVE_APPEAL_STATUSES = [
+        self::STATUS_OPEN,
+        self::STATUS_VERIFY,
+        self::STATUS_AWAITING_REPLY,
+        self::STATUS_ADMIN,
+        self::STATUS_CHECKUSER,
+        self::STATUS_NOTFOUND,
+    ];
 
     const REPLY_STATUS_CHANGE_OPTIONS = [
         self::STATUS_OPEN           => self::STATUS_OPEN,
@@ -24,6 +36,7 @@ class Appeal extends Model
         self::STATUS_ACCEPT         => self::STATUS_ACCEPT,
         self::STATUS_DECLINE        => self::STATUS_DECLINE,
         self::STATUS_EXPIRE         => self::STATUS_EXPIRE,
+        self::STATUS_ACC            => self::STATUS_ACC,
     ];
 
     const REGULAR_NO_VIEW_STATUS = [
@@ -52,6 +65,8 @@ class Appeal extends Model
         self::STATUS_ACCEPT,
         self::STATUS_DECLINE,
         self::STATUS_EXPIRE,
+        self::STATUS_ACC,
+
     ];
 
     const STATUS_OPEN = 'OPEN';
@@ -69,6 +84,7 @@ class Appeal extends Model
     const STATUS_ACCEPT = 'ACCEPT';
     const STATUS_DECLINE = 'DECLINE';
     const STATUS_EXPIRE = 'EXPIRE'; // appeal went too long without any changes
+    const STATUS_ACC = 'ACC'; // appeal is being handled by ACC
 
     const BLOCKTYPE_IP = 0;
     const BLOCKTYPE_ACCOUNT = 1;
@@ -90,8 +106,17 @@ class Appeal extends Model
         'submitted',
     ];
 
-    // scopes
+    // attributes
+    public $sortableAs = ['id',
+                        'appealfor',
+                        'blocktype',
+                        'status',
+                        'blockingadmin',
+                        'blockreason',
+                        'submitted',
+                    ];
 
+    // scopes
     public function scopeOpenOrRecent(Builder $query)
     {
         return $query->where(function (Builder $query) {
@@ -204,4 +229,35 @@ class Appeal extends Model
 
         return $reason;
     }
+
+    // get the wiki entry for the appeal
+    public function getWikiEntry()
+    {
+        return Wiki::where('id', $this->wiki_id)->first();
+    }
+
+    // get the default language for the wiki
+    public function getWikiDefaultLanguage()
+    {
+        return Wiki::where('id', $this->wiki_id)->first()->default_language;
+    }
+
+    // get the acc entry for the appeal
+    public function getACC()
+    {
+        return Acc::where('appeal_id', $this->id)->first();
+    }
+
+    // get emailban entry for the appeal
+    public function getEmailBan()
+    {
+        return EmailBan::where('email', $this->email)->first();
+    }
+
+    // get the emailban token for the appeal
+    public function getEmailBanToken()
+    {
+        return EmailBan::where('email', $this->email)->first()->uid;
+    }
+
 }

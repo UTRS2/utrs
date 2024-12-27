@@ -42,25 +42,31 @@
             @component('components.errors')
             @endcomponent
 
-            {{ Form::open(['url' => route('public.appeal.store')]) }}
-            {{ Form::token() }}
+            {{ html()->form('POST', route('public.appeal.store'))->open() }}
+            {{ html()->token() }}
 
             <h5>About you</h5>
             <div class="form-group mb-4">
-                {{ Form::label('wiki_id', __('appeals.forms.block-wiki')) }}<br>
-                {{ Form::select('wiki_id', $wikis, old('wiki_id'), ['class' => 'custom-select']) }}
+                {{ html()->label(__('appeals.forms.block-wiki'), 'wiki_id') }}<br>
+                {{ html()->select('wiki_id', $wikis, old('wiki_id'))->class('custom-select') }}
             </div>
-            {{ Form::hidden('blocktype', 0) }}
+            {{ html()->hidden('blocktype', 0) }}
 
             <div class="form-group mb-4">
-                {{ Form::label('appealfor', __('appeals.forms.block-ip')) }}
-                {{ Form::text('appealfor', old('appealfor'), ['class' => 'form-control']) }}
+                {{ html()->label(__('appeals.forms.block-ip'), 'appealfor') }}
+                {{ html()->text('appealfor', old('appealfor'))->class('form-control') }}
                 <noscript>
                     <div class="alert alert-warning" role="alert">The following button will not work as you don't have javascript enabled.</div>
                 </noscript>
                 <br /><div style="display: none" class="alert alert-success" role="alert" id="forhidden">This question has been answered automatically.</div>
                 <br /><button type="button" class="btn btn-info" onclick="getIP()">Don't know your IP? Get IP address automatically.</button>
             </div>
+
+            <div class="form-group mb-4">
+                {{ html()->label(__('appeals.forms.email'), 'email') }}
+                {{ html()->text('email', old('email'))->class('form-control') }}
+            </div>
+
 
             <h5>{{ __('appeals.forms.appeal-info') }}</h5>
 
@@ -69,13 +75,14 @@
                 <br/>{{ __('appeals.forms.word-notice') }}
             </div>
 
+            
             <div class="form-group mb-4">
-                {{ Form::label('appealtext', __('appeals.forms.question-why')) }}
-                {{ Form::textarea('appealtext', old('appealtext'), ['class' => 'form-control h-25']) }}
+                {{ html()->label(__('appeals.forms.question-why'), 'appealtext') }}
+                {{ html()->textarea('appealtext', old('appealtext'))->class('form-control h-25') }}
             </div>
 
-            {{ Form::button(__('generic.submit'), ['class' => 'btn btn-success','type'=>'submit']) }}
-            {{ Form::close() }}
+            {{ html()->submit(__('generic.submit'))->class('btn btn-success') }}
+            {{ html()->form()->close() }}
         </div>
     </div>
 @endsection

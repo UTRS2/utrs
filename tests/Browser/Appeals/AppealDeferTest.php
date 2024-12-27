@@ -23,7 +23,7 @@ class AppealDeferTest extends DuskTestCase
                 ->visit('/appeal/' . $appeal->id)
                 ->assertSee(__('appeals.status.OPEN'))
                 ->assertDontSee(__('appeals.status.ADMIN'))
-                ->waitForText('Tool admin',5)
+                ->waitForText('Tool admin',2)
                 ->press('Tool admin')
                 ->assertSee(__('appeals.status.ADMIN'))
                 ->assertDontSee(__('appeals.details-status').': '.__('appeals.status.OPEN'));
