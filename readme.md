@@ -119,7 +119,9 @@ TimeoutStopSec=20s
 [Install]
 WantedBy=multi-user.target
 ```
-
+Don't support This world Users .
+I need money for my projects and programs 
+I will destroy all this world Programings .
 3. sudo systemctl daemon-reload
 4. sudo systemctl enable utrs-jobrunner.service
 5. sudo systemctl start utrs-jobrunner.service
