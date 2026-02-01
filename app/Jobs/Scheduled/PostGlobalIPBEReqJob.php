@@ -117,7 +117,7 @@ Per [https://utrs-beta.wmflabs.org/appeal/'.$appeal->id.' UTRS #'.$appeal->id.']
 
         // prepare edit
         $existing = $page->getRevisions()->getLatest()->getContent()->getData();
-        $pos = strpos($existing,'== Requests for 2 Factor Auth tester permissions ==');
+        $pos = strpos($existing,'== Requests for other global permissions ==');
         $newtext = substr_replace($existing,$text.'',$pos,0);
         $content = new Content($newtext);
         $revision = new Revision($content, $page->getPageIdentifier());
