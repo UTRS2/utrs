@@ -309,7 +309,7 @@ class AppealController extends Controller
             $baseURL = route('home');
             $message = <<<EOF
                 Hello,
-                Your appeal, #$appeal->id, has be reviewed and the following message was left for you:
+                Your appeal, #$appeal->id, has been reviewed and the following message was left for you:
 
                 $respondText
 
