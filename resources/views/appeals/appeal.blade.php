@@ -486,7 +486,41 @@ function displayTransfer() {
                 <i>{{__('appeals.comment-color-text')}}</i>
                 <br/>
                 <br/>
-                
+                @can('update', $info)
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title">{{__('appeals.send-reply-header')}}</h5>
+                            @if($info->handlingadmin != null && $info->handlingadmin == Auth::id())
+                                <a href="{{ route('appeal.template', $info) }}" class="btn btn-info">
+                                    {{__('appeals.send-reply-button')}}
+                                </a>
+                            @else
+                                <div class="alert alert-danger" role="alert">
+                                    {{__('appeals.not-handling-admin')}}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">{{ __('appeals.comments.leave') }}</h5>
+
+                            {{ html()->form('POST', route('appeal.action.comment', $info))->open() }}
+
+                                <div class="mb-3">
+                                    {{ html()->label(__('appeals.comments.add'))->for('comment') }}
+
+                                    {{ html()->textarea('comment')
+                                            ->value(old('comment'))
+                                            ->class('form-control')
+                                            ->attribute('id', 'comment') }}
+                                </div>
+
+                                {{ html()->submit(__('appeals.cu.submit'))
+                                        ->class('btn btn-success') }}
+
+                            {{ html()->form()->close() }}
+                        </div>
+                    </div>
+                @endcan
             </div>
         </div>
     </div>
