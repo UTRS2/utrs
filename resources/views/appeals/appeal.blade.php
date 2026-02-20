@@ -410,7 +410,7 @@ function displayTransfer() {
                     <th scope="col">{{ __('generic.logs-user') }}</th>
                     <th scope="col">{{ __('generic.logs-time') }}</th>
                     <th scope="col">{{ __('generic.logs-action') }}</th>
-                    <th scope="col">{{ __('generic.translate-link') }}</th>
+                    {{--<th scope="col">{{ __('generic.translate-link') }}</th>--}}
                 </tr>
                 </thead>
                 <tbody>
@@ -466,7 +466,7 @@ function displayTransfer() {
                                     <td>{{ $comment->reason }}</td>
                                 @endif
                             @endif
-                            <td>
+                            {{--<td>
                                 @if($comment->action === 'responded' && $comment->reason !== null && $comment->user_id === -1)
                                     @if(in_array($comment->id,$translateIDs))
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
@@ -476,7 +476,7 @@ function displayTransfer() {
                                     </a>
                                     @endif
                                 @endif
-                            </td>
+                            </td>--}}
                         @endif
                         </tr>
                     @endif
