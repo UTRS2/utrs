@@ -418,7 +418,16 @@ function displayTransfer() {
                     @if($comment->action === 'translate')
                         <!-- Skip translation log entries -->
                     @else
-                    <tr class="{{ $comment->action === 'comment' ? 'bg-success' : ($comment->action === 'responded' ? 'bg-primary' : '') }}">
+                    <tr
+                        @class([
+                            'table-success' => $comment->action === 'comment',
+                            'table-primary' => $comment->action === 'responded',
+                        ])
+                        style="
+                            {{ $comment->action === 'comment' ? '--bs-table-bg: #28a745;' : '' }}
+                            {{ $comment->action === 'responded' ? '--bs-table-bg: #007bff;' : '' }}
+                        "
+                    >
                         @if(is_null($comment['commentUser']))
                             @if($comment->action !== "comment" && $comment->action !== "responded")
                                 @if($comment->user_id == 0)
