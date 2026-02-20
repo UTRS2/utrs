@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Ban;
 use App\Models\LogEntry;
 use App\Models\User;
+use App\Models\EmailBan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Bans\CreateBanRequest;
 use App\Http\Requests\Admin\Bans\UpdateBanRequest;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class BanController extends Controller
 {
@@ -41,75 +43,50 @@ class BanController extends Controller
             return '';
         }
 
-        $allbans = Ban::where(function (Builder $query) use ($wikis, $canSeeGlobal) {
-            return $query
-                ->whereIn('wiki_id', $wikis)
-                ->when($canSeeGlobal, function (Builder $query) {
-                    return $query->orWhereNull('wiki_id');
-                });
-        })
-            ->with('wiki')
-            ->get();
+        $allbans = Ban::paginate(50);
 
         /** @var User $user */
         $user = $request->user();
 
         $protectedBansVisible = false;
 
-        $tableheaders = [ 'ID', 'Target', 'Expires', 'Reason' ];
-        if ($wikis->count() > ($canSeeGlobal ? 0 : 1)) {
-            $tableheaders[] = 'Wiki';
+        $tableheaders = [ 
+            __('admin.bans.id'), 
+            __('admin.bans.target'), 
+            __('admin.bans.expires'), 
+            __('admin.bans.reason'),
+            "Wiki"
+        ];
+        
+        $admin = $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer']);
+
+        //dependent on if the user is a checkuser on any wiki, mark the $checkuser variable
+        $checkuser = false;
+        //for each wiki the user has permissions on, check if they have checkuser
+        foreach ($user->permissions as $permission) {
+            if ($permission->hasAnySpecifiedPerms(['checkuser']) || $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer'])) {
+                $checkuser = true;
+            }
         }
 
-        $rowcontents = [];
-
-        foreach ($allbans as $ban) {
-            $idbutton = '<a href="' . route('admin.bans.view', $ban) . '" class="btn ' . ($ban->is_protected ? 'btn-danger' : 'btn-primary') . '">' . $ban->id . '</a>';
-            $targetName = htmlspecialchars($ban->target);
-
-            if ($ban->is_protected) {
-                $canSee = $user->can('viewName', $ban);
-
-                if (!$protectedBansVisible && $canSee) {
-                    $protectedBansVisible = true;
+        //if the user has tooladmin, steward, staff, or developer globally, then add all wikis to the allowed wikis array
+        $allowedwikis = [];
+        if ($admin) {
+            $allowedwikis = Wiki::get()->pluck('id')->toArray();
+        } else {
+            //otherwise, add the wikis that the user has permissions on to the allowed wikis array
+            foreach ($user->permissions as $permission) {
+                if ($permission->hasAnySpecifiedPerms(['tooladmin'])) {
+                    $allowedwikis[] = Wiki::where('database_name',$permission->wiki)->first()->id;
+                    $admin = true;
                 }
-
-                $targetName = $canSee ? '<i class="text-danger">' . $targetName . '</i>'
-                    : '<i class="text-muted">(ban target removed)</i>';
-            }
-
-            $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
-            $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
-
-            if (!$ban->is_active) {
-                $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
-            }
-
-            if ($expiry->isPast() && $expiry->year >= 2000) {
-                $formattedExpiry .= ' <i class="text-danger">(expired)</i>';
-            }
-
-            $rowcontents[$ban->id] = [ $idbutton, $targetName, $formattedExpiry, htmlspecialchars($ban->reason) ];
-
-            if ($wikis->count() > 1) {
-                $wikiName = $ban->wiki ? $ban->wiki->display_name . ' (' . $ban->wiki->database_name . ')' : 'All UTRS wikis';
-                $rowcontents[$ban->id][] = $wikiName;
             }
         }
 
-        $caption = null;
-        if ($protectedBansVisible) {
-            $caption = "Any ban showing in red has been oversighted and should not be shared to others who do not have access to it.";
-        }
+        // define createlink as the route to create a new ban
+        $createlink = route('admin.bans.new');
 
-        return view('admin.tables', [
-            'title'        => 'All Bans',
-            'tableheaders' => $tableheaders,
-            'rowcontents'  => $rowcontents,
-            'caption'      => $caption,
-            'createlink'   => $user->can('create', Ban::class) ? route('admin.bans.new') : null,
-            'createtext'   => 'Add ban',
-        ]);
+        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowed' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser, 'createlink' => $createlink]);
     }
 
     public function new(Request $request)
@@ -162,23 +139,23 @@ class BanController extends Controller
 
     public function show(Request $request, Ban $ban)
     {
-        $this->authorize('view', $ban);
+        $this->authorize('view', [Auth::user(),$ban]);
 
-        $target = $request->user()->can('viewName', $ban) ? $ban->target : '(ban target removed)';
+        $target = $request->user()->can('viewName', $ban) ? $ban->target : __('admin.bans.ban-target-removed');
         $targetHtml = $request->user()->can('viewName', $ban)
             ? ($ban->is_protected ? '<span class="text-danger">' : '') . htmlspecialchars($ban->target) . ($ban->is_protected ? '</span>' : '')
-            : '<i class="text-muted">(ban target removed)</i>';
+            : '<i class="text-muted">'.__('admin.bans.ban-target-removed').'</i>';
 
         $expiry = Carbon::createFromFormat('Y-m-d H:i:s', $ban->expiry);
-        $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
-        $formOldExpiry = $expiry->year >= 2000 ? $ban->expiry : 'indefinite';
+        $formattedExpiry = $expiry->year >= 2000 ? $ban->expiry : __('admin.bans.indefinite');
+        $formOldExpiry = $expiry->year >= 2000 ? $ban->expiry : __('admin.bans.indefinite');
 
         if (!$ban->is_active) {
-            $formattedExpiry .= ' <i class="text-muted">(unbanned)</i>';
+            $formattedExpiry .= ' <i class="text-muted">'.__('admin.bans.unbanned').'</i>';
         }
 
         if ($expiry->isPast() && $expiry->year >= 2000) {
-            $formattedExpiry .= ' <i class="text-muted">(expired)</i>';
+            $formattedExpiry .= ' <i class="text-muted">'.__('admin.bans.expired').'</i>';
         }
 
         $wikis = $this->constructWikiDropdown($request->user());
@@ -263,5 +240,36 @@ class BanController extends Controller
         }
 
         return $wikis;
+    }
+
+    public function banEmail(string $code)
+    {
+        return view('admin.bans.emailban', [
+            'code' => $code,
+        ]);
+    }
+
+    public function banEmailSubmit(Request $request)
+    {
+        //validate that 
+        $this->validate($request, [
+            'uid' => 'required|string',
+        ]);
+
+        //find the email and set the ban
+        $email = EmailBan::where('email', $address)->firstOrFail();
+        //set the appealban to match the value from the request
+        $email->appealbanned = $request->input('appealbanned', false);
+        //set the accountban to match the value from the request
+        $email->accountbanned = $request->input('accountbanned', false);
+
+
+        $ban->addLog(
+            new RequestLogContext($request),
+            'email ban modified',
+            'Appeal: '.$request->input('appealbanned', false) . ' Account: ' . $request->input('accountbanned', false)
+        );
+
+        return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
     }
 }

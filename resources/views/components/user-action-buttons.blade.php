@@ -7,7 +7,7 @@
    class="btn btn-light">
     {{__('appeals.links.contribs')}}
 </a>
-
+<br />
 <a href="{{ $baseUrl }}wiki/Special:BlockList/{{ $target }}"
    class="btn btn-light">
     {{__('appeals.links.find-block')}}
@@ -17,7 +17,7 @@
    class="btn btn-light">
     {{__('appeals.links.block-log')}}
 </a>
-
+<br />
 <a href="https://meta.wikimedia.org/wiki/Special:CentralAuth?target={{ $target }}"
    class="btn btn-light">
     {{__('appeals.links.ca')}}
@@ -27,7 +27,7 @@
    class="btn btn-light">
     ST
 </a>
-
+<br />
 @if($canUnblock)
     <a href="{{ $baseUrl }}wiki/Special:Unblock/{{ $target }}"
        class="btn btn-warning">

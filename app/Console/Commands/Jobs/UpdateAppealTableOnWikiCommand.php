@@ -22,5 +22,6 @@ class UpdateAppealTableOnWikiCommand extends Command
             $this->line("Scheduling for $wiki");
             UpdateWikiAppealListJob::dispatchNow($wiki);
         }
+        return 0;
     }
 }

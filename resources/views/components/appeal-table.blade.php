@@ -1,12 +1,12 @@
 <table class="table table-bordered table-dark">
     <thead>
     <tr>
-        <th scope="col">{{__('appeals.appeal-number')}}</th>
-        <th scope="col">{{__('appeals.appeal-for')}}</th>
-        <th scope="col">{{__('appeals.details-status')}}</th>
-        <th scope="col">{{__('appeals.details-block-admin')}}</th>
-        <th scope="col">{{__('appeals.details-block-reason')}}</th>
-        <th scope="col">{{__('appeals.details-submitted')}}</th>
+        <th scope="col">@sortablelink('id','#',[],['style'=>'color:white;'])</th>
+        <th scope="col">@sortablelink('appealfor',__('appeals.appeal-for'),[],['style'=>'color:white;'])</th>
+        <th scope="col">@sortablelink('status',__('appeals.details-status'),[],['style'=>'color:white;'])</th>
+        <th scope="col">@sortablelink('blockingadmin',__('appeals.details-block-admin'),[],['style'=>'color:white;'])</th>
+        <th scope="col">@sortablelink('blockreason',__('appeals.details-block-reason'),[],['style'=>'color:white;'])</th>
+        <th scope="col">@sortablelink('submitted',__('appeals.details-submitted'),[],['style'=>'color:white;'])</th>
     </tr>
     </thead>
     <tbody>
@@ -50,3 +50,8 @@
         @endforeach
     </tbody>
 </table>
+@if($mainPaginate)
+<div class="d-flex justify-content-center">
+    {{ $appeals->links() }}
+</div>
+@endif

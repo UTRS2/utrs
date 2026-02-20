@@ -70,6 +70,12 @@ return [
         'array' => [
             'transport' => 'array',
         ],
+
+        'mailcoach' => [
+            'transport' => 'mailcoach',
+            'domain' => env('MAILCOACH_DOMAIN', 'example.com'),
+            'token' => env('MAILCOACH_TOKEN', 'secret-token'),
+        ],
     ],
 
     /*

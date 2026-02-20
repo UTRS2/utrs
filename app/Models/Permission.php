@@ -55,4 +55,27 @@ class Permission extends Model
             ->intersect($perms)
             ->isNotEmpty();
     }
+
+    //check if the user has any permission on a particular wiki
+    public static function hasAnyPermsOnWiki($wiki)
+    {
+        //if has developer, steward, staff, tooladmin globally, return true
+        if (self::hasAnySpecifiedLocalOrGlobalPerms(null, ['developer', 'steward', 'staff', 'tooladmin'])) {
+            return true;
+        }
+        //if wiki is a number, convert it to the respective wiki name
+        if (is_numeric($wiki)) {
+            $wiki = Wiki::find($wiki)->database_name;
+        }
+        $listofpermissions = DB::table('permissions')
+            ->where('wiki', $wiki)
+            ->get();
+        //check if the list has any true values
+        foreach ($listofpermissions as $permission) {
+            if ($permission->hasAnyPerms()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

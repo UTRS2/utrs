@@ -35,6 +35,18 @@ return [
                  * Determines if symlinks should be followed.
                  */
                 'follow_links' => false,
+
+                /*
+                 * Determines if it should avoid unreadable folders.
+                 */
+                'ignore_unreadable_directories' => false,
+
+                /*
+                 * This path is used to make directories in resulting zip-file relative
+                 * Set to `null` to include complete absolute path
+                 * Example: base_path()
+                 */
+                'relative_path' => null,
             ],
 
             /*
@@ -85,12 +97,33 @@ return [
          */
         'database_dump_compressor' => null,
 
+        /*
+         * If specified, the database dumped file name will contain a timestamp (e.g.: 'Y-m-d-H-i-s').
+         */
+        'database_dump_file_timestamp_format' => null,
+
+        /*
+         * The base of the dump filename, either 'database' or 'connection'
+         *
+         * If 'database' (default), the dumped filename will contain the database name.
+         * If 'connection', the dumped filename will contain the connection name.
+         */
+        'database_dump_filename_base' => 'database',
+
+        /*
+         * The file extension used for the database dump files.
+         *
+         * If not specified, the file extension will be .archive for MongoDB and .sql for all other databases
+         * The file extension should be specified without a leading .
+         */
+        'database_dump_file_extension' => '',
+
         'destination' => [
 
             /*
              * The filename prefix used for the backup zip file.
              */
-            'filename_prefix' => 'utrs_backup_',
+            'filename_prefix' => '',
 
             /*
              * The disk names on which the backups will be stored.
@@ -104,24 +137,39 @@ return [
          * The directory where the temporary files will be stored.
          */
         'temporary_directory' => storage_path('app/backup-temp'),
+
+        /*
+         * The password to be used for archive encryption.
+         * Set to `null` to disable encryption.
+         */
+        'password' => env('BACKUP_ARCHIVE_PASSWORD'),
+
+        /*
+         * The encryption algorithm to be used for archive encryption.
+         * You can set it to `null` or `false` to disable encryption.
+         *
+         * When set to 'default', we'll use ZipArchive::EM_AES_256 if it is
+         * available on your system.
+         */
+        'encryption' => 'default',
     ],
 
     /*
      * You can get notified when specific events occur. Out of the box you can use 'mail' and 'slack'.
-     * For Slack you need to install guzzlehttp/guzzle and laravel/slack-notification-channel.
+     * For Slack you need to install laravel/slack-notification-channel.
      *
      * You can also use your own notification classes, just make sure the class is named after one of
-     * the `Spatie\Backup\Events` classes.
+     * the `Spatie\Backup\Notifications\Notifications` classes.
      */
     'notifications' => [
 
         'notifications' => [
-            \Spatie\Backup\Notifications\Notifications\BackupHasFailed::class => ['slack'],
-            \Spatie\Backup\Notifications\Notifications\UnhealthyBackupWasFound::class => ['slack'],
-            \Spatie\Backup\Notifications\Notifications\CleanupHasFailed::class => ['slack'],
-            \Spatie\Backup\Notifications\Notifications\BackupWasSuccessful::class => ['slack'],
-            \Spatie\Backup\Notifications\Notifications\HealthyBackupWasFound::class => ['slack'],
-            \Spatie\Backup\Notifications\Notifications\CleanupWasSuccessful::class => ['slack'],
+            \Spatie\Backup\Notifications\Notifications\BackupHasFailedNotification::class => ['mail'],
+            \Spatie\Backup\Notifications\Notifications\UnhealthyBackupWasFoundNotification::class => ['mail'],
+            \Spatie\Backup\Notifications\Notifications\CleanupHasFailedNotification::class => ['mail'],
+            \Spatie\Backup\Notifications\Notifications\BackupWasSuccessfulNotification::class => ['mail'],
+            \Spatie\Backup\Notifications\Notifications\HealthyBackupWasFoundNotification::class => ['mail'],
+            \Spatie\Backup\Notifications\Notifications\CleanupWasSuccessfulNotification::class => ['mail'],
         ],
 
         /*
@@ -140,17 +188,31 @@ return [
         ],
 
         'slack' => [
-            'webhook_url' => env('SLACK_BACKUP'),
+            'webhook_url' => '',
 
             /*
              * If this is set to null the default channel of the webhook will be used.
              */
             'channel' => null,
 
-            'username' => env('SLACK_BOTNAME','UTRSServerBot'),
+            'username' => null,
 
             'icon' => null,
 
+        ],
+
+        'discord' => [
+            'webhook_url' => '',
+
+            /*
+             * If this is an empty string, the name field on the webhook will be used.
+             */
+            'username' => '',
+
+            /*
+             * If this is an empty string, the avatar on the webhook will be used.
+             */
+            'avatar_url' => '',
         ],
     ],
 
@@ -223,6 +285,7 @@ return [
             /*
              * After cleaning up the backups remove the oldest backup until
              * this amount of megabytes has been reached.
+             * Set null for unlimited size.
              */
             'delete_oldest_backups_when_using_more_megabytes_than' => 330,
         ],
