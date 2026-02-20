@@ -57,9 +57,9 @@ class UserController extends Controller
 
         // if user is not a developer, steward clerk, steward, WMF staff, or tooladmin, or sysop, then set $setemail to false
         $setemail = false;
-        if ($user->hasAnySpecifiedPermsOnAnyWiki(['developer', 'stew_clerk', 'steward', 'staff', 'tooladmin', 'sysop'])) {
-            $setemail = true;
-        }
+        // if ($user->hasAnySpecifiedPermsOnAnyWiki(['developer', 'stew_clerk', 'steward', 'staff', 'tooladmin', 'sysop'])) {
+        //     $setemail = true;
+        // }
 
         // pull the env deepl languages, split into an array, and check if the input language is in the array
         $languages = env('DEEPL_LANGUAGE_CODES');

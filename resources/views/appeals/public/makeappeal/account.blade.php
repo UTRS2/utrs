@@ -74,10 +74,10 @@
                 <br /><button type="button" class="btn btn-info" onclick="getIP()">Don't know your IP? Get IP address automatically.</button>
             </div>
 
-            <div class="form-group mb-4">
+            {{--<div class="form-group mb-4">
                 {{ html()->label(__('appeals.forms.email'), 'email') }}
                 {{ html()->text('email', old('email'))->class('form-control') }}
-            </div>
+            </div>--}}
 
             <h5>{{ __('appeals.forms.appeal-info') }}</h5>
 

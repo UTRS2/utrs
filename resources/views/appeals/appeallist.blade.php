@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('content')
-    @if($noemail)
+    {{-- @if($noemail)
         <div class="alert alert-danger" role="alert">
-            {{__('generic.no-email')}}
+            <!--{{__('generic.no-email')}}-->
         </div>
-    @endif
+    @endif --}}
     @if($tooladmin)
         <div class="card">
             <h5 class="card-header">{{__('generic.admin-tools.title')}}</h5>

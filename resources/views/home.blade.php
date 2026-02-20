@@ -59,7 +59,7 @@
             </div>
             {{ html()->form()->close() }}
         </div>
-        <div class="card bg-light mb-5 text-center">
+        {{--<div class="card bg-light mb-5 text-center">
             {{ html()->form('POST', route('appealkey.reset'))->open() }}
             <div class="card-body">
                 <h5 class="card-title">{{__('auth.email.key-title')}}</h5>
@@ -72,6 +72,6 @@
                 </div>
             </div>
             {{ html()->form()->close() }}
-        </div>
+        </div>--}}
     </div>
 @endsection

@@ -181,63 +181,64 @@ class PublicAppealController extends Controller
             return response('Test: not actually saving anything');
         }
 
-        $email = $request->input('email');
-        // check if the email is null, if so, return with errors to the form page
-        if (is_null($email)) {
-            return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal'])->withInput();
-        }
-        // check if the email domain is in the prohibited domain list in the env file, if so, return with errors to the form page
-        if (!is_null($email) && in_array(explode('@', $email)[1], explode(',', env('PROHIBITED_EMAIL_DOMAINS')))) {
-            return Redirect::back()->withErrors(['msg'=>'The email domain you used is not allowed to be used for appeals.'])->withInput();
-        }
+        // $email = $request->input('email');
+        // // check if the email is null, if so, return with errors to the form page
+        // if (is_null($email)) {
+        //     return Redirect::back()->withErrors(['msg'=>'You must provide an email address to appeal'])->withInput();
+        // }
+        // // check if the email domain is in the prohibited domain list in the env file, if so, return with errors to the form page
+        // if (!is_null($email) && in_array(explode('@', $email)[1], explode(',', env('PROHIBITED_EMAIL_DOMAINS')))) {
+        //     return Redirect::back()->withErrors(['msg'=>'The email domain you used is not allowed to be used for appeals.'])->withInput();
+        // }
 
-        //check if email is banned and if so, return with errors to the form page
-        $emailbans = EmailBan::where('email', '=', $email)->first();
-        if (!is_null($emailbans)) {
-            if ($emailbans->appealbanned) {
-                return Redirect::back()->withErrors(['msg'=>'Your email address has been banned from making appeals. If you believe this is a mistake, please contact a tool administrator.'])->withInput();
-            }
-            //if the email was used in the last 36 hours, return with errors to the form page
-            $lastused = strtotime($emailbans->lastused);
-            $now = strtotime(now());
-            $diff = $now - $lastused;
-            $hours = $diff / ( 60 * 60 );
-            if ($hours < 36 && env('APP_SPAM_FILTER', true) == true) {
-                return Redirect::back()->withErrors(['msg'=>'Your email address has been used to file an appeal recently. Please make sure your recent appeal has been closed before filing another. If it has, you will need to take time to reflect on the response of the administrator before reappealing.'])->withInput();
-            }
-        }
-        //if the email used in the request has an appeal that is open, return with errors to the form page
-        $emailActive = Appeal::where('email', '=', $email)->whereIn('status', Appeal::ACTIVE_APPEAL_STATUSES)->get();
-        if (!is_null($email) && count($emailActive)>0 && env('APP_SPAM_FILTER', true) == true) {
-            return Redirect::back()->withErrors(['msg'=>'Your email address has an open appeal. Please wait for that appeal to close before submitting another appeal.'])->withInput();
-        }
+        // //check if email is banned and if so, return with errors to the form page
+        // $emailbans = EmailBan::where('email', '=', $email)->first();
+        // if (!is_null($emailbans)) {
+        //     if ($emailbans->appealbanned) {
+        //         return Redirect::back()->withErrors(['msg'=>'Your email address has been banned from making appeals. If you believe this is a mistake, please contact a tool administrator.'])->withInput();
+        //     }
+        //     //if the email was used in the last 36 hours, return with errors to the form page
+        //     $lastused = strtotime($emailbans->lastused);
+        //     $now = strtotime(now());
+        //     $diff = $now - $lastused;
+        //     $hours = $diff / ( 60 * 60 );
+        //     if ($hours < 36 && env('APP_SPAM_FILTER', true) == true) {
+        //         return Redirect::back()->withErrors(['msg'=>'Your email address has been used to file an appeal recently. Please make sure your recent appeal has been closed before filing another. If it has, you will need to take time to reflect on the response of the administrator before reappealing.'])->withInput();
+        //     }
+        // }
+        // //if the email used in the request has an appeal that is open, return with errors to the form page
+        // $emailActive = Appeal::where('email', '=', $email)->whereIn('status', Appeal::ACTIVE_APPEAL_STATUSES)->get();
+        // if (!is_null($email) && count($emailActive)>0 && env('APP_SPAM_FILTER', true) == true) {
+        //     return Redirect::back()->withErrors(['msg'=>'Your email address has an open appeal. Please wait for that appeal to close before submitting another appeal.'])->withInput();
+        // }
 
-        $emailkey = hash('sha512', $email . (microtime() . rand()));
-        //if email exists in the database, update the last used time, otherwise create a new entry
-        $emailBanEntry = NULL;
-        if (!is_null($emailbans)) {
-            $emailbans->lastused = now();
-            $linkedappeals = $emailbans->linkedappeals;
-            $emailbans->save();
+        // $emailkey = hash('sha512', $email . (microtime() . rand()));
+        // //if email exists in the database, update the last used time, otherwise create a new entry
+        // $emailBanEntry = NULL;
+        // if (!is_null($emailbans)) {
+        //     $emailbans->lastused = now();
+        //     $linkedappeals = $emailbans->linkedappeals;
+        //     $emailbans->save();
             
-        } elseif(!is_null($email)) {
-            $emailBanEntry = EmailBan::create([
-                'email' => $email,
-                'uid' => $emailkey,
-                'lastused' => now(),
-            ]);
-        }
-        if ($data['blocktype']!==0) {
-            $wikiemailBanEntry = EmailBan::firstOrCreate([
-                'email' => $data['appealfor'].'@wiki',
-                'uid' => $emailkey,
+        // } elseif(!is_null($email)) {
+        //     $emailBanEntry = EmailBan::create([
+        //         'email' => $email,
+        //         'uid' => $emailkey,
+        //         'lastused' => now(),
+        //     ]);
+        // }
+        // if ($data['blocktype']!==0) {
+        //     $wikiemailBanEntry = EmailBan::firstOrCreate([
+        //         'email' => $data['appealfor'].'@wiki',
+        //         'uid' => $emailkey,
                 
-                'lastused' => now(),
-            ]);
-        }
+        //         'lastused' => now(),
+        //     ]);
+        // }
 
         /** @var Appeal $appeal */
-        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $wikiemailBanEntry, $email) {
+        //$appeal = DB::transaction(function () use ($data, $ip, $ua, $lang, $emailbans, $emailBanEntry, $wikiemailBanEntry, $email) {
+        $appeal = DB::transaction(function () use ($data, $ip, $ua, $lang) {
             $appeal = Appeal::create($data);
 
             Privatedata::create([
@@ -256,23 +257,23 @@ class PublicAppealController extends Controller
                 'ua'         => $ua . ' ' . $lang,
             ]);
 
-            if (env('APP_ENV') == 'production' || env('APP_EMAIL_ON', FALSE) == TRUE) {
-                if ($appeal->blocktype == 0) {
-                    Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
-                    $emailBanEntry->lastemail = now();
-                    $emailBanEntry->save();
-                } else {
-                    //create a python job to send a wiki email
-                    $pythonjob = PythonJob::create([
-                        'appeal_id' => $appeal->id,
-                        'request_name' => 'send_wiki_email',
-                        'status' => 'pending',
-                    ]);
-                    $wikiemailBanEntry->lastemail = now();
-                    $wikiemailBanEntry->save();
-                }
+            // if (env('APP_ENV') == 'production' || env('APP_EMAIL_ON', FALSE) == TRUE) {
+            //     if ($appeal->blocktype == 0) {
+            //         Mail::to($email)->send(new VerifyAccount($email, route('public.appeal.verifyownership', ['appeal' => $appeal->id, 'token' => $appeal->verify_token])));
+            //         $emailBanEntry->lastemail = now();
+            //         $emailBanEntry->save();
+            //     } else {
+            //         //create a python job to send a wiki email
+            //         $pythonjob = PythonJob::create([
+            //             'appeal_id' => $appeal->id,
+            //             'request_name' => 'send_wiki_email',
+            //             'status' => 'pending',
+            //         ]);
+            //         $wikiemailBanEntry->lastemail = now();
+            //         $wikiemailBanEntry->save();
+            //     }
                 
-            }
+            // }
 
             //No longer supported - repo is unsupported
             //Now handled via python script
@@ -282,25 +283,25 @@ class PublicAppealController extends Controller
         });
 
         //now that we have the appeal id we need to add it to the emailban entry
-        if (!is_null($emailbans)) {
-            $linkedappeals = $emailbans->linkedappeals;
-            $emailbans->linkedappeals = $linkedappeals . ',' . $appeal->id;
-            $emailbans->save();
-        } else {
-            $emailBanEntry->linkedappeals = $emailBanEntry->linkedappeals . ',' . $appeal->id;
-            $emailBanEntry->save();
-        }
+        // if (!is_null($emailbans)) {
+        //     $linkedappeals = $emailbans->linkedappeals;
+        //     $emailbans->linkedappeals = $linkedappeals . ',' . $appeal->id;
+        //     $emailbans->save();
+        // } else {
+        //     $emailBanEntry->linkedappeals = $emailBanEntry->linkedappeals . ',' . $appeal->id;
+        //     $emailBanEntry->save();
+        // }
 
         $askproxy = FALSE; 
-        if ($data['proxy'] && $data['blocktype']==0) {
-            //if the IP is a proxy and the blocktype is IP, this will be given the chance to be diverted to ACC
-            //should the user accept, they will be given a form to fill out to request an account
-            //if they decline, the appeal will continue as normal           
-            return view('appeals.public.makeappeal.divertacc', [ 'hash' => $appeal->appealsecretkey ]);
-        }
-        elseif($data['proxy'] && $data['blocktype']!=0) {
-            $askproxy = TRUE;            
-        }
+        // if ($data['proxy'] && $data['blocktype']==0) {
+        //     //if the IP is a proxy and the blocktype is IP, this will be given the chance to be diverted to ACC
+        //     //should the user accept, they will be given a form to fill out to request an account
+        //     //if they decline, the appeal will continue as normal           
+        //     return view('appeals.public.makeappeal.divertacc', [ 'hash' => $appeal->appealsecretkey ]);
+        // }
+        // elseif($data['proxy'] && $data['blocktype']!=0) {
+        //     $askproxy = TRUE;            
+        // }
 
         return view('appeals.public.makeappeal.hash', [ 'hash' => $appeal->appealsecretkey, 'processed' => FALSE, 'askproxy' => $askproxy ]);
     }

@@ -56,13 +56,14 @@ class AppealController extends Controller
             /** @var User $user */
             $user = Auth::user();
 
-            $translateIDs = [];
-            // check if the appealtext has a translation in the users default language under log id 0
-            $translation = Translation::where('language', $user->default_translation_language)->where('log_entries_id', 0)->first();
-            if ($translation) {
-                $info->appealtext = $translation->translation;
-                $translateIDs[] = 0;
-            }
+            /** Translation turned off right now */
+            // $translateIDs = [];
+            // // check if the appealtext has a translation in the users default language under log id 0
+            // $translation = Translation::where('language', $user->default_translation_language)->where('log_entries_id', 0)->first();
+            // if ($translation) {
+            //     $info->appealtext = $translation->translation;
+            //     $translateIDs[] = 0;
+            // }
 
             $logs = $info->comments;
             $i=0;
@@ -126,7 +127,7 @@ class AppealController extends Controller
                 'previousAppeals' => $previousAppeals,
                 'urlname' => $urlname,
                 'wikis' => $newwikis,
-                'translateIDs' => $translateIDs,
+                //'translateIDs' => $translateIDs,
             ]);
         }
 
@@ -350,6 +351,7 @@ class AppealController extends Controller
                         elseif($linecomment['action'] == 'changed block information') {
                             $appealmap[] = ['text'=>__('appeals.map.blockchange'), 'time'=>$linecomment['timestamp'].' - '.$linecomment['user'], 'icon'=>'pencil','active'=>"yes",'appealid'=>$appealid];
                         }
+                        elseif($linecomment['action'] == 'checkuser') {}
                         //if linecomment action contains "set status as" then based on the remainder of the string, set an map entry
                         elseif(strpos($linecomment['action'], 'set status as') !== false || strpos($linecomment['action'], 'closed - ') !== false || strpos($linecomment['action'], 'closed as') !== false) {
                             if (strpos($linecomment['action'], 'closed as') !== false) {$status = strtoupper(str_replace('closed as ','',$linecomment['action']));}

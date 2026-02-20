@@ -72,7 +72,7 @@
                     </li>
                 @endcan
             </ul>
-            <ul class="navbar-nav ms-auto"> <!-- right nav -->
+            <ul class="navbar-nav" data-bs-theme="dark"> <!-- right nav -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ Auth::user()->username }}
@@ -109,6 +109,7 @@
         </div>
     </div>
 </nav>
+<div class="alert alert-warning" role="alert">Launch of UTRS 3: Please note that we are now running UTRS 3. Should you encounter unexpected behavoir, please report it.</div>
 @env(['local','dev'])
 <div class="alert alert-warning" role="alert">BE AWARE: You are running UTRS in development mode. There are some functionality differences, plus, this will help you know whether you are looking at live or dev ;).</div>
 @endenv

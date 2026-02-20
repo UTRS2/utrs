@@ -105,7 +105,7 @@ function displayTransfer() {
                                 <h5 class="card-title">{{__('appeals.section-headers.content')}}</h5>
                                 <b>{{__('appeals.content-question-why')}}</b>
                                 <p>{{ $info->appealtext }}</p>
-                                @if(in_array(0,$translateIDs))
+                                {{--@if(in_array(0,$translateIDs))
                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                 @else
                                 <a href="{{ route('translate.activate', ['appeal' => $info, 'logid' => 0])}}">
@@ -113,7 +113,7 @@ function displayTransfer() {
                                         <div style="font-size: 20px; font-family: 'Courier New', monospace; text-align: center;">{{__('generic.translate-with')}}</div>&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
                                     </div>
                                 </a>
-                                @endif
+                                @endif--}}
 
                                 @can('update', $info)
                                     <br /><br />
@@ -274,7 +274,7 @@ function displayTransfer() {
                                                 <a href="{{ route('appeal.template', $info) }}"><button class="btn btn-info">
                                                     {{__('appeals.send-reply-button')}}
                                                 </button></a>
-                                                @if ($info->status !== Appeal::STATUS_ACC)
+                                                @if ($info->status !== Appeal::STATUS_ACC && env('APP_SEND_ACC'))
                                                 <a href="{{ route('appeal.sendtoacc', $info) }}"><button class="btn btn-info">
                                                     {{__('appeals.send-acc')}}
                                                 </button></a>

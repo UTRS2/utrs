@@ -13,10 +13,6 @@ trait ProxycheckTrait
             return false;
         }
         
-        //Tester
-        $ip = "2606:40:4d4:1112::260:2b9";
-        return false;
-
         $proxycheck_options = array(
             'API_KEY' => env('PROXYCHECK_API_KEY'),
             'DAY_RESTRCTOR' => 7,
