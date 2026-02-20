@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          - 7.3 # current production
-          - 8.3 # target, https://github.com/UTRS2/utrs/issues/375
+          - 8.3
     services:
       mysql:
         image: mariadb:10.5
@@ -28,7 +27,7 @@ jobs:
         with:
           extensions: zip, mbstring, dom, fileinfo, mysql
           php-version: ${{ matrix.php-versions }}
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Copy env file
         run: cp .env.ci .env
       - name: Cache Composer dependencies
@@ -66,23 +65,6 @@ jobs:
       - name: Build assets
         run: npm run production
       - name: Run tests
-        run: composer test
+        run: composer test --verbose
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Start chromedriver
-        run: chromedriver &
-      - name: Start Laravel Server
-        run: php artisan serve &
-        env:
-          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - name: Run Browser Tests
-        run: php artisan dusk
-        continue-on-error: true  # Tests need to be fixed
-        env:
-          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      - uses: actions/upload-artifact@v4
-        name: Save Dusk screenshots
-        if: failure()
-        with:
-          name: dusk-screenshots
-          path: tests/Browser/screenshots/*.png

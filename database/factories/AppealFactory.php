@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 use App\Models\Appeal;
 use App\Models\Wiki;
+use App\Models\LogEntry;
 use App\Services\Facades\MediaWikiRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Database\Factories\LogEntryFactory;
+
 
 class AppealFactory extends Factory
 {
@@ -39,6 +42,7 @@ class AppealFactory extends Factory
             'wiki' => $wiki->database_name,
             'wiki_id' => $wiki->id,
             'user_verified' => 0,
+            'proxy' => 0,
         ];
     }
 }

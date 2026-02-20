@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Lang;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,9 +45,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+        Paginator::useBootstrapFour();
+
+        // Lang::handleMissingKeysUsing(function (string $key, array $replacements, string $locale) {
+        //     info("Missing translation key [$key] detected.");
+     
+        //     return $key;
+        // });
 
         if (Request::has('uselang')) {
             App::setLocale(Request::get('uselang', 'en'));
         }
+
+        
     }
 }

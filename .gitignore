@@ -26,3 +26,6 @@ _ide_helper_models.php
 
 resources/lang/vendor/*
 !resources/lang/vendor/torblock
+python/config.py
+resources/lang/en/utrs.code-workspace
+.phpunit.cache/test-results
