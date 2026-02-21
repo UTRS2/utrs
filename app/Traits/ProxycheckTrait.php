@@ -23,18 +23,20 @@ trait ProxycheckTrait
         $result_array = \proxycheck\proxycheck::check($ip, $proxycheck_options);
         
         //check if status is ok
-        if ($result_array['status'] != 'ok') {
-            throw new \Exception('Proxy detection error: ' . $result_array['status']);
-        }
-
-        if ($result_array[$ip]['detections']['proxy'] == true 
-           || $result_array[$ip]['detections']['vpn'] == true
-           || $result_array[$ip]['detections']['tor'] == true
-           || $result_array[$ip]['detections']['anonymous'] == true
-           ) {
-            return true;
-        } else {
-            return false;
-        }
+        if(env('APP_ENV') == 'production') {
+            if ($result_array['status'] != 'ok') {
+                throw new \Exception('Proxy detection error: ' . $result_array['status']);
+            }
+            
+            if ($result_array[$ip]['detections']['proxy'] == true 
+            || $result_array[$ip]['detections']['vpn'] == true
+            || $result_array[$ip]['detections']['tor'] == true
+            || $result_array[$ip]['detections']['anonymous'] == true
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {return false;}
     }
 }
