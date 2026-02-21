@@ -28,7 +28,7 @@ class ActivateGIPBEReqCommand extends Command
      */
     public function handle()
     {
-        PostGlobalIPBEReqJob::dispatchNow();
+        PostGlobalIPBEReqJob::dispatchSync();
         return 0;
     }
 }
