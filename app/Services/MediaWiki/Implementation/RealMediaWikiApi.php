@@ -17,9 +17,8 @@ use Addwiki\MediawikiApi\SimpleRequest;
 use Addwiki\MediawikiApiBase\Client\Action\ActionApi;
 use Addwiki\MediawikiApiBase\Auth\NoAuth;
 
-use App\Services\Mediawiki\Api\MediawikiApi;
-use App\Services\Mediawiki\Api\MediawikiExtras;
-use App\Services\Mediawiki\Api\MediawikiApi as MediawikiApiContract;
+use App\Services\MediaWiki\Api\MediaWikiApi as MediawikiApiContract;
+use App\Services\Mediawiki\Api\MediaWikiExtras;
 use App\Services\Mediawiki\Implementation\RealMediaWikiExtras;
 
 class RealMediaWikiApi implements MediawikiApiContract
