@@ -127,15 +127,13 @@ class StatsController extends Controller
                 }
             }
             //go through $admins and remove any with a count of less than 10
+            //dd($admins);
             foreach ($admins as $admin => $count) {
-                // if in production
-                if (app()->environment('production')) {
-                    if ($count < 15 && $requestedWiki != 'global') {
-                        unset($admins[User::findOrFail($admin)->name]);
-                    }
-                    elseif ($count < 2 && $requestedWiki == 'global') {
-                        unset($admins[User::findOrFail($admin)->name]);
-                    }
+                if ($count < 30 && $requestedWiki != 'global') {
+                    unset($admins[$admin]);
+                }
+                elseif ($count < 2 && $requestedWiki == 'global') {
+                    unset($admins[$admin]);
                 }
             }
             //sort the array by the number of times they are blocking admins
@@ -144,7 +142,7 @@ class StatsController extends Controller
                 $chart_data->addRow([$admin, $count]);
             }
             \Lava::BarChart('admincount', $chart_data, [
-                'title' => 'Number of requests per block admin if over 15 appeals in last '.$numericDay.' days - '.$requestedWiki,
+                'title' => 'Number of requests per block admin if over 30 appeals in last '.$numericDay.' days - '.$requestedWiki,
                 'legend' => [
                     'position' => 'none'
                 ],
