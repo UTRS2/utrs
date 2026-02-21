@@ -22,7 +22,7 @@
                             <a href="{{ route('admin.templates.update', $template->id) }}" class="btn btn-primary">{{ $template->id }}</a>
                         </td>
                         <td style="vertical-align: middle;">{{ $template->name }}</td>
-                        <td style="vertical-align: middle;">{{ $template->wiki->name }}</td>
+                        <td style="vertical-align: middle;">{{ $template->wiki->display_name }}</td>
 
                     </tr>
                 @endforeach
