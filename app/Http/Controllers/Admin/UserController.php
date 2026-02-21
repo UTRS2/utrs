@@ -106,9 +106,9 @@ class UserController extends Controller
             ]);
 
             //update the preferences without logging
-            $user->weekly_appeal_list = $data['weekly_appeal_list'];
-            $user->appeal_notifications = $data['appeal_notifications'];
-            $user->saveOrFail();
+            //$user->weekly_appeal_list = $data['weekly_appeal_list'];
+            //$user->appeal_notifications = $data['appeal_notifications'];
+            //$user->saveOrFail();
 
             $reason = $data['reason'];
 
