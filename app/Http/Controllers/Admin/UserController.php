@@ -37,7 +37,7 @@ class UserController extends Controller
 
         //if user is tooladmin, set $canAdmin to true
         $canAdmin = false;
-        if (auth()->user()->can('update', User::class)) {
+        if (auth()->user()->can('update', auth()->user())) {
             $canAdmin = true;
         }
 
