@@ -18,7 +18,7 @@ class StatsController extends Controller
             return abort(403, 'User not logged in');
         }
         //check if authed, and if not, present 403
-        if (!auth()->user()->can('viewAny')) {
+        if (auth()->user()->can('viewAny')) {
             return abort(403, 'User does not have permission to view any appeals');
         }
         $requestedChart = $request->name;
