@@ -1,44 +1,61 @@
 <?php
 
-namespace App\Services\MediaWiki\Implementation;
+namespace App\Services\Mediawiki\Implementation;
 
 use Throwable;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use Mediawiki\Api\SimpleRequest;
-use GuzzleHttp\Cookie\FileCookieJar;
-use App\Services\MediaWiki\Api\MediaWikiApi;
-use App\Services\MediaWiki\Api\MediaWikiExtras;
-use Mediawiki\Api\ApiUser;
-use Mediawiki\Api\MediawikiApi as AddwikiMediaWikiApi;
-use Mediawiki\Api\MediawikiFactory;
 use RuntimeException;
 
-class RealMediaWikiApi implements MediaWikiApi
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\FileCookieJar;
+
+use Addwiki\MediawikiApi\MediawikiFactory;
+use Addwiki\MediawikiApi\CategoryLookupException;
+use Addwiki\MediawikiApi\ApiUser;
+use Addwiki\MediawikiApi\SimpleRequest;
+
+use Addwiki\MediawikiApiBase\Client\Action\ActionApi;
+use Addwiki\MediawikiApiBase\Auth\NoAuth;
+
+use App\Services\Mediawiki\Api\MediawikiApi;
+use App\Services\Mediawiki\Api\MediawikiExtras;
+use App\Services\Mediawiki\Api\MediawikiApi as MediawikiApiContract;
+use App\Services\Mediawiki\Implementation\RealMediaWikiExtras;
+
+class RealMediaWikiApi implements MediawikiApiContract
 {
-    /** @var boolean */
+    /** @var bool */
     private $loggedIn = false;
 
-    /** @var AddwikiMediaWikiApi */
+    /** @var MediawikiFactory */
+    private $factory;
+
+    /** @var ActionApi */
     private $api;
 
     /** @var Client */
     private $guzzleClient;
 
-    /** @var boolean */
+    /** @var bool */
     private $hasExistingSession = false;
 
     public function __construct(string $identifier, string $url)
     {
         $this->guzzleClient = $this->createGuzzleClient($identifier);
-        $this->api = new AddwikiMediaWikiApi($url, $this->guzzleClient);
+
+        // Build ActionApi (3.x) and then the MediawikiFactory from it.
+        $this->api = new ActionApi(
+            $url,
+            new NoAuth(),
+            $this->guzzleClient
+        );
+
+        $this->factory = new MediawikiFactory($this->api);
 
         /** @var CookieJar $jar */
         $jar = $this->guzzleClient->getConfig('cookies');
 
-        // session names are unreliable, just assume there is at least some session if it's not empty
-        // checking the logged-in status when logging in isn't that expensive and this is significantly
-        // simpler than trying to guess the correct session cookie name which can change at any point anyways
+        // Session names are unreliable; assume there is at least some session if the jar is not empty.
         if ($jar->count() > 0) {
             $this->hasExistingSession = true;
         }
@@ -50,25 +67,26 @@ class RealMediaWikiApi implements MediaWikiApi
     protected function createGuzzleClient(string $identifier): Client
     {
         $cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
+
         return new Client([
             'cookies' => $cookieJar,
             'headers' => [
                 'User-Agent' => 'UTRS 2, https://github.com/utrs2/utrs',
-            ]
+            ],
         ]);
     }
 
-    public function getAddWikiMediaWikiApi(): AddwikiMediaWikiApi
+    public function getAddwikiMediawikiApi(): ActionApi
     {
         return $this->api;
     }
 
-    public function getAddWikiServices(): MediawikiFactory
+    public function getAddwikiServices(): MediawikiFactory
     {
-        return new MediawikiFactory($this->api);
+        return $this->factory;
     }
 
-    public function getMediaWikiExtras(): MediaWikiExtras
+    public function getMediaWikiExtras(): MediawikiExtras
     {
         return new RealMediaWikiExtras($this);
     }
@@ -81,19 +99,20 @@ class RealMediaWikiApi implements MediaWikiApi
 
         if ($this->hasExistingSession) {
             try {
-                $userInfoResponse = $this->api->getRequest(new SimpleRequest('query', ['meta' => 'userinfo']));
+                $userInfoResponse = $this->api->getRequest(
+                    new SimpleRequest('query', ['meta' => 'userinfo'])
+                );
 
-                // mediawiki assigns user ID 0 to logged-out editors, so we can use that to check if we are logged in
-                if ($userInfoResponse['query']['userinfo']['id'] > 0) {
+                // MediaWiki assigns user ID 0 to logged-out editors, so use that to check if we are logged in.
+                if (($userInfoResponse['query']['userinfo']['id'] ?? 0) > 0) {
                     $this->loggedIn = true;
                     return;
                 }
             } catch (Throwable $ignored) {
-                // we're checking if our session is invalid, it may just well throw an exception if it isn't
-                // but we don't need to handle it - we'll clear all cookies next in any case
+                // If session is invalid, MW may throw; we clear cookies next anyway.
             }
 
-            // looks like our session has expired, let's just kill it
+            // Looks like our session has expired; kill it.
             /** @var CookieJar $jar */
             $jar = $this->guzzleClient->getConfig('cookies');
             $jar->clear();
@@ -102,7 +121,13 @@ class RealMediaWikiApi implements MediaWikiApi
         }
 
         if (config('wikis.login.username') && config('wikis.login.password')) {
-            $this->api->login(new ApiUser(config('wikis.login.username'), config('wikis.login.password')));
+            $this->api->login(
+                new ApiUser(
+                    config('wikis.login.username'),
+                    config('wikis.login.password')
+                )
+            );
+
             $this->loggedIn = true;
             $this->hasExistingSession = true;
             return;
