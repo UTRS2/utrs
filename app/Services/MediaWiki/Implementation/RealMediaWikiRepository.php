@@ -59,7 +59,7 @@ class RealMediaWikiRepository implements MediaWikiRepository
     /**
      * {@inheritDoc}
      */
-    public function getApiForTarget(string $target): MediawikiApi
+    public function getApiForTarget(string $target): MediaWikiApi
     {
         if (!array_key_exists($target, $this->loadedApis)) {
             $this->loadedApis[$target] = new RealMediaWikiApi($target,

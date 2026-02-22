@@ -22,7 +22,7 @@ class FakeMediaWikiRepository extends RealMediaWikiRepository
         return $includeGlobal ? ['enwiki', 'ptwiki', 'global'] : ['enwiki', 'ptwiki'];
     }
 
-    public function getApiForTarget(string $target): MediawikiApi
+    public function getApiForTarget(string $target): MediaWikiApi
     {
         return new FakeMediaWikiApi($this, $target);
     }

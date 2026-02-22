@@ -4,7 +4,7 @@ namespace App\Services\MediaWiki\Implementation\Access;
 
 use App\Services\MediaWiki\Api\MediaWikiApi;
 use App\Services\MediaWiki\Api\WikiAccessChecker;
-use Mediawiki\DataModel\User;
+use MediaWiki\DataModel\User;
 
 abstract class BaseAccessChecker implements WikiAccessChecker
 {

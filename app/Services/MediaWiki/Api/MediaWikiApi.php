@@ -2,17 +2,17 @@
 
 namespace App\Services\MediaWiki\Api;
 
-use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
-use Addwiki\Mediawiki\Api\MediawikiFactory;
+use Addwiki\MediaWiki\Api\Client\Action\ActionApi;
+use Addwiki\MediaWiki\Api\MediaWikiFactory;
 
 /**
  * Provides access to the API for the specified MediaWiki endpoint.
  */
 interface MediaWikiApi
 {
-    public function getAddwikiMediawikiApi(): ActionApi;
+    public function getAddwikiMediaWikiApi(): ActionApi;
 
-    public function getAddwikiServices(): MediawikiFactory;
+    public function getAddwikiServices(): MediaWikiFactory;
 
     public function getMediaWikiExtras(): MediaWikiExtras;
 

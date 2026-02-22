@@ -2,10 +2,10 @@
 
 namespace Tests\Fakes\MediaWiki;
 
-use Mediawiki\Api\MediawikiFactory;
+use MediaWiki\Api\MediaWikiFactory;
 use Tests\Fakes\MediaWiki\Factories\FakeUserGetter;
 
-class FakeMediaWikiApiServiceFactory extends MediawikiFactory
+class FakeMediaWikiApiServiceFactory extends MediaWikiFactory
 {
     private $fakeApi;
     private $wiki;

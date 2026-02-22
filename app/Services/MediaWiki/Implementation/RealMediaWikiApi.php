@@ -9,23 +9,23 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\FileCookieJar;
 
-use Addwiki\Mediawiki\Api\MediawikiFactory;
-use Addwiki\Mediawiki\Api\CategoryLookupException;
-use Addwiki\Mediawiki\Api\ApiUser;
-use Addwiki\Mediawiki\Api\SimpleRequest;
-use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
-use Addwiki\Mediawiki\Api\Client\Auth\NoAuth;
+use Addwiki\MediaWiki\Api\MediaWikiFactory;
+use Addwiki\MediaWiki\Api\CategoryLookupException;
+use Addwiki\MediaWiki\Api\ApiUser;
+use Addwiki\MediaWiki\Api\SimpleRequest;
+use Addwiki\MediaWiki\Api\Client\Action\ActionApi;
+use Addwiki\MediaWiki\Api\Client\Auth\NoAuth;
 
-use App\Services\MediaWiki\Api\MediaWikiApi as MediawikiApiContract;
-use App\Services\Mediawiki\Api\MediaWikiExtras;
-use App\Services\Mediawiki\Implementation\RealMediaWikiExtras;
+use App\Services\MediaWiki\Api\MediaWikiApi as MediaWikiApiContract;
+use App\Services\MediaWiki\Api\MediaWikiExtras;
+use App\Services\MediaWiki\Implementation\RealMediaWikiExtras;
 
-class RealMediaWikiApi implements MediawikiApiContract
+class RealMediaWikiApi implements MediaWikiApiContract
 {
     /** @var bool */
     private $loggedIn = false;
 
-    /** @var MediawikiFactory */
+    /** @var MediaWikiFactory */
     private $factory;
 
     /** @var ActionApi */
@@ -41,14 +41,14 @@ class RealMediaWikiApi implements MediawikiApiContract
     {
         $this->guzzleClient = $this->createGuzzleClient($identifier);
 
-        // Build ActionApi (3.x) and then the MediawikiFactory from it.
+        // Build ActionApi (3.x) and then the MediaWikiFactory from it.
         $this->api = new ActionApi(
             $url,
             new NoAuth(),
             $this->guzzleClient
         );
 
-        $this->factory = new MediawikiFactory($this->api);
+        $this->factory = new MediaWikiFactory($this->api);
 
         /** @var CookieJar $jar */
         $jar = $this->guzzleClient->getConfig('cookies');
@@ -74,17 +74,17 @@ class RealMediaWikiApi implements MediawikiApiContract
         ]);
     }
 
-    public function getAddwikiMediawikiApi(): ActionApi
+    public function getAddwikiMediaWikiApi(): ActionApi
     {
         return $this->api;
     }
 
-    public function getAddwikiServices(): MediawikiFactory
+    public function getAddwikiServices(): MediaWikiFactory
     {
         return $this->factory;
     }
 
-    public function getMediaWikiExtras(): MediawikiExtras
+    public function getMediaWikiExtras(): MediaWikiExtras
     {
         return new RealMediaWikiExtras($this);
     }
