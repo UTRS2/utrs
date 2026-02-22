@@ -15,6 +15,7 @@ use Addwiki\Mediawiki\Api\SimpleRequest;
 use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
 use Addwiki\Mediawiki\Api\Client\Auth\NoAuth;
 use Addwiki\Mediawiki\Api\Client\Auth\UserAndPassword;
+use Addwiki\Mediawiki\Api\Client\Action\Request\ActionRequest;
 
 use App\Services\MediaWiki\Api\MediaWikiApi as MediaWikiApiContract;
 use App\Services\MediaWiki\Api\MediaWikiExtras;
@@ -102,8 +103,8 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         if ($this->hasExistingSession) {
             try {
-                $userInfoResponse = $this->api->getRequest(
-                    new SimpleRequest('query', ['meta' => 'userinfo'])
+                $userInfoResponse = $this->api->request(
+                    ActionRequest::simpleGet('query', ['meta' => 'userinfo'])
                 );
 
                 // MediaWiki assigns user ID 0 to logged-out editors, so use that to check if we are logged in.
