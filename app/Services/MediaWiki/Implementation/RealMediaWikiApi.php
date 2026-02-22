@@ -9,11 +9,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\FileCookieJar;
 
-use Addwiki\MediawikiApi\MediawikiFactory;
-use Addwiki\MediawikiApi\CategoryLookupException;
-use Addwiki\MediawikiApi\ApiUser;
-use Addwiki\MediawikiApi\SimpleRequest;
-
+use Addwiki\Mediawiki\Api\MediawikiFactory;
+use Addwiki\Mediawiki\Api\CategoryLookupException;
+use Addwiki\Mediawiki\Api\ApiUser;
+use Addwiki\Mediawiki\Api\SimpleRequest;
 use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
 use Addwiki\Mediawiki\Api\Client\Auth\NoAuth;
 
