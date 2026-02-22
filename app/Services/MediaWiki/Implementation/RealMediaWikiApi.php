@@ -47,12 +47,22 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         $this->guzzleClient = $this->createGuzzleClient($identifier);
 
-        // Build ActionApi (3.x) and then the MediawikiFactory from it.
+        $auth = new NoAuth();
+
+        if (config('wikis.login.username') && config('wikis.login.password')) {
+            $auth = new UserAndPassword(
+                config('wikis.login.username'),
+                config('wikis.login.password')
+            );
+        }
+
         $this->api = new ActionApi(
             $this->apiUrl,
-            new NoAuth(),
+            $auth,
             $this->guzzleClient
         );
+
+        $this->factory = new MediawikiFactory($this->api);
 
         $this->factory = new MediawikiFactory($this->api);
 
@@ -101,44 +111,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
             return;
         }
 
-        if ($this->hasExistingSession) {
-            try {
-                $userInfoResponse = $this->api->request(
-                    ActionRequest::simpleGet('query', ['meta' => 'userinfo'])
-                );
-
-                // MediaWiki assigns user ID 0 to logged-out editors, so use that to check if we are logged in.
-                if (($userInfoResponse['query']['userinfo']['id'] ?? 0) > 0) {
-                    $this->loggedIn = true;
-                    return;
-                }
-            } catch (Throwable $ignored) {
-                // If session is invalid, MW may throw; we clear cookies next anyway.
-            }
-
-            // Looks like our session has expired; kill it.
-            /** @var CookieJar $jar */
-            $jar = $this->guzzleClient->getConfig('cookies');
-            $jar->clear();
-
-            $this->hasExistingSession = false;
-        }
-
         if (config('wikis.login.username') && config('wikis.login.password')) {
-
-            $auth = new UserAndPassword(
-                config('wikis.login.username'),
-                config('wikis.login.password')
-            );
-
-            $this->api = new ActionApi(
-                    $this->apiUrl,
-                    $auth,
-                    $this->guzzleClient
-            );
-
-            $this->factory = new MediawikiFactory($this->api);
-
             $this->loggedIn = true;
             $this->hasExistingSession = true;
             return;
