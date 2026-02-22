@@ -5,7 +5,7 @@ namespace Tests\Fakes\MediaWiki;
 use App\Services\MediaWiki\Api\MediaWikiApi;
 use App\Services\MediaWiki\Api\MediaWikiExtras;
 use MediaWiki\Api\MediaWikiApi as AddwikiMediaWikiApi;
-use MediaWiki\Api\MediaWikiFactory;
+use MediaWiki\Api\MediawikiFactory;
 use RuntimeException;
 
 class FakeMediaWikiApi implements MediaWikiApi
@@ -32,7 +32,7 @@ class FakeMediaWikiApi implements MediaWikiApi
         return new FakeMediaWikiApiAddwikiApi($this);
     }
 
-    public function getAddWikiServices(): MediaWikiFactory
+    public function getAddWikiServices(): MediawikiFactory
     {
         return new FakeMediaWikiApiServiceFactory($this);
     }

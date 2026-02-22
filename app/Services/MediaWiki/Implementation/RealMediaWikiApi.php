@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\FileCookieJar;
 
-use Addwiki\Mediawiki\Api\MediaWikiFactory;
+use Addwiki\Mediawiki\Api\MediawikiFactory;
 use Addwiki\Mediawiki\Api\CategoryLookupException;
 use Addwiki\Mediawiki\Api\ApiUser;
 use Addwiki\Mediawiki\Api\SimpleRequest;
@@ -25,7 +25,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
     /** @var bool */
     private $loggedIn = false;
 
-    /** @var MediaWikiFactory */
+    /** @var MediawikiFactory */
     private $factory;
 
     /** @var ActionApi */
@@ -41,14 +41,14 @@ class RealMediaWikiApi implements MediaWikiApiContract
     {
         $this->guzzleClient = $this->createGuzzleClient($identifier);
 
-        // Build ActionApi (3.x) and then the MediaWikiFactory from it.
+        // Build ActionApi (3.x) and then the MediawikiFactory from it.
         $this->api = new ActionApi(
             $url,
             new NoAuth(),
             $this->guzzleClient
         );
 
-        $this->factory = new MediaWikiFactory($this->api);
+        $this->factory = new MediawikiFactory($this->api);
 
         /** @var CookieJar $jar */
         $jar = $this->guzzleClient->getConfig('cookies');
@@ -79,7 +79,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
         return $this->api;
     }
 
-    public function getAddwikiServices(): MediaWikiFactory
+    public function getAddwikiServices(): MediawikiFactory
     {
         return $this->factory;
     }
