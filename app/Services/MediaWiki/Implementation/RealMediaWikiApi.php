@@ -14,7 +14,6 @@ use Addwiki\Mediawiki\Api\CategoryLookupException;
 use Addwiki\Mediawiki\Api\SimpleRequest;
 use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
 use Addwiki\Mediawiki\Api\Client\Auth\NoAuth;
-use Addwiki\Mediawiki\Api\Client\Auth\UserAndPassword;
 use Addwiki\Mediawiki\Api\Client\Action\Request\ActionRequest;
 
 use App\Services\MediaWiki\Api\MediaWikiApi as MediaWikiApiContract;
@@ -49,16 +48,18 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         $auth = new NoAuth();
 
-        if (config('wikis.login.username') && config('wikis.login.password')) {
-            $auth = new UserAndPassword(
-                config('wikis.login.username'),
-                config('wikis.login.password')
-            );
-        }
+        // if (config('wikis.login.username') && config('wikis.login.password')) {
+        //     $auth = new UserAndPassword(
+        //         config('wikis.login.username'),
+        //         config('wikis.login.password')
+        //     );
+        // }
+
+        $auth = new NoAuth();
 
         $this->api = new ActionApi(
             $this->apiUrl,
-            $auth,
+            new NoAuth(),
             $this->guzzleClient
         );
 
@@ -82,12 +83,18 @@ class RealMediaWikiApi implements MediaWikiApiContract
     {
         $cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
 
-        return new Client([
+        $opts = [
             'cookies' => $cookieJar,
             'headers' => [
-                'User-Agent' => 'UTRS 2, https://github.com/utrs2/utrs',
+                'User-Agent' => 'UTRS 3, https://github.com/utrs2/utrs',
             ],
-        ]);
+        ];
+
+        if (config('wikis.login.username') && config('wikis.login.password')) {
+            $opts['auth'] = [config('wikis.login.username'), config('wikis.login.password')];
+        }
+
+        return new Client($opts);
     }
 
     public function getAddwikiMediaWikiApi(): ActionApi
@@ -111,12 +118,11 @@ class RealMediaWikiApi implements MediaWikiApiContract
             return;
         }
 
-        if (config('wikis.login.username') && config('wikis.login.password')) {
-            $this->loggedIn = true;
-            $this->hasExistingSession = true;
-            return;
+        if (!config('wikis.login.username') || !config('wikis.login.password')) {
+            throw new RuntimeException('No MediaWiki API credentials located.');
         }
 
-        throw new RuntimeException('No MediaWiki API credentials located.');
+        $this->loggedIn = true;
+        $this->hasExistingSession = true;
     }
 }
