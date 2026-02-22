@@ -2,7 +2,7 @@
 
 namespace App\Services\MediaWiki\Api;
 
-use Addwiki\MediawikiApiBase\Client\Action\ActionApi;
+use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
 use Addwiki\MediawikiApi\MediawikiFactory;
 
 /**
