@@ -3,7 +3,7 @@
 namespace App\Services\MediaWiki\Implementation\Access;
 
 use App\Services\MediaWiki\Api\MediaWikiApi;
-use MediaWiki\DataModel\User;
+use Mediawiki\DataModel\User;
 
 class GlobalAccessChecker extends BaseAccessChecker
 {
