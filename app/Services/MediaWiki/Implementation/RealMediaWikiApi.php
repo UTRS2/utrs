@@ -31,6 +31,9 @@ class RealMediaWikiApi implements MediaWikiApiContract
     /** @var ActionApi */
     private $api;
 
+    /** @var string */
+    private $apiUrl;
+
     /** @var Client */
     private $guzzleClient;
 
@@ -39,11 +42,13 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
     public function __construct(string $identifier, string $url)
     {
+        $this->apiUrl = $url;
+
         $this->guzzleClient = $this->createGuzzleClient($identifier);
 
         // Build ActionApi (3.x) and then the MediawikiFactory from it.
         $this->api = new ActionApi(
-            $url,
+            $apiUrl,
             new NoAuth(),
             $this->guzzleClient
         );
@@ -126,7 +131,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
             );
 
             $this->api = new ActionApi(
-                    $this->url,
+                    $this->apiUrl,
                     $auth,
                     $this->guzzleClient
             );
