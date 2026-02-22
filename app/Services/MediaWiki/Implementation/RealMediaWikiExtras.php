@@ -57,6 +57,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
         $tokenResp = $actionApi->request(
             ActionRequest::simpleGet('query', [
+                'assert' => 'user',
                 'meta' => 'tokens',
                 'type' => 'csrf',
             ])
@@ -94,6 +95,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
             $response = $this->getApi()->request(ActionRequest::simpleGet(
                 'query',
                 [
+                    'assert'   => 'user',
                     'list'     => 'blocks',
                     $searchKey => $target,
                     'bkprop'   => 'by|byid|expiry|flags|id|range|reason|restrictions|timestamp|user|userid',
@@ -130,6 +132,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
                 $response = $this->getApi()->request(ActionRequest::simpleGet(
                     'query',
                     [
+                        'assert'   => 'user',
                         'list' => 'globalblocks',
                         'bgip' => $target,
                         'bgprop' => 'target|by|expiry|id|range|reason|timestamp',
