@@ -48,7 +48,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         // Build ActionApi (3.x) and then the MediawikiFactory from it.
         $this->api = new ActionApi(
-            $apiUrl,
+            $this->$apiUrl,
             new NoAuth(),
             $this->guzzleClient
         );
