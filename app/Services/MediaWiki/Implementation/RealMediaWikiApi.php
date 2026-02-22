@@ -11,10 +11,10 @@ use GuzzleHttp\Cookie\FileCookieJar;
 
 use Addwiki\Mediawiki\Api\MediawikiFactory;
 use Addwiki\Mediawiki\Api\CategoryLookupException;
-use Addwiki\Mediawiki\Api\ApiUser;
 use Addwiki\Mediawiki\Api\SimpleRequest;
 use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
 use Addwiki\Mediawiki\Api\Client\Auth\NoAuth;
+use Addwiki\Mediawiki\Api\Client\Auth\UserAndPassword;
 
 use App\Services\MediaWiki\Api\MediaWikiApi as MediaWikiApiContract;
 use App\Services\MediaWiki\Api\MediaWikiExtras;
@@ -119,12 +119,19 @@ class RealMediaWikiApi implements MediaWikiApiContract
         }
 
         if (config('wikis.login.username') && config('wikis.login.password')) {
-            $this->api->login(
-                new ApiUser(
-                    config('wikis.login.username'),
-                    config('wikis.login.password')
-                )
+
+            $auth = new UserAndPassword(
+                config('wikis.login.username'),
+                config('wikis.login.password')
             );
+
+            $this->api = new ActionApi(
+                    $this->url,
+                    $auth,
+                    $this->guzzleClient
+            );
+
+            $this->factory = new MediawikiFactory($this->api);
 
             $this->loggedIn = true;
             $this->hasExistingSession = true;
