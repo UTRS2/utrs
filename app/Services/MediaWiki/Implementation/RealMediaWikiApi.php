@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Mediawiki\Implementation;
+namespace App\Services\MediaWiki\Implementation;
 
 use Throwable;
 use RuntimeException;
