@@ -14,8 +14,8 @@ use Addwiki\MediawikiApi\CategoryLookupException;
 use Addwiki\MediawikiApi\ApiUser;
 use Addwiki\MediawikiApi\SimpleRequest;
 
-use Addwiki\MediawikiApiBase\Client\Action\ActionApi;
-use Addwiki\MediawikiApiBase\Auth\NoAuth;
+use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
+use Addwiki\Mediawiki\Api\Client\Auth\NoAuth;
 
 use App\Services\MediaWiki\Api\MediaWikiApi as MediawikiApiContract;
 use App\Services\Mediawiki\Api\MediaWikiExtras;
