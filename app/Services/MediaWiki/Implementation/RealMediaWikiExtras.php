@@ -40,6 +40,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
         $response = $this->getApi()->request(ActionRequest::simpleGet(
             'query',
             [
+                'assert' => 'user',
                 'list' => 'users',
                 'ususers' => $username,
                 'usprop' => 'emailable',
@@ -70,6 +71,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
         $resp = $actionApi->request(
         ActionRequest::simplePost('emailuser', [
+                'assert' => 'user',
                 'target'  => $username,
                 'subject' => $title,
                 'text'    => $content,
@@ -199,6 +201,7 @@ class RealMediaWikiExtras implements MediaWikiExtras
         $response = $this->getApi()->request(ActionRequest::simpleGet(
             'query',
             [
+                'assert' => 'user',
                 'list' => 'globalallusers',
                 'agufrom' => $userName,
                 'aguto' => $userName,
