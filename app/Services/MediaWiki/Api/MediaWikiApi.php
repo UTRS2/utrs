@@ -2,8 +2,8 @@
 
 namespace App\Services\MediaWiki\Api;
 
-use Addwiki\MediaWiki\Api\Client\Action\ActionApi;
-use Addwiki\MediaWiki\Api\MediaWikiFactory;
+use Addwiki\Mediawiki\Api\Client\Action\ActionApi;
+use Addwiki\Mediawiki\Api\MediaWikiFactory;
 
 /**
  * Provides access to the API for the specified MediaWiki endpoint.
