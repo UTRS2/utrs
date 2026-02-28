@@ -78,7 +78,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
      */
     protected function createGuzzleClient(string $identifier): Client
     {
-        $cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
+        //$cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
 
         $opts = [
             'cookies' => $cookieJar,
@@ -87,9 +87,9 @@ class RealMediaWikiApi implements MediaWikiApiContract
             ],
         ];
 
-        if (config('wikis.login.username') && config('wikis.login.password')) {
-            $opts['auth'] = [config('wikis.login.username'), config('wikis.login.password')];
-        }
+        // if (config('wikis.login.username') && config('wikis.login.password')) {
+        //     $opts['auth'] = [config('wikis.login.username'), config('wikis.login.password')];
+        // }
 
         return new Client($opts);
     }
