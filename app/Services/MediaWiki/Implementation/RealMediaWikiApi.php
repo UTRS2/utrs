@@ -81,7 +81,7 @@ class RealMediaWikiApi implements MediaWikiApiContract
         //$cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
 
         $opts = [
-            'cookies' => $cookieJar,
+            //'cookies' => $cookieJar,
             'headers' => [
                 'User-Agent' => 'UTRS 3, https://github.com/utrs2/utrs',
             ],
