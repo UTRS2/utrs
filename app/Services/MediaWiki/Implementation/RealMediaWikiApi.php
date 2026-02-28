@@ -64,8 +64,6 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         $this->factory = new MediawikiFactory($this->api);
 
-        $this->factory = new MediawikiFactory($this->api);
-
         /** @var CookieJar $jar */
         $jar = $this->guzzleClient->getConfig('cookies');
 
