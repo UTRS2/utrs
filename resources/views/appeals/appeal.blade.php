@@ -77,26 +77,67 @@ function displayTransfer() {
                                     <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Symbol_redirect_vote.svg/23px-Symbol_redirect_vote.svg.png">
                                     <i>{{__('appeals.appeal-types.anon-only')}}</i>
                                 @endif
-                                <br/>{{__('appeals.appeal-types.title')}}: 
-                                @if($info->blocktype==0)
-                                    {{__('appeals.appeal-types.ip')}}
-                                @elseif($info->blocktype==1)
-                                    {{__('appeals.appeal-types.account')}}
-                                @elseif($info->blocktype==2)
-                                    {{__('appeals.appeal-types.ip-under')}}
-                                @endif
-                                @if($info->status=="INVALID")
-                                <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }} <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Octagon_delete.svg/20px-Octagon_delete.svg.png">
-                                @else
-                                <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }}
-                                @endif
-                                <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
-                                <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
-                                @if($info->hiddenip != NULL && $info->blocktype==2)
-                                <br/><b style="color:red">{{__('appeals.cu.under-ip')}}</b>
-                                @endif
-                                <br/>{{__('appeals.details-submitted')}}: {{ $info->submitted }}
-                                <br/>Wiki: {{ $info->wiki }}
+                                <table style="border: 1px solid black; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">{{__('appeals.appeal-types.title')}}:</td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            @if($info->blocktype==0)
+                                                {{__('appeals.appeal-types.ip')}}
+                                            @elseif($info->blocktype==1)
+                                                {{__('appeals.appeal-types.account')}}
+                                            @elseif($info->blocktype==2)
+                                                {{__('appeals.appeal-types.ip-under')}}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-status')}}:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            @if($info->status=="INVALID")
+                                             {{ __('appeals.status.'.$info->status) }} <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Octagon_delete.svg/20px-Octagon_delete.svg.png">
+                                            @else
+                                            {{ __('appeals.status.'.$info->status) }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-block-admin')}}:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{ $info->blockingadmin }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-block-reason')}}: 
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {!! $info->getFormattedBlockReason() !!}
+                                            @if($info->hiddenip != NULL && $info->blocktype==2)
+                                            <b style="color:red">{{__('appeals.cu.under-ip')}}</b>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-submitted')}}:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{ $info->submitted }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            Wiki:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{ $info->wiki }}
+                                        </td>
+                                    </tr>
+                                </table>
                                 @if(!is_null($info->handlingadmin))
                                     <br/>{{__('appeals.details-handling-admin')}}: {{ $info->handlingAdminObject->username }}
                                 @endif
