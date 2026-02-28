@@ -19,7 +19,7 @@
             </h6>
 
             <div class="card-body collapse" id="contents-{{ $template->id }}"> {{-- for purgecss: show hr --}}
-                {{ __('appeals.template.greeting',[$appeal->appealfor]) }},
+                {{ __('appeals.template.greeting',[$appeal->appealfor]) }}
 
                 <p class="mt-2">
                     {{ $template->template }}
