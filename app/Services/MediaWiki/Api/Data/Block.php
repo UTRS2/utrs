@@ -8,5 +8,5 @@ interface Block
     public function getBlockingUser(): string;
     public function getBlockReason(): string;
     public function getBlockTimestamp(): string;
-    public function getBlockAnonOnly(): bool;
+    public function isAnonOnly(): bool;
 }
