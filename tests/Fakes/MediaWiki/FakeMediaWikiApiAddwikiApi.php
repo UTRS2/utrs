@@ -2,9 +2,9 @@
 
 namespace Tests\Fakes\MediaWiki;
 
-use Mediawiki\Api\MediawikiApi;
+use MediaWiki\Api\MediaWikiApi;
 
-class FakeMediaWikiApiAddwikiApi extends MediawikiApi
+class FakeMediaWikiApiAddwikiApi extends MediaWikiApi
 {
     private $api;
 

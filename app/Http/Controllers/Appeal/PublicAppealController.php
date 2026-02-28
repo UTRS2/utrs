@@ -275,9 +275,7 @@ class PublicAppealController extends Controller
                 
             // }
 
-            //No longer supported - repo is unsupported
-            //Now handled via python script
-            //GetBlockDetailsJob::dispatchSync($appeal);
+            GetBlockDetailsJob::dispatchSync($appeal);
             
             return $appeal;
         });

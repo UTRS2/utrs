@@ -4,8 +4,8 @@ namespace Tests\Fakes\MediaWiki;
 
 use App\Services\MediaWiki\Api\MediaWikiApi;
 use App\Services\MediaWiki\Api\MediaWikiExtras;
-use Mediawiki\Api\MediawikiApi as AddwikiMediaWikiApi;
-use Mediawiki\Api\MediawikiFactory;
+use MediaWiki\Api\MediaWikiApi as AddwikiMediaWikiApi;
+use MediaWiki\Api\MediawikiFactory;
 use RuntimeException;
 
 class FakeMediaWikiApi implements MediaWikiApi

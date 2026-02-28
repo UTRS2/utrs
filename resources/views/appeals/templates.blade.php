@@ -3,7 +3,7 @@
 @section('title', 'Templates')
 @section('content')
     <div class="alert alert-info" role="alert">
-        {{__('appeals.templates.alert')}}
+        {{__('appeals.template.alert')}}
     </div>
     <div class="mt-2 mb-4">
         <a href="/appeal/{{ $appeal->id }}" class="btn btn-danger">{{__('appeals.template.return-appeal')}}</a>
@@ -13,13 +13,13 @@
     @foreach($templates as $template)
         <div class="card mt-2 mb-2">
             <h6 class="card-header">
-                <button class="p-0 btn btn-link" data-toggle="collapse" data-target="#contents-{{ $template->id }}">
+                <button type="button" class="p-0 btn btn-link" data-bs-toggle="collapse" data-bs-target="#contents-{{ $template->id }}">
                     {{ $template->name }}
                 </button>
             </h6>
 
             <div class="card-body collapse" id="contents-{{ $template->id }}"> {{-- for purgecss: show hr --}}
-                {{ __('appeals.template.greeting',[$appeal->appealfor]) }},
+                {{ __('appeals.template.greeting',[$appeal->appealfor]) }}
 
                 <p class="mt-2">
                     {{ $template->template }}

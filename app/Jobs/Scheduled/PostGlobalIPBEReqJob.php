@@ -11,9 +11,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
-use Mediawiki\DataModel\Content;
-use Mediawiki\DataModel\EditInfo;
-use Mediawiki\DataModel\Revision;
+use Addwiki\Mediawiki\DataModel\Content;
+use Addwiki\Mediawiki\DataModel\EditInfo;
+use Addwiki\Mediawiki\DataModel\Revision;
 use DB;
 
 class PostGlobalIPBEReqJob implements ShouldQueue

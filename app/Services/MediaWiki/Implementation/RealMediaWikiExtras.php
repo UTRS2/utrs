@@ -5,10 +5,11 @@ namespace App\Services\MediaWiki\Implementation;
 use App\Services\MediaWiki\Api\Data\Block;
 use App\Services\MediaWiki\Api\MediaWikiExtras;
 use App\Services\MediaWiki\Implementation\Data\RealBlock;
+use Addwiki\Mediawiki\Api\Client\Action\Request\ActionRequest;
+use Addwiki\Mediawiki\Api\SimpleRequest;
 use App\Utils\IPUtils;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use Mediawiki\Api\SimpleRequest;
 
 class RealMediaWikiExtras implements MediaWikiExtras
 {
@@ -36,9 +37,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
             return false;
         }
 
-        $response = $this->getApi()->getRequest(new SimpleRequest(
+        $response = $this->getApi()->request(ActionRequest::simpleGet(
             'query',
             [
+                'assert' => 'user',
                 'list' => 'users',
                 'ususers' => $username,
                 'usprop' => 'emailable',
@@ -51,14 +53,33 @@ class RealMediaWikiExtras implements MediaWikiExtras
     public function sendEmail(string $username, string $title, string $content): bool
     {
         $this->api->login();
-        $response = $this->getApi()->postRequest(new SimpleRequest('emailuser', [
-            'token' => $this->getApi()->getToken(),
-            'target' => $username,
-            'subject' => $title,
-            'text' => $content,
-        ]));
 
-        return $response['emailuser']['result'] === 'Success';
+        $actionApi = $this->api->getAddwikiMediawikiApi();
+
+        $tokenResp = $actionApi->request(
+            ActionRequest::simpleGet('query', [
+                'assert' => 'user',
+                'meta' => 'tokens',
+                'type' => 'csrf',
+            ])
+        );
+
+        $token = $tokenResp['query']['tokens']['csrftoken'] ?? null;
+        if (!$token) {
+            throw new \RuntimeException('Could not fetch CSRF token.');
+        }
+
+        $resp = $actionApi->request(
+        ActionRequest::simplePost('emailuser', [
+                'assert' => 'user',
+                'target'  => $username,
+                'subject' => $title,
+                'text'    => $content,
+                'token'   => $token,
+            ])
+        );
+
+        return ($resp['emailuser'] ?? null) === 'success';
     }
 
     public function getBlockInfo(string $target, int $appealId = -1, string $searchKey = null): ?Block
@@ -73,9 +94,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
         }
 
         try {
-            $response = $this->getApi()->getRequest(new SimpleRequest(
+            $response = $this->getApi()->request(ActionRequest::simpleGet(
                 'query',
                 [
+                    'assert'   => 'user',
                     'list'     => 'blocks',
                     $searchKey => $target,
                     'bkprop'   => 'by|byid|expiry|flags|id|range|reason|restrictions|timestamp|user|userid',
@@ -109,9 +131,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
             // is ip
 
             try {
-                $response = $this->getApi()->getRequest(new SimpleRequest(
+                $response = $this->getApi()->request(ActionRequest::simpleGet(
                     'query',
                     [
+                        'assert'   => 'user',
                         'list' => 'globalblocks',
                         'bgip' => $target,
                         'bgprop' => 'target|by|expiry|id|range|reason|timestamp',
@@ -175,9 +198,10 @@ class RealMediaWikiExtras implements MediaWikiExtras
 
     public function getGlobalGroupMembership(string $userName): array
     {
-        $response = $this->getApi()->getRequest(new SimpleRequest(
+        $response = $this->getApi()->request(ActionRequest::simpleGet(
             'query',
             [
+                'assert' => 'user',
                 'list' => 'globalallusers',
                 'agufrom' => $userName,
                 'aguto' => $userName,

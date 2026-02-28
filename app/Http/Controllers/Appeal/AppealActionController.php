@@ -217,7 +217,7 @@ class AppealActionController extends Controller
                 $appeal->wiki = MediaWikiRepository::getCodedName($id);
                 $appeal->save();
 
-                GetBlockDetailsJob::dispatchNow($appeal);
+                GetBlockDetailsJob::dispatchSync($appeal);
 
                 return NULL;
             },
@@ -278,7 +278,7 @@ class AppealActionController extends Controller
             're-verify block details',
             function (Appeal $appeal) {
                 if(app()->environment('production')) {
-                    GetBlockDetailsJob::dispatchNow($appeal);    
+                    GetBlockDetailsJob::dispatchSync($appeal);    
                 }
                 else {
                     GetBlockDetailsJob::dispatch($appeal);

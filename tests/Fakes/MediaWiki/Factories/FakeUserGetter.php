@@ -2,7 +2,7 @@
 
 namespace Tests\Fakes\MediaWiki\Factories;
 
-use Mediawiki\Api\Service\UserGetter;
+use MediaWiki\Api\Service\UserGetter;
 use ReflectionObject;
 use Tests\Fakes\MediaWiki\FakeMediaWikiApi;
 
