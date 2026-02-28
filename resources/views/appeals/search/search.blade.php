@@ -16,7 +16,7 @@
 
         <div class="card">
             <div class="card-header">
-                <button class="p-0 btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-filters" aria-expanded="{{ !$hasResults }}" aria-controls="collapse-filters">
+                <button class="p-0 btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-filters" aria-expanded="{{ !$hasResults }}" aria-controls="collapse-filters">
                     Filters
                 </button>
             </div>
@@ -96,12 +96,12 @@
             </div>
 
             <div class="card-body">
-                @if($results->isEmpty())
+                @if($mainPaginate->isEmpty())
                     <div class="alert alert-info">
                         No results found.
                     </div>
                 @else
-                    @component('components.appeal-table', ['appeals' => $results])
+                    @component('components.appeal-table', ['appeals' => $mainPaginate, 'mainPaginate' => $mainPaginate])
                     @endcomponent
                 @endif
             </div>

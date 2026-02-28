@@ -60,13 +60,13 @@ class AppealAdvancedSearchController extends Controller
                 return [$blockType => $request->get('blocktype_'.$blockType, !$filled)];
             });
 
-        $results = null;
+        $mainPaginate = null;
         if ($filled) {
             $wikisToSearch = $wikiInputs->filter()->keys();
             $statusesToSearch = $statusInputs->filter()->keys();
             $blockTypesToSearch = $blockTypeInputs->filter()->keys();
-
-            $results = $this->doRunSearch(
+            
+            $mainPaginate = $this->doRunSearch(
                 $request,
                 $wikisToSearch,
                 $statusesToSearch,
@@ -74,9 +74,14 @@ class AppealAdvancedSearchController extends Controller
             );
         }
 
+        //if this is an actual search and appealfor is empty, we need to error
+        if ($filled && !$request->input('appealfor')) {
+            return redirect()->back()->withErrors(['appealfor' => 'Please enter a search term.']);
+        }
+
         return view('appeals.search.search', [
             'hasResults' => $filled,
-            'results' => $results,
+            'mainPaginate' => $mainPaginate,
             'blockTypeNames' => self::ALL_BLOCK_TYPES_WITH_NAMES,
 
             'wikiInputs' => $wikiInputs,
@@ -105,6 +110,6 @@ class AppealAdvancedSearchController extends Controller
             ->when($request->input('handlingadmin_none'), function (Builder $query) {
                 $query->whereNull('handlingadmin');
             })
-            ->get();
+            ->orderByDesc('id')->paginate(49)->withQueryString();
     }
 }
