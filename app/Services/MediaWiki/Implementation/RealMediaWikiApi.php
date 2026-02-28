@@ -64,13 +64,13 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         $this->factory = new MediawikiFactory($this->api);
 
-        /** @var CookieJar $jar */
-        $jar = $this->guzzleClient->getConfig('cookies');
+        // /** @var CookieJar $jar */
+        // $jar = $this->guzzleClient->getConfig('cookies');
 
-        // Session names are unreliable; assume there is at least some session if the jar is not empty.
-        if ($jar->count() > 0) {
-            $this->hasExistingSession = true;
-        }
+        // // Session names are unreliable; assume there is at least some session if the jar is not empty.
+        // if ($jar->count() > 0) {
+        //     $this->hasExistingSession = true;
+        // }
     }
 
     /**
