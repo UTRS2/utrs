@@ -12,9 +12,13 @@
             <center>{{ __('appeals.key.your-key-is') }}<br>
                 <h2>{{ $hash }}</h2></center>
             <br/>
-            <a href="{{ post(route('public.appeal.view') . '?' . http_build_query([ 'hash' => $hash ])) }}" class="btn btn-success">
-                {{ __('appeals.key.view-appeal-details') }}
-            </a>
+            <form method="POST" action="{{ route('public.appeal.view') }}">
+                @csrf
+                <input type="hidden" name="hash" value="{{ $hash }}">
+                <button type="submit" class="btn btn-success">
+                    {{ __('appeals.key.view-appeal-details') }}
+                </button>
+            </form>
         </div>
     </div>
 @endsection
