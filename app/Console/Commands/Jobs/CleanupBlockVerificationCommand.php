@@ -12,8 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanupBlockVerificationCommand extends Command
 {
-    protected $signature = 'utrs-jobs:close-expired-notfound';
-    protected $description = 'Close old appeals with no ban found';
+    protected $signature = 'utrs-jobs:run-verification';
+    protected $description = 'Go through appeals needing verification';
 
     /**
      * Find appeals that need to be closed.
