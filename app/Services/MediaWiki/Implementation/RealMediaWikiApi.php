@@ -46,20 +46,19 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         $this->guzzleClient = $this->createGuzzleClient($identifier);
 
-        $auth = new NoAuth();
-
-        // if (config('wikis.login.username') && config('wikis.login.password')) {
-        //     $auth = new UserAndPassword(
-        //         config('wikis.login.username'),
-        //         config('wikis.login.password')
-        //     );
-        // }
-
-        $auth = new NoAuth();
+        if (config('wikis.login.username') && config('wikis.login.password')) {
+            $auth = new \Addwiki\Mediawiki\Api\Client\Auth\UserAndPassword(
+                config('wikis.login.username'),
+                config('wikis.login.password')
+            );
+        }
+        else {
+            $auth = new NoAuth();
+        }
 
         $this->api = new ActionApi(
             $this->apiUrl,
-            new NoAuth(),
+            $auth,
             $this->guzzleClient
         );
 
