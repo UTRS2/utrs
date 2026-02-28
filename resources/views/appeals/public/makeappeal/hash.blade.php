@@ -14,7 +14,7 @@
             <br/>
             <form method="POST" action="{{ route('public.appeal.view') }}">
                 @csrf
-                <input type="hidden" name="hash" value="{{ $hash }}">
+                <input type="hidden" name="appealkey" value="{{ $hash }}">
                 <button type="submit" class="btn btn-success">
                     {{ __('appeals.key.view-appeal-details') }}
                 </button>
