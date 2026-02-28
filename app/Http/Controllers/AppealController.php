@@ -182,7 +182,7 @@ class AppealController extends Controller
         $developerStatuses = [Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND];
         $basicStatuses = [Appeal::STATUS_ACCEPT, Appeal::STATUS_DECLINE, Appeal::STATUS_EXPIRE, Appeal::STATUS_VERIFY, Appeal::STATUS_NOTFOUND, Appeal::STATUS_INVALID, Appeal::STATUS_CHECKUSER];
 
-        $appeals[$appealtypes['developer']] = $appeal->whereIn('status',$developerStatuses)->sortable()->paginate(20);
+        $appeals[$appealtypes['developer']] = $appeal->whereIn('status',$developerStatuses)->sortable()->paginate(49);
         $mainPaginate = $appeals[$appealtypes['developer']]->count() > 49;
         
         return view('appeals.devappeallist', ['appeals' => $appeals, 'appealtypes' => $appealtypes, 'tooladmin' => True, 'noWikis' => $wikis->isEmpty(), 'mainPaginate' => $mainPaginate, 'noemail' => $noemail]);
