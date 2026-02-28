@@ -109,7 +109,7 @@
         </div>
     </div>
 </nav>
-<div class="alert alert-warning" role="alert">Launch of UTRS 3: Please note that we are now running UTRS 3. Should you encounter unexpected behavoir, please report it.</div>
+<div class="alert alert-warning" role="alert">Launch of UTRS 3: Please note that we are now running UTRS 3. Should you encounter unexpected behavior, please report it.</div>
 @env(['local','dev'])
 <div class="alert alert-warning" role="alert">BE AWARE: You are running UTRS in development mode. There are some functionality differences, plus, this will help you know whether you are looking at live or dev ;).</div>
 @endenv
