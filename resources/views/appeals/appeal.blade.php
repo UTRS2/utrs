@@ -213,7 +213,7 @@ function displayTransfer() {
 
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
                                                     <div class="mb-2">
-                                                        <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
+                                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkuserModal">
                                                             {{__('appeals.links.checkuser')}}
                                                         </button>
                                                         <form action="{{ route('appeal.action.tooladmin', $info) }}" method="POST" style="display: inline;">
@@ -539,9 +539,6 @@ function displayTransfer() {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="checkuserModalTitle">{{__('appeals.cu.submit-title')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                 </div>
                 {{ html()->form('POST', route('appeal.action.requestcheckuser', $info))->open() }}
                 {{ html()->token() }}
@@ -549,11 +546,11 @@ function displayTransfer() {
 
                     <div class="form-group mb-4">
                         {{ html()->label(__('appeals.cu.review-req'), 'cu_reason') }}
-                        {{ html()->input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
+                        {{ html()->input('textarea', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('appeal.links.cancel')}}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('appeals.links.cancel')}}</button>
                     {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-primary') }}
                 </div>
                 {{ html()->form()->close() }}
