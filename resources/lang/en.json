@@ -128,6 +128,7 @@
   "appeals.cu.ip-address": "IP address:",
   "appeals.cu.user-agent": "User agent:",
   "appeals.cu.browser-lang": "Browser language:",
+  "appeals.appeal-types.anon-only": "This appeal may be able to be redirected to ACC.",
   "appeals.nav.back-appeal-list": "Go back to appeal list",
   "appeals.section-headers.details": "Appeal details",
   "appeals.section-headers.content": "Appeal content",
