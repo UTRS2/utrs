@@ -98,7 +98,7 @@ class AppealAdvancedSearchController extends Controller
     private function doRunSearch(Request $request, Collection $wikisToSearch, Collection $statusesToSearch,
                                  Collection $blockTypesToSearch)
     {
-        return Appeal::whereIn('wiki', $wikisToSearch)
+        $result = Appeal::whereIn('wiki', $wikisToSearch)
             ->whereIn('status', $statusesToSearch)
             ->whereIn('blocktype', $blockTypesToSearch)
             ->when($request->input('appealfor'), function (Builder $query, $value) {
@@ -116,5 +116,50 @@ class AppealAdvancedSearchController extends Controller
                 $query->whereNull('handlingadmin');
             })
             ->orderByDesc('id')->paginate(49)->withQueryString();
+
+        //If no appeals on the first go, then add % to the end, and still if not any, add to the front
+        if ($result->isEmpty()) {
+            $result = Appeal::whereIn('wiki', $wikisToSearch)
+                ->whereIn('status', $statusesToSearch)
+                ->whereIn('blocktype', $blockTypesToSearch)
+                ->when($request->input('appealfor'), function (Builder $query, $value) {
+                    $query->where('appealfor', 'LIKE', $value . '%');
+                })
+                ->when($request->input('blockingadmin'), function (Builder $query, $value) {
+                    $query->where('blockingadmin', $value);
+                })
+                ->when($request->input('handlingadmin'), function (Builder $query, $value) {
+                    $query->whereHas('handlingAdminObject', function (Builder $adminQuery) use ($value) {
+                        $adminQuery->where('username', $value);
+                    });
+                })
+                ->when($request->input('handlingadmin_none'), function (Builder $query) {
+                    $query->whereNull('handlingadmin');
+                })
+                ->orderByDesc('id')->paginate(49)->withQueryString();
+
+            if ($result->isEmpty()) {
+                $result = Appeal::whereIn('wiki', $wikisToSearch)
+                    ->whereIn('status', $statusesToSearch)
+                    ->whereIn('blocktype', $blockTypesToSearch)
+                    ->when($request->input('appealfor'), function (Builder $query, $value) {
+                        $query->where('appealfor', 'LIKE', '%' . $value);
+                    })
+                    ->when($request->input('blockingadmin'), function (Builder $query, $value) {
+                        $query->where('blockingadmin', $value);
+                    })
+                    ->when($request->input('handlingadmin'), function (Builder $query, $value) {
+                        $query->whereHas('handlingAdminObject', function (Builder $adminQuery) use ($value) {
+                            $adminQuery->where('username', $value);
+                        });
+                    })
+                    ->when($request->input('handlingadmin_none'), function (Builder $query) {
+                        $query->whereNull('handlingadmin');
+                    })
+                    ->orderByDesc('id')->paginate(49)->withQueryString();
+            }
+        }
+
+        return $result;
     }
 }
