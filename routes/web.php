@@ -95,6 +95,7 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/admin/bans', 'Admin\BanController@index')->name('admin.bans.list');
     Route::get('/admin/bans/create', 'Admin\BanController@new')->name('admin.bans.new');
     Route::post('/admin/bans/create', 'Admin\BanController@create')->name('admin.bans.create');
+    Route::post('/admin/bans/search', 'Admin\BanController@searchSubmit')->name('admin.bans.search.submit');
     Route::get('/admin/bans/{ban}', 'Admin\BanController@show')->name('admin.bans.view');
     Route::post('/admin/bans/{ban}', 'Admin\BanController@update')->name('admin.bans.update');
     Route::get('/admin/emailban/{code}', 'Admin\BanController@banEmail')->name('admin.bans.emailban');

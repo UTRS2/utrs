@@ -50,43 +50,10 @@ class BanController extends Controller
 
         $protectedBansVisible = false;
 
-        $tableheaders = [ 
-            __('admin.bans.id'), 
-            __('admin.bans.target'), 
-            __('admin.bans.expires'), 
-            __('admin.bans.reason'),
-            "Wiki"
-        ];
-        
-        $admin = $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer']);
+        //define all vars in one line calling create table vars
+        [$tableheaders, $allowedwikis, $admin, $checkuser, $createlink] = $this->createTableVars($user);
 
-        //dependent on if the user is a checkuser on any wiki, mark the $checkuser variable
-        $checkuser = false;
-        //for each wiki the user has permissions on, check if they have checkuser
-        foreach ($user->permissions as $permission) {
-            if ($permission->hasAnySpecifiedPerms(['checkuser']) || $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer'])) {
-                $checkuser = true;
-            }
-        }
-
-        //if the user has tooladmin, steward, staff, or developer globally, then add all wikis to the allowed wikis array
-        $allowedwikis = [];
-        if ($admin) {
-            $allowedwikis = Wiki::get()->pluck('id')->toArray();
-        } else {
-            //otherwise, add the wikis that the user has permissions on to the allowed wikis array
-            foreach ($user->permissions as $permission) {
-                if ($permission->hasAnySpecifiedPerms(['tooladmin'])) {
-                    $allowedwikis[] = Wiki::where('database_name',$permission->wiki)->first()->id;
-                    $admin = true;
-                }
-            }
-        }
-
-        // define createlink as the route to create a new ban
-        $createlink = route('admin.bans.new');
-
-        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowed' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser, 'createlink' => $createlink]);
+        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowedwikis' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser, 'createlink' => $createlink]);
     }
 
     public function new(Request $request)
@@ -271,5 +238,109 @@ class BanController extends Controller
         );
 
         return redirect()->route('admin.bans.view', [ 'ban' => $ban ]);
+    }
+
+    public function searchSubmit(Request $request)
+    {
+        $this->authorize('viewAny', Ban::class);
+
+        $user = $request->user();
+        
+        $searchTerm = $request->input('search', '');
+
+        //try original term search first, if nothing, add wildcard to end, and if still nothing, add wildcard to start. also try searching by ban id as required
+        $bans = Ban::query()
+            ->when($searchTerm, function (Builder $query) use ($searchTerm) {
+                $query->where('target', $searchTerm);
+            })
+            ->paginate(50);
+            
+        if($bans->isEmpty()) {
+            $bans = Ban::query()
+                ->when($searchTerm, function (Builder $query) use ($searchTerm) {
+                    $query->where('target', 'LIKE', $searchTerm . '%');
+                })
+                ->paginate(50);
+                if($bans->isEmpty()) {
+                    $bans = Ban::query()
+                        ->when($searchTerm, function (Builder $query) use ($searchTerm) {
+                            $query->where('target', 'LIKE', '%' . $searchTerm);
+                        })
+                        ->paginate(50);
+                        if($bans->isEmpty()) {
+                            $bans = Ban::query()
+                            ->when($searchTerm, function (Builder $query) use ($searchTerm) {
+                                $query->where('id', $searchTerm);
+                            })
+                            ->paginate(50);
+                        }
+                }
+        }
+        
+        //if no results, return error
+        if ($bans->isEmpty()) {
+            return redirect()->route('admin.bans.list')->with('error', 'No bans found using requested parameters.');
+        }
+
+        //define all vars in one line calling create table vars
+        [$tableheaders, $allowedwikis, $admin, $checkuser, $createlink] = $this->createTableVars($user);
+
+        return view('admin.bans.search', [
+            'bans' => $bans,
+            'searchTerm' => $searchTerm,
+            'tableheaders' => $tableheaders,
+            'allowedwikis' => $allowedwikis,
+            'admin' => $admin,
+            'checkuser' => $checkuser,
+            'createlink' => $createlink,
+        ]);
+    }
+
+    public function createTableVars(User $user)
+    {
+        $tableheaders = [ 
+            __('admin.bans.id'), 
+            __('admin.bans.target'), 
+            __('admin.bans.expires'), 
+            __('admin.bans.reason'),
+            "Wiki"
+        ];
+        
+        $admin = $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer']);
+
+        //dependent on if the user is a checkuser on any wiki, mark the $checkuser variable
+        $checkuser = false;
+        //for each wiki the user has permissions on, check if they have checkuser
+        foreach ($user->permissions as $permission) {
+            if ($permission->hasAnySpecifiedPerms(['checkuser']) || $user->hasAnySpecifiedPermsOnAnyWiki(['steward', 'staff', 'developer'])) {
+                $checkuser = true;
+            }
+        }
+
+        //if the user has tooladmin, steward, staff, or developer globally, then add all wikis to the allowed wikis array
+        $allowedwikis = [];
+        if ($admin) {
+            $allowedwikis = Wiki::get()->pluck('id')->toArray();
+        } else {
+            //otherwise, add the wikis that the user has permissions on to the allowed wikis array
+            foreach ($user->permissions as $permission) {
+                if ($permission->hasAnySpecifiedPerms(['tooladmin'])) {
+                    $allowedwikis[] = Wiki::where('database_name',$permission->wiki)->first()->id;
+                    $admin = true;
+                }
+            }
+        }
+
+        // define createlink as the route to create a new ban
+        $createlink = route('admin.bans.new');
+
+        //return in order, without var names
+        return [
+            $tableheaders,
+            $allowedwikis,
+            $admin,
+            $checkuser,
+            $createlink
+        ];
     }
 }

@@ -1,10 +1,13 @@
 @extends('layouts.app')
 @section('content')
-    <div class="card">
-        <h5 class="card-header">{{ $title }}</h5>
+{{-- add card around search results --}}
+<div class="card">
+    <h5 class="card-header">Ban list</h5>
         <div class="card-body">
             <p>
                 <a href="{{ $createlink }}" class="btn btn-primary">New Ban</a>
+                {{-- Back to main ban list --}}
+                <a href="{{ route('admin.bans.list') }}" class="btn btn-secondary">Back to Ban List</a>
             </p>
 
             @if(isset($caption) && strlen($caption) > 0)
@@ -25,8 +28,8 @@
             </form>
             <br />
             <div class="table-responsive">
-                @include('admin.bans.table', ['bans' => $bans, 'tableheaders' => $tableheaders, 'allowedwikis' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser])
+                @include('admin.bans.table', ['bans' => $bans])
             </div>
         </div>
-    </div>
+</div>
 @endsection
