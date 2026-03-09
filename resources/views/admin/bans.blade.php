@@ -3,9 +3,21 @@
     <div class="card">
         <h5 class="card-header">{{ $title }}</h5>
         <div class="card-body">
-            <p>
-                <a href="{{ $createlink }}" class="btn btn-primary">New Ban</a>
-            </p>
+            <table>
+                <tr>
+                    <td>
+                        <a href="{{ $createlink }}" class="btn btn-primary">New Ban</a>
+                    </td>
+                    <td>
+                        <form method="GET" action="{{ route('admin.bans.list') }}" class="d-inline mb-3">
+                            <input type="hidden" name="hide_expired" value="{{ $hide_expired ? 0 : 1 }}">
+                            <button type="submit" class="btn btn-outline-secondary">
+                                {{ $hide_expired ? 'Show expired bans' : 'Hide expired bans' }}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
 
             @if(isset($caption) && strlen($caption) > 0)
                 <p>

@@ -43,7 +43,21 @@ class BanController extends Controller
             return '';
         }
 
-        $allbans = Ban::orderBy('id', 'desc')->paginate(50);
+         // read toggle, default: show expired (hide_expired = false)
+        $hideExpired = $request->boolean('hide_expired', false);
+
+        if ($hideExpired) {
+            // build the query, then paginate outside the closure
+            $query = Ban::orderBy('id', 'desc');
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $query->where(function ($q) use ($now) {
+                $q->where('expiry', '>=', $now)
+                  ->orWhere('expiry', '<', '2000-01-01 00:00:00');
+            });
+            $allbans = $query->paginate(50);
+        } else {
+            $allbans = Ban::orderBy('id', 'desc')->paginate(50);
+        }
 
         /** @var User $user */
         $user = $request->user();
@@ -53,7 +67,7 @@ class BanController extends Controller
         //define all vars in one line calling create table vars
         [$tableheaders, $allowedwikis, $admin, $checkuser, $createlink] = $this->createTableVars($user);
 
-        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowedwikis' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser, 'createlink' => $createlink]);
+        return view('admin.bans', ['title' => __('admin.bans.all'), 'tableheaders' => $tableheaders, 'bans' => $allbans, 'allowedwikis' => $allowedwikis, 'admin' => $admin, 'checkuser' => $checkuser, 'createlink' => $createlink, 'hide_expired' => $hideExpired]);
     }
 
     public function new(Request $request)
