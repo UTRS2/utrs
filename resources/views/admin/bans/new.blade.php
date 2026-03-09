@@ -55,11 +55,11 @@
                 <div class="form-group mb-4">
                     Ban target visibility
                     <div class="custom-control custom-radio">
-                        {{ html()->radio('is_protected', old('is_protected', 0) === 0, 0)->class('custom-control-input')->id('is_protected-0') }} {{ html()->label('Ban target is visible to all users who can view ban list', 'is_protected-0')->class('custom-control-label') }}
+                        {{ html()->radio('is_protected', old('is_protected', 0) == 0, 0)->class('custom-control-input')->id('is_protected-0') }} {{ html()->label('Ban target is visible to all users who can view ban list', 'is_protected-0')->class('custom-control-label') }}
                     </div>
 
                     <div class="custom-control custom-radio">
-                        {{ html()->radio('is_protected', old('is_protected') === 1, 1)->class('custom-control-input')->id('is_protected-1') }} {{ html()->label('Ban target is oversighted', 'is_protected-1')->class('custom-control-label') }}
+                        {{ html()->radio('is_protected', old('is_protected') == 1, 1)->class('custom-control-input')->id('is_protected-1') }} {{ html()->label('Ban target is oversighted', 'is_protected-1')->class('custom-control-label') }}
                     </div>
                 </div>
 
