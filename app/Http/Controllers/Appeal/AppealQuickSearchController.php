@@ -25,8 +25,12 @@ class AppealQuickSearchController extends Controller
 
         /** @var User $user */
         $user = $request->user();
+
+        if (!$request->input('search') || $request->input('search') == ''){
+            $search = "%";
+        }
         
-        $search = $request->validate(['search' => 'required|min:1'])['search'];
+        //$search = $request->validate(['search' => 'required|min:1'])['search'];
 
         $number = is_numeric($search) ? intval($search) : null;
 

@@ -31,6 +31,11 @@ class AppealAdvancedSearchController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        // if the search term is blank, set it to "%"
+        if (!$request->input('appealfor')) {
+            $request->merge(['appealfor' => '%']);
+        }
+
         $filled = $request->has('dosearch');
 
         $wikiInputs = collect(MediaWikiRepository::getSupportedTargets())
