@@ -43,7 +43,7 @@ class BanController extends Controller
             return '';
         }
 
-        $allbans = Ban::paginate(50);
+        $allbans = Ban::orderBy('id', 'desc')->paginate(50);
 
         /** @var User $user */
         $user = $request->user();
