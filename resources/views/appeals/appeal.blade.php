@@ -47,29 +47,29 @@ function displayTransfer() {
                             <p class="card-text">
                                 {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
                                 @if($info->proxy == 0)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
                                 <i>{{__('appeals.proxy.unlikelyproxy')}}</i>
                                 @else
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
                                 <i>{{__('appeals.proxy.likelyproxy')}}</i>
                                 @endif
                                 @if($info->user_verified == 1)
                                     @if($info->blocktype == 0)
-                                    <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                    <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
                                     <i>{{__('appeals.verify.notableverified')}}</i>
-                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
                                     <i>{{__('appeals.verify.ip-emailverified')}}</i>
                                     <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                     @else
-                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
                                     <i>{{__('appeals.verify.verified')}}</i>
                                     @endif
                                 @elseif($info->user_verified == -1)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
                                 <i>{{__('appeals.verify.notableverified')}}</i>
                                 <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @elseif(!$info->blocktype == 0)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/40px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i> 
                                 <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @endif
@@ -151,7 +151,7 @@ function displayTransfer() {
                                 <b>{{__('appeals.content-question-why')}}</b>
                                 <p>{{ $info->appealtext }}</p>
                                 {{--@if(in_array(0,$translateIDs))
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/40px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                 @else
                                 <a href="{{ route('translate.activate', ['appeal' => $info, 'logid' => 0])}}">
                                     <div style="height: 55px; display: flex; align-items: center;">
@@ -523,7 +523,7 @@ function displayTransfer() {
                             {{--<td>
                                 @if($comment->action === 'responded' && $comment->reason !== null && $comment->user_id === -1)
                                     @if(in_array($comment->id,$translateIDs))
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/40px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                     @else
                                     <a href="{{ route('translate.activate', ['appeal' => $info->id, 'logid' => $comment->id])}}" style="color: white">
                                         {{__('generic.translate-with')}} &nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
