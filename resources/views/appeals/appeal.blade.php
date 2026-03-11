@@ -47,52 +47,97 @@ function displayTransfer() {
                             <p class="card-text">
                                 {{__('appeals.appeal-number')}} #{{ $info->id }}&nbsp;
                                 @if($info->proxy == 0)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
                                 <i>{{__('appeals.proxy.unlikelyproxy')}}</i>
                                 @else
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
                                 <i>{{__('appeals.proxy.likelyproxy')}}</i>
                                 @endif
                                 @if($info->user_verified == 1)
                                     @if($info->blocktype == 0)
-                                    <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                    <br /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
                                     <i>{{__('appeals.verify.notableverified')}}</i>
-                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
                                     <i>{{__('appeals.verify.ip-emailverified')}}</i>
                                     <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                     @else
-                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
                                     <i>{{__('appeals.verify.verified')}}</i>
                                     @endif
                                 @elseif($info->user_verified == -1)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
                                 <i>{{__('appeals.verify.notableverified')}}</i>
                                 <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @elseif(!$info->blocktype == 0)
-                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
+                                <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/40px-Oxygen480-status-security-medium.svg.png">
                                 <i>{{__('appeals.verify.not-verified')}}</i> 
                                 <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @endif
-                                <br/>{{__('appeals.appeal-types.title')}}: 
-                                @if($info->blocktype==0)
-                                    {{__('appeals.appeal-types.ip')}}
-                                @elseif($info->blocktype==1)
-                                    {{__('appeals.appeal-types.account')}}
-                                @elseif($info->blocktype==2)
-                                    {{__('appeals.appeal-types.ip-under')}}
+                                @if($info->anon_only && $info->blocktype == 0)
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Symbol_redirect_vote.svg/23px-Symbol_redirect_vote.svg.png">
+                                    <i>{{__('appeals.appeal-types.anon-only')}}</i>
                                 @endif
-                                @if($info->status=="INVALID")
-                                <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }} <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Octagon_delete.svg/20px-Octagon_delete.svg.png">
-                                @else
-                                <br/>{{__('appeals.details-status')}}: {{ __('appeals.status.'.$info->status) }}
-                                @endif
-                                <br/>{{__('appeals.details-block-admin')}}: {{ $info->blockingadmin }}
-                                <br/>{{__('appeals.details-block-reason')}}: {!! $info->getFormattedBlockReason() !!}
-                                @if($info->hiddenip != NULL && $info->blocktype==2)
-                                <br/><b style="color:red">{{__('appeals.cu.under-ip')}}</b>
-                                @endif
-                                <br/>{{__('appeals.details-submitted')}}: {{ $info->submitted }}
-                                <br/>Wiki: {{ $info->wiki }}
+                                <table style="border: 1px solid black; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">{{__('appeals.appeal-types.title')}}:</td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            @if($info->blocktype==0)
+                                                {{__('appeals.appeal-types.ip')}}
+                                            @elseif($info->blocktype==1)
+                                                {{__('appeals.appeal-types.account')}}
+                                            @elseif($info->blocktype==2)
+                                                {{__('appeals.appeal-types.ip-under')}}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-status')}}:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            @if($info->status=="INVALID")
+                                             {{ __('appeals.status.'.$info->status) }} <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Octagon_delete.svg/20px-Octagon_delete.svg.png">
+                                            @else
+                                            {{ __('appeals.status.'.$info->status) }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-block-admin')}}:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{ $info->blockingadmin }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-block-reason')}}: 
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {!! $info->getFormattedBlockReason() !!}
+                                            @if($info->hiddenip != NULL && $info->blocktype==2)
+                                            <b style="color:red">{{__('appeals.cu.under-ip')}}</b>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{__('appeals.details-submitted')}}:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{ $info->submitted }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            Wiki:
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 3px;">
+                                            {{ $info->wiki }}
+                                        </td>
+                                    </tr>
+                                </table>
                                 @if(!is_null($info->handlingadmin))
                                     <br/>{{__('appeals.details-handling-admin')}}: {{ $info->handlingAdminObject->username }}
                                 @endif
@@ -106,7 +151,7 @@ function displayTransfer() {
                                 <b>{{__('appeals.content-question-why')}}</b>
                                 <p>{{ $info->appealtext }}</p>
                                 {{--@if(in_array(0,$translateIDs))
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/40px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                 @else
                                 <a href="{{ route('translate.activate', ['appeal' => $info, 'logid' => 0])}}">
                                     <div style="height: 55px; display: flex; align-items: center;">
@@ -213,7 +258,7 @@ function displayTransfer() {
 
                                                 @if($info->status === Appeal::STATUS_OPEN || $info->status === Appeal::STATUS_AWAITING_REPLY)
                                                     <div class="mb-2">
-                                                        <button class="btn btn-warning" data-toggle="modal" data-target="#checkuserModal">
+                                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkuserModal">
                                                             {{__('appeals.links.checkuser')}}
                                                         </button>
                                                         <form action="{{ route('appeal.action.tooladmin', $info) }}" method="POST" style="display: inline;">
@@ -478,7 +523,7 @@ function displayTransfer() {
                             {{--<td>
                                 @if($comment->action === 'responded' && $comment->reason !== null && $comment->user_id === -1)
                                     @if(in_array($comment->id,$translateIDs))
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/30px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/40px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                     @else
                                     <a href="{{ route('translate.activate', ['appeal' => $info->id, 'logid' => $comment->id])}}" style="color: white">
                                         {{__('generic.translate-with')}} &nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
@@ -539,9 +584,6 @@ function displayTransfer() {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="checkuserModalTitle">{{__('appeals.cu.submit-title')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                 </div>
                 {{ html()->form('POST', route('appeal.action.requestcheckuser', $info))->open() }}
                 {{ html()->token() }}
@@ -549,11 +591,11 @@ function displayTransfer() {
 
                     <div class="form-group mb-4">
                         {{ html()->label(__('appeals.cu.review-req'), 'cu_reason') }}
-                        {{ html()->input('text', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
+                        {{ html()->input('textarea', 'cu_reason', old('cu_reason'), ['class' => 'form-control']) }}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('appeal.links.cancel')}}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('appeals.links.cancel')}}</button>
                     {{ html()->submit(__('appeals.cu.submit'))->class('btn btn-primary') }}
                 </div>
                 {{ html()->form()->close() }}

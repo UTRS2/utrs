@@ -336,7 +336,6 @@ class PublicAppealController extends Controller
         } else {
             return response()->json(['processed'=>TRUE, 'notfound'=>FALSE, 'status'=>'success']);
         }
-
     }
 
     public function appealmap(Request $request)
@@ -348,7 +347,6 @@ class PublicAppealController extends Controller
         }
         $appealkey = $request->input('appealkey');
         $appeal = Appeal::where('appealsecretkey', '=', $appealkey)->first();
-        $matchAppealID = $appeal->id;
 
         if (!$appeal) {
             return response()->view('appeals.public.wrongkey', [], 404);
@@ -357,6 +355,8 @@ class PublicAppealController extends Controller
         if ($appeal->status == Appeal::STATUS_INVALID) {
             return response()->view('appeals.public.oversight', [], 403);
         }
+
+        $matchAppealID = $appeal->id;
 
         //$appeal->loadMissing('comments.userObject');
 

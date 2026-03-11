@@ -23,11 +23,11 @@
             </td>
             <td>{{ $appeal->appealfor }}
             @if($appeal->user_verified == 1)
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/30px-Oxygen480-status-security-high.svg.png">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Oxygen480-status-security-high.svg/40px-Oxygen480-status-security-high.svg.png">
             @elseif($appeal->user_verified == -1 && $appeal->blocktype != 0)
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/30px-Oxygen480-status-security-low.svg.png">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Oxygen480-status-security-low.svg/40px-Oxygen480-status-security-low.svg.png">
             @elseif(!$appeal->blocktype == 0)
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/30px-Oxygen480-status-security-medium.svg.png">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Oxygen480-status-security-medium.svg/40px-Oxygen480-status-security-medium.svg.png">
             @endif
             </td>
             <td style="vertical-align: middle">

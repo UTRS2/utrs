@@ -46,34 +46,31 @@ class RealMediaWikiApi implements MediaWikiApiContract
 
         $this->guzzleClient = $this->createGuzzleClient($identifier);
 
-        $auth = new NoAuth();
-
-        // if (config('wikis.login.username') && config('wikis.login.password')) {
-        //     $auth = new UserAndPassword(
-        //         config('wikis.login.username'),
-        //         config('wikis.login.password')
-        //     );
-        // }
-
-        $auth = new NoAuth();
+        if (config('wikis.login.username') && config('wikis.login.password')) {
+            $auth = new \Addwiki\Mediawiki\Api\Client\Auth\UserAndPassword(
+                config('wikis.login.username'),
+                config('wikis.login.password')
+            );
+        }
+        else {
+            $auth = new NoAuth();
+        }
 
         $this->api = new ActionApi(
             $this->apiUrl,
-            new NoAuth(),
+            $auth,
             $this->guzzleClient
         );
 
         $this->factory = new MediawikiFactory($this->api);
 
-        $this->factory = new MediawikiFactory($this->api);
+        // /** @var CookieJar $jar */
+        // $jar = $this->guzzleClient->getConfig('cookies');
 
-        /** @var CookieJar $jar */
-        $jar = $this->guzzleClient->getConfig('cookies');
-
-        // Session names are unreliable; assume there is at least some session if the jar is not empty.
-        if ($jar->count() > 0) {
-            $this->hasExistingSession = true;
-        }
+        // // Session names are unreliable; assume there is at least some session if the jar is not empty.
+        // if ($jar->count() > 0) {
+        //     $this->hasExistingSession = true;
+        // }
     }
 
     /**
@@ -81,18 +78,19 @@ class RealMediaWikiApi implements MediaWikiApiContract
      */
     protected function createGuzzleClient(string $identifier): Client
     {
-        $cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
+        //$cookieJar = new FileCookieJar(storage_path('app/mw-cookies/' . $identifier . '.json'), true);
 
         $opts = [
-            'cookies' => $cookieJar,
+            //'cookies' => $cookieJar,
+            'cookies' => new CookieJar(),
             'headers' => [
                 'User-Agent' => 'UTRS 3, https://github.com/utrs2/utrs',
             ],
         ];
 
-        if (config('wikis.login.username') && config('wikis.login.password')) {
-            $opts['auth'] = [config('wikis.login.username'), config('wikis.login.password')];
-        }
+        // if (config('wikis.login.username') && config('wikis.login.password')) {
+        //     $opts['auth'] = [config('wikis.login.username'), config('wikis.login.password')];
+        // }
 
         return new Client($opts);
     }

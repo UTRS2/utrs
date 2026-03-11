@@ -25,8 +25,12 @@ class AppealQuickSearchController extends Controller
 
         /** @var User $user */
         $user = $request->user();
+
+        if (!$request->input('search') || $request->input('search') == ''){
+            $search = "%";
+        }
         
-        $search = $request->validate(['search' => 'required|min:1'])['search'];
+        $search = $request['search'];
 
         $number = is_numeric($search) ? intval($search) : null;
 
@@ -71,13 +75,36 @@ class AppealQuickSearchController extends Controller
                 ->first();
         }
 
-        // If no appeals were found at all, show error message
+        // If no appeals were found at all, try search with %s on the end, and if that's still blank, fail
         if (!$appeal) {
-            return redirect()
-                ->back(302, [], route('appeal.list'))
-                ->withErrors([
-                    'search' => 'No results found.'
-                ]);
+            $search = $search . '%';
+            $appeal = Appeal::where('appealfor', 'LIKE', $search)
+                ->when($number, function (Builder $query, $number) {
+                    return $query->orWhere('id', $number);
+                })
+                ->whereIn('wiki', $wikis)
+                ->orderByDesc('id')
+                ->first();
+            
+            //check if any results if still nothing try % on the front
+            if (!$appeal) {
+                $search = '%' . $search;
+                $appeal = Appeal::where('appealfor', 'LIKE', $search)
+                    ->when($number, function (Builder $query, $number) {
+                        return $query->orWhere('id', $number);
+                    })
+                ->whereIn('wiki', $wikis)
+                ->orderByDesc('id')
+                ->first();
+
+                if (!$appeal) {
+                return redirect()
+                    ->back(302, [], route('appeal.list'))
+                    ->withErrors([
+                        'search' => 'No results found.'
+                    ]);
+                }
+            }
         }
 
         if (!$user->can('view', $appeal)) {

@@ -25,12 +25,13 @@ class RealBlock implements Block
      * @param string $blockReason
      * @param string $blockTimestamp
      */
-    public function __construct(string $blockTarget, string $blockingUser, string $blockReason, string $blockTimestamp)
+    public function __construct(string $blockTarget, string $blockingUser, string $blockReason, string $blockTimestamp, bool $anonOnly=false)
     {
         $this->blockTarget = $blockTarget;
         $this->blockingUser = $blockingUser;
         $this->blockReason = $blockReason;
         $this->blockTimestamp = $blockTimestamp;
+        $this->anonOnly = $anonOnly;
     }
 
     public static function fromArray(array $blockData)
@@ -40,6 +41,7 @@ class RealBlock implements Block
             $blockData['by'],
             $blockData['reason'],
             $blockData['timestamp'],
+            array_key_exists('anononly', $blockData)
         );
     }
 
@@ -73,5 +75,10 @@ class RealBlock implements Block
     public function getBlockTimestamp(): string
     {
         return $this->blockTimestamp;
+    }
+
+    public function isAnonOnly(): bool
+    {
+        return $this->anonOnly;
     }
 }
