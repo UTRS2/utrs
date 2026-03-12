@@ -53,11 +53,11 @@
             <div class="form-group mb-4">
                 {{ __('appeals.forms.direct-question') }}
                 <div class="custom-control custom-radio">
-                    {{ html()->radio('blocktype', old('blocktype') === 1, 1)->class('custom-control-input')->id('blocktype-1')->attribute('onclick', 'hideHiddenIP()') }} {{ html()->label(__('appeals.forms.direct-yes'), 'blocktype-1')->class('custom-control-label') }}
+                    {{ html()->radio('blocktype', (int)old('blocktype', 1) === 1, 1)->class('custom-control-input')->id('blocktype-1')->attribute('onclick', 'hideHiddenIP()') }} {{ html()->label(__('appeals.forms.direct-yes'), 'blocktype-1')->class('custom-control-label') }}
                 </div>
 
                 <div class="custom-control custom-radio">
-                    {{ html()->radio('blocktype', old('blocktype') === 2, 2)->class('custom-control-input')->id('blocktype-2')->attribute('onclick', 'showHiddenIP()') }} {{ html()->label(__('appeals.forms.direct-no'), 'blocktype-2')->class('custom-control-label') }}
+                    {{ html()->radio('blocktype', (int)old('blocktype', 1) === 2, 2)->class('custom-control-input')->id('blocktype-2')->attribute('onclick', 'showHiddenIP()') }} {{ html()->label(__('appeals.forms.direct-no'), 'blocktype-2')->class('custom-control-label') }}
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                 {{ html()->text('hiddenip', old('hiddenip'))->class('form-control') }}
                 </div>
             </noscript>
-            <div class="form-group mb-4" id="hiddenipdiv" style = "display:none">
+            <div class="form-group mb-4" id="hiddenipdiv" style="{{ (int)old('blocktype', 1) === 2 ? '' : 'display:none' }}">
                 {{ html()->label(__('appeals.forms.hiddenip-question', ['option' => __('appeals.forms.direct-no')]), 'hiddenip') }}
                 {{ html()->text('hiddenip', old('hiddenip'))->class('form-control') }}
                 <br /><div style="display: none" class="alert alert-success" role="alert" id="forhidden">This question has been answered automatically.</div>
