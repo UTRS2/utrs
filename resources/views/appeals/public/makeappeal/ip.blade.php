@@ -78,7 +78,7 @@
             
             <div class="form-group mb-4">
                 {{ html()->label(__('appeals.forms.question-why'), 'appealtext') }}
-                {{ html()->textarea('appealtext', old('appealtext'))->class('form-control h-25') }}
+                {{ html()->textarea('appealtext', old('appealtext'))->class('form-control')->attribute('style','height:180px;resize:vertical;') }}
             </div>
 
             {{ html()->submit(__('generic.submit'))->class('btn btn-success') }}
