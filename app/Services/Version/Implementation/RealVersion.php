@@ -28,15 +28,21 @@ class RealVersion implements Version
     private function tryDetermineVersion(): string
     {
         if (file_exists(base_path('.git')) && function_exists('exec')) {
-            $gitTag = htmlspecialchars(trim(exec('git describe --tags --abbrev=0')));
-            $gitRevision = htmlspecialchars(trim(exec('git rev-parse --short HEAD')));
+            // silence errors from git if unavailable
+            $gitTag = htmlspecialchars(trim(exec('git describe --tags --abbrev=0 2>/dev/null')));
+            $gitBranch = htmlspecialchars(trim(exec('git rev-parse --abbrev-ref HEAD 2>/dev/null')));
+            $gitRevision8 = htmlspecialchars(trim(exec('git rev-parse --short=8 HEAD 2>/dev/null')));
 
+            // prefer tag if present, but include branch and short (8 char) revision when possible
             if (strlen($gitTag) > 0) {
-                return " (<a href=\"https://github.com/UTRS2/utrs/releases/tag/$gitTag\">$gitTag</a><!-- revision: $gitRevision -->)";
+                $branchPart = ($gitBranch !== '' && $gitBranch !== 'HEAD') ? " on <a href=\"https://github.com/utrs2/utrs/tree/$gitBranch\">$gitBranch</a>" : '';
+                $revPart = $gitRevision8 ? " <a href=\"https://github.com/utrs2/utrs/commit/$gitRevision8\">$gitRevision8</a>" : '';
+                return " (<a href=\"https://github.com/utrs2/utrs/releases/tag/$gitTag\">$gitTag</a> {$branchPart} at revision {$revPart})";
             }
 
-            if (strlen($gitRevision) > 0) {
-                return " (git-<a href=\"https://github.com/utrs2/utrs/commit/$gitRevision\">$gitRevision</a>)";
+            if (strlen($gitRevision8) > 0) {
+                $branchPart = ($gitBranch !== '' && $gitBranch !== 'HEAD') ? "branch <a href=\"https://github.com/utrs2/utrs/tree/$gitBranch\">$gitBranch</a> / " : '';
+                return " ({$branchPart}<a href=\"https://github.com/utrs2/utrs/commit/$gitRevision8\">$gitRevision8</a>)";
             }
         }
 
