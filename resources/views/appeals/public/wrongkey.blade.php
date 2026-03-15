@@ -15,18 +15,18 @@
     <div class="card-deck">
         <div class="card">
             <div class="card-body">
-                {{ __('auth.auth-needed-screen.key-text') }}
-
-                {{ html()->form('GET', route('public.appeal.view'))->open() }}
-                <div class="input-group w-100 mb-3">
-                    {{ html()->text('hash')->class('form-control w-100')->placeholder(__('auth.auth-needed-screen.key-placeholder')) }}
-                </div>
-
+                {{ html()->form('POST', route('public.appeal.map'))->open() }}
+            <div class="card-body">
+                <h5 class="card-title">{{__('auth.auth-needed-screen.key-title')}}</h5>
+                {{ html()->label(__('auth.auth-needed-screen.key-text'), 'hash') }}
+                <p class="card-text">{{ html()->text('appealkey')->class('form-control w-100')->placeholder(__('auth.auth-needed-screen.key-placeholder')) }}</p>
+            </div>
+            <div class="card-footer">
                 <div>
-                    <button type="submit" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
-                    {{-- <a href="#" class="btn btn-danger">Forgot Appeal Key</a> --}}
+                    <button type="submit" dusk="view-my-appeal" class="btn btn-primary">{{ __('auth.auth-needed-screen.submit-text') }}</button>
                 </div>
-                {{ html()->form()->close() }}
+            </div>
+            {{ html()->form()->close() }}
             </div>
         </div>
     </div>

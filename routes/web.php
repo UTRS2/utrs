@@ -133,6 +133,8 @@ Route::middleware('set.locale')->group(function () {
     Route::post('/admin/apikeys/activate/{apikey}', 'ApiController@activate')->name('apikey.activate');
     Route::post('/admin/apikeys/regenerate/{apikey}', 'ApiController@regenerate')->name('apikey.regenerate');
 
+    Route::get('/api/ip', 'ApiController@giveCurrentIP')->name('apikey.ip');
+
     Route::get('/test', function () {
         $email = new App\Mail\Acc('https://accounts.wmflabs.org/randomkey', 'joe@null');
         return $email;
