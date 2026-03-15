@@ -218,4 +218,8 @@ class ApiController extends Controller
             'api_error_code' => 0,
         ];
     }
+
+    function giveCurrentIP() {
+        return request()->ip();
+    }
 }

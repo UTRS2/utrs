@@ -3,17 +3,44 @@
 @section('title', 'Appeal a block on an IP address')
 @section('scripts')
         function getIP() {
-            const url = "https://api64.ipify.org/"
-            const auth = confirm('The following button will connect to' + url + ' to obtain your IP address. Press OK if you agree to allow this.')
-            if (!auth) {
-                console.error("Authorization to check API rejected. Site will not connect.");
-                return;
+            fetch("{{ route('apikey.ip') }}")
+                .then(response => {
+                    if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            fetch(url).then(res => res.text()).then(data => document.getElementById("appealfor").value=data);
-            document.getElementById("appealfor").style.visibility="hidden";
-            document.getElementById("appealfor").style.display="none";
-            document.getElementById("forhidden").style.display="block";
-        }
+            return response.text();
+        })
+        .then(text => {
+            let ip;
+            try {
+                const parsed = JSON.parse(text);
+                ip = parsed && parsed.ip ? parsed.ip : text;
+            } catch (e) {
+                ip = text.trim();
+            }
+            if (!ip) {
+                throw new Error('Empty IP returned');
+            }
+            
+            console.log('Retrieved IP:', ip);
+
+            const appealElement = document.getElementById("appealfor");
+            const hiddenElement = document.getElementById("forhidden");
+
+            if (appealElement) {
+                appealElement.value = ip;
+                appealElement.style.visibility = "hidden";
+                appealElement.style.display = "none";
+            }
+            if (hiddenElement) {
+                hiddenElement.style.display = "block";
+            }
+        })
+        .catch(err => {
+            console.error('Failed to get IP:', err);
+            alert('Could not retrieve IP address automatically. Please enter it manually.');
+        });
+}
 @endsection
 @section('content')
     <div class="alert alert-danger" role="alert">
