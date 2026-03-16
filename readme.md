@@ -22,11 +22,11 @@ The frontend is built using Bootstrap 4. It uses `purgecss` to remove unused cla
 
 First, install NPM dependencies using `npm install`. Then, you can use Laravel Mix (webpack wrapper) to build assets:
 
-* Use `npm run watch` to start Webpack mix in development watch mode. That mode does not use PurgeCSS and it re-builds
+* Use `npm run dev` to start Webpack mix in development watch mode. That mode does not use PurgeCSS and it re-builds
   all assets when it detects a change. This is most useful when working with JavaScript or when modifying the SCSS files.
 * Use `npm run dev` to do one build in the development mode. This mode does not use PurgeCSS. This is most useful when
   you are working on the frontend, as you have access to all classes Bootstrap has to offer.
-* Use `npm run prod` to do a production build. This build uses PurgeCSS and URL versioning. Due to legacy reasons a
+* Use `npm run build` to do a production build. This build uses PurgeCSS and URL versioning. Due to legacy reasons a
   production build should be commited to the repository for pull requests. This may change soon, see issue
   [#240](https://github.com/UTRS2/utrs/issues/240).
 
