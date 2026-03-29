@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d38c66857648e435030a98f2c4cd4cd6",
+    "content-hash": "a96e025ccf1d3db1e0bb8e921fe52c29",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -1720,26 +1720,26 @@
         },
         {
             "name": "kyslik/column-sortable",
-            "version": "7.0.0",
+            "version": "8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Kyslik/column-sortable.git",
-                "reference": "d7a71ce6faa5a5c044b41ae73223bfddbd11fe6c"
+                "reference": "dd1427968446277be318e97757cb5f6e429aba46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Kyslik/column-sortable/zipball/d7a71ce6faa5a5c044b41ae73223bfddbd11fe6c",
-                "reference": "d7a71ce6faa5a5c044b41ae73223bfddbd11fe6c",
+                "url": "https://api.github.com/repos/Kyslik/column-sortable/zipball/dd1427968446277be318e97757cb5f6e429aba46",
+                "reference": "dd1427968446277be318e97757cb5f6e429aba46",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-                "illuminate/support": "5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+                "illuminate/database": "5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "illuminate/support": "5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
                 "php": ">=7.2"
             },
             "require-dev": {
-                "orchestra/testbench": "^5.0|^7.0|^8.0|^9.0|^10.0",
-                "phpunit/phpunit": "^8.5|^9.5.10|^10.5|^11.5.3"
+                "orchestra/testbench": "^5.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "phpunit/phpunit": "^8.5|^9.5.10|^10.5|^11.5.3|^12.5.12"
             },
             "type": "package",
             "extra": {
@@ -1775,9 +1775,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Kyslik/column-sortable/issues",
-                "source": "https://github.com/Kyslik/column-sortable/tree/7.0.0"
+                "source": "https://github.com/Kyslik/column-sortable/tree/8.0.0"
             },
-            "time": "2025-02-24T14:12:07+00:00"
+            "time": "2026-03-17T20:02:31+00:00"
         },
         {
             "name": "laravel/framework",

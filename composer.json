@@ -16,7 +16,7 @@
         "doctrine/dbal": "^4",
         "guzzlehttp/guzzle": "^7",
         "khill/lavacharts": "^3.1",
-        "kyslik/column-sortable": "^7",
+        "kyslik/column-sortable": "^8",
         "laravel/framework": "^11",
         "laravel/socialite": "^5",
         "laravel/tinker": "^3",
