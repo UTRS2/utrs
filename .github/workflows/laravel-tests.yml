@@ -63,7 +63,7 @@ jobs:
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Build assets
-        run: npm run production
+        run: npm run build
       - name: Run tests
         run: composer test --verbose
         env:

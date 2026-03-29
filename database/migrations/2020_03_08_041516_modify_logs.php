@@ -35,7 +35,7 @@ class ModifyLogs extends Migration
     {
         Schema::table('logs', function(Blueprint $table) {
             $table->string('xff');
-            $table->string('reason')->change();
+            $table->string('reason')->nullable()->change();
             $table->dropColumn('objecttype');
             $table->dropColumn('protected');
             $table->dropColumn('timestamp');
