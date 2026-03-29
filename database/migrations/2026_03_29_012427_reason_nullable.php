@@ -19,6 +19,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE log_entries MODIFY reason TEXT NOT NULL");
+        // avoid truncation on revert: keep a large nullable type (safer for tests)
+        DB::statement("ALTER TABLE log_entries MODIFY reason TEXT NULL");
     }
 };

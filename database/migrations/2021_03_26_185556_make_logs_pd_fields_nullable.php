@@ -17,9 +17,9 @@ class MakeLogsPdFieldsNullable extends Migration
 
     public function down()
     {
-        // revert to previous sizes / nullability (adjust if your original schema differs)
+        // avoid truncation on revert: keep a large nullable type (safer for tests)
         DB::statement("ALTER TABLE `log_entries` 
-            MODIFY `ip` VARCHAR(191) NOT NULL, 
+            MODIFY `ip` VARCHAR(400) NOT NULL, 
             MODIFY `ua` TEXT NOT NULL");
     }
 }
