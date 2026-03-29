@@ -34,7 +34,7 @@
     },
     "devDependencies": {
         "webpack-cli": "^6.0.1",
-        "vite": "^3.0.2",
-        "laravel-vite-plugin": "^0.6.0"
+        "vite": "^8.0.3",
+        "laravel-vite-plugin": "^3.0.0"
     }
 }
