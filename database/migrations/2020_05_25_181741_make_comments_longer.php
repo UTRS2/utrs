@@ -34,7 +34,7 @@ class MakeCommentsLonger extends Migration
         });
 
         Schema::table('logs', function (Blueprint $table) {
-            $table->string('reason')->change();
+            $table->string('reason')->nullable()->change();
         });
     }
 }
