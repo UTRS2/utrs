@@ -17,9 +17,9 @@ class MakeLogsPdFieldsNullable extends Migration
 
     public function down()
     {
-        // avoid truncation on revert: keep a large nullable type (safer for tests)
+        // keep nullable so rollback doesn't fail when rows have NULL ip/ua
         DB::statement("ALTER TABLE `log_entries` 
-            MODIFY `ip` VARCHAR(400) NOT NULL, 
-            MODIFY `ua` TEXT NOT NULL");
+            MODIFY `ip` VARCHAR(400) NULL, 
+            MODIFY `ua` TEXT NULL");
     }
 }
