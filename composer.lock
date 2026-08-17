@@ -305,16 +305,16 @@
         },
         {
             "name": "deeplcom/deepl-php",
-            "version": "v1.19.0",
+            "version": "v1.20.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/DeepLcom/deepl-php.git",
-                "reference": "bde58fa2a6d1fbef75d187739a8dff90171844c1"
+                "url": "https://github.com/DeepL/deepl-php.git",
+                "reference": "c092b9a4817aaaa0b625dda6ddff0c786e7c8233"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DeepLcom/deepl-php/zipball/bde58fa2a6d1fbef75d187739a8dff90171844c1",
-                "reference": "bde58fa2a6d1fbef75d187739a8dff90171844c1",
+                "url": "https://api.github.com/repos/DeepL/deepl-php/zipball/c092b9a4817aaaa0b625dda6ddff0c786e7c8233",
+                "reference": "c092b9a4817aaaa0b625dda6ddff0c786e7c8233",
                 "shasum": ""
             },
             "require": {
@@ -361,10 +361,10 @@
                 "translator"
             ],
             "support": {
-                "issues": "https://github.com/DeepLcom/deepl-php/issues",
-                "source": "https://github.com/DeepLcom/deepl-php/tree/v1.19.0"
+                "issues": "https://github.com/DeepL/deepl-php/issues",
+                "source": "https://github.com/DeepL/deepl-php/tree/v1.20.0"
             },
-            "time": "2026-06-24T10:15:06+00:00"
+            "time": "2026-08-11T20:10:01+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -11738,13 +11738,13 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2",
         "ext-json": "*"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }
