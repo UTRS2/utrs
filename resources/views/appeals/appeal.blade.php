@@ -74,7 +74,7 @@ function displayTransfer() {
                                 <br /><b style="color:red">{{__('appeals.verify.negativeaction')}}</b>
                                 @endif
                                 @if($info->anon_only && $info->blocktype == 0)
-                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Symbol_redirect_vote.svg/23px-Symbol_redirect_vote.svg.png">
+                                    <br/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Symbol_redirect_vote.svg/20px-Symbol_redirect_vote.svg.png">
                                     <i>{{__('appeals.appeal-types.anon-only')}}</i>
                                 @endif
                                 <table style="border: 1px solid black; border-collapse: collapse;">
