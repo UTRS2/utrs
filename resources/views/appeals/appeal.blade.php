@@ -155,7 +155,7 @@ function displayTransfer() {
                                 @else
                                 <a href="{{ route('translate.activate', ['appeal' => $info, 'logid' => 0])}}">
                                     <div style="height: 55px; display: flex; align-items: center;">
-                                        <div style="font-size: 20px; font-family: 'Courier New', monospace; text-align: center;">{{__('generic.translate-with')}}</div>&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
+                                        <div style="font-size: 20px; font-family: 'Courier New', monospace; text-align: center;">{{__('generic.translate-with')}}</div>&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/120px-DeepL_logo.svg.png" />
                                     </div>
                                 </a>
                                 @endif--}}
@@ -372,22 +372,22 @@ function displayTransfer() {
                                             @if($info->status === Appeal::STATUS_ACCEPT)
                                                 <center>{{__('appeals.status-texts.ACCEPT')}}<br/>
                                             <br/><img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
+                                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/250px-Emblem-unblock-granted.svg.png"
                                                     class="img-fluid"></center>
                                             @elseif($info->status === Appeal::STATUS_EXPIRE)
                                                 <center>{{__('appeals.status-texts.EXPIRE')}}<br/>
                                                     <br/><img
-                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/250px-Emblem-unblock-expired.svg.png"
                                                             class="img-fluid"></center>
                                             @elseif($info->status === Appeal::STATUS_DECLINE)
                                                 <center>{{__('appeals.status-texts.DECLINE')}}<br/>
                                                     <br/><img
-                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/250px-Emblem-unblock-denied.svg.png"
                                                             class="img-fluid"></center>
                                             @else
                                                 <center>{{__('appeals.status-texts.default')}}<br/>
                                                     <br/><img
-                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png"
+                                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/250px-Emblem-unblock-request.svg.png"
                                                             class="img-fluid"></center>
                                             @endif    
                                             {{--
@@ -526,7 +526,7 @@ function displayTransfer() {
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Oxygen15.04.1-applications-education-language.svg/40px-Oxygen15.04.1-applications-education-language.svg.png" />&nbsp;&nbsp;{{__('generic.translated-by-deepl')}}
                                     @else
                                     <a href="{{ route('translate.activate', ['appeal' => $info->id, 'logid' => $comment->id])}}" style="color: white">
-                                        {{__('generic.translate-with')}} &nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/105px-DeepL_logo.svg.png" />
+                                        {{__('generic.translate-with')}} &nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/DeepL_logo.svg/120px-DeepL_logo.svg.png" />
                                     </a>
                                     @endif
                                 @endif
