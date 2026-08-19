@@ -57,13 +57,13 @@
                     <div class="col-3">
                         <center>This is a legacy appeal. The success of this appeal is unknown.
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/250px-Emblem-unblock-request.svg.png"
                                     class="img-fluid"></center>
                     </div>
                     <div class="col-3">
                         <center>This is a legacy appeal. This appeal is automatically considered private.
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Oxygen480-actions-irc-unvoice.svg/200px-Oxygen480-actions-irc-unvoice.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Oxygen480-actions-irc-unvoice.svg/250px-Oxygen480-actions-irc-unvoice.svg.png"
                                     class="img-fluid"></center>
                     </div>
                 </div>
