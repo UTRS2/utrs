@@ -66,27 +66,27 @@
                     @if($appeal->status === Appeal::STATUS_ACCEPT)
                         <center>{{ __('appeals.status-texts.ACCEPT') }}<br/>
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/200px-Emblem-unblock-granted.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Emblem-unblock-granted.svg/250px-Emblem-unblock-granted.svg.png"
                                     class="img-fluid"></center>
                     @elseif($appeal->status === Appeal::STATUS_EXPIRE)
                         <center>{{ __('appeals.status-texts.EXPIRE') }}<br/>
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/200px-Emblem-unblock-expired.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Emblem-unblock-expired.svg/250px-Emblem-unblock-expired.svg.png"
                                     class="img-fluid"></center>
                     @elseif($appeal->status === Appeal::STATUS_DECLINE)
                         <center>{{ __('appeals.status-texts.DECLINE') }}<br/>
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/250px-Emblem-unblock-denied.svg.png"
                                     class="img-fluid"></center>
                     @elseif($appeal->status === Appeal::STATUS_INVALID)
                         <center>{{ __('appeals.status-texts.INVALID') }}<br/>
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/200px-Emblem-unblock-denied.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Emblem-unblock-denied.svg/250px-Emblem-unblock-denied.svg.png"
                                     class="img-fluid"></center>
                     @else
                         <center>{{ __('appeals.status-texts.default') }}<br/>
                             <br/><img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/200px-Emblem-unblock-request.svg.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Emblem-unblock-request.svg/250px-Emblem-unblock-request.svg.png"
                                     class="img-fluid"></center>
                     @endif
                 </div>
