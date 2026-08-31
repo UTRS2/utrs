@@ -13,6 +13,7 @@ jobs:
       matrix:
         php-versions:
           - 8.3
+          - 8.4
     services:
       mysql:
         image: mariadb:10.5
