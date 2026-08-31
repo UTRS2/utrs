@@ -120,7 +120,7 @@ class BanController extends Controller
 
     public function show(Request $request, Ban $ban)
     {
-        $this->authorize('view', [Auth::user(),$ban]);
+        $this->authorize('view', $ban);
 
         $target = $request->user()->can('viewName', $ban) ? $ban->target : __('admin.bans.ban-target-removed');
         $targetHtml = $request->user()->can('viewName', $ban)
