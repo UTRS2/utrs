@@ -18,6 +18,10 @@ class TrustProxies extends Middleware
         '2a02:ec80:a000:1::2f3',  // proxy-5.project-proxy.eqiad1.wikimedia.cloud
         '172.16.17.55',           // proxy-6.project-proxy.eqiad1.wikimedia.cloud
         '2a02:ec80:a000:1::31d',  // proxy-6.project-proxy.eqiad1.wikimedia.cloud
+        '172.16.20.180',          // proxy-7.project-proxy.eqiad1.wikimedia.cloud
+        '2a02:ec80:a000:1::514',  // proxy-7.project-proxy.eqiad1.wikimedia.cloud
+        '172.16.19.131',          // proxy-8.project-proxy.eqiad1.wikimedia.cloud
+        '2a02:ec80:a000:1::51f',  // proxy-8.project-proxy.eqiad1.wikimedia.cloud
     ];
 
     /**
