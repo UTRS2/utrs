@@ -8,7 +8,7 @@
         </h2>
 
         <p>
-            This appeal has been locked from view because of potentially sensitive information inside of it. You are prohibited from accessing it. Should you need to know about the contents of this request, you must send a request to utrs-developers@googlegroups.com
+            This appeal has been locked from view because of potentially sensitive information inside of it. You are prohibited from accessing it. Should you need to know about the contents of this request, please contact a UTRS developer.
 
             Your request will only be replied to if there is no sensitive information in the file.
 

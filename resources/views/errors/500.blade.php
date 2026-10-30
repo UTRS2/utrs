@@ -18,8 +18,7 @@
         <p>We apologise for any inconvenience caused. Please report this exception at <a href="https://github.com/utrs2/utrs/issues" class="alert-link">https://github.com/utrs2/utrs/issues</a>.</p>
         <p>
             If this happened while creating your appeal, do not create another appeal as it might have been saved.
-            Instead, contact UTRS developers at <a href="mailto:utrs-developers@googlegroups.com" class="alert-link">utrs-developers@googlegroups.com</a>
-            so they can help you.
+            Instead, contact UTRS developers so they can help you.
         </p>
     </div>
 </div>
