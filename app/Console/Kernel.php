@@ -44,7 +44,10 @@ class Kernel extends ConsoleKernel
 
         // Permission updates
         $schedule->command('utrs-jobs:reverify-user-permissions')->daily()->at('14:00');
-        
+
+        $schedule->command('queue:work --stop-when-empty --tries=3')
+            ->everyMinute()
+            ->withoutOverlapping();
     }
 
     /**
